@@ -2,7 +2,7 @@
 description: Shared coordinates and replay operations for local Xiangqi play.
 scope: game interface
 status: stable
-last_update: 2026-09-07
+last_update: 2026-09-08
 document_class: coordination
 ---
 
@@ -29,3 +29,30 @@ CLI stdout contains one JSON object; errors use a structured stderr object and
 nonzero exit status. Save stdout to a different file from the input snapshot.
 Browser exports use the same snapshot and import validates it before replacement.
 Replay navigation is read-only; return to the last move to continue playing.
+
+## Browser opponents
+
+`POST /api/opponent` accepts snapshot, expected-state hash, player (`random` or
+`alphabeta`), seed, depth, and nodes. It checks the full-history hash before search,
+selects one move through the shared Python player, and returns `position` plus
+`choice` diagnostics after guarded application. The operation is stateless and
+cannot mutate the supplied snapshot. Terminal positions return `game_over`.
+
+The browser request budget is bounded to depth 1–4 and 1–512 nodes; the UI uses
+depth 2 / 128 nodes and base seed zero. The actual seed is base plus absolute ply,
+matching arena decision seeding. No executable path or external teacher is
+accepted by this endpoint. Defaults are deterministic, not latency guarantees.
+
+The UI defaults to pass-and-play and allows a random or alpha-beta opponent,
+with the human playing either color. Mode/side changes keep the live game;
+if the selected computer owns the current turn it moves automatically. Human
+moves are disabled on computer turns. Failure leaves the current position intact
+and exposes an explicit retry; there is no automatic retry loop.
+
+Replay pauses opponent work. Returning to the latest move resumes an opponent
+turn. Starting a new game, importing, changing player controls, or navigating
+history invalidates earlier requests. The browser aborts fetches and also rejects
+stale results by request generation, even if a response arrives after cancellation.
+Server computation may finish within its bounded node budget after browser abort.
+Exports remain game-only replay snapshots; player controls and diagnostics are
+not persisted. Reload defaults to a new pass-and-play game.

@@ -13,3 +13,6 @@ artifacts/
 .DS_Store
 node_modules/
 src/qi/static/
+web/.test-build/
+web/test-results/
+web/playwright-report/

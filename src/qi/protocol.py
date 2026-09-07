@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from qi.game import START_FEN, Game, in_check, legal_moves, replay
+from qi.players import Choice
 
 
 class Snapshot(BaseModel):
@@ -56,3 +57,17 @@ def inspect(game: Game) -> Position:
         in_check=in_check(game.board, game.turn),
         outcome=Result(winner=outcome.winner, reason=outcome.reason) if outcome else None,
     )
+
+
+class OpponentRequest(InspectRequest):
+    model_config = ConfigDict(extra="forbid")
+    expected_state_hash: str = Field(min_length=64, max_length=64)
+    player: Literal["random", "alphabeta"] = "alphabeta"
+    seed: int = Field(default=0, ge=0, le=2_147_483_647, strict=True)
+    depth: int = Field(default=2, ge=1, le=4, strict=True)
+    nodes: int = Field(default=128, ge=1, le=512, strict=True)
+
+
+class OpponentResult(BaseModel):
+    position: Position
+    choice: Choice

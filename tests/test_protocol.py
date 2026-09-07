@@ -68,3 +68,75 @@ def test_cli_api_parity_and_clean_error_streams(tmp_path, client) -> None:
     assert invalid.returncode == 1
     assert not invalid.stdout
     assert json.loads(invalid.stderr)["error"]["code"] == "illegal_move"
+
+
+@pytest.mark.parametrize("player", ["random", "alphabeta"])
+def test_opponent_choice_matches_python_and_replays(client, player) -> None:
+    from dataclasses import asdict
+
+    from qi.players import PlayerConfig, choose
+
+    snapshot = Snapshot(moves=["b2e2"])
+    game = snapshot.game()
+    response = client.post(
+        "/api/opponent",
+        json={
+            "snapshot": snapshot.model_dump(),
+            "expected_state_hash": game.state_hash,
+            "player": player,
+            "seed": 7,
+            "nodes": 64,
+            "depth": 2,
+        },
+    )
+    assert response.status_code == 200
+    data = response.json()
+    actual = data["choice"]
+    expected = asdict(choose(game, PlayerConfig(player, seed=8, depth=2, nodes=64)))
+    actual.pop("elapsed_ms")
+    expected.pop("elapsed_ms")
+    assert actual == expected
+    position = data["position"]
+    assert position["snapshot"]["moves"] == ["b2e2", actual["move"]]
+    assert client.post("/api/inspect", json={"snapshot": position["snapshot"]}).json() == position
+    assert snapshot.moves == ["b2e2"]
+
+
+def test_opponent_stale_guard_precedes_search(client, monkeypatch) -> None:
+    def forbidden(*args):
+        pytest.fail("Stale requests must not start search")
+
+    monkeypatch.setattr("qi.api.choose", forbidden)
+    response = client.post("/api/opponent", json={"snapshot": Snapshot().model_dump(), "expected_state_hash": "0" * 64})
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "stale_state"
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [{"nodes": 513}, {"depth": 5}, {"seed": -1}, {"seed": True}, {"player": "teacher"}, {"engine": "/tmp/anything"}],
+)
+def test_browser_opponent_rejects_unbounded_or_external_settings(client, settings) -> None:
+    initial = client.post("/api/new").json()
+    response = client.post(
+        "/api/opponent",
+        json={
+            "snapshot": initial["snapshot"],
+            "expected_state_hash": initial["state_hash"],
+            **settings,
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_browser_opponent_rejects_terminal_game(client) -> None:
+    snapshot = Snapshot(moves=["b0c2", "b9c7", "c2b0", "c7b9"] * 2)
+    response = client.post(
+        "/api/opponent",
+        json={
+            "snapshot": snapshot.model_dump(),
+            "expected_state_hash": snapshot.game().state_hash,
+        },
+    )
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "game_over"

@@ -2,15 +2,15 @@
 description: Setup and usage for the local qi Xiangqi game.
 scope: project setup
 status: stable
-last_update: 2026-09-07
+last_update: 2026-09-08
 document_class: coordination
 ---
 
 # qi
 
-A local two-human Xiangqi board, with a Python referee, structured CLI, and
-portable save/replay files. Seeded random and small alpha-beta players can run reproducible CLI matches.
-Learning engines are future work.
+A local Xiangqi board for pass-and-play or games against random and alpha-beta
+opponents, with a Python referee, structured CLI, and portable save/replay.
+Fixed evaluation batches and local Pikafish analysis support future learning work.
 
 ## Setup and play
 
@@ -22,7 +22,9 @@ make check
 make play
 ```
 
-Open http://127.0.0.1:8000 in your browser. Both players share that board.
+Open http://127.0.0.1:8000 in your browser. Share the board in pass-and-play, or
+select a computer opponent and your color. The computer moves automatically on
+its turn; failed requests expose a Retry opponent button.
 Select a piece, then a highlighted destination. Keyboard users can focus a
 square and press Enter or Space. Flip the board as desired.
 
@@ -65,7 +67,21 @@ uv run qi match --red alphabeta --black random --seed 7 > match.json
 [Baseline contracts](docs/baselines.md) explain search budgets, deterministic
 seeds, opening snapshots, and match records. Matches run through the existing
 referee. Extract a match record's nested `snapshot` to import it into the browser.
-The browser remains a two-human board in this slice.
+Browser opponents use depth 2 / 128 nodes and a fixed seed. Switching opponents
+keeps the current game; replay pauses computer moves until you return to live play.
+
+Evaluate the fixed opening corpus (both player colors, with replayable games):
+
+```bash
+mkdir -p artifacts
+uv run qi evaluate --corpus data/evaluation/openings-v1.json --seed 7 > artifacts/evaluation.json
+```
+
+See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
+budget interpretation, and the limits of this small evaluation corpus.
+
+For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and
+weights remain optional local artifacts; default checks need neither.
 
 ## Rules and verification
 
@@ -76,8 +92,21 @@ Repeated checking/chasing has no special penalty. These are training rules,
 not competitive adjudication.
 
 `make check` runs Ruff, documentation validation, TypeScript/format checks,
-Python tests, and a production browser build. `make format` applies formatting;
+Python and browser request-lifecycle unit tests, and a production browser build. `make format` applies formatting;
 `make authoring-check` is a separate advisory writing check.
+
+Browser integration tests run the production board against a local server on port
+18765, with Chromium at desktop and mobile widths:
+
+```bash
+cd web
+npx playwright install chromium
+npm run test:e2e
+```
+
+This separate lane tests opponent turns, explicit retries, replay/export/import,
+terminal states, and late responses during new-game/replay cancellation. Default
+`make check` requires no browser download or listening server.
 
 An optional independent movement check uses pyffish 0.0.90 in a separate environment:
 
@@ -99,16 +128,3 @@ records this slice's verification.
 Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` records
 its baseline. Shared rules and skills remain kit-managed. Use `governance-sync`
 when updating; project bindings and application code belong to qi.
-
-Evaluate the fixed opening corpus (both player colors, with replayable games):
-
-```bash
-mkdir -p artifacts
-uv run qi evaluate --corpus data/evaluation/openings-v1.json --seed 7 > artifacts/evaluation.json
-```
-
-See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
-budget interpretation, and the limits of this small evaluation corpus.
-
-For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and
-weights remain optional local artifacts; default checks need neither.

@@ -8,7 +8,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from qi.game import Game, GameError
-from qi.protocol import ApplyRequest, InspectRequest, Position, inspect
+from qi.players import PlayerConfig, choose
+from qi.protocol import ApplyRequest, InspectRequest, OpponentRequest, OpponentResult, Position, inspect
 
 
 def create_app() -> FastAPI:
@@ -36,6 +37,16 @@ def create_app() -> FastAPI:
     @app.post("/api/apply", response_model=Position)
     def apply(request: ApplyRequest) -> Position:
         return inspect(request.snapshot.game().apply(request.move, request.expected_state_hash))
+
+    @app.post("/api/opponent", response_model=OpponentResult)
+    def opponent(request: OpponentRequest) -> OpponentResult:
+        game = request.snapshot.game()
+        if game.state_hash != request.expected_state_hash:
+            raise GameError("stale_state", "The position changed before the opponent request.")
+        choice = choose(
+            game, PlayerConfig(request.player, request.seed + len(game.moves), request.depth, request.nodes)
+        )
+        return OpponentResult(position=inspect(game.apply(choice.move, choice.state_hash)), choice=choice)
 
     static = Path(__file__).parent / "static"
     if static.is_dir():

@@ -2,7 +2,7 @@
 description: Compact navigator over authority areas, rules, glossary, and agent flows in qi.
 scope: documentation navigator index
 status: stable
-last_update: 2026-08-17
+last_update: 2026-09-08
 document_class: coordination
 ---
 

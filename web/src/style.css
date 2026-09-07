@@ -335,3 +335,32 @@ footer {
     font-size: 9px;
   }
 }
+
+.opponent-controls {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.opponent-controls label {
+  font-size: 12px;
+  font-weight: 600;
+}
+.opponent-controls select {
+  width: 100%;
+  min-height: 42px;
+  font: inherit;
+  color: inherit;
+  background: #faf7f0;
+  border: 1px solid #c8cabc;
+  border-radius: 5px;
+  padding: 8px 10px;
+}
+.opponent-controls p {
+  font-size: 11px;
+  color: #616e60;
+  margin: 0;
+}
+select:focus-visible {
+  outline: 3px solid #648b6c;
+  outline-offset: 3px;
+}

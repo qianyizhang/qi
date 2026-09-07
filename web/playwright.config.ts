@@ -1,0 +1,17 @@
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./e2e",
+  workers: 1,
+  use: { baseURL: "http://127.0.0.1:18765", trace: "retain-on-failure" },
+  projects: [
+    { name: "desktop", use: { viewport: { width: 1200, height: 900 } } },
+    { name: "mobile", use: { viewport: { width: 390, height: 844 } } },
+  ],
+  webServer: {
+    command:
+      "npm run build && ../.venv/bin/uvicorn qi.api:create_app --factory --host 127.0.0.1 --port 18765",
+    url: "http://127.0.0.1:18765",
+    reuseExistingServer: false,
+  },
+});

@@ -2,7 +2,7 @@
 description: Project scope, architecture direction, and learning milestones.
 scope: project direction
 status: stable
-last_update: 2026-09-07
+last_update: 2026-09-08
 document_class: coordination
 ---
 
@@ -25,8 +25,9 @@ freshly verified third-party capabilities.
 accepted ownership and teacher-bootstrapping boundary.
 
 The first playable milestone includes a minimal browser board for two humans
-and structured CLI access to the same Python operations. Both humans share one
-browser in local pass-and-play. Remote multiplayer is outside the current scope.
+and structured CLI access to the same Python operations. Both humans can share one
+browser in local pass-and-play; baseline computer opponents are also implemented.
+Remote multiplayer is outside the current scope.
 Keep the referee independent of browser sessions and transport so a future
 adapter can reuse it; do not add accounts, rooms, or synchronization machinery.
 

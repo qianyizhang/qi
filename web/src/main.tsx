@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
+import { RequestGate } from "./request-gate";
 
 type Snapshot = {
   schema_version: 1;
@@ -18,6 +19,16 @@ type Position = {
   in_check: boolean;
   outcome: { winner: "red" | "black" | null; reason: string } | null;
 };
+type Opponent = "human" | "random" | "alphabeta";
+type Choice = {
+  move: string;
+  player_version: string;
+  nodes: number;
+  completed_depth: number;
+  seed: number;
+  elapsed_ms: number;
+};
+type OpponentResult = { position: Position; choice: Choice };
 const symbols: Record<string, string> = {
   K: "帥",
   A: "仕",
@@ -47,9 +58,14 @@ const coord = (i: number) =>
   String.fromCharCode(97 + (i % 9)) + Math.floor(i / 9);
 const color = (piece: string) =>
   piece === piece.toUpperCase() ? "red" : "black";
-async function request(path: string, data?: unknown): Promise<Position> {
+async function request<T = Position>(
+  path: string,
+  data?: unknown,
+  signal?: AbortSignal,
+): Promise<T> {
   const response = await fetch(`/api/${path}`, {
     method: "POST",
+    signal,
     headers: { "Content-Type": "application/json" },
     body: data === undefined ? undefined : JSON.stringify(data),
   });
@@ -68,40 +84,114 @@ function App() {
   const [error, setError] = useState("");
   const [flipped, setFlipped] = useState(false);
   const [confirmNew, setConfirmNew] = useState(false);
+  const [opponent, setOpponent] = useState<Opponent>("human");
+  const [humanSide, setHumanSide] = useState<"red" | "black">("red");
+  const [thinking, setThinking] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [lastChoice, setLastChoice] = useState<Choice | null>(null);
+  const gate = useRef(new RequestGate());
   const file = useRef<HTMLInputElement>(null);
-  async function run(action: () => Promise<void>) {
-    setBusy(true);
-    setError("");
-    try {
-      await action();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unable to load game.");
-    } finally {
-      setBusy(false);
-    }
-  }
   function accept(p: Position) {
     setLive(p);
     setView(p);
     setSelected(null);
     setConfirmNew(false);
   }
-  useEffect(() => {
-    void run(async () => accept(await request("new")));
-  }, []);
+  function cancelWork() {
+    gate.current.cancel();
+    setThinking(false);
+    setBusy(false);
+    setSelected(null);
+    setError("");
+  }
+  function run(
+    action: (signal: AbortSignal) => Promise<Position | OpponentResult>,
+    target: "live" | "view" | "opponent" = "live",
+  ) {
+    const ticket = gate.current.start();
+    setBusy(target !== "opponent");
+    setThinking(target === "opponent");
+    setError("");
+    void action(ticket.signal)
+      .then((result) => {
+        if (!gate.current.isCurrent(ticket)) return;
+        const position = "position" in result ? result.position : result;
+        if (target === "view") {
+          setView(position);
+          setSelected(null);
+        } else {
+          accept(position);
+          setLastChoice("choice" in result ? result.choice : null);
+        }
+      })
+      .catch((e: unknown) => {
+        if (gate.current.isCurrent(ticket))
+          setError(e instanceof Error ? e.message : "Unable to load game.");
+      })
+      .finally(() => {
+        if (gate.current.isCurrent(ticket)) {
+          setBusy(false);
+          setThinking(false);
+        }
+      });
+    return () => {
+      if (gate.current.cancel(ticket)) {
+        setBusy(false);
+        setThinking(false);
+      }
+    };
+  }
+  useEffect(() => run((signal) => request("new", undefined, signal)), []);
   const reviewing = !!(view && live && view.ply !== live.ply);
-  async function choose(i: number) {
-    if (!view || !live || busy || reviewing || view.outcome) return;
+  const opponentTurn = !!(
+    live &&
+    opponent !== "human" &&
+    live.turn !== humanSide &&
+    !live.outcome
+  );
+  useEffect(() => {
+    if (!live || !opponentTurn || reviewing || confirmNew) return;
+    return run(
+      (signal) =>
+        request<OpponentResult>(
+          "opponent",
+          {
+            snapshot: live.snapshot,
+            expected_state_hash: live.state_hash,
+            player: opponent,
+            seed: 0,
+            nodes: 128,
+            depth: 2,
+          },
+          signal,
+        ),
+      "opponent",
+    );
+  }, [live, opponent, humanSide, reviewing, retry, confirmNew]);
+  function choose(i: number) {
+    if (
+      !view ||
+      !live ||
+      busy ||
+      thinking ||
+      reviewing ||
+      view.outcome ||
+      opponentTurn ||
+      confirmNew
+    )
+      return;
     const target = coord(i),
       move = selected ? selected + target : "";
     if (view.legal_moves.includes(move)) {
-      await run(async () =>
-        accept(
-          await request("apply", {
+      run((signal) =>
+        request(
+          "apply",
+          {
             snapshot: live.snapshot,
             move,
             expected_state_hash: live.state_hash,
-          }),
+          },
+          signal,
         ),
       );
     } else {
@@ -114,19 +204,22 @@ function App() {
       );
     }
   }
-  async function review(ply: number) {
+  function review(ply: number) {
     if (!live) return;
-    await run(async () => {
-      setView(
-        await request("inspect", {
-          snapshot: {
-            ...live.snapshot,
-            moves: live.snapshot.moves.slice(0, ply),
+    run(
+      (signal) =>
+        request(
+          "inspect",
+          {
+            snapshot: {
+              ...live.snapshot,
+              moves: live.snapshot.moves.slice(0, ply),
+            },
           },
-        }),
-      );
-      setSelected(null);
-    });
+          signal,
+        ),
+      "view",
+    );
   }
   function download() {
     if (!live) return;
@@ -161,9 +254,15 @@ function App() {
         <div>
           <p className="eyebrow">01 / XIANGQI</p>
           <h1>A meeting across the river.</h1>
-          <p>Two players. One board. Take your time.</p>
+          <p>Share the board, or play a local computer opponent.</p>
         </div>
-        <button disabled={busy || !live} onClick={() => setConfirmNew(true)}>
+        <button
+          disabled={busy || !live}
+          onClick={() => {
+            cancelWork();
+            setConfirmNew(true);
+          }}
+        >
           New game ↗
         </button>
       </section>
@@ -173,7 +272,7 @@ function App() {
           keep it. <button onClick={download}>Export game</button>
           <button
             disabled={busy}
-            onClick={() => void run(async () => accept(await request("new")))}
+            onClick={() => run((signal) => request("new", undefined, signal))}
           >
             Start new game
           </button>
@@ -186,7 +285,7 @@ function App() {
           {!live && (
             <button
               disabled={busy}
-              onClick={() => void run(async () => accept(await request("new")))}
+              onClick={() => run((signal) => request("new", undefined, signal))}
             >
               Retry
             </button>
@@ -283,7 +382,17 @@ function App() {
                     key={i}
                     transform={`translate(${x},${y})`}
                     role="button"
-                    tabIndex={busy ? -1 : 0}
+                    tabIndex={
+                      busy || thinking || opponentTurn || reviewing ? -1 : 0
+                    }
+                    aria-disabled={
+                      busy ||
+                      thinking ||
+                      opponentTurn ||
+                      reviewing ||
+                      !!view.outcome ||
+                      confirmNew
+                    }
                     aria-label={label}
                     aria-pressed={active}
                     onClick={() => void choose(i)}
@@ -341,15 +450,60 @@ function App() {
           )}
           <div className="board-bottom">
             <span>{flipped ? "BLACK · 黑方" : "RED · 紅方"}</span>
-            <span>Shared board · pass & play</span>
+            <span>
+              {opponent === "human"
+                ? "Shared board · pass & play"
+                : `You play ${humanSide}`}
+            </span>
           </div>
         </section>
         <aside>
+          <section className="opponent-controls" aria-label="Players">
+            <label htmlFor="opponent">Opponent</label>
+            <select
+              id="opponent"
+              value={opponent}
+              disabled={busy}
+              onChange={(e) => {
+                cancelWork();
+                setOpponent(e.target.value as Opponent);
+                setLastChoice(null);
+              }}
+            >
+              <option value="human">Human · pass & play</option>
+              <option value="random">Computer · random</option>
+              <option value="alphabeta">Computer · alpha-beta</option>
+            </select>
+            {opponent !== "human" && (
+              <>
+                <label htmlFor="human-side">You play</label>
+                <select
+                  id="human-side"
+                  value={humanSide}
+                  disabled={busy}
+                  onChange={(e) => {
+                    cancelWork();
+                    setHumanSide(e.target.value as "red" | "black");
+                    setLastChoice(null);
+                  }}
+                >
+                  <option value="red">Red · moves first</option>
+                  <option value="black">Black</option>
+                </select>
+                <p>
+                  Local baseline · fixed seed ·{" "}
+                  {opponent === "alphabeta"
+                    ? "depth 2, up to 128 nodes"
+                    : "random legal moves"}
+                </p>
+              </>
+            )}
+          </section>
           <section className="turn-card" aria-live="polite">
             <p className="eyebrow">{reviewing ? "REPLAY" : "AT THE BOARD"}</p>
             <h2>
               <i className={view?.turn ?? "red"} />
-              {status}
+              {thinking ? "Computer is thinking…" : status}
             </h2>
             <p>
               {view?.outcome
@@ -358,8 +512,34 @@ function App() {
                   ? "Check — protect your general."
                   : reviewing
                     ? "Viewing history. Return to the latest move to play."
-                    : "Select a piece to see its legal moves."}
+                    : opponentTurn
+                      ? thinking
+                        ? "You can browse history or start a new game while it thinks."
+                        : "The computer is waiting. Retry or change opponent."
+                      : "Select a piece to see its legal moves."}
             </p>
+            {opponentTurn &&
+              !thinking &&
+              !busy &&
+              !reviewing &&
+              !confirmNew &&
+              error && (
+                <button onClick={() => setRetry((n) => n + 1)}>
+                  Retry opponent
+                </button>
+              )}
+            {lastChoice && !reviewing && (
+              <details>
+                <summary>Last computer move</summary>
+                <p>
+                  {lastChoice.move} · {lastChoice.player_version}
+                  <br />
+                  {lastChoice.nodes} nodes · depth {lastChoice.completed_depth}{" "}
+                  · {lastChoice.elapsed_ms.toFixed(0)} ms · seed{" "}
+                  {lastChoice.seed}
+                </p>
+              </details>
+            )}
             <div className="meta">
               <span>MOVE HISTORY</span>
               <strong>
@@ -443,13 +623,16 @@ function App() {
                 const f = e.target.files?.[0];
                 e.target.value = "";
                 if (f)
-                  void run(async () => {
+                  run(async (signal) => {
                     if (f.size > 100000)
                       throw new Error("Game file is too large.");
-                    const p = await request("inspect", {
-                      snapshot: JSON.parse(await f.text()),
-                    });
-                    accept(p);
+                    return request(
+                      "inspect",
+                      {
+                        snapshot: JSON.parse(await f.text()),
+                      },
+                      signal,
+                    );
                   });
               }}
             />

@@ -10,6 +10,7 @@ lint:
 	npm run check --prefix web
 test:
 	uv run pytest
+	npm test --prefix web
 check: lint test web-build
 format:
 	uv run ruff check --fix src scripts tests

@@ -6,14 +6,17 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
-    "check": "tsc --noEmit && prettier --check src index.html vite.config.ts",
-    "format": "prettier --write src index.html vite.config.ts"
+    "check": "tsc --noEmit && prettier --check src tests e2e index.html vite.config.ts playwright.config.ts",
+    "format": "prettier --write src tests e2e index.html vite.config.ts playwright.config.ts",
+    "test": "tsc src/request-gate.ts --target ES2022 --module ESNext --skipLibCheck --outDir .test-build && node --test tests/request-gate.test.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "prettier": "^3.6.2",

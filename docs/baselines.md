@@ -2,7 +2,7 @@
 description: Baseline player contracts and replayable CLI matches.
 scope: player and arena interface
 status: stable
-last_update: 2026-09-07
+last_update: 2026-09-08
 document_class: coordination
 ---
 

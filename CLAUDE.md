@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-07
+last_update: 2026-09-08
 document_class: coordination
 ---
 
@@ -17,7 +17,7 @@ identity, invariants, authority, and commands here. Portable doctrine lives in
 A personal game-learning laboratory for Xiangqi, neural search, and LLM post-training.
 
 The learning destination and staged stack live in `docs/project.md`. Current
-implementation supports local browser pass-and-play, structured CLI operations,
+implementation supports local browser pass-and-play and baseline opponents, structured CLI operations,
 and deterministic replay under `docs/xiangqi-training-v1.md`.
 
 ## Core model and governing invariant
@@ -75,7 +75,9 @@ Portable doctrine: `docs/rules/testing.md`.
 `make test` covers referee rules, replay, and CLI/HTTP parity. Colocated rule
 tests live in `src/qi/test_game.py`; central `tests/` owns integration checks.
 Default checks require no engine, GPU, network, or service after dependency
-installation. Browser builds and type checks run in `make check`.
+installation. Browser builds, type checks, and request-lifecycle unit tests run
+in `make check`. The optional `npm run test:e2e --prefix web` lane starts a local
+server and Chromium; see README for setup.
 
 ## Skills
 
