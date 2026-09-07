@@ -1,0 +1,88 @@
+---
+description: Backlog-item lifecycle, schema, and discovery for qi.
+scope: backlog
+status: stable
+last_update: 2026-08-17
+document_class: coordination
+---
+
+# Backlog
+
+This page owns the backlog lifecycle and schema. It does not duplicate item
+status. Every active or not-yet-archived item is one durable file under
+`records/work-items/items/`; terminal items pass through the repository's
+promotion and archive lifecycle.
+
+## Triage Tags
+
+- `[MVP]`: needed before the current slice is trustworthy.
+- `[domain]`: bounded-context or shared-kernel implementation work.
+- `[frontend]`: app/API/user-surface work.
+- `[hygiene]`: doc/tooling cleanup that protects the SSOT.
+
+## Work Status
+
+- `deferred`: valid work, deliberately not scheduled.
+- `ready`: scope and acceptance criteria are sufficient to begin.
+- `wip`: actively owned; implementation has started.
+- `blocked`: needs a named decision, dependency, or capability.
+- `done`: all acceptance criteria are satisfied and verified.
+- `partial`: terminal accepted subset; remaining scope exists as linked items.
+- `canceled`: terminal intentional abandonment, with rationale.
+
+`partial` never becomes `done`. Close the residual scope through new items linked
+with `residual_of` / `residual_items`; the original outcome remains historical.
+
+Canonical `work_kind` values are `decision`, `build`, and `research`.
+
+## Required Shape
+
+```markdown
+---
+description: <one concise sentence>
+scope: backlog item
+status: stable
+last_update: YYYY-MM-DD
+document_class: work_record
+work_id: AB-AREA-001
+work_status: deferred
+work_kind: build
+added: YYYY-MM-DD
+tags: tag-a, tag-b
+depends_on: none
+residual_of: none
+residual_items: none
+---
+
+# AB-AREA-001 — <title>
+
+## Intent
+
+## Acceptance Criteria
+
+## Context and Trade-offs
+
+## Status History
+
+| Date | Actor | From | To | Reason / evidence |
+| --- | --- | --- | --- | --- |
+| YYYY-MM-DD | <actor> | — | deferred | Item captured |
+
+## Implementation Ledger
+
+No implementation events yet.
+```
+
+Status History is terse and append-only. Implementation Ledger entries are
+substantive and use one of `finding`, `decision`, `assumption`, `deviation`,
+`verification`, or `handoff`; each records evidence, consequence, follow-up, and
+review state (`not-required`, `pending`, `ratified`, `rejected`, `superseded`, or
+`audit-requested`).
+
+## Discovery
+
+```bash
+find records/work-items/items -maxdepth 1 -name '*.md' -print | sort
+rg -n '^work_status: (ready|wip|blocked)$' records/work-items/items
+rg -n '^[-*] \*\*Review:\*\* (pending|audit-requested)$' records/work-items/items
+```

@@ -1,0 +1,10 @@
+# Governance kit answers — managed by Copier, do not edit by hand.
+# `copier update` reads this to 3-way-merge kit updates. Commit it.
+_commit: v0.10.3-7-g8ac840f
+_src_path: /Users/zhangqy/pkgs/repo-kit
+code_dirs: src scripts tests docs .codex
+project_name: qi
+project_slug: qi
+project_tagline: A personal game-learning laboratory for Xiangqi, neural search, and
+    LLM post-training.
+

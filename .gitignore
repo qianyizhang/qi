@@ -1,0 +1,15 @@
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+artifacts/
+.env
+.DS_Store
+node_modules/
+src/qi/static/

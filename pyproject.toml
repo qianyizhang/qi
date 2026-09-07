@@ -1,0 +1,118 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qi"
+version = "0.1.0"
+description = "A personal game-learning laboratory for Xiangqi and LLM post-training"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "typer>=0.27,<0.28", "pydantic>=2.10,<3"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "hypothesis>=6,<7", "ruff==0.16.3", "httpx>=0.28,<1"]
+
+[project.scripts]
+qi = "qi.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["src", "tests"]
+
+# `scripts/check_docs.py` and `scripts/bootstrap_agents.py` read these bindings;
+# the scripts stay portable, the repo-specific values live here.
+# Doctrine: docs/rules/governance.md "Mechanical enforcement".
+
+[tool.doc_governance]
+exclude_dirs = [
+    ".git", ".venv", "venv", ".cache", ".state", ".workspaces",
+    "node_modules", "__pycache__",
+    ".import_linter_cache", ".pytest_cache", ".ruff_cache",
+    "scratch", "artifacts", "audit_logs", "resources", "dist", "build",
+]
+exclude_path_contains = ["/prompts"]
+# top-level dirs whose backticked paths in authority docs must resolve
+repo_path_dirs = ["src", "scripts", "tests", "docs", ".codex"]
+authority_files = [
+    "CLAUDE.md", "readme.md", "README.md",
+    "docs/index.md",
+]
+authority_globs = ["docs/glossary/*.md"]
+skills_dirs = [".codex/skills", ".agents/skills"]
+deprecated_dir = "docs/deprecated"
+index_file = "docs/index.md"
+# Area routes required in the compact navigator. Complete file discovery belongs
+# to generated Human View, not docs/index.md.
+index_route_areas = [
+    "docs/", "docs/adr/", "docs/glossary/", "docs/rules/", "records/work-items/",
+]
+
+[tool.doc_governance.document_classes.coordination]
+required_fields = []
+allowed_prefixes = ["docs/", "records/campaigns/", "records/reports/"]
+allowed_paths = [
+    "AGENTS.md", "CLAUDE.md", "README.md", "readme.md",
+    "records/work-items/backlog.md",
+]
+
+[tool.doc_governance.document_classes.work_record]
+required_fields = [
+    "work_id", "work_status", "work_kind", "added", "tags",
+    "depends_on", "residual_of", "residual_items",
+]
+allowed_prefixes = ["records/work-items/"]
+
+[tool.doc_governance.document_classes.report]
+required_fields = ["report_outcome"]
+allowed_prefixes = ["records/reports/"]
+
+[tool.doc_governance.document_classes.source]
+required_fields = ["source_kind"]
+allowed_prefixes = ["sources/"]
+
+[tool.doc_governance.document_classes.artifact]
+required_fields = []
+allowed_prefixes = ["data/", ".codex/skills/"]
+
+[tool.doc_governance.document_classes.generated]
+required_fields = ["derived_from", "generator"]
+allowed_prefixes = ["generated/"]
+
+[tool.doc_governance.document_classes.tombstone]
+required_fields = ["superseded_by"]
+allowed_prefixes = ["docs/deprecated/"]
+
+# INVARIANT: .codex/ holds the real agent assets; discovery paths are relative
+# symlinks into it (docs/rules/governance.md "Agent toolchains and symlinks").
+[tool.doc_governance.symlinks]
+".agents" = ".codex"
+".claude/skills" = "../.codex/skills"
+
+# Optional, non-mutating technical-authoring checks. These repository-owned
+# bindings are intentionally narrower than the structural documentation scan.
+[tool.authoring_check]
+mode = "advisory"
+languages = ["en", "zh"]
+glossary_globs = ["docs/glossary/*.md"]
+blocking_rule_ids = []
+
+[[tool.authoring_check.targets]]
+glob = "CLAUDE.md"
+profile = "instruction"
+
+[[tool.authoring_check.targets]]
+glob = "docs/adr/*.md"
+profile = "decision"
+
+[[tool.authoring_check.targets]]
+glob = "docs/design/*.md"
+profile = "design"
+
+[[tool.authoring_check.targets]]
+glob = "records/work-items/items/*.md"
+profile = "requirements"
+sections = ["Intent", "Acceptance Criteria"]
+
+# Doctrine ruff defaults live in ruff_base.toml (docs/rules/python.md); extend
+# them here and keep only repo-specific `ignore` exceptions in [tool.ruff.lint].
+[tool.ruff]
+extend = "ruff_base.toml"
