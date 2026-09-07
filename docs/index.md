@@ -15,6 +15,7 @@ stale route, and preserve the owning authority. Doctrine:
 `docs/rules/governance.md` "Scoped authority and core models".
 
 Project scope and milestone direction: [Project plan](project.md).
+Baseline players and matches: [Baselines](baselines.md).
 Coordinates and replay operations: [Interface](interface.md).
 Training adjudication: [xiangqi-training-v1](xiangqi-training-v1.md).
 

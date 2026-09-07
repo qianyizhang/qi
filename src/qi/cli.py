@@ -1,6 +1,7 @@
 """Structured command adapter for the Xiangqi referee."""
 
 import json
+from dataclasses import asdict
 from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
@@ -9,7 +10,9 @@ import typer
 from pydantic import ValidationError
 from typer.exceptions import TyperException
 
+from qi.arena import play_match
 from qi.game import Game, GameError
+from qi.players import PlayerConfig, choose
 from qi.protocol import Snapshot, inspect
 
 app = typer.Typer(no_args_is_help=True, help="Qi: local Xiangqi play and deterministic replay.")
@@ -85,6 +88,39 @@ def play(port: Annotated[int, typer.Option(min=1024, max=65535)] = 8000) -> None
         raise GameError("ui_not_built", "Run make web-build first.")
     typer.echo(f"Open http://127.0.0.1:{port}", err=True)
     uvicorn.run("qi.api:create_app", factory=True, host="127.0.0.1", port=port)
+
+
+@app.command("choose")
+def choose_move(
+    state: Annotated[Path, typer.Option("--state")],
+    player: Annotated[str, typer.Option()] = "alphabeta",
+    seed: Annotated[int, typer.Option()] = 0,
+    depth: Annotated[int, typer.Option(min=1, max=8)] = 2,
+    nodes: Annotated[int, typer.Option(min=1)] = 128,
+) -> None:
+    """Select a move without changing the saved game."""
+    typer.echo(json.dumps(asdict(choose(load(state), PlayerConfig(player, seed, depth, nodes)))))
+
+
+@app.command("match")
+def match(
+    red: Annotated[str, typer.Option()] = "alphabeta",
+    black: Annotated[str, typer.Option()] = "random",
+    seed: Annotated[int, typer.Option()] = 0,
+    depth: Annotated[int, typer.Option(min=1, max=8)] = 2,
+    nodes: Annotated[int, typer.Option(min=1)] = 128,
+    opening: Annotated[Path | None, typer.Option()] = None,
+) -> None:
+    """Run one complete game and emit a match record with a replayable snapshot."""
+    record = play_match(
+        PlayerConfig(red, seed, depth, nodes),
+        PlayerConfig(black, seed + 1, depth, nodes),
+        load(opening) if opening else None,
+    )
+    data = asdict(record)
+    data["opening"] = record.opening.model_dump()
+    data["snapshot"] = record.snapshot.model_dump()
+    typer.echo(json.dumps(data))
 
 
 def main() -> None:

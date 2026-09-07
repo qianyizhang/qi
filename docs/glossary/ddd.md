@@ -26,3 +26,5 @@ document_class: coordination
 | Ply | 半回合 | One legal move by one player; 300 plies is the training ceiling. |
 | Snapshot | 对局快照 | Versioned initial position and moves sufficient for exact replay. |
 | State hash | 状态哈希 | Digest identifying the ruleset and full saved move history. |
+| Alpha-beta | α–β 剪枝搜索 | Minimax search that prunes branches unable to improve the current bound. |
+| Node budget | 搜索节点预算 | Maximum visited positions across all iterations of one move decision. |

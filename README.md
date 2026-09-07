@@ -9,7 +9,8 @@ document_class: coordination
 # qi
 
 A local two-human Xiangqi board, with a Python referee, structured CLI, and
-portable save/replay files. Learning engines are future work.
+portable save/replay files. Seeded random and small alpha-beta players can run reproducible CLI matches.
+Learning engines are future work.
 
 ## Setup and play
 
@@ -53,6 +54,18 @@ output file before the command reads it. Errors go to stderr with nonzero status
 is served at http://127.0.0.1:8000/docs. Python, CLI, and HTTP share the same referee.
 Imported snapshots start from the standard position; arbitrary setup/FEN editing
 is not supported in this slice.
+
+## Baseline players
+
+```bash
+uv run qi choose --state game.json --player alphabeta --nodes 128 --depth 2
+uv run qi match --red alphabeta --black random --seed 7 > match.json
+```
+
+[Baseline contracts](docs/baselines.md) explain search budgets, deterministic
+seeds, opening snapshots, and match records. Matches run through the existing
+referee. Extract a match record's nested `snapshot` to import it into the browser.
+The browser remains a two-human board in this slice.
 
 ## Rules and verification
 
