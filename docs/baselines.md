@@ -65,6 +65,31 @@ and outcomes; elapsed times need not match. Opening moves have no fabricated pla
 diagnostics. Terminal openings are rejected. Runs use the standard 300-ply ruleset
 ceiling, including opening plies; there is no separate cutoff disguised as a draw.
 
-Color-swapped commands are available for exploratory runs. A held-out opening
-corpus, aggregate statistics, external teachers, and learned-policy evaluation
-protocols remain future work. A single match is not a strength estimate.
+## Fixed evaluation batches
+
+`qi evaluate --corpus data/evaluation/openings-v1.json --seed 7` runs both color
+assignments for every opening. `--player-a`, `--player-b`, `--depth`, and `--nodes`
+configure the same baseline players. `src/qi/evaluation.py` owns batch behavior.
+The four hand-authored histories are an engineering baseline, not a representative
+strength benchmark. They carry an explicit evaluation-only purpose; future
+training pipelines must exclude these histories and derived labels.
+
+The schema validates every opening before any game starts, rejecting terminal or
+illegal histories and duplicate IDs or identical full-history states. Equivalent
+boards with different histories remain distinct. The artifact embeds the full
+normalized corpus and its SHA-256; semantic corpus changes require a new corpus ID
+and file version. The digest is over the normalized model JSON, not raw file bytes.
+
+Each opening receives two games, A as Red then A as Black. For opening index i,
+A uses the base seed plus 2i; B uses the base seed plus 1 plus 2i. Seeds follow
+player identity when colors swap. Existing absolute-ply decision seeding still
+applies. Records include complete individual matches and player-relative W/D/L,
+termination reasons, decisions, total nodes, mean completed depth, and total/mean
+latency. Different algorithms' node counts are reported, not presumed equivalent.
+
+Every final snapshot is replayed before accepting its result. Invalid actions or
+other failures abort the batch with structured stderr and no success JSON; they
+are never scored as draws. Successful batches have zero invalid actions/retries.
+Repeated runs reproduce games and results under the same code and Python version;
+latency is observational. Outputs can be large; redirect to ignored `artifacts/`.
+No Elo, statistical strength, teacher, or learned-policy fairness claim is made.

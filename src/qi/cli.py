@@ -11,6 +11,7 @@ from pydantic import ValidationError
 from typer.exceptions import TyperException
 
 from qi.arena import play_match
+from qi.evaluation import Corpus, evaluate_batch
 from qi.game import Game, GameError
 from qi.players import PlayerConfig, choose
 from qi.protocol import Snapshot, inspect
@@ -121,6 +122,24 @@ def match(
     data["opening"] = record.opening.model_dump()
     data["snapshot"] = record.snapshot.model_dump()
     typer.echo(json.dumps(data))
+
+
+@app.command("evaluate")
+def evaluate_players(
+    corpus: Annotated[Path, typer.Option()],
+    player_a: Annotated[str, typer.Option()] = "alphabeta",
+    player_b: Annotated[str, typer.Option()] = "random",
+    seed: Annotated[int, typer.Option()] = 0,
+    depth: Annotated[int, typer.Option(min=1, max=8)] = 2,
+    nodes: Annotated[int, typer.Option(min=1)] = 128,
+) -> None:
+    """Run each evaluation opening twice, swapping player colors."""
+    record = evaluate_batch(
+        Corpus.model_validate_json(corpus.read_text()),
+        PlayerConfig(player_a, seed, depth, nodes),
+        PlayerConfig(player_b, seed + 1, depth, nodes),
+    )
+    typer.echo(record.model_dump_json())
 
 
 def main() -> None:

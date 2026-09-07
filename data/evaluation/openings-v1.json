@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "qi-openings-v1",
+  "purpose": "evaluation",
+  "provenance": "Hand-authored legal opening histories for a small engineering baseline. No teacher labels or strength/representativeness claim. Reserved from future training data.",
+  "openings": [
+    {"id": "initial", "description": "Standard initial position.", "snapshot": {"moves": []}},
+    {"id": "central-cannon", "description": "Central cannon facing a developed horse.", "snapshot": {"moves": ["b2e2", "b9c7"]}},
+    {"id": "double-horse", "description": "Both sides develop the left horse.", "snapshot": {"moves": ["b0c2", "b9c7"]}},
+    {"id": "flank-soldiers", "description": "Both sides advance a flank soldier.", "snapshot": {"moves": ["a3a4", "i6i5"]}}
+  ]
+}

@@ -99,3 +99,13 @@ records this slice's verification.
 Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` records
 its baseline. Shared rules and skills remain kit-managed. Use `governance-sync`
 when updating; project bindings and application code belong to qi.
+
+Evaluate the fixed opening corpus (both player colors, with replayable games):
+
+```bash
+mkdir -p artifacts
+uv run qi evaluate --corpus data/evaluation/openings-v1.json --seed 7 > artifacts/evaluation.json
+```
+
+See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
+budget interpretation, and the limits of this small evaluation corpus.

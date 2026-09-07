@@ -68,8 +68,8 @@ Do not create generic multi-game abstractions before a second game needs them.
 
 Milestone 1 is implemented; verification lives in the
 [playable work item](../records/work-items/items/AB-GAME-001-playable-xiangqi.md).
-Milestone 2 now has baseline players and CLI matches; external teachers and a
-fixed evaluation corpus remain planned. See [baseline contracts](baselines.md).
+Milestone 2 now has baseline players, CLI matches, and a fixed evaluation corpus
+with paired-color batch summaries; external teachers remain planned. See [baseline contracts](baselines.md).
 Later learning milestones remain planned.
 
 1. Specify a named training ruleset and build a two-human Xiangqi browser board
