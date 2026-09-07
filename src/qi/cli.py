@@ -15,6 +15,7 @@ from qi.evaluation import Corpus, evaluate_batch
 from qi.game import Game, GameError
 from qi.players import PlayerConfig, choose
 from qi.protocol import Snapshot, inspect
+from qi.teacher import TeacherConfig, analyze
 
 app = typer.Typer(no_args_is_help=True, help="Qi: local Xiangqi play and deterministic replay.")
 
@@ -140,6 +141,20 @@ def evaluate_players(
         PlayerConfig(player_b, seed + 1, depth, nodes),
     )
     typer.echo(record.model_dump_json())
+
+
+@app.command("teach")
+def teacher_move(
+    state: Annotated[Path, typer.Option("--state")],
+    engine: Annotated[Path, typer.Option()],
+    network: Annotated[Path, typer.Option()],
+    nodes: Annotated[int, typer.Option(min=1)] = 10_000,
+    depth: Annotated[int, typer.Option(min=1, max=64)] = 6,
+    timeout: Annotated[float, typer.Option(min=0.01, max=120)] = 10,
+) -> None:
+    """Query a local UCI teacher; emit a legal proposal and engine-native analysis."""
+    result = analyze(load(state), TeacherConfig(engine, network, nodes, depth, timeout))
+    typer.echo(result.model_dump_json())
 
 
 def main() -> None:

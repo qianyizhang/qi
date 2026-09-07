@@ -1,0 +1,141 @@
+"""Hermetic subprocess tests for the local teacher boundary."""
+
+import json
+import os
+import subprocess
+import sys
+from dataclasses import replace
+from pathlib import Path
+
+import pytest
+
+from qi.game import Game, GameError, replay
+from qi.protocol import Snapshot
+from qi.teacher import TeacherAnalysis, TeacherConfig, analyze, digest, read_info
+
+
+def fake_teacher(tmp_path: Path, mode: str = "ok") -> TeacherConfig:
+    script = tmp_path / "fake-engine"
+    script.write_text(f"""#!{sys.executable}
+import os, sys, time
+from pathlib import Path
+mode = {mode!r}
+Path({str(tmp_path / "pid")!r}).write_text(str(os.getpid()))
+for raw in sys.stdin:
+    command = raw.strip()
+    with open({str(tmp_path / "commands")!r}, "a") as log:
+        log.write(command + "\\n")
+    if command == "uci":
+        if mode == "hang":
+            print("unfinished", end="", flush=True)
+            time.sleep(20)
+        if mode == "flood":
+            print("x" * 1_100_000, flush=True)
+        if mode == "exit":
+            sys.exit(3)
+        print("id name Fake Teacher 1")
+        for name in ("Threads", "Hash", "MultiPV", "Ponder", "EvalFile"):
+            if mode != "missing-option":
+                print("option name " + name + " type string")
+        print("uciok", flush=True)
+    elif command == "isready":
+        print("readyok", flush=True)
+    elif command.startswith("go "):
+        print("info depth 3 nodes 42 score mate -2 upperbound pv b9c7")
+        move = "a0a9" if mode == "illegal" else "b9c7"
+        if mode == "none":
+            move = "(none)"
+        if mode == "malformed":
+            print("bestmove b9c7 extra", flush=True)
+        else:
+            print("bestmove " + move, flush=True)
+""")
+    script.chmod(0o700)
+    network = tmp_path / "fake.nnue"
+    network.write_bytes(b"fake network")
+    return TeacherConfig(script, network, nodes=100, depth=3, timeout_seconds=2)
+
+
+def test_teacher_full_history_identity_perspective_and_no_mutation(tmp_path) -> None:
+    config = fake_teacher(tmp_path)
+    game = replay(("b2e2",))
+    before = game.state_hash
+    result = analyze(game, config)
+    assert result.move == "b9c7"
+    assert game.state_hash == before == result.state_hash
+    assert result.snapshot.game() == game
+    assert result.engine_sha256 == digest(config.engine)
+    assert result.network_sha256 == digest(config.network)
+    assert result.engine_name == "Fake Teacher 1"
+    assert result.score.kind == "mate" and result.score.value == -2
+    assert result.score.bound == "upperbound" and result.score.perspective == "side_to_move"
+    assert result.reported_nodes == 42 and result.reported_depth == 3
+    assert TeacherAnalysis.model_validate_json(result.model_dump_json()) == result
+    commands = (tmp_path / "commands").read_text().splitlines()
+    assert commands == [
+        "uci",
+        "setoption name Threads value 1",
+        "setoption name Hash value 16",
+        "setoption name MultiPV value 1",
+        "setoption name Ponder value false",
+        f"setoption name EvalFile value {config.network.resolve()}",
+        "ucinewgame",
+        "isready",
+        "position startpos moves b2e2",
+        "go nodes 100 depth 3",
+    ]
+    with pytest.raises(ProcessLookupError):
+        os.kill(int((tmp_path / "pid").read_text()), 0)
+
+
+@pytest.mark.parametrize(
+    ("mode", "code"),
+    [
+        ("hang", "teacher_timeout"),
+        ("exit", "teacher_exit"),
+        ("flood", "teacher_output_limit"),
+        ("missing-option", "teacher_protocol"),
+        ("illegal", "teacher_illegal_move"),
+        ("none", "teacher_illegal_move"),
+        ("malformed", "teacher_protocol"),
+    ],
+)
+def test_teacher_failures_leave_no_process_or_move(tmp_path, mode, code) -> None:
+    config = fake_teacher(tmp_path, mode)
+    config = replace(config, timeout_seconds=2)
+    game = replay(("b2e2",))
+    with pytest.raises(GameError) as error:
+        analyze(game, config)
+    assert error.value.code == code
+    assert game.moves == ("b2e2",)
+    with pytest.raises(ProcessLookupError):
+        os.kill(int((tmp_path / "pid").read_text()), 0)
+
+
+def test_teacher_terminal_and_forged_history_rejected_before_process(tmp_path) -> None:
+    config = fake_teacher(tmp_path)
+    with pytest.raises(GameError, match="after the game"):
+        analyze(replay(("b0c2", "b9c7", "c2b0", "c7b9") * 2), config)
+    with pytest.raises(GameError, match="must replay"):
+        analyze(replace(Game(), turn="black"), config)
+    assert not (tmp_path / "pid").exists()
+
+
+@pytest.mark.parametrize("line", ["info nodes -1", "info depth x", "info score cp", "info score bogus 3"])
+def test_malformed_search_information_is_rejected(line) -> None:
+    with pytest.raises(GameError):
+        read_info([line])
+
+
+def test_teacher_cli_and_error_stream(tmp_path) -> None:
+    config = fake_teacher(tmp_path)
+    state = tmp_path / "state.json"
+    state.write_text(Snapshot(moves=["b2e2"]).model_dump_json())
+    command = ["qi", "teach", "--state", str(state), "--engine", str(config.engine), "--network", str(config.network)]
+    result = subprocess.run(command, text=True, capture_output=True, check=True)
+    assert not result.stderr
+    assert json.loads(result.stdout)["move"] == "b9c7"
+    fake_teacher(tmp_path, "illegal")
+    result = subprocess.run(command, text=True, capture_output=True)
+    assert result.returncode == 1 and not result.stdout
+    assert json.loads(result.stderr)["error"]["code"] == "teacher_illegal_move"

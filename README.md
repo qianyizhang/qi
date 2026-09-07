@@ -109,3 +109,6 @@ uv run qi evaluate --corpus data/evaluation/openings-v1.json --seed 7 > artifact
 
 See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
 budget interpretation, and the limits of this small evaluation corpus.
+
+For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and
+weights remain optional local artifacts; default checks need neither.

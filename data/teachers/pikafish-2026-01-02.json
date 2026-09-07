@@ -1,0 +1,14 @@
+{
+  "id": "pikafish-2026-01-02-apple-silicon",
+  "release": "https://github.com/official-pikafish/Pikafish/releases/tag/Pikafish-2026-01-02",
+  "source": "https://github.com/official-pikafish/Pikafish/tree/Pikafish-2026-01-02",
+  "archive_url": "https://github.com/official-pikafish/Pikafish/releases/download/Pikafish-2026-01-02/Pikafish.2026-01-02.7z",
+  "archive_sha256": "84257063905615919fb4ee6a70273a94843bb6ec04c45e3ac706098838bc1a49",
+  "engine": "MacOS/pikafish-apple-silicon",
+  "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+  "network": "pikafish.nnue",
+  "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+  "engine_license": "GPL-3.0; upstream Copying.txt",
+  "network_license": "Upstream NNUE-License.md: no commercial use without permission",
+  "validated_scope": "Personal, local, noncommercial analysis only; no redistribution or training-data licensing conclusion"
+}
