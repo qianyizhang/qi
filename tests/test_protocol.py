@@ -70,7 +70,7 @@ def test_cli_api_parity_and_clean_error_streams(tmp_path, client) -> None:
     assert json.loads(invalid.stderr)["error"]["code"] == "illegal_move"
 
 
-@pytest.mark.parametrize("player", ["random", "alphabeta"])
+@pytest.mark.parametrize("player", ["random", "alphabeta", "quiescence"])
 def test_opponent_choice_matches_python_and_replays(client, player) -> None:
     from dataclasses import asdict
 

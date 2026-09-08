@@ -5,19 +5,10 @@ from dataclasses import replace
 import pytest
 
 from qi.game import Game, GameError, legal_moves, replay
-from qi.players import MATE, PlayerConfig, Search, choose, evaluate
+from qi.players import PlayerConfig, choose
+from qi.players.alphabeta import Search
+from qi.players.common import MATE, NodeBudget, evaluate
 from qi.test_game import board_at
-
-
-def test_seeded_random_is_repeatable_and_does_not_mutate() -> None:
-    game = Game()
-    config = PlayerConfig("random", seed=42)
-    first, second = choose(game, config), choose(game, config)
-    assert first.move == second.move
-    assert first.move in legal_moves(game.board, game.turn)
-    assert game == Game()
-    assert first.nodes == 0 and first.score is None
-    assert first.elapsed_ms >= 0
 
 
 @pytest.mark.parametrize("nodes", [1, 10, 45, 60, 128])
@@ -56,9 +47,9 @@ def test_material_score_reverses_with_player_perspective() -> None:
 def test_terminal_search_uses_referee_and_not_material() -> None:
     board = board_at(e9="k", e0="K", e5="P", d8="R", f8="R")
     game = Game(board=board, turn="black", positions=(board + "black",))
-    assert Search(10).visit(game, 0, -2 * MATE, 2 * MATE, 2) == -MATE + 2
+    assert Search(NodeBudget(10)).visit(game, 0, -2 * MATE, 2 * MATE, 2) == -MATE + 2
     draw = replay(("b0c2", "b9c7", "c2b0", "c7b9") * 2)
-    assert Search(10).visit(draw, 2, -2 * MATE, 2 * MATE, 1) == 0
+    assert Search(NodeBudget(10)).visit(draw, 2, -2 * MATE, 2 * MATE, 1) == 0
     with pytest.raises(GameError, match="game ends"):
         choose(draw, PlayerConfig())
 
@@ -71,14 +62,14 @@ def test_alpha_beta_finds_mate_in_one() -> None:
     assert choice.score == MATE - 1
 
 
-@pytest.mark.parametrize("kwargs", [{"nodes": 0}, {"depth": 0}, {"kind": "unknown"}])
+@pytest.mark.parametrize("kwargs", [{"nodes": 0}, {"depth": 0}])
 def test_invalid_configuration_is_rejected(kwargs) -> None:
     with pytest.raises(GameError):
         PlayerConfig(**kwargs)
 
 
 def test_completed_search_matches_exhaustive_depth_two() -> None:
-    from qi.players import ordered_moves
+    from qi.players.common import ordered_moves
 
     board = board_at(e0="K", d9="k", a0="R", a5="r")
     game = Game(board=board, positions=(board + "red",))

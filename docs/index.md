@@ -15,6 +15,7 @@ stale route, and preserve the owning authority. Doctrine:
 `docs/rules/governance.md` "Scoped authority and core models".
 
 Project scope and milestone direction: [Project plan](project.md).
+Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Local external analysis: [Teacher](teacher.md).
 Coordinates and replay operations: [Interface](interface.md).

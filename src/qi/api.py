@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from qi.game import Game, GameError
-from qi.players import PlayerConfig, choose
+from qi.players import PlayerConfig, PlayerInfo, choose, list_players
 from qi.protocol import ApplyRequest, InspectRequest, OpponentRequest, OpponentResult, Position, inspect
 
 
@@ -25,6 +25,10 @@ def create_app() -> FastAPI:
             status_code=422,
             content={"error": {"code": "invalid_request", "message": "Request does not match the game schema."}},
         )
+
+    @app.get("/api/players", response_model=list[PlayerInfo])
+    def players() -> list[PlayerInfo]:
+        return list_players()
 
     @app.post("/api/new", response_model=Position)
     def new() -> Position:

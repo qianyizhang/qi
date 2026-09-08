@@ -32,18 +32,21 @@ Replay navigation is read-only; return to the last move to continue playing.
 
 ## Browser opponents
 
-`POST /api/opponent` accepts snapshot, expected-state hash, player (`random` or
-`alphabeta`), seed, depth, and nodes. It checks the full-history hash before search,
+`GET /api/players` lists registered in-process player IDs, versions, labels,
+descriptions, and browser budget defaults. The browser discovers its options here.
+`POST /api/opponent` accepts snapshot, expected-state hash, registered player ID,
+seed, depth, and nodes. It checks the full-history hash before search,
 selects one move through the shared Python player, and returns `position` plus
 `choice` diagnostics after guarded application. The operation is stateless and
 cannot mutate the supplied snapshot. Terminal positions return `game_over`.
 
 The browser request budget is bounded to depth 1–4 and 1–512 nodes; the UI uses
-depth 2 / 128 nodes and base seed zero. The actual seed is base plus absolute ply,
+base seed zero and the selected catalog entry’s defaults (depth 2; 128 nodes for
+original alpha-beta, 512 for quiescence). The actual seed is base plus absolute ply,
 matching arena decision seeding. No executable path or external teacher is
 accepted by this endpoint. Defaults are deterministic, not latency guarantees.
 
-The UI defaults to pass-and-play and allows a random or alpha-beta opponent,
+The UI defaults to pass-and-play and allows any catalog player, including random, alpha-beta, and quiescence,
 with the human playing either color. Mode/side changes keep the live game;
 if the selected computer owns the current turn it moves automatically. Human
 moves are disabled on computer turns. Failure leaves the current position intact

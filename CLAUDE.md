@@ -66,7 +66,9 @@ Keep `src/qi/game.py` independent of training, UI, and model SDKs.
 `src/qi/protocol.py` owns validated interchange; CLI and HTTP are adapters.
 The React board consumes legal moves; it does not implement rules. Boundary
 contracts arrive with behavior; avoid speculative packages. Vocabulary authority:
-`docs/glossary/ddd.md`.
+`docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a
+README and tests. Register implementations once in its catalog; adapters discover
+metadata and dispatch through the shared `choose` boundary.
 
 ## Testing
 

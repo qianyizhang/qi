@@ -2,10 +2,11 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from qi.game import START_FEN, Game, in_check, legal_moves, replay
 from qi.players import Choice
+from qi.players.catalog import get_player
 
 
 class Snapshot(BaseModel):
@@ -62,10 +63,16 @@ def inspect(game: Game) -> Position:
 class OpponentRequest(InspectRequest):
     model_config = ConfigDict(extra="forbid")
     expected_state_hash: str = Field(min_length=64, max_length=64)
-    player: Literal["random", "alphabeta"] = "alphabeta"
+    player: str = "alphabeta"
     seed: int = Field(default=0, ge=0, le=2_147_483_647, strict=True)
     depth: int = Field(default=2, ge=1, le=4, strict=True)
     nodes: int = Field(default=128, ge=1, le=512, strict=True)
+
+    @field_validator("player")
+    @classmethod
+    def registered_player(cls, value: str) -> str:
+        get_player(value)
+        return value
 
 
 class OpponentResult(BaseModel):

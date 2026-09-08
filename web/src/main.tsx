@@ -19,7 +19,15 @@ type Position = {
   in_check: boolean;
   outcome: { winner: "red" | "black" | null; reason: string } | null;
 };
-type Opponent = "human" | "random" | "alphabeta";
+type PlayerInfo = {
+  id: string;
+  version: string;
+  label: string;
+  description: string;
+  uses_search: boolean;
+  default_nodes: number;
+  default_depth: number;
+};
 type Choice = {
   move: string;
   player_version: string;
@@ -27,6 +35,8 @@ type Choice = {
   completed_depth: number;
   seed: number;
   elapsed_ms: number;
+  qnodes: number;
+  max_qply: number;
 };
 type OpponentResult = { position: Position; choice: Choice };
 const symbols: Record<string, string> = {
@@ -62,9 +72,10 @@ async function request<T = Position>(
   path: string,
   data?: unknown,
   signal?: AbortSignal,
+  method: "GET" | "POST" = "POST",
 ): Promise<T> {
   const response = await fetch(`/api/${path}`, {
-    method: "POST",
+    method,
     signal,
     headers: { "Content-Type": "application/json" },
     body: data === undefined ? undefined : JSON.stringify(data),
@@ -84,7 +95,11 @@ function App() {
   const [error, setError] = useState("");
   const [flipped, setFlipped] = useState(false);
   const [confirmNew, setConfirmNew] = useState(false);
-  const [opponent, setOpponent] = useState<Opponent>("human");
+  const [opponent, setOpponent] = useState("human");
+  const [players, setPlayers] = useState<PlayerInfo[]>([]);
+  const [catalogError, setCatalogError] = useState("");
+  const [catalogRetry, setCatalogRetry] = useState(0);
+  const selectedPlayer = players.find((player) => player.id === opponent);
   const [humanSide, setHumanSide] = useState<"red" | "black">("red");
   const [thinking, setThinking] = useState(false);
   const [retry, setRetry] = useState(0);
@@ -142,15 +157,29 @@ function App() {
     };
   }
   useEffect(() => run((signal) => request("new", undefined, signal)), []);
+  useEffect(() => {
+    const controller = new AbortController();
+    setCatalogError("");
+    void request<PlayerInfo[]>("players", undefined, controller.signal, "GET")
+      .then((catalog) => {
+        if (!controller.signal.aborted) setPlayers(catalog);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setCatalogError("Unable to load computer players.");
+      });
+    return () => controller.abort();
+  }, [catalogRetry]);
   const reviewing = !!(view && live && view.ply !== live.ply);
   const opponentTurn = !!(
     live &&
-    opponent !== "human" &&
+    selectedPlayer &&
     live.turn !== humanSide &&
     !live.outcome
   );
   useEffect(() => {
-    if (!live || !opponentTurn || reviewing || confirmNew) return;
+    if (!live || !selectedPlayer || !opponentTurn || reviewing || confirmNew)
+      return;
     return run(
       (signal) =>
         request<OpponentResult>(
@@ -160,14 +189,14 @@ function App() {
             expected_state_hash: live.state_hash,
             player: opponent,
             seed: 0,
-            nodes: 128,
-            depth: 2,
+            nodes: selectedPlayer.default_nodes,
+            depth: selectedPlayer.default_depth,
           },
           signal,
         ),
       "opponent",
     );
-  }, [live, opponent, humanSide, reviewing, retry, confirmNew]);
+  }, [live, opponent, humanSide, reviewing, retry, confirmNew, selectedPlayer]);
   function choose(i: number) {
     if (
       !view ||
@@ -466,15 +495,26 @@ function App() {
               disabled={busy}
               onChange={(e) => {
                 cancelWork();
-                setOpponent(e.target.value as Opponent);
+                setOpponent(e.target.value);
                 setLastChoice(null);
               }}
             >
               <option value="human">Human · pass & play</option>
-              <option value="random">Computer · random</option>
-              <option value="alphabeta">Computer · alpha-beta</option>
+              {players.map((player) => (
+                <option key={player.id} value={player.id}>
+                  Computer · {player.label.toLowerCase()}
+                </option>
+              ))}
             </select>
-            {opponent !== "human" && (
+            {catalogError && (
+              <p role="alert">
+                {catalogError}{" "}
+                <button onClick={() => setCatalogRetry((n) => n + 1)}>
+                  Retry player list
+                </button>
+              </p>
+            )}
+            {selectedPlayer && (
               <>
                 <label htmlFor="human-side">You play</label>
                 <select
@@ -491,10 +531,9 @@ function App() {
                   <option value="black">Black</option>
                 </select>
                 <p>
-                  Local baseline · fixed seed ·{" "}
-                  {opponent === "alphabeta"
-                    ? "depth 2, up to 128 nodes"
-                    : "random legal moves"}
+                  {selectedPlayer.description} Fixed seed.
+                  {selectedPlayer.uses_search &&
+                    ` Depth ${selectedPlayer.default_depth}, up to ${selectedPlayer.default_nodes} nodes.`}
                 </p>
               </>
             )}
@@ -537,6 +576,13 @@ function App() {
                   {lastChoice.nodes} nodes · depth {lastChoice.completed_depth}{" "}
                   · {lastChoice.elapsed_ms.toFixed(0)} ms · seed{" "}
                   {lastChoice.seed}
+                  {lastChoice.qnodes > 0 && (
+                    <>
+                      <br />
+                      {lastChoice.qnodes} quiescence nodes · up to{" "}
+                      {lastChoice.max_qply} extra plies
+                    </>
+                  )}
                 </p>
               </details>
             )}

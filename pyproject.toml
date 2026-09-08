@@ -52,6 +52,8 @@ allowed_prefixes = ["docs/", "records/campaigns/", "records/reports/"]
 allowed_paths = [
     "AGENTS.md", "CLAUDE.md", "README.md", "readme.md",
     "records/work-items/backlog.md",
+    "src/qi/players/README.md", "src/qi/players/random/README.md",
+    "src/qi/players/alphabeta/README.md", "src/qi/players/quiescence/README.md",
 ]
 
 [tool.doc_governance.document_classes.work_record]

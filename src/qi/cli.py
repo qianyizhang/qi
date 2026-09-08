@@ -13,7 +13,7 @@ from typer.exceptions import TyperException
 from qi.arena import play_match
 from qi.evaluation import Corpus, evaluate_batch
 from qi.game import Game, GameError
-from qi.players import PlayerConfig, choose
+from qi.players import PlayerConfig, choose, list_players
 from qi.protocol import Snapshot, inspect
 from qi.teacher import TeacherConfig, analyze
 
@@ -90,6 +90,12 @@ def play(port: Annotated[int, typer.Option(min=1024, max=65535)] = 8000) -> None
         raise GameError("ui_not_built", "Run make web-build first.")
     typer.echo(f"Open http://127.0.0.1:{port}", err=True)
     uvicorn.run("qi.api:create_app", factory=True, host="127.0.0.1", port=port)
+
+
+@app.command("players")
+def players() -> None:
+    """List registered players and their versions and browser defaults."""
+    typer.echo(json.dumps([asdict(player) for player in list_players()]))
 
 
 @app.command("choose")

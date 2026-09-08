@@ -63,6 +63,8 @@ class PlayerSummary(BaseModel):
     mean_elapsed_ms: float
     invalid_actions: int = 0
     retries: int = 0
+    qnodes: int = 0
+    max_qply: int = 0
 
 
 class EvaluationRecord(BaseModel):
@@ -79,6 +81,7 @@ class EvaluationRecord(BaseModel):
 def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerSummary:
     wins = draws = losses = nodes = depth = decisions = 0
     elapsed = 0.0
+    qnodes = max_qply = 0
     for entry in games:
         side = entry.a_side if player == "a" else ("black" if entry.a_side == "red" else "red")
         result = entry.match
@@ -92,9 +95,13 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
             if turn.side == side:
                 decisions += 1
                 nodes += turn.choice.nodes
+                qnodes += turn.choice.qnodes
+                max_qply = max(max_qply, turn.choice.max_qply)
                 depth += turn.choice.completed_depth
                 elapsed += turn.choice.elapsed_ms
     return PlayerSummary(
+        qnodes=qnodes,
+        max_qply=max_qply,
         wins=wins,
         draws=draws,
         losses=losses,

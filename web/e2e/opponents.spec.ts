@@ -264,3 +264,95 @@ test("import during search survives an old opponent response", async ({
     page.getByRole("heading", { name: "Red to move" }),
   ).toBeVisible();
 });
+
+test("quiescence is discovered and shows its extra tactical work", async ({
+  page,
+}) => {
+  await start(page);
+  await expect(
+    page.getByRole("option", {
+      name: "Computer · alpha-beta + quiescence",
+      exact: true,
+    }),
+  ).toHaveCount(1);
+  await page.getByLabel("Opponent", { exact: true }).selectOption("quiescence");
+  await page.getByLabel("You play", { exact: true }).selectOption("black");
+  await expect(page.locator(".moves li")).toHaveCount(1);
+  await expect(
+    page.getByRole("heading", { name: "Black to move" }),
+  ).toBeVisible();
+  await page.getByText("Last computer move", { exact: true }).click();
+  await expect(page.getByText(/alphabeta-quiescence-v1/)).toBeVisible();
+  await expect(page.getByText(/quiescence nodes/)).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath("quiescence-board.png"),
+    fullPage: true,
+  });
+});
+
+test("catalog additions appear without a frontend player allowlist", async ({
+  page,
+}) => {
+  await page.route("**/api/players", async (route) => {
+    const catalog = await (await route.fetch()).json();
+    await route.fulfill({
+      json: [
+        ...catalog,
+        {
+          id: "catalog-probe",
+          version: "probe-v1",
+          label: "Catalog probe",
+          description: "Test catalog extension.",
+          uses_search: false,
+          default_nodes: 64,
+          default_depth: 1,
+        },
+      ],
+    });
+  });
+  let submitted = "";
+  await page.route("**/api/opponent", async (route) => {
+    const body = route.request().postDataJSON();
+    submitted = body.player;
+    const response = await route.fetch({
+      postData: JSON.stringify({ ...body, player: "random" }),
+    });
+    await route.fulfill({ response });
+  });
+  await start(page);
+  await page
+    .getByLabel("Opponent", { exact: true })
+    .selectOption("catalog-probe");
+  await humanMove(page);
+  await expect(page.locator(".moves li")).toHaveCount(2);
+  expect(submitted).toBe("catalog-probe");
+});
+
+test("catalog failure preserves human play and permits explicit retry", async ({
+  page,
+}) => {
+  let calls = 0;
+  await page.route("**/api/players", async (route) => {
+    calls += 1;
+    if (calls === 1)
+      return route.fulfill({
+        status: 503,
+        json: { error: { message: "Unavailable" } },
+      });
+    return route.continue();
+  });
+  await start(page);
+  await expect(
+    page.getByText("Unable to load computer players.", { exact: false }),
+  ).toBeVisible();
+  await humanMove(page);
+  await expect(page.locator(".moves li")).toHaveCount(1);
+  await page.getByRole("button", { name: "Retry player list" }).click();
+  await expect(
+    page.getByRole("option", {
+      name: "Computer · alpha-beta + quiescence",
+      exact: true,
+    }),
+  ).toHaveCount(1);
+  expect(calls).toBe(2);
+});

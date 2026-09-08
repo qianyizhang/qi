@@ -8,7 +8,9 @@ document_class: coordination
 
 # Baseline players and matches
 
-`src/qi/players.py` owns baseline behavior; `src/qi/arena.py` runs complete games.
+`src/qi/players/` owns player implementations; `src/qi/arena.py` runs complete games.
+The [player guide](../src/qi/players/README.md) explains the shared interface and
+links each implementation’s README. `qi players` lists catalog IDs and versions.
 The referee still owns legality and adjudication. These are educational baselines,
 not trained models or claims of competitive strength.
 
@@ -38,6 +40,19 @@ move, depth zero, and a null score. This fallback is explicit in the diagnostics
 This is a node budget, not a latency guarantee. Move generation and cached results
 can change elapsed time without changing selected moves. Depth is limited to 1–8;
 node budget must be positive. Random players ignore depth and node settings.
+
+## Quiescence player
+
+`quiescence` selects `alphabeta-quiescence-v1`, preserving the original alpha-beta
+player as a separate baseline. It replaces static frontier evaluation with capture
+continuations and all legal check evasions. Both phases share the hard node budget;
+terminal outcomes retain referee authority. See the [algorithm walkthrough](../src/qi/players/quiescence/README.md).
+
+`Choice` also reports `qnodes` (a subset of total nodes, including dispatched
+frontiers) and `max_qply` (deepest extra continuation across attempted work).
+Ordinary completed depth excludes these extra plies. Batch summaries total qnodes
+and report maximum qply; partial work is included. Other players report zeros.
+At small budgets, quiescence can leave fewer ordinary iterations completed.
 
 ## CLI and artifacts
 

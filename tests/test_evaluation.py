@@ -56,6 +56,8 @@ def test_batch_pairs_colors_replays_and_recomputes_summary() -> None:
         assert (stats.wins, stats.draws, stats.losses) == (wins, draws, losses)
         assert stats.decisions == len(choices)
         assert stats.nodes == sum(choice.nodes for choice in choices)
+        assert stats.qnodes == sum(choice.qnodes for choice in choices)
+        assert stats.max_qply == max(choice.max_qply for choice in choices)
         assert stats.elapsed_ms == sum(choice.elapsed_ms for choice in choices)
         assert stats.mean_completed_depth == sum(c.completed_depth for c in choices) / len(choices)
     restored = EvaluationRecord.model_validate_json(first.model_dump_json())

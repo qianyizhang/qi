@@ -8,7 +8,7 @@ document_class: coordination
 
 # qi
 
-A local Xiangqi board for pass-and-play or games against random and alpha-beta
+A local Xiangqi board for pass-and-play or games against pluggable local
 opponents, with a Python referee, structured CLI, and portable save/replay.
 Fixed evaluation batches and local Pikafish analysis support future learning work.
 
@@ -57,17 +57,21 @@ is served at http://127.0.0.1:8000/docs. Python, CLI, and HTTP share the same re
 Imported snapshots start from the standard position; arbitrary setup/FEN editing
 is not supported in this slice.
 
-## Baseline players
+## Players
 
 ```bash
+uv run qi players
 uv run qi choose --state game.json --player alphabeta --nodes 128 --depth 2
 uv run qi match --red alphabeta --black random --seed 7 > match.json
 ```
 
+[Player modules and walkthroughs](src/qi/players/README.md) explain how to build
+and add an implementation, including the quiescence search player.
 [Baseline contracts](docs/baselines.md) explain search budgets, deterministic
 seeds, opening snapshots, and match records. Matches run through the existing
 referee. Extract a match record's nested `snapshot` to import it into the browser.
-Browser opponents use depth 2 / 128 nodes and a fixed seed. Switching opponents
+The browser discovers the player catalog and uses its suggested budgets with a
+fixed seed. Original alpha-beta uses 128 nodes; quiescence uses 512. Switching opponents
 keeps the current game; replay pauses computer moves until you return to live play.
 
 Evaluate the fixed opening corpus (both player colors, with replayable games):
