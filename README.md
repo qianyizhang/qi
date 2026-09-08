@@ -84,6 +84,14 @@ uv run qi evaluate --corpus data/evaluation/openings-v1.json --seed 7 > artifact
 See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
 budget interpretation, and the limits of this small evaluation corpus.
 
+Try **MCTS · UCT** in the browser opponent menu, then expand **Last computer move**
+to inspect root visits and estimated returns. The [MCTS guide](src/qi/players/mcts/README.md)
+explains the algorithm and its replaceable leaf evaluator. For CLI experiments:
+
+```bash
+uv run qi choose --state game.json --player mcts --nodes 512 --rollout-plies 8 --seed 7
+```
+
 For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and
 weights remain optional local artifacts; default checks need neither.
 

@@ -66,6 +66,11 @@ class PlayerSummary(BaseModel):
     qnodes: int = 0
     max_qply: int = 0
     model_calls: int = 0
+    simulations: int = 0
+    rollout_steps: int = 0
+    terminal_simulations: int = 0
+    heuristic_cutoffs: int = 0
+    max_tree_depth: int = 0
 
 
 class EvaluationRecord(BaseModel):
@@ -84,6 +89,7 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
     elapsed = 0.0
     qnodes = max_qply = 0
     model_calls = 0
+    simulations = rollout_steps = terminal_simulations = heuristic_cutoffs = max_tree_depth = 0
     for entry in games:
         side = entry.a_side if player == "a" else ("black" if entry.a_side == "red" else "red")
         result = entry.match
@@ -99,6 +105,12 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
                 nodes += turn.choice.nodes
                 qnodes += turn.choice.qnodes
                 model_calls += turn.choice.model_calls
+                if (stats := turn.choice.mcts) is not None:
+                    simulations += stats.simulations
+                    rollout_steps += stats.rollout_steps
+                    terminal_simulations += stats.terminal_simulations
+                    heuristic_cutoffs += stats.rollout_cutoffs + stats.budget_cutoffs
+                    max_tree_depth = max(max_tree_depth, stats.max_tree_depth)
                 max_qply = max(max_qply, turn.choice.max_qply)
                 depth += turn.choice.completed_depth
                 elapsed += turn.choice.elapsed_ms
@@ -106,6 +118,11 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
         qnodes=qnodes,
         max_qply=max_qply,
         model_calls=model_calls,
+        simulations=simulations,
+        rollout_steps=rollout_steps,
+        terminal_simulations=terminal_simulations,
+        heuristic_cutoffs=heuristic_cutoffs,
+        max_tree_depth=max_tree_depth,
         wins=wins,
         draws=draws,
         losses=losses,

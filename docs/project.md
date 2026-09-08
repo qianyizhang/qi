@@ -58,7 +58,10 @@ slice; do not turn them into fixed interface contracts now.
 | Data | JSONL trajectories; add Parquet/SQLite when justified | Replay, then experiments |
 
 Referee, CLI/API, and browser dependencies are installed and locked.
-Training dependencies are deferred. Pin added dependencies when their slice starts. Model choice, hardware budget, and trainer versions remain open.
+The optional local learning extra pins PyTorch for a small teacher-imitation
+policy; its [work item](../records/work-items/items/AB-LEARN-001-policy-imitation.md)
+records the working pipeline and unsuccessful held-out generalization smoke.
+Larger model choices, accelerator budgets, and LLM trainer versions remain open.
 
 The referee owns legality, transitions, and outcomes. A player selects an action
 under a budget. A trainer changes model weights using data. Search and training
@@ -72,7 +75,10 @@ Milestone 1 is implemented; verification lives in the
 Milestone 2 now has baseline players, CLI matches, and a fixed evaluation corpus
 with paired-color batch summaries and a local UCI teacher adapter validated with
 pinned Pikafish. See [teacher setup and limits](teacher.md). See [baseline contracts](baselines.md).
-Later learning milestones remain planned.
+Milestone 3 has an initial CPU policy-training pipeline. Plain MCTS with random
+rollouts is also implemented independently of training; see its
+[module guide](../src/qi/players/mcts/README.md). Learned value estimation, PUCT,
+self-play training, and the LLM track remain planned.
 
 1. Specify a named training ruleset and build a two-human Xiangqi browser board
    plus structured CLI access, with legal actions, outcomes, and deterministic

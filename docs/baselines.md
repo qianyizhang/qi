@@ -56,6 +56,14 @@ At small budgets, quiescence can leave fewer ordinary iterations completed.
 
 ## CLI and artifacts
 
+The `mcts` player uses UCT selection, seeded random rollouts, and bounded material
+estimates at nonterminal cutoffs. See the [MCTS walkthrough](../src/qi/players/mcts/README.md)
+for its separate tree/rollout accounting and root-move diagnostics. It uses the
+shared nodes allowance plus `--rollout-plies` (default 8, range 0-64), and ignores
+ordinary depth. Its nested `Choice.mcts` is null for other players. Batch summaries
+add simulations, rollout steps, terminal simulations, heuristic cutoffs, and maximum
+tree depth; root tables remain in each turn record.
+
 ```bash
 uv run qi new > game.json
 uv run qi choose --state game.json --player alphabeta --nodes 128 --depth 2

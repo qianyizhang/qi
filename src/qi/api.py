@@ -48,7 +48,14 @@ def create_app() -> FastAPI:
         if game.state_hash != request.expected_state_hash:
             raise GameError("stale_state", "The position changed before the opponent request.")
         choice = choose(
-            game, PlayerConfig(request.player, request.seed + len(game.moves), request.depth, request.nodes)
+            game,
+            PlayerConfig(
+                request.player,
+                request.seed + len(game.moves),
+                request.depth,
+                request.nodes,
+                rollout_plies=request.rollout_plies,
+            ),
         )
         return OpponentResult(position=inspect(game.apply(choice.move, choice.state_hash)), choice=choice)
 

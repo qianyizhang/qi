@@ -58,6 +58,7 @@ allowed_paths = [
     "src/qi/players/README.md", "src/qi/players/random/README.md",
     "src/qi/players/alphabeta/README.md", "src/qi/players/quiescence/README.md",
     "src/qi/players/policy/README.md", "src/qi/learning/README.md",
+    "src/qi/players/mcts/README.md",
 ]
 
 [tool.doc_governance.document_classes.work_record]

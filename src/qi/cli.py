@@ -107,9 +107,14 @@ def choose_move(
     seed: Annotated[int, typer.Option()] = 0,
     depth: Annotated[int, typer.Option(min=1, max=8)] = 2,
     nodes: Annotated[int, typer.Option(min=1)] = 128,
+    rollout_plies: Annotated[
+        int, typer.Option(min=0, max=64, help="MCTS rollout length; ignored by other players.")
+    ] = 8,
 ) -> None:
     """Select a move without changing the saved game."""
-    typer.echo(json.dumps(asdict(choose(load(state), PlayerConfig(player, seed, depth, nodes)))))
+    typer.echo(
+        json.dumps(asdict(choose(load(state), PlayerConfig(player, seed, depth, nodes, rollout_plies=rollout_plies))))
+    )
 
 
 @app.command("match")
@@ -120,11 +125,12 @@ def match(
     depth: Annotated[int, typer.Option(min=1, max=8)] = 2,
     nodes: Annotated[int, typer.Option(min=1)] = 128,
     opening: Annotated[Path | None, typer.Option()] = None,
+    rollout_plies: Annotated[int, typer.Option(min=0, max=64)] = 8,
 ) -> None:
     """Run one complete game and emit a match record with a replayable snapshot."""
     record = play_match(
-        PlayerConfig(red, seed, depth, nodes),
-        PlayerConfig(black, seed + 1, depth, nodes),
+        PlayerConfig(red, seed, depth, nodes, rollout_plies=rollout_plies),
+        PlayerConfig(black, seed + 1, depth, nodes, rollout_plies=rollout_plies),
         load(opening) if opening else None,
     )
     data = asdict(record)
@@ -141,12 +147,13 @@ def evaluate_players(
     seed: Annotated[int, typer.Option()] = 0,
     depth: Annotated[int, typer.Option(min=1, max=8)] = 2,
     nodes: Annotated[int, typer.Option(min=1)] = 128,
+    rollout_plies: Annotated[int, typer.Option(min=0, max=64)] = 8,
 ) -> None:
     """Run each evaluation opening twice, swapping player colors."""
     record = evaluate_batch(
         Corpus.model_validate_json(corpus.read_text()),
-        PlayerConfig(player_a, seed, depth, nodes),
-        PlayerConfig(player_b, seed + 1, depth, nodes),
+        PlayerConfig(player_a, seed, depth, nodes, rollout_plies=rollout_plies),
+        PlayerConfig(player_b, seed + 1, depth, nodes, rollout_plies=rollout_plies),
     )
     typer.echo(record.model_dump_json())
 

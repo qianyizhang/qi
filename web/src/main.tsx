@@ -27,6 +27,7 @@ type PlayerInfo = {
   uses_search: boolean;
   default_nodes: number;
   default_depth: number;
+  default_rollout_plies: number | null;
 };
 type Choice = {
   move: string;
@@ -39,6 +40,17 @@ type Choice = {
   max_qply: number;
   checkpoint_sha256: string | null;
   model_calls: number;
+  mcts: {
+    simulations: number;
+    tree_visits: number;
+    rollout_steps: number;
+    terminal_simulations: number;
+    rollout_cutoffs: number;
+    budget_cutoffs: number;
+    unfinished_simulations: number;
+    max_tree_depth: number;
+    root_moves: { move: string; visits: number; mean_value: number | null }[];
+  } | null;
 };
 type OpponentResult = { position: Position; choice: Choice };
 const symbols: Record<string, string> = {
@@ -193,6 +205,7 @@ function App() {
             seed: 0,
             nodes: selectedPlayer.default_nodes,
             depth: selectedPlayer.default_depth,
+            rollout_plies: selectedPlayer.default_rollout_plies ?? 8,
           },
           signal,
         ),
@@ -535,7 +548,9 @@ function App() {
                 <p>
                   {selectedPlayer.description} Fixed seed.
                   {selectedPlayer.uses_search &&
-                    ` Depth ${selectedPlayer.default_depth}, up to ${selectedPlayer.default_nodes} nodes.`}
+                    (selectedPlayer.default_rollout_plies != null
+                      ? ` Up to ${selectedPlayer.default_nodes} visits; rollouts up to ${selectedPlayer.default_rollout_plies} plies.`
+                      : ` Depth ${selectedPlayer.default_depth}, up to ${selectedPlayer.default_nodes} nodes.`)}
                 </p>
               </>
             )}
@@ -577,7 +592,9 @@ function App() {
                   <br />
                   {lastChoice.model_calls > 0
                     ? `${lastChoice.model_calls} model pass`
-                    : `${lastChoice.nodes} nodes · depth ${lastChoice.completed_depth}`}{" "}
+                    : lastChoice.mcts
+                      ? `${lastChoice.mcts.simulations} simulations · ${lastChoice.nodes} visits`
+                      : `${lastChoice.nodes} nodes · depth ${lastChoice.completed_depth}`}{" "}
                   · {lastChoice.elapsed_ms.toFixed(0)} ms · seed{" "}
                   {lastChoice.seed}
                   {lastChoice.checkpoint_sha256 && (
@@ -594,6 +611,74 @@ function App() {
                     </>
                   )}
                 </p>
+                {lastChoice.mcts && (
+                  <>
+                    <p>
+                      {lastChoice.mcts.tree_visits} tree visits ·{" "}
+                      {lastChoice.mcts.rollout_steps} rollout steps
+                      <br />
+                      {lastChoice.mcts.terminal_simulations} terminal results ·{" "}
+                      {lastChoice.mcts.rollout_cutoffs +
+                        lastChoice.mcts.budget_cutoffs}{" "}
+                      heuristic cutoffs
+                      <br />
+                      Deepest tree path: {lastChoice.mcts.max_tree_depth} plies.
+                      {lastChoice.mcts.unfinished_simulations > 0 &&
+                        " Budget ended before another root move could be sampled."}
+                    </p>
+                    <p>
+                      Estimates favor the computer when positive; they are not
+                      win probabilities. The most-visited move is chosen.
+                    </p>
+                    <div
+                      className="root-moves"
+                      tabIndex={0}
+                      role="region"
+                      aria-label="MCTS root move statistics"
+                    >
+                      <table>
+                        <caption>Root moves · computer’s perspective</caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">Move</th>
+                            <th scope="col">Visits</th>
+                            <th scope="col">Mean estimate</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...lastChoice.mcts.root_moves]
+                            .sort(
+                              (a, b) =>
+                                b.visits - a.visits ||
+                                (b.mean_value ?? -2) - (a.mean_value ?? -2) ||
+                                a.move.localeCompare(b.move),
+                            )
+                            .map((row) => (
+                              <tr
+                                key={row.move}
+                                className={
+                                  row.move === lastChoice.move
+                                    ? "chosen"
+                                    : undefined
+                                }
+                              >
+                                <th scope="row">
+                                  {row.move}
+                                  {row.move === lastChoice.move ? " ✓" : ""}
+                                </th>
+                                <td>{row.visits}</td>
+                                <td>
+                                  {row.mean_value === null
+                                    ? "—"
+                                    : row.mean_value.toFixed(3)}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
               </details>
             )}
             <div className="meta">

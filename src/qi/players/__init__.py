@@ -1,6 +1,7 @@
 """Public player boundary: select by catalog ID, validate, and attach provenance."""
 
 from dataclasses import replace
+from math import isfinite
 from time import perf_counter
 
 from qi.game import Game, GameError, legal_moves
@@ -40,6 +41,39 @@ def choose(game: Game, config: PlayerConfig) -> Choice:
         and decision.checkpoint_sha256 == config.checkpoint_sha256
     ):
         raise GameError("invalid_player_result", "Player returned diagnostics outside its budget.")
+    if (stats := decision.mcts) is not None:
+        roots = stats.root_moves
+        valid = (
+            stats.tree_visits + stats.rollout_steps == decision.nodes
+            and stats.simulations == stats.terminal_simulations + stats.rollout_cutoffs + stats.budget_cutoffs
+            and stats.simulations == sum(move.visits for move in roots)
+            and stats.tree_visits >= 2 * stats.simulations + stats.unfinished_simulations
+            and stats.unfinished_simulations in (0, 1)
+            and 0 <= stats.max_tree_depth <= stats.tree_visits
+            and all(
+                count >= 0
+                for count in (
+                    stats.rollout_steps,
+                    stats.terminal_simulations,
+                    stats.rollout_cutoffs,
+                    stats.budget_cutoffs,
+                    stats.simulations,
+                )
+            )
+            and len(roots) == len({move.move for move in roots})
+            and {move.move for move in roots} == set(legal_moves(game.board, game.turn))
+            and all(
+                move.visits >= 0
+                and (
+                    move.mean_value is None
+                    if move.visits == 0
+                    else move.mean_value is not None and isfinite(move.mean_value) and -1 <= move.mean_value <= 1
+                )
+                for move in roots
+            )
+        )
+        if not valid:
+            raise GameError("invalid_player_result", "Player returned inconsistent MCTS diagnostics.")
     return Choice(
         decision.move,
         game.state_hash,
@@ -53,4 +87,5 @@ def choose(game: Game, config: PlayerConfig) -> Choice:
         decision.max_qply,
         decision.checkpoint_sha256,
         decision.model_calls,
+        decision.mcts,
     )

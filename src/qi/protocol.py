@@ -67,6 +67,7 @@ class OpponentRequest(InspectRequest):
     seed: int = Field(default=0, ge=0, le=2_147_483_647, strict=True)
     depth: int = Field(default=2, ge=1, le=4, strict=True)
     nodes: int = Field(default=128, ge=1, le=512, strict=True)
+    rollout_plies: int = Field(default=8, ge=0, le=64, strict=True)
 
     @field_validator("player")
     @classmethod

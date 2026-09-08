@@ -36,6 +36,8 @@ document_class: coordination
 | Search | — | 搜索 | Explores possible continuations to inform a player's decision. | Training |
 | Evaluator | — | 局面评估器 | Assigns a heuristic score to a nonterminal position from a stated perspective. | Referee |
 | Quiescence | Quiescence search | 静态搜索 | Extends the ordinary search frontier through captures and legal check evasions. | A learned policy |
+| UCT | Upper Confidence bounds applied to Trees | 树置信上界 | MCTS selection rule balancing estimated return against exploration of less-visited children. | PUCT with learned priors |
+| Rollout | — | 模拟续局 | A sampled continuation used to estimate a tree node's value; a length cutoff is not a referee outcome. | Training run |
 | Stand pat | — | 静态估值基线 | Uses the current evaluation as a quiescence baseline when not in check. | A legal pass move |
 | Tactics | — | 战术 | Short forcing sequences such as exchanges and checks. | Player interface |
 | Strategy | — | 战略 | Longer-term positional plans and priorities. | Policy as a probability distribution |

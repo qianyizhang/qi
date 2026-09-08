@@ -364,3 +364,31 @@ select:focus-visible {
   outline: 3px solid #648b6c;
   outline-offset: 3px;
 }
+
+.root-moves {
+  max-height: 240px;
+  overflow: auto;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.root-moves table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.root-moves caption {
+  text-align: left;
+  padding-bottom: 8px;
+}
+.root-moves th,
+.root-moves td {
+  padding: 6px 4px;
+  text-align: right;
+  border-bottom: 1px solid #c8cabc;
+}
+.root-moves th:first-child {
+  text-align: left;
+}
+.root-moves .chosen {
+  background: #d1dfcb;
+}

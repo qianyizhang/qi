@@ -377,3 +377,29 @@ test("configured learned policy plays and identifies its checkpoint", async ({
     fullPage: true,
   });
 });
+
+test("MCTS exposes simulations and root move estimates", async ({ page }) => {
+  await start(page);
+  await page.getByLabel("Opponent", { exact: true }).selectOption("mcts");
+  await page.getByLabel("You play", { exact: true }).selectOption("black");
+  await expect(page.locator(".moves li")).toHaveCount(1);
+  await page.getByText("Last computer move", { exact: true }).click();
+  await expect(page.getByText(/mcts-uct-v1/)).toBeVisible();
+  await expect(page.getByText(/simulations · 512 visits/)).toBeVisible();
+  const statistics = page.getByRole("region", {
+    name: "MCTS root move statistics",
+  });
+  await expect(statistics).toBeVisible();
+  await expect(statistics.locator("tbody tr")).toHaveCount(44);
+  await expect(statistics.locator("tr.chosen")).toHaveCount(1);
+  await expect(page.getByText(/not win probabilities/)).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: test.info().outputPath("mcts-root-statistics.png"),
+    fullPage: true,
+  });
+});

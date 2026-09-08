@@ -21,6 +21,7 @@ Read these implementations in order:
 | [Random](random/README.md) | Seeded decisions and the legal-move boundary |
 | [Alpha-beta](alphabeta/README.md) | Alternating perspectives, pruning, iterative deepening |
 | [Quiescence](quiescence/README.md) | Looking beyond an exchange at the normal search horizon |
+| [MCTS](mcts/README.md) | UCT exploration, random rollouts, value backup, and root visits |
 | [Learned policy](policy/README.md) | Board encoding, legal masking, and checkpoint-backed inference |
 
 ## One extension point
@@ -77,7 +78,7 @@ callback; quiescence plugs into it, sharing the search loop and budget. No searc
 value cache is keyed by board alone: repetition and the ply ceiling need history.
 
 `Decision` reports total nodes, completed ordinary depth, score, and optional
-quiescence diagnostics, model calls, and checkpoint identity. `Choice` adds
+quiescence diagnostics, optional MCTS statistics, model calls, and checkpoint identity. `Choice` adds
 provenance. Learned-policy encoding and inference budgets are documented in its
 module; training stays in the [trainer](../learning/README.md).
 See [runtime contracts](../../../docs/baselines.md)
