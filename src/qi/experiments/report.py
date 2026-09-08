@@ -5,15 +5,17 @@ from collections import defaultdict
 from pathlib import Path
 from statistics import mean
 
+from qi.artifacts import digest
 from qi.experiments.evidence import load_run, require
 from qi.experiments.glossary import load_glossary
 from qi.experiments.inspect import load_traces
+from qi.experiments.model import Plan
+from qi.scoring import GameScore, score_pairs
 
 
 def summarize(run: dict, opening: str | None = None) -> dict:
     plan = run["manifest"]["plan"]
     groups = defaultdict(list)
-    pairs = defaultdict(list)
     for unit in run["units"]:
         if unit["status"] != "complete":
             continue
@@ -22,9 +24,6 @@ def summarize(run: dict, opening: str | None = None) -> dict:
             continue
         if job["kind"] == "probe":
             groups[(job["a"]["kind"], job["a"]["nodes"])].append(unit)
-        else:
-            key = (job["opening"], json.dumps(job["a"], sort_keys=True), json.dumps(job["b"], sort_keys=True))
-            pairs[key].append(unit)
     probes = []
     for (player, budget), units in groups.items():
         choices = [unit["turns"][0]["choice"] for unit in units]
@@ -50,23 +49,36 @@ def summarize(run: dict, opening: str | None = None) -> dict:
                 "leaf_aborts": sum((choice["mcts"] or {}).get("leaf_aborts", 0) for choice in choices),
             }
         )
-    matches = defaultdict(lambda: {"wins": 0, "draws": 0, "losses": 0, "pairs": 0})
-    unmatched = 0
-    for units in pairs.values():
-        if len(units) != 2 or {unit["job"]["a_side"] for unit in units} != {"red", "black"}:
-            unmatched += len(units)
+    units_by_id = {unit["job"]["id"]: unit for unit in run["units"]}
+    comparisons = defaultdict(list)
+    for job in Plan.model_validate(plan).jobs():
+        if job["kind"] != "game" or (opening is not None and job["opening"] != opening):
             continue
-        job = units[0]["job"]
-        group = matches[(job["a"]["kind"], job["b"]["kind"], job["a"]["nodes"])]
-        group["pairs"] += 1
-        for unit in units:
+        unit = units_by_id.get(job["id"])
+        status = unit["status"] if unit else "pending"
+        result = None
+        turns = []
+        if status == "complete":
             winner = unit["outcome"]["winner"]
-            group["draws" if winner is None else "wins" if winner == unit["job"]["a_side"] else "losses"] += 1
-    return {
-        "probes": probes,
-        "matches": [{"a": a, "b": b, "budget": budget, **values} for (a, b, budget), values in matches.items()],
-        "unpaired_completed_games": unmatched,
-    }
+            result = "draw" if winner is None else "win" if winner == job["a_side"] else "loss"
+            turns = [turn for turn in unit.get("turns", []) if turn["side"] == job["a_side"]]
+        comparisons[(job["a"]["kind"], job["b"]["kind"], job["a"]["nodes"])].append(
+            GameScore(
+                pair_id=digest([job["opening"], job["a"], job["b"]]),
+                a_side=job["a_side"],
+                status=status,
+                result=result,
+                decisions=len(turns),
+                elapsed_ms=sum(turn["choice"]["elapsed_ms"] for turn in turns),
+            )
+        )
+    matches = []
+    unmatched = 0
+    for (a, b, budget), games in comparisons.items():
+        score = score_pairs(games)
+        unmatched += score.unpaired_completed_games
+        matches.append({"a": a, "b": b, "budget": budget, "pairs": score.completed_pairs, **score.model_dump()})
+    return {"probes": probes, "matches": matches, "unpaired_completed_games": unmatched}
 
 
 def report(directory: Path, output: Path) -> dict:

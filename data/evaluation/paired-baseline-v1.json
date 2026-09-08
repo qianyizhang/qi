@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "protocol": "paired-games-v1",
+  "corpus": {
+    "schema_version": 1,
+    "id": "qi-openings-v1",
+    "purpose": "evaluation",
+    "provenance": "Hand-authored legal opening histories for a small engineering baseline. No teacher labels or strength/representativeness claim. Reserved from future training data.",
+    "openings": [
+      {
+        "id": "initial",
+        "description": "Standard initial position.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": []
+        }
+      },
+      {
+        "id": "central-cannon",
+        "description": "Central cannon facing a developed horse.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "b2e2",
+            "b9c7"
+          ]
+        }
+      },
+      {
+        "id": "double-horse",
+        "description": "Both sides develop the left horse.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "b0c2",
+            "b9c7"
+          ]
+        }
+      },
+      {
+        "id": "flank-soldiers",
+        "description": "Both sides advance a flank soldier.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "a3a4",
+            "i6i5"
+          ]
+        }
+      }
+    ]
+  },
+  "player_a": {
+    "kind": "alphabeta",
+    "seed": 7,
+    "depth": 1,
+    "nodes": 64,
+    "checkpoint_sha256": null,
+    "rollout_plies": 8
+  },
+  "player_b": {
+    "kind": "random",
+    "seed": 8,
+    "depth": 1,
+    "nodes": 64,
+    "checkpoint_sha256": null,
+    "rollout_plies": 8
+  }
+}

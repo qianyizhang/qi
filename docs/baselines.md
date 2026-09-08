@@ -90,6 +90,10 @@ ceiling, including opening plies; there is no separate cutoff disguised as a dra
 
 ## Fixed evaluation batches
 
+The [performance evaluation protocol](evaluation.md) provides versioned specs,
+saved runs, and independent paired-game scoring. This command remains compatible
+and includes the new summary in its `evaluation` field.
+
 `qi evaluate --corpus data/evaluation/openings-v1.json --seed 7` runs both color
 assignments for every opening. `--player-a`, `--player-b`, `--depth`, and `--nodes`
 configure the same baseline players. `src/qi/evaluation.py` owns batch behavior.

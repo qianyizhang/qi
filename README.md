@@ -85,6 +85,8 @@ uv run qi evaluate --corpus data/evaluation/openings-v1.json --seed 7 > artifact
 
 See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
 budget interpretation, and the limits of this small evaluation corpus.
+For a versioned spec, saved evidence, and scores that can be recomputed later,
+see the [performance evaluation protocol](docs/evaluation.md).
 
 Try **MCTS · UCT** in the browser opponent menu, then expand **Last computer move**
 to inspect root visits and estimated returns. The [MCTS guide](src/qi/players/mcts/README.md)

@@ -302,13 +302,23 @@ function compare() {
   );
   table(
     "matches",
-    ["Player A", "Player B", "Budget", "Pairs", "A wins / draws / losses"],
+    [
+      "Player A",
+      "Player B",
+      "Budget",
+      "Pairs done / planned",
+      "A wins / draws / losses",
+      "A score",
+      "Failed games",
+    ],
     matches.map((r) => [
       r.a,
       r.b,
       r.budget,
-      r.pairs,
+      `${r.completed_pairs} / ${r.planned_pairs}`,
       `${r.wins} / ${r.draws} / ${r.losses}`,
+      r.score_rate === null ? "—" : `${(100 * r.score_rate).toFixed(1)}%`,
+      r.failed_games,
     ]),
   );
   const old = $("unit").value;

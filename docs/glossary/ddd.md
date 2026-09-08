@@ -158,6 +158,12 @@ to a canonical term; they do not introduce different meanings.
 | Term | 中文 | Meaning | _Avoid_ | Aliases |
 | :-- | :-- | :-- | :-- | :-- |
 | Arena | 评测场 | Runs games under specified players, openings, seeds, and budgets while retaining replayable results. | A strength guarantee | — |
+| Evaluation spec | 评测规格 | A versioned protocol, fixed corpus, and participant configurations defining what an evaluation measures. | A score without its benchmark conditions | EvalSpec; spec_sha256 |
+| Evaluation run | 评测运行 | Recorded execution evidence for every planned game, including completion and failures. Summaries can be recomputed without playing again. | A cached summary as outcome authority | EvalRun |
+| Evaluation summary | 评测摘要 | Versioned metrics derived from validated run evidence, linked to the spec identity and completion status. | A universal engine ranking | EvalSummary |
+| Game score rate | 对局得分率 | Wins plus half the draws divided by games in complete color pairs, from the named participant's view. No complete pair means unavailable. | Win probability or Elo rating | score_rate; A score; game-score-v1 |
+| Pair completion | 配对完成度 | Completed color pairs compared with all planned pairs. Incomplete pairs contribute no game score. | Counting a single finished partner as a scored pair | completed_pairs; planned_pairs; Pairs done / planned |
+| Failed games | 失败对局 | Planned games whose execution failed. They remain visible and are never scored as draws. | Referee-adjudicated losses | failed_games |
 | Experiment plan | 实验计划 | The frozen question and matrix of corpus positions, recipes, budgets, seeds, and comparisons to execute. | Results already obtained | plan; preview; question; name; order |
 | Experiment run | 实验运行 | One execution of a plan with its environment, saved units, and status. A run can stop before the planned matrix finishes. | Assuming a run is complete | run |
 | Matrix | 实验组合矩阵 | All planned combinations of positions, players, budgets, and seeds, plus selected paired games. A time limit may leave some combinations missing. | Equally sampled results when units are missing | comparison matrix; planned |

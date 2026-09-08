@@ -12,6 +12,7 @@ from typer.exceptions import TyperException
 
 from qi.arena import play_match
 from qi.evaluation import Corpus, evaluate_batch
+from qi.evaluation_cli import app as evaluation_app
 from qi.experiments.cli import app as experiments_app
 from qi.game import Game, GameError
 from qi.learning.cli import app as learning_app
@@ -22,6 +23,7 @@ from qi.teacher import TeacherConfig, analyze
 app = typer.Typer(no_args_is_help=True, help="Qi: local Xiangqi play and deterministic replay.")
 app.add_typer(learning_app, name="learn")
 app.add_typer(experiments_app, name="experiment")
+app.add_typer(evaluation_app, name="eval")
 
 
 def show_version(value: bool) -> None:

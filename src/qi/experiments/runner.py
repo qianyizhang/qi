@@ -1,25 +1,17 @@
 """Sequential execution with fresh paths and atomically saved partial evidence."""
 
-import json
-import os
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from time import monotonic
 
+from qi.artifacts import write_json
 from qi.experiments.model import Plan, digest, provenance
 from qi.players import PlayerConfig, choose
 from qi.players.catalog import get_player
 from qi.protocol import Snapshot
 
-
-def write_json(path: Path, data) -> None:
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    with temporary.open("w") as stream:
-        json.dump(data, stream, allow_nan=False, separators=(",", ":"))
-        stream.flush()
-        os.fsync(stream.fileno())
-    temporary.replace(path)
+__all__ = ["run", "write_json"]
 
 
 def run(plan: Plan, directory: Path, seconds: float = 600, *, clock=monotonic) -> dict:

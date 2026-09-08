@@ -22,7 +22,7 @@ from qi.experiments.runner import run
 from qi.experiments.inspect import inspect_decision
 from qi.experiments.report import report
 from qi.protocol import Snapshot
-p=Plan(name="Offline report fixture",question="</script><script>alert('bad')</script>",corpus={"id":"fixture","provenance":"Hermetic browser fixture","openings":[{"id":"initial","description":"Initial position","snapshot":Snapshot()}]},players=["alphabeta-enhanced","mcts"],budgets=[64])
+p=Plan(name="Offline report fixture",question="</script><script>alert('bad')</script>",corpus={"id":"fixture","provenance":"Hermetic browser fixture","openings":[{"id":"initial","description":"Initial position","snapshot":Snapshot()}]},players=["alphabeta-enhanced","mcts"],budgets=[64],pairs=[("alphabeta-enhanced","mcts")],game_openings=["initial"])
 d=Path(sys.argv[1])/"run"
 run(p,d)
 inspect_decision(d,"unit-00000",0,d/"traces/alpha.json")
@@ -51,6 +51,15 @@ test("offline report filters, replays, and inspects complete or limited traces",
   await page.goto(reportUrl);
   await expect(page.locator("h1")).toHaveText("Offline report fixture");
   await expect(page.locator("#comparison tbody tr")).toHaveCount(2);
+  const match = page.locator("#matches tbody tr");
+  await expect(match).toHaveCount(1);
+  await expect(match.locator("td").nth(3)).toHaveText("1 / 1");
+  const wdl = (await match.locator("td").nth(4).innerText())
+    .split(" / ")
+    .map(Number);
+  const score = (100 * (wdl[0] + 0.5 * wdl[1])) / 2;
+  await expect(match.locator("td").nth(5)).toHaveText(`${score.toFixed(1)}%`);
+  await expect(match.locator("td").nth(6)).toHaveText("0");
   await page.locator("#opening").selectOption("initial");
   await page.locator("#player").selectOption("mcts");
   await expect(page.locator("#comparison tbody tr")).toHaveCount(1);

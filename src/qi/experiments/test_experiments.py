@@ -57,7 +57,7 @@ def test_deadline_keeps_partial_game_without_inventing_a_draw(tmp_path):
     partial = checked["units"][-1]
     assert partial["job"]["kind"] == "game" and partial["status"] == "incomplete"
     assert len(partial["turns"]) > 0 and "outcome" not in partial
-    assert summarize(checked)["matches"] == []
+    assert summarize(checked)["matches"][0]["score_rate"] is None
 
 
 def test_player_failure_preserves_previous_decisions(tmp_path, monkeypatch):
@@ -160,8 +160,11 @@ def test_only_complete_color_pairs_contribute_outcomes():
         {"status": "incomplete", "job": game_jobs[1]},
     ]
     data = {"manifest": {"plan": specification.model_dump(mode="json")}, "units": units}
-    assert summarize(data)["matches"] == []
+    assert summarize(data)["matches"][0]["score_rate"] is None
     assert summarize(data)["unpaired_completed_games"] == 1
     units[1] = {"status": "complete", "job": game_jobs[1], "outcome": {"winner": None}}
     result = summarize(data)["matches"][0]
     assert (result["wins"], result["draws"], result["losses"], result["pairs"]) == (1, 1, 0, 1)
+    assert result["score_rate"] == 0.75
+    assert result["scorer"] == "game-score-v1"
+    assert result["completed_pairs"] == result["planned_pairs"] == 1

@@ -1,53 +1,17 @@
 """Explicit, bounded search matrices and code identity."""
 
-import hashlib
-import json
-import subprocess
 from dataclasses import asdict
-from importlib.metadata import version
-from pathlib import Path
-from platform import platform, python_version
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from qi.artifacts import ROOT, digest, provenance
 from qi.evaluation import Corpus
 from qi.game import legal_moves
 from qi.players import PlayerConfig
 from qi.players.catalog import get_player
 
-ROOT = Path(__file__).resolve().parents[3]
-
-
-def digest(value) -> str:
-    return hashlib.sha256(
-        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
-    ).hexdigest()
-
-
-def provenance() -> dict:
-    files = sorted(
-        path
-        for path in (ROOT / "src/qi").rglob("*")
-        if path.suffix in (".py", ".html", ".js", ".css") and "static" not in path.parts
-    )
-    files += [ROOT / "pyproject.toml", ROOT / "uv.lock"]
-    source = hashlib.sha256()
-    for path in files:
-        source.update(str(path.relative_to(ROOT)).encode() + b"\0" + path.read_bytes() + b"\0")
-
-    def git(*args):
-        result = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True, check=False)
-        return result.stdout.strip() if result.returncode == 0 else None
-
-    return {
-        "source_sha256": source.hexdigest(),
-        "commit": git("rev-parse", "HEAD"),
-        "working_tree": git("status", "--porcelain"),
-        "python": python_version(),
-        "platform": platform(),
-        "packages": {name: version(name) for name in ("qi", "pydantic")},
-    }
+__all__ = ["ROOT", "Plan", "digest", "provenance"]
 
 
 class Plan(BaseModel):

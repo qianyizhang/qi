@@ -1,16 +1,21 @@
 """Fixed opening batches with paired colors and auditable player-relative totals."""
 
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import replace
 from hashlib import sha256
+from math import isfinite
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from qi.arena import MatchRecord, play_match
+from qi.artifacts import Provenance, digest, provenance
 from qi.game import GameError, Side
 from qi.players import PlayerConfig, bind_config
+from qi.players.catalog import get_player
 from qi.protocol import Snapshot
+from qi.scoring import GameScore, PairedScore, score_pairs
 
 
 class Opening(BaseModel):
@@ -52,6 +57,109 @@ class EvaluationGame(BaseModel):
     match: MatchRecord
 
 
+class EvalSpec(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal[1] = 1
+    protocol: Literal["paired-games-v1"] = "paired-games-v1"
+    corpus: Corpus
+    player_a: PlayerConfig
+    player_b: PlayerConfig
+
+    @property
+    def digest(self) -> str:
+        return digest(self.model_dump(mode="json"))
+
+    def configurations(self, index: int, side: Side) -> tuple[PlayerConfig, PlayerConfig]:
+        a = replace(self.player_a, seed=self.player_a.seed + 2 * index)
+        b = replace(self.player_b, seed=self.player_b.seed + 2 * index)
+        return (a, b) if side == "red" else (b, a)
+
+
+class EvalGame(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    opening_id: str
+    a_side: Side
+    status: Literal["pending", "running", "complete", "failed", "incomplete"] = "pending"
+    match: MatchRecord | None = None
+    error: str | None = None
+
+    @model_validator(mode="after")
+    def validate_status(self) -> Self:
+        if (self.status == "complete") != (self.match is not None):
+            raise ValueError("Only completed games must contain a match.")
+        if (self.status in ("failed", "incomplete")) != (self.error is not None):
+            raise ValueError("Failed or interrupted games must retain an error.")
+        return self
+
+
+class EvalRun(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal[1] = 1
+    spec: EvalSpec
+    spec_sha256: str
+    provenance: Provenance
+    player_versions: dict[Literal["a", "b"], str]
+    games: list[EvalGame]
+
+    @model_validator(mode="after")
+    def validate_evidence(self) -> Self:
+        if self.spec_sha256 != self.spec.digest or set(self.player_versions) != {"a", "b"}:
+            raise ValueError("Evaluation identity mismatch.")
+        expected = [(opening.id, side) for opening in self.spec.corpus.openings for side in ("red", "black")]
+        if [(game.opening_id, game.a_side) for game in self.games] != expected:
+            raise ValueError("Run must retain every planned game exactly once in spec order.")
+        for index, entry in enumerate(self.games):
+            if entry.match is not None:
+                self.validate_match(index // 2, entry)
+        return self
+
+    def validate_match(self, index: int, entry: EvalGame) -> None:
+        match = entry.match
+        opening = self.spec.corpus.openings[index].snapshot
+        red, black = self.spec.configurations(index, entry.a_side)
+        if match.schema_version != 1 or (match.red, match.black, match.opening) != (red, black, opening):
+            raise ValueError("Match configuration or opening differs from spec.")
+        game = opening.game()
+        for turn in match.turns:
+            choice = turn.choice
+            config = red if game.turn == "red" else black
+            who = "a" if game.turn == entry.a_side else "b"
+            if (
+                game.outcome is not None
+                or turn.ply != len(game.moves) + 1
+                or turn.side != game.turn
+                or choice.state_hash != game.state_hash
+                or choice.seed != config.seed + len(game.moves)
+                or choice.player_version != self.player_versions[who]
+                or choice.checkpoint_sha256 != config.checkpoint_sha256
+            ):
+                raise ValueError("Match turn differs from replay or participant identity.")
+            if not (
+                isfinite(choice.elapsed_ms)
+                and choice.elapsed_ms >= 0
+                and 0 <= choice.qnodes <= choice.nodes <= config.nodes
+                and 0 <= choice.completed_depth <= config.depth
+                and 0 <= choice.max_qply <= choice.qnodes
+                and choice.model_calls in (0, 1)
+            ):
+                raise ValueError("Invalid timing or budget diagnostics.")
+            game = game.apply(choice.move, choice.state_hash)
+        if (
+            Snapshot(moves=list(game.moves)) != match.snapshot
+            or game.outcome is None
+            or (game.outcome.winner, game.outcome.reason) != (match.winner, match.reason)
+        ):
+            raise ValueError("Match outcome or snapshot differs from replay.")
+
+
+class EvalSummary(BaseModel):
+    schema_version: Literal[1] = 1
+    protocol: Literal["paired-games-v1"] = "paired-games-v1"
+    spec_sha256: str
+    status: Literal["complete", "incomplete", "failed"]
+    players: dict[Literal["a", "b"], PairedScore]
+
+
 class PlayerSummary(BaseModel):
     wins: int
     draws: int
@@ -89,6 +197,7 @@ class EvaluationRecord(BaseModel):
     games: list[EvaluationGame]
     summary: dict[str, PlayerSummary]
     termination_reasons: dict[str, int]
+    evaluation: EvalSummary | None = None
 
 
 def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerSummary:
@@ -157,26 +266,93 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
     )
 
 
+def run_evaluation(spec: EvalSpec, *, save: Callable[[EvalRun], None] | None = None) -> EvalRun:
+    """Execute once, optionally saving before and after each game; stop on failure."""
+    spec = EvalSpec.model_validate(spec.model_dump())
+    spec = spec.model_copy(update={"player_a": bind_config(spec.player_a), "player_b": bind_config(spec.player_b)})
+    run = EvalRun(
+        spec=spec,
+        spec_sha256=spec.digest,
+        provenance=provenance(),
+        player_versions={
+            "a": get_player(spec.player_a.kind).info.version,
+            "b": get_player(spec.player_b.kind).info.version,
+        },
+        games=[
+            EvalGame(opening_id=opening.id, a_side=side)
+            for opening in spec.corpus.openings
+            for side in ("red", "black")
+        ],
+    )
+    if save:
+        save(run)
+    for index, entry in enumerate(run.games):
+        entry.status = "running"
+        if save:
+            save(run)
+        try:
+            red, black = spec.configurations(index // 2, entry.a_side)
+            match = play_match(red, black, spec.corpus.openings[index // 2].snapshot.game())
+            complete = EvalGame(opening_id=entry.opening_id, a_side=entry.a_side, status="complete", match=match)
+            run.validate_match(index // 2, complete)
+            run.games[index] = complete
+        except (Exception, KeyboardInterrupt) as exc:
+            entry.status = "incomplete" if isinstance(exc, KeyboardInterrupt) else "failed"
+            entry.error = f"{type(exc).__name__}: {exc}"
+        if save:
+            save(run)
+        if run.games[index].status in ("failed", "incomplete"):
+            break
+    return run
+
+
+def summarize_evaluation(run: EvalRun) -> EvalSummary:
+    """Revalidate saved evidence and derive scores without invoking players."""
+    run = EvalRun.model_validate(run.model_dump())
+    players = {}
+    for player in ("a", "b"):
+        games = []
+        for entry in run.games:
+            result = None
+            turns = []
+            if entry.match is not None:
+                side = entry.a_side if player == "a" else ("black" if entry.a_side == "red" else "red")
+                winner = entry.match.winner
+                result = "draw" if winner is None else "win" if winner == side else "loss"
+                turns = [turn for turn in entry.match.turns if turn.side == side]
+            games.append(
+                GameScore(
+                    pair_id=entry.opening_id,
+                    a_side=entry.a_side,
+                    status=entry.status,
+                    result=result,
+                    decisions=len(turns),
+                    elapsed_ms=sum(turn.choice.elapsed_ms for turn in turns),
+                )
+            )
+        players[player] = score_pairs(games)
+    status = (
+        "failed"
+        if players["a"].failed_games
+        else ("complete" if players["a"].completed_pairs == players["a"].planned_pairs else "incomplete")
+    )
+    return EvalSummary(spec_sha256=run.spec_sha256, status=status, players=players)
+
+
 def evaluate_batch(corpus: Corpus, a: PlayerConfig, b: PlayerConfig) -> EvaluationRecord:
-    # CONTRACT: Preflight every opening before starting any match, including direct callers.
-    corpus = Corpus.model_validate(corpus.model_dump())
-    a, b = bind_config(a), bind_config(b)
-    games = []
-    for index, opening in enumerate(corpus.openings):
-        pair_a, pair_b = replace(a, seed=a.seed + 2 * index), replace(b, seed=b.seed + 2 * index)
-        for a_side in ("red", "black"):
-            red, black = (pair_a, pair_b) if a_side == "red" else (pair_b, pair_a)
-            match = play_match(red, black, opening.snapshot.game())
-            outcome = match.snapshot.game().outcome
-            if outcome is None or (outcome.winner, outcome.reason) != (match.winner, match.reason):
-                raise GameError("invalid_match", "Match result does not agree with replay.")
-            games.append(EvaluationGame(opening_id=opening.id, a_side=a_side, match=match))
+    # COMPAT: Keep the original successful batch shape and fail-fast CLI behavior.
+    run = run_evaluation(EvalSpec(corpus=corpus, player_a=a, player_b=b))
+    summary = summarize_evaluation(run)
+    if summary.status != "complete":
+        raise GameError("evaluation_failed", next(entry.error for entry in run.games if entry.error))
+    games = [EvaluationGame(opening_id=entry.opening_id, a_side=entry.a_side, match=entry.match) for entry in run.games]
     return EvaluationRecord(
-        corpus=corpus,
-        corpus_sha256=corpus.digest,
-        player_a=a,
-        player_b=b,
+        corpus=run.spec.corpus,
+        corpus_sha256=run.spec.corpus.digest,
+        player_a=run.spec.player_a,
+        player_b=run.spec.player_b,
         games=games,
         summary={player: summarize(games, player) for player in ("a", "b")},
         termination_reasons=dict(Counter(entry.match.reason for entry in games)),
+        evaluation=summary,
     )

@@ -85,6 +85,8 @@ authorship or tamper-proof signatures. Replay cannot reproduce measured timing.
 - Outcome totals use complete color pairs with identical opening/configurations.
   Missing partners and incomplete games remain outside these totals. There is no
   universal winner ranking, Elo estimate, or general strength claim.
+  The shared [evaluation scorer](../../../docs/evaluation.md) adds A's score rate,
+  completed/planned pairs, and failed games, including rows with no score yet.
 - Latency surrounds untraced `choose`, including validation, excluding file writes.
   Recipes run in fixed order with shared referee caches; these observations are
   not isolated speedup measurements. Equal visits are not equal compute. Depth is ordinary alpha-beta depth, not an
