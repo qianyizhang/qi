@@ -22,7 +22,7 @@ and network-use conditions still apply. These commands do not publish artifacts.
 ```bash
 uv sync --extra learning
 uv run --extra learning qi learn dataset \
-  --corpus data/evaluation/openings-v1.json \
+  --corpus data/evaluation/search-positions-v1.json \
   --engine artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon \
   --network artifacts/teachers/pikafish-2026-01-02/pikafish.nnue \
   --output artifacts/learning/smoke-v1.json
@@ -38,7 +38,7 @@ uv run --extra learning qi learn train \
   > artifacts/learning/policy-v1-report.json
 
 QI_POLICY_CHECKPOINT=artifacts/learning/policy-v1.pt \
-  uv run --extra learning qi evaluate --corpus data/evaluation/openings-v1.json \
+  uv run --extra learning qi evaluate --corpus data/evaluation/search-positions-v1.json \
   --player-a policy --player-b alphabeta --seed 7 \
   > artifacts/learning/policy-vs-alphabeta.json
 ```
@@ -54,6 +54,8 @@ assigns four whole source games to validation before sampling, and queries up to
 analysis, including binary/network hashes and query settings. Teacher scores are
 retained only as raw provenance, never used as targets.
 
+For new datasets, use the expanded `data/evaluation/search-positions-v1.json`
+corpus; older datasets/checkpoints do not automatically exclude its new positions.
 The dataset embeds the reserved evaluation corpus. Its opening positions and all
 history-prefix inputs are excluded. Deduplication across both splits uses the
 exact board-and-turn model input, so transpositions cannot leak through different

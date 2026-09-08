@@ -8,6 +8,9 @@ lint:
 	uv run ruff format --check src scripts tests conftest.py
 	uv run python scripts/check_docs.py
 	npm run check --prefix web
+	web/node_modules/.bin/prettier --check src/qi/experiments/report.html src/qi/experiments/report.css src/qi/experiments/report.js src/qi/experiments/report-help.js
+	node --check src/qi/experiments/report.js
+	node --check src/qi/experiments/report-help.js
 test:
 	uv run pytest
 	npm test --prefix web
@@ -18,6 +21,7 @@ format:
 	uv run ruff check --fix src scripts tests conftest.py
 	uv run ruff format src scripts tests conftest.py
 	npm run format --prefix web
+	web/node_modules/.bin/prettier --write src/qi/experiments/report.html src/qi/experiments/report.css src/qi/experiments/report.js src/qi/experiments/report-help.js
 authoring-check:
 	uv run python scripts/check_authoring.py
 

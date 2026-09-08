@@ -79,6 +79,8 @@ Milestone 3 has an initial CPU policy-training pipeline. Plain MCTS with random
 rollouts is also implemented independently of training; see its
 [module guide](../src/qi/players/mcts/README.md). Learned value estimation, PUCT,
 self-play training, and the LLM track remain planned.
+Local search comparisons now have [experiment tracking and offline reports](../src/qi/experiments/README.md),
+with optional explored-tree recordings separate from benchmark timings.
 
 1. Specify a named training ruleset and build a two-human Xiangqi browser board
    plus structured CLI access, with legal actions, outcomes, and deterministic

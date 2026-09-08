@@ -156,3 +156,10 @@ records this slice's verification.
 Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` records
 its baseline. Shared rules and skills remain kit-managed. Use `governance-sync`
 when updating; project bindings and application code belong to qi.
+
+## Search experiments
+
+Plan bounded recipe comparisons, preserve partial runs, and inspect local HTML
+reports with optional explored-search trees. See the
+[experiment guide](src/qi/experiments/README.md) for preview, run, verify, report,
+and selected-decision inspection commands.

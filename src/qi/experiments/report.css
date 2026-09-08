@@ -1,0 +1,283 @@
+:root {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  color: #24352e;
+  background: #f5f3ed;
+  font-size: 15px;
+  --accent: #226b55;
+  --line: #d7ded5;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header,
+main,
+footer {
+  max-width: 1280px;
+  margin: auto;
+  padding: 30px 36px;
+}
+header {
+  padding-top: 52px;
+  border-bottom: 1px solid var(--line);
+}
+h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 44px;
+  margin: 12px 0;
+}
+h2 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 14px;
+}
+h3 {
+  font-size: 16px;
+}
+.eyebrow {
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  color: var(--accent);
+}
+section {
+  padding: 22px 0 32px;
+  border-bottom: 1px solid var(--line);
+}
+p {
+  line-height: 1.65;
+}
+.muted {
+  color: #647369;
+  font-size: 13px;
+}
+.badges,
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 16px 0;
+}
+.badge {
+  padding: 6px 10px;
+  background: #e1eadf;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.inspection {
+  display: grid;
+  grid-template-columns: minmax(270px, 420px) minmax(0, 1fr);
+  gap: 30px;
+}
+article {
+  background: #fffdf8;
+  border: 1px solid var(--line);
+  padding: 18px;
+  border-radius: 6px;
+}
+.controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+select,
+button {
+  font: inherit;
+  padding: 7px;
+  background: #fffdf8;
+  color: inherit;
+  border: 1px solid #b6c4b8;
+  border-radius: 4px;
+  max-width: 100%;
+}
+select {
+  max-width: 500px;
+}
+button {
+  cursor: pointer;
+}
+button:hover {
+  background: #e1eadf;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+th,
+td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+th {
+  font-weight: 600;
+  color: #536c5b;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.6;
+  background: #eeeee7;
+  padding: 14px;
+  border-radius: 4px;
+  max-height: 450px;
+  overflow: auto;
+}
+details {
+  margin: 12px 0;
+}
+summary {
+  cursor: pointer;
+}
+.scroll {
+  overflow: auto;
+}
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+#board,
+#trace-board {
+  max-width: 410px;
+  margin: auto;
+}
+#timeline {
+  min-height: 160px;
+}
+.tree {
+  height: 650px;
+  overflow: auto;
+  background: #fffdf8;
+  border: 1px solid var(--line);
+  padding: 12px;
+  font-size: 12px;
+}
+.tree details {
+  margin: 4px 0 4px 12px;
+}
+.tree button {
+  font-size: 11px;
+  padding: 2px 6px;
+  margin-left: 5px;
+}
+.tree .selected {
+  background: #dbe9dc;
+}
+.trace-warning {
+  color: #925323;
+}
+input[type="range"] {
+  flex: 1;
+  min-width: 80px;
+}
+footer {
+  font-size: 12px;
+  color: #66796c;
+}
+@media (max-width: 760px) {
+  header,
+  main,
+  footer {
+    padding: 24px 16px;
+  }
+  h1 {
+    font-size: 32px;
+  }
+  .grid,
+  .inspection {
+    grid-template-columns: 1fr;
+  }
+  .controls label {
+    max-width: 100%;
+  }
+  select {
+    max-width: 75vw;
+  }
+  .tree {
+    height: 420px;
+  }
+}
+
+#latency,
+#work,
+#timeline {
+  overflow-x: auto;
+}
+#latency svg,
+#work svg {
+  min-width: 520px;
+}
+#timeline svg {
+  min-width: 560px;
+}
+.grid > *,
+.inspection > * {
+  min-width: 0;
+}
+
+/* In-place explanations preserve labels and copied JSON text. */
+.glossary-term {
+  text-decoration: underline dotted #688c7b;
+  text-underline-offset: 3px;
+  cursor: help;
+  border-radius: 2px;
+}
+.glossary-term:hover,
+.glossary-term:focus-visible {
+  background: #e1eadf;
+  outline: 2px solid #226b55;
+  outline-offset: 2px;
+}
+#term-tooltip {
+  position: fixed;
+  z-index: 100;
+  width: min(370px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  padding: 16px 18px;
+  background: #fffdf8;
+  border: 1px solid #7c9d8d;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px #24352e30;
+  font-size: 14px;
+}
+#term-tooltip p {
+  margin: 9px 0 0;
+}
+#beginner-guide li {
+  line-height: 1.65;
+  margin: 8px 0;
+}
+#glossary-search {
+  display: block;
+  width: min(100%, 480px);
+  padding: 10px;
+  margin-top: 10px;
+  font: inherit;
+  border: 1px solid #b6c4b8;
+  border-radius: 4px;
+}
+#glossary-entries article {
+  margin: 10px 0;
+}
+#glossary-entries h4,
+#glossary-entries p {
+  margin: 4px 0;
+}
+#glossary-source {
+  overflow-wrap: anywhere;
+}

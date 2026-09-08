@@ -74,6 +74,11 @@ The optional trainer lives in `src/qi/learning/`; checkpoint-backed inference
 lives in its player module. `QI_POLICY_CHECKPOINT` selects an explicit local file,
 loaded and pinned per process. HTTP does not accept checkpoint paths.
 
+`src/qi/experiments/` owns local search plans, execution evidence, validation,
+and report generation. Reports are projections; players/referee remain outcome
+authorities. Optional recording is observational and separate from benchmark
+timing. See its README for run and trace completeness semantics.
+
 ## Testing
 
 Portable doctrine: `docs/rules/testing.md`.

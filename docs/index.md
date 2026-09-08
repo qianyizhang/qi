@@ -17,6 +17,7 @@ stale route, and preserve the owning authority. Doctrine:
 Project scope and milestone direction: [Project plan](project.md).
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
+Search experiment tracking and local reports: [Experiments](../src/qi/experiments/README.md).
 Local external analysis: [Teacher](teacher.md).
 Local supervised policy training: [Trainer](../src/qi/learning/README.md).
 Coordinates and replay operations: [Interface](interface.md).
