@@ -41,3 +41,9 @@ document_class: coordination
 | Stand pat | — | 静态估值基线 | Uses the current evaluation as a quiescence baseline when not in check. | A legal pass move |
 | Tactics | — | 战术 | Short forcing sequences such as exchanges and checks. | Player interface |
 | Strategy | — | 战略 | Longer-term positional plans and priorities. | Policy as a probability distribution |
+| Move ordering | — | 着法排序 | Changes the order in which legal continuations are searched, without removing them. | Pruning |
+| Killer move | — | 杀手着法 | A quiet move remembered for causing a cutoff at the same search ply. | Forced mate |
+| History heuristic | — | 历史启发 | Ranks quiet moves by cutoff success during search. | Referee repetition history |
+| SEE | Static Exchange Evaluation | 静态交换评估 | Estimates captures and recaptures on one square; qi uses it for ordering only. | Tactical proof |
+| Check extension | — | 将军延伸 | Spends a bounded extra-ply allowance at a checked search position. | Extra node budget |
+| TT | Transposition Table | 置换表 | Caches search bounds and move hints under compatible state and search context. | Board-only outcome cache |

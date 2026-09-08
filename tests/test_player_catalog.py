@@ -64,7 +64,19 @@ def test_catalog_cli_and_api_have_identical_metadata() -> None:
     assert json.loads(result.stdout) == expected
     with TestClient(create_app()) as client:
         assert client.get("/api/players").json() == expected
-    assert {p["id"] for p in expected} == {"random", "alphabeta", "quiescence", "mcts"}
+    assert {p["id"] for p in expected} == {
+        "random",
+        "alphabeta",
+        "quiescence",
+        "mcts",
+        "alphabeta-ordered",
+        "alphabeta-positional",
+        "alphabeta-see",
+        "alphabeta-checks",
+        "alphabeta-tt",
+        "alphabeta-enhanced",
+        "mcts-quiescence",
+    }
 
 
 def test_quiescence_cli_returns_budget_and_replay_guard(tmp_path) -> None:

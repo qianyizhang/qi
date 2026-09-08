@@ -6,10 +6,11 @@ from math import isfinite, log, sqrt
 from random import Random
 
 from qi.game import Game, GameError, legal_moves
-from qi.players.common import NodeBudget, evaluate
+from qi.players.common import BudgetExhausted, NodeBudget, evaluate
 from qi.players.core import Decision, MctsStats, Player, PlayerConfig, PlayerInfo, RootMove
 
 LeafEvaluator = Callable[[Game], float]
+BudgetedLeafEvaluator = Callable[[Game, NodeBudget], float]
 
 
 def material_value(game: Game) -> float:
@@ -75,6 +76,8 @@ class Search:
     budget_cutoffs: int = 0
     unfinished_simulations: int = 0
     max_tree_depth: int = 0
+    budgeted_leaf: BudgetedLeafEvaluator | None = None
+    leaf_aborts: int = 0
 
     def visit_tree(self) -> None:
         self.budget.visit()
@@ -88,13 +91,17 @@ class Search:
             self.rollout_steps += 1
             steps += 1
             game = game.apply(self.rng.choice(sorted(legal_moves(game.board, game.turn))))
+        estimate = (
+            value(game, lambda position: self.budgeted_leaf(position, self.budget))
+            if self.budgeted_leaf
+            else value(game, self.leaf)
+        )
         if game.outcome:
             self.terminal_simulations += 1
         elif steps == self.rollout_plies:
             self.rollout_cutoffs += 1
         else:
             self.budget_cutoffs += 1
-        estimate = value(game, self.leaf)
         return estimate if game.turn == start.turn else -estimate
 
     def run(self, root: Node) -> MctsStats:
@@ -116,10 +123,16 @@ class Search:
                 self.unfinished_simulations += 1
                 break
             self.max_tree_depth = max(self.max_tree_depth, len(path) - 1)
-            backup(path, self.rollout(node.game))
+            try:
+                estimate = self.rollout(node.game)
+            except BudgetExhausted:
+                self.unfinished_simulations += 1
+                self.leaf_aborts += 1
+                break
+            backup(path, estimate)
         roots = tuple(
             RootMove(move, child.visits, -child.mean_value)
-            if (child := root.children.get(move))
+            if (child := root.children.get(move)) and child.visits
             else RootMove(move, 0, None)
             for move in sorted(legal_moves(root.game.board, root.game.turn))
         )
@@ -133,19 +146,29 @@ class Search:
             self.unfinished_simulations,
             self.max_tree_depth,
             roots,
+            self.budget.nodes - self.tree_visits - self.rollout_steps,
+            self.leaf_aborts,
         )
 
 
-def search(game: Game, config: PlayerConfig, leaf: LeafEvaluator = material_value) -> Decision:
+def search(
+    game: Game,
+    config: PlayerConfig,
+    leaf: LeafEvaluator = material_value,
+    *,
+    budgeted_leaf: BudgetedLeafEvaluator | None = None,
+) -> Decision:
     if game.outcome:
         raise GameError("game_over", "Cannot search a terminal game.")
     rng = Random(config.seed)
     root = Node.create(game, rng)
-    worker = Search(NodeBudget(config.nodes), rng, config.rollout_plies, leaf)
+    worker = Search(NodeBudget(config.nodes), rng, config.rollout_plies, leaf, budgeted_leaf=budgeted_leaf)
     stats = worker.run(root)
     # Coordinate order breaks ties; unvisited moves never outrank a completed sample.
     best = max(stats.root_moves, key=lambda move: (move.visits, move.mean_value if move.mean_value is not None else -2))
-    return Decision(best.move, nodes=worker.budget.nodes, mcts=stats)
+    return Decision(
+        best.move, nodes=worker.budget.nodes, qnodes=worker.budget.qnodes, max_qply=worker.budget.max_qply, mcts=stats
+    )
 
 
 def select(game: Game, config: PlayerConfig) -> Decision:

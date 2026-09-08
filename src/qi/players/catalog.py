@@ -7,7 +7,9 @@ from types import MappingProxyType
 from qi.game import GameError
 from qi.players.alphabeta import PLAYER as ALPHABETA
 from qi.players.core import Player, PlayerInfo
+from qi.players.enhanced import PLAYERS as ENHANCED
 from qi.players.mcts import PLAYER as MCTS
+from qi.players.mcts_quiescence import PLAYER as MCTS_QUIESCENCE
 from qi.players.policy import PLAYER as POLICY
 from qi.players.quiescence import PLAYER as QUIESCENCE
 from qi.players.random import PLAYER as RANDOM
@@ -22,7 +24,7 @@ def build_catalog(players: tuple[Player, ...]) -> Mapping[str, Player]:
     return MappingProxyType(result)
 
 
-PLAYERS = build_catalog((RANDOM, ALPHABETA, QUIESCENCE, MCTS, POLICY))
+PLAYERS = build_catalog((RANDOM, ALPHABETA, QUIESCENCE, MCTS, *ENHANCED, MCTS_QUIESCENCE, POLICY))
 
 
 def get_player(kind: str) -> Player:

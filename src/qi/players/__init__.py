@@ -44,7 +44,9 @@ def choose(game: Game, config: PlayerConfig) -> Choice:
     if (stats := decision.mcts) is not None:
         roots = stats.root_moves
         valid = (
-            stats.tree_visits + stats.rollout_steps == decision.nodes
+            stats.tree_visits + stats.rollout_steps + stats.leaf_nodes == decision.nodes
+            and stats.leaf_nodes >= 0
+            and 0 <= stats.leaf_aborts <= stats.unfinished_simulations
             and stats.simulations == stats.terminal_simulations + stats.rollout_cutoffs + stats.budget_cutoffs
             and stats.simulations == sum(move.visits for move in roots)
             and stats.tree_visits >= 2 * stats.simulations + stats.unfinished_simulations
@@ -74,6 +76,14 @@ def choose(game: Game, config: PlayerConfig) -> Choice:
         )
         if not valid:
             raise GameError("invalid_player_result", "Player returned inconsistent MCTS diagnostics.")
+    if (stats := decision.search_stats) is not None and not (
+        0 <= stats.see_nodes <= decision.nodes - decision.qnodes
+        and 0 <= stats.max_extensions <= 4
+        and 0 <= stats.extensions <= decision.nodes
+        and 0 <= stats.tt_cutoffs <= stats.tt_hits <= decision.nodes
+        and 0 <= stats.cutoffs <= decision.nodes
+    ):
+        raise GameError("invalid_player_result", "Player returned inconsistent search diagnostics.")
     return Choice(
         decision.move,
         game.state_hash,
@@ -88,4 +98,6 @@ def choose(game: Game, config: PlayerConfig) -> Choice:
         decision.checkpoint_sha256,
         decision.model_calls,
         decision.mcts,
+        decision.search_stats,
+        decision.evaluation,
     )

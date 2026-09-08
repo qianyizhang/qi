@@ -403,3 +403,54 @@ test("MCTS exposes simulations and root move estimates", async ({ page }) => {
     fullPage: true,
   });
 });
+
+for (const player of [
+  "alphabeta-ordered",
+  "alphabeta-positional",
+  "alphabeta-see",
+  "alphabeta-checks",
+  "alphabeta-tt",
+  "alphabeta-enhanced",
+  "mcts-quiescence",
+]) {
+  test(`${player} plays and exposes component diagnostics`, async ({
+    page,
+  }) => {
+    await start(page);
+    await page.getByLabel("Opponent", { exact: true }).selectOption(player);
+    await page.getByLabel("You play", { exact: true }).selectOption("black");
+    await expect(page.locator(".moves li")).toHaveCount(1);
+    await page.getByText("Last computer move", { exact: true }).click();
+    await expect(page.getByText(new RegExp(`${player}-v1`))).toBeVisible();
+    if (player === "mcts-quiescence") {
+      await expect(page.getByText(/tactical leaf visits/)).toBeVisible();
+      await expect(
+        page.getByRole("region", { name: "MCTS root move statistics" }),
+      ).toBeVisible();
+    } else {
+      await expect(page.getByText(/exchange-analysis visits/)).toBeVisible();
+      await expect(page.getByText(/cached cutoffs/)).toBeVisible();
+    }
+    if (player === "alphabeta-positional" || player === "alphabeta-enhanced") {
+      await expect(
+        page.getByText(/Before-move static assessment/),
+      ).toBeVisible();
+      await expect(page.locator(".evaluation-terms dd")).toHaveText([
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+      ]);
+    }
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: test.info().outputPath(`${player}.png`),
+      fullPage: true,
+    });
+  });
+}

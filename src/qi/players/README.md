@@ -22,13 +22,16 @@ Read these implementations in order:
 | [Alpha-beta](alphabeta/README.md) | Alternating perspectives, pruning, iterative deepening |
 | [Quiescence](quiescence/README.md) | Looking beyond an exchange at the normal search horizon |
 | [MCTS](mcts/README.md) | UCT exploration, random rollouts, value backup, and root visits |
+| [Search components](components/README.md) | Ordering, positional scores, exchanges, extensions, and safe caching |
+| [Combined recipes](enhanced/README.md) | Assemble and compare alpha-beta ingredients |
+| [Quiescent MCTS](mcts_quiescence/README.md) | Budget tactical leaf work alongside simulations |
 | [Learned policy](policy/README.md) | Board encoding, legal masking, and checkpoint-backed inference |
 
 ## One extension point
 
-Every module exports `PLAYER`, a `Player` descriptor with `PlayerInfo` and a
+An implementation exports a `Player` descriptor with `PlayerInfo` and a
 `select(game, config) -> Decision` callable. `core.py` defines the interface;
-`catalog.py` explicitly registers implementations. There is no filesystem scan,
+`catalog.py` explicitly registers implementations (`PLAYER`, or `PLAYERS` for recipes). There is no filesystem scan,
 SDK dependency, class hierarchy requirement, or arbitrary executable loading.
 The local teacher stays outside this catalog so evaluated players do not gain
 teacher access implicitly.
@@ -73,12 +76,14 @@ outcomes and transitions. Callers apply the result with the returned state hash.
 ## Shared mechanics without a framework
 
 `common.py` holds the existing material evaluator, deterministic move ordering,
-terminal score conversion, and node counter. Alpha-beta exposes a small leaf
-callback; quiescence plugs into it, sharing the search loop and budget. No search
+terminal score conversion, and node counter. Alpha-beta exposes a leaf
+callback and immutable `SearchOptions`; [components](components/README.md) plug
+into its search loop and budget. MCTS exposes both static and budgeted leaf callbacks. No search
 value cache is keyed by board alone: repetition and the ply ceiling need history.
 
 `Decision` reports total nodes, completed ordinary depth, score, and optional
-quiescence diagnostics, optional MCTS statistics, model calls, and checkpoint identity. `Choice` adds
+quiescence diagnostics, MCTS/search statistics, root evaluation terms, model calls,
+and checkpoint identity. `Choice` adds
 provenance. Learned-policy encoding and inference budgets are documented in its
 module; training stays in the [trainer](../learning/README.md).
 See [runtime contracts](../../../docs/baselines.md)

@@ -71,6 +71,13 @@ class PlayerSummary(BaseModel):
     terminal_simulations: int = 0
     heuristic_cutoffs: int = 0
     max_tree_depth: int = 0
+    leaf_nodes: int = 0
+    leaf_aborts: int = 0
+    see_nodes: int = 0
+    search_cutoffs: int = 0
+    check_extensions: int = 0
+    tt_hits: int = 0
+    tt_cutoffs: int = 0
 
 
 class EvaluationRecord(BaseModel):
@@ -90,6 +97,7 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
     qnodes = max_qply = 0
     model_calls = 0
     simulations = rollout_steps = terminal_simulations = heuristic_cutoffs = max_tree_depth = 0
+    leaf_nodes = leaf_aborts = see_nodes = search_cutoffs = check_extensions = tt_hits = tt_cutoffs = 0
     for entry in games:
         side = entry.a_side if player == "a" else ("black" if entry.a_side == "red" else "red")
         result = entry.match
@@ -105,9 +113,17 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
                 nodes += turn.choice.nodes
                 qnodes += turn.choice.qnodes
                 model_calls += turn.choice.model_calls
+                if (stats := turn.choice.search_stats) is not None:
+                    see_nodes += stats.see_nodes
+                    search_cutoffs += stats.cutoffs
+                    check_extensions += stats.extensions
+                    tt_hits += stats.tt_hits
+                    tt_cutoffs += stats.tt_cutoffs
                 if (stats := turn.choice.mcts) is not None:
                     simulations += stats.simulations
                     rollout_steps += stats.rollout_steps
+                    leaf_nodes += stats.leaf_nodes
+                    leaf_aborts += stats.leaf_aborts
                     terminal_simulations += stats.terminal_simulations
                     heuristic_cutoffs += stats.rollout_cutoffs + stats.budget_cutoffs
                     max_tree_depth = max(max_tree_depth, stats.max_tree_depth)
@@ -123,6 +139,13 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
         terminal_simulations=terminal_simulations,
         heuristic_cutoffs=heuristic_cutoffs,
         max_tree_depth=max_tree_depth,
+        leaf_nodes=leaf_nodes,
+        leaf_aborts=leaf_aborts,
+        see_nodes=see_nodes,
+        search_cutoffs=search_cutoffs,
+        check_extensions=check_extensions,
+        tt_hits=tt_hits,
+        tt_cutoffs=tt_cutoffs,
         wins=wins,
         draws=draws,
         losses=losses,

@@ -59,6 +59,11 @@ allowed_paths = [
     "src/qi/players/alphabeta/README.md", "src/qi/players/quiescence/README.md",
     "src/qi/players/policy/README.md", "src/qi/learning/README.md",
     "src/qi/players/mcts/README.md",
+    "src/qi/players/components/README.md",
+    "src/qi/players/components/ordering/README.md", "src/qi/players/components/positional/README.md",
+    "src/qi/players/components/exchange/README.md", "src/qi/players/components/extensions/README.md",
+    "src/qi/players/components/transpositions/README.md", "src/qi/players/enhanced/README.md",
+    "src/qi/players/mcts_quiescence/README.md",
 ]
 
 [tool.doc_governance.document_classes.work_record]

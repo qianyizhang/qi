@@ -51,7 +51,7 @@ terminal outcomes retain referee authority. See the [algorithm walkthrough](../s
 `Choice` also reports `qnodes` (a subset of total nodes, including dispatched
 frontiers) and `max_qply` (deepest extra continuation across attempted work).
 Ordinary completed depth excludes these extra plies. Batch summaries total qnodes
-and report maximum qply; partial work is included. Other players report zeros.
+and report maximum qply; partial work is included. Players without quiescence report zeros.
 At small budgets, quiescence can leave fewer ordinary iterations completed.
 
 ## CLI and artifacts
@@ -60,7 +60,7 @@ The `mcts` player uses UCT selection, seeded random rollouts, and bounded materi
 estimates at nonterminal cutoffs. See the [MCTS walkthrough](../src/qi/players/mcts/README.md)
 for its separate tree/rollout accounting and root-move diagnostics. It uses the
 shared nodes allowance plus `--rollout-plies` (default 8, range 0-64), and ignores
-ordinary depth. Its nested `Choice.mcts` is null for other players. Batch summaries
+ordinary depth. Its nested `Choice.mcts` is null for players outside the MCTS family. Batch summaries
 add simulations, rollout steps, terminal simulations, heuristic cutoffs, and maximum
 tree depth; root tables remain in each turn record.
 
@@ -116,3 +116,30 @@ are never scored as draws. Successful batches have zero invalid actions/retries.
 Repeated runs reproduce games and results under the same code and Python version;
 latency is observational. Outputs can be large; redirect to ignored `artifacts/`.
 No Elo, statistical strength, teacher, or learned-policy fairness claim is made.
+
+## Composable search recipes
+
+[Components](../src/qi/players/components/README.md) own the learning guides;
+[alpha-beta recipes](../src/qi/players/enhanced/README.md) list stable IDs.
+`alphabeta-ordered`, `alphabeta-positional`, `alphabeta-see`, `alphabeta-checks`,
+and `alphabeta-tt` isolate enhancements; `alphabeta-enhanced` combines them with
+positional quiescence. All suggest 512 nodes and depth two in the browser.
+
+Their optional `Choice.search_stats` records alpha-beta cutoffs, SEE visits,
+check-extension events and maximum spent per path, and TT hits/cutoffs.
+SEE transitions consume total nodes and are disjoint from qnodes. TT reuse is
+charged and requires compatible history and remaining horizon. Partial iterations
+retain the last completed decision. Static positional `Choice.evaluation` has
+material, placement, mobility, and king_safety fields; their sum assesses the
+root before moving, from the choosing side's perspective. It is separate from
+the searched `score`. Original players emit null for these optional records.
+
+`mcts-quiescence` shares the MCTS loop with budgeted tactical leaf evaluation.
+`Choice.mcts.leaf_nodes` counts additional leaf visits and `leaf_aborts` counts
+unfinished leaf estimates discarded without backup. For either MCTS recipe,
+tree visits + rollout steps + leaf nodes equals total nodes. qnodes also includes
+already-visited frontiers, so it is not added to this total. Plain MCTS emits
+zero for both new counters. Batch summaries aggregate leaf/SEE visits, leaf
+aborts, search cutoffs, check extensions, and cache hits/cutoffs; individual
+turns retain detailed diagnostics. Extra work can reduce completed depth or
+simulation count; a recipe name is not a strength claim.

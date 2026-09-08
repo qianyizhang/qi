@@ -40,6 +40,30 @@ class MctsStats:
     unfinished_simulations: int
     max_tree_depth: int
     root_moves: tuple[RootMove, ...]
+    leaf_nodes: int = 0
+    leaf_aborts: int = 0
+
+
+@dataclass(frozen=True)
+class EvaluationBreakdown:
+    material: int
+    placement: int
+    mobility: int
+    king_safety: int
+
+    @property
+    def total(self) -> int:
+        return self.material + self.placement + self.mobility + self.king_safety
+
+
+@dataclass(frozen=True)
+class SearchStats:
+    cutoffs: int = 0
+    see_nodes: int = 0
+    extensions: int = 0
+    max_extensions: int = 0
+    tt_hits: int = 0
+    tt_cutoffs: int = 0
 
 
 @dataclass(frozen=True)
@@ -53,6 +77,8 @@ class Decision:
     checkpoint_sha256: str | None = None
     model_calls: int = 0
     mcts: MctsStats | None = None
+    search_stats: SearchStats | None = None
+    evaluation: EvaluationBreakdown | None = None
 
 
 @dataclass(frozen=True)
@@ -70,6 +96,8 @@ class Choice:
     checkpoint_sha256: str | None = None
     model_calls: int = 0
     mcts: MctsStats | None = None
+    search_stats: SearchStats | None = None
+    evaluation: EvaluationBreakdown | None = None
 
 
 @dataclass(frozen=True)

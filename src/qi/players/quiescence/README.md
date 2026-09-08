@@ -71,3 +71,8 @@ For a production-engine example of entering quiescence at depth zero, see
 [Stockfish's search entry](https://github.com/official-stockfish/Stockfish/blob/master/src/search.cpp).
 Qi's implementation is small and independently written for its own ruleset.
 [Parent contract and extension guide](../README.md).
+
+`quiesce` also accepts an `evaluator` callback and optional `max_plies` cap for
+non-check frontiers. The original player leaves that cap unset;
+[MCTS quiescent leaves](../mcts_quiescence/README.md) use two. Checked positions
+always continue through legal evasions under the global budget, even past a cap.

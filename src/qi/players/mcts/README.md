@@ -87,7 +87,7 @@ choose the first coordinate-sorted legal move and report all means as null.
 
 `Choice.mcts` records completed simulations, tree visits, rollout steps, terminal
 results, rollout-length cutoffs, work-budget cutoffs, unfinished simulations, and
-maximum tree depth. Tree visits plus rollout steps equal the reported total nodes;
+maximum tree depth. For this plain player, tree visits plus rollout steps equal total nodes;
 root-child visits sum to completed simulations. If both limits are reached at once,
 classify a nonterminal result as a rollout-length cutoff; terminal outcomes always
 win precedence.
@@ -112,3 +112,9 @@ A future value model can replace the leaf callback; PUCT will additionally need
 policy priors and explicit model-call accounting. Those changes belong to a later
 player version. Current random rollouts and material cutoffs are deliberately
 simple; a working tree search does not imply superiority to alpha-beta.
+
+A second keyword-only hook, `budgeted_leaf(Game, NodeBudget) -> float`, supports
+leaves that search further using the same allowance. See [quiescent MCTS](../mcts_quiescence/README.md).
+Such recipes report `leaf_nodes` and `leaf_aborts`; tree visits plus rollout steps
+plus leaf nodes equal total nodes. Exhausting a leaf discards that simulation
+and ends the decision. Plain `mcts` keeps its original cutoff behavior.

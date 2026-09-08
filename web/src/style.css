@@ -392,3 +392,15 @@ select:focus-visible {
 .root-moves .chosen {
   background: #d1dfcb;
 }
+
+.evaluation-terms dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 12px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.evaluation-terms dd {
+  margin: 0;
+  text-align: right;
+}

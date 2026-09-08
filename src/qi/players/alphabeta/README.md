@@ -38,4 +38,9 @@ budget, mate, and exhaustive-oracle tests are in `test_alphabeta.py`.
 uv run qi choose --state game.json --player alphabeta --depth 2 --nodes 128
 ```
 
+`SearchOptions` optionally composes an evaluator, move ordering, SEE, bounded
+check extensions, and a transposition table. Defaults keep this baseline intact.
+See [components and composition](../components/README.md) and the separately
+registered [recipes](../enhanced/README.md).
+
 [Parent contract and extension guide](../README.md).

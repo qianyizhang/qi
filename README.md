@@ -66,7 +66,9 @@ uv run qi match --red alphabeta --black random --seed 7 > match.json
 ```
 
 [Player modules and walkthroughs](src/qi/players/README.md) explain how to build
-and add an implementation, including the quiescence search player.
+and add an implementation. [Search components](src/qi/players/components/README.md)
+explain move ordering, positional evaluation, exchanges, check extensions, and
+history-aware caching, with selectable single-feature and combined recipes.
 [Baseline contracts](docs/baselines.md) explain search budgets, deterministic
 seeds, opening snapshots, and match records. Matches run through the existing
 referee. Extract a match record's nested `snapshot` to import it into the browser.
@@ -90,6 +92,15 @@ explains the algorithm and its replaceable leaf evaluator. For CLI experiments:
 
 ```bash
 uv run qi choose --state game.json --player mcts --nodes 512 --rollout-plies 8 --seed 7
+```
+
+Try **Alpha-beta · combined** or **MCTS · quiescence leaves** in the same menu.
+Expand **Last computer move** for search work and positional score terms. To
+combine ingredients yourself, start with the [composition example](src/qi/players/components/README.md).
+
+```bash
+uv run qi choose --state game.json --player alphabeta-enhanced --nodes 2048 --depth 2
+uv run qi choose --state game.json --player mcts-quiescence --nodes 512 --rollout-plies 8
 ```
 
 For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and

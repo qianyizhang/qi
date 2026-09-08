@@ -49,7 +49,23 @@ type Choice = {
     budget_cutoffs: number;
     unfinished_simulations: number;
     max_tree_depth: number;
+    leaf_nodes: number;
+    leaf_aborts: number;
     root_moves: { move: string; visits: number; mean_value: number | null }[];
+  } | null;
+  search_stats: {
+    cutoffs: number;
+    see_nodes: number;
+    extensions: number;
+    max_extensions: number;
+    tt_hits: number;
+    tt_cutoffs: number;
+  } | null;
+  evaluation: {
+    material: number;
+    placement: number;
+    mobility: number;
+    king_safety: number;
   } | null;
 };
 type OpponentResult = { position: Position; choice: Choice };
@@ -611,11 +627,49 @@ function App() {
                     </>
                   )}
                 </p>
+                {lastChoice.search_stats && (
+                  <p>
+                    {lastChoice.search_stats.cutoffs} alpha-beta cutoffs ·{" "}
+                    {lastChoice.search_stats.see_nodes} exchange-analysis visits
+                    <br />
+                    {lastChoice.search_stats.extensions} check extensions · at
+                    most {lastChoice.search_stats.max_extensions} per path
+                    <br />
+                    {lastChoice.search_stats.tt_hits} cache hits ·{" "}
+                    {lastChoice.search_stats.tt_cutoffs} cached cutoffs
+                  </p>
+                )}
+                {lastChoice.evaluation && (
+                  <div className="evaluation-terms">
+                    <p>
+                      Before-move static assessment · computer’s perspective
+                    </p>
+                    <dl>
+                      <dt>Material</dt>
+                      <dd>{lastChoice.evaluation.material}</dd>
+                      <dt>Piece placement</dt>
+                      <dd>{lastChoice.evaluation.placement}</dd>
+                      <dt>Mobility</dt>
+                      <dd>{lastChoice.evaluation.mobility}</dd>
+                      <dt>King safety</dt>
+                      <dd>{lastChoice.evaluation.king_safety}</dd>
+                      <dt>Total heuristic</dt>
+                      <dd>
+                        {Object.values(lastChoice.evaluation).reduce(
+                          (a, b) => a + b,
+                          0,
+                        )}
+                      </dd>
+                    </dl>
+                  </div>
+                )}
                 {lastChoice.mcts && (
                   <>
                     <p>
                       {lastChoice.mcts.tree_visits} tree visits ·{" "}
                       {lastChoice.mcts.rollout_steps} rollout steps
+                      {lastChoice.mcts.leaf_nodes > 0 &&
+                        ` · ${lastChoice.mcts.leaf_nodes} tactical leaf visits`}
                       <br />
                       {lastChoice.mcts.terminal_simulations} terminal results ·{" "}
                       {lastChoice.mcts.rollout_cutoffs +
@@ -624,7 +678,9 @@ function App() {
                       <br />
                       Deepest tree path: {lastChoice.mcts.max_tree_depth} plies.
                       {lastChoice.mcts.unfinished_simulations > 0 &&
-                        " Budget ended before another root move could be sampled."}
+                        (lastChoice.mcts.leaf_aborts > 0
+                          ? " Budget interrupted the final tactical evaluation; its value was discarded."
+                          : " Budget ended before another root move could be sampled.")}
                     </p>
                     <p>
                       Estimates favor the computer when positive; they are not

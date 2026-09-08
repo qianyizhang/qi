@@ -48,6 +48,7 @@ class NodeBudget:
     nodes: int = 0
     qnodes: int = 0
     max_qply: int = 0
+    see_nodes: int = 0
 
     def visit(self) -> None:
         if self.nodes >= self.limit:
