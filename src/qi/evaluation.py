@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from qi.arena import MatchRecord, play_match
 from qi.game import GameError, Side
-from qi.players import PlayerConfig
+from qi.players import PlayerConfig, bind_config
 from qi.protocol import Snapshot
 
 
@@ -65,6 +65,7 @@ class PlayerSummary(BaseModel):
     retries: int = 0
     qnodes: int = 0
     max_qply: int = 0
+    model_calls: int = 0
 
 
 class EvaluationRecord(BaseModel):
@@ -82,6 +83,7 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
     wins = draws = losses = nodes = depth = decisions = 0
     elapsed = 0.0
     qnodes = max_qply = 0
+    model_calls = 0
     for entry in games:
         side = entry.a_side if player == "a" else ("black" if entry.a_side == "red" else "red")
         result = entry.match
@@ -96,12 +98,14 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
                 decisions += 1
                 nodes += turn.choice.nodes
                 qnodes += turn.choice.qnodes
+                model_calls += turn.choice.model_calls
                 max_qply = max(max_qply, turn.choice.max_qply)
                 depth += turn.choice.completed_depth
                 elapsed += turn.choice.elapsed_ms
     return PlayerSummary(
         qnodes=qnodes,
         max_qply=max_qply,
+        model_calls=model_calls,
         wins=wins,
         draws=draws,
         losses=losses,
@@ -116,6 +120,7 @@ def summarize(games: list[EvaluationGame], player: Literal["a", "b"]) -> PlayerS
 def evaluate_batch(corpus: Corpus, a: PlayerConfig, b: PlayerConfig) -> EvaluationRecord:
     # CONTRACT: Preflight every opening before starting any match, including direct callers.
     corpus = Corpus.model_validate(corpus.model_dump())
+    a, b = bind_config(a), bind_config(b)
     games = []
     for index, opening in enumerate(corpus.openings):
         pair_a, pair_b = replace(a, seed=a.seed + 2 * index), replace(b, seed=b.seed + 2 * index)

@@ -1,11 +1,13 @@
 """Explicit in-repository registrations; adapters discover players through this catalog."""
 
 from collections.abc import Mapping
+from dataclasses import replace
 from types import MappingProxyType
 
 from qi.game import GameError
 from qi.players.alphabeta import PLAYER as ALPHABETA
 from qi.players.core import Player, PlayerInfo
+from qi.players.policy import PLAYER as POLICY
 from qi.players.quiescence import PLAYER as QUIESCENCE
 from qi.players.random import PLAYER as RANDOM
 
@@ -19,7 +21,7 @@ def build_catalog(players: tuple[Player, ...]) -> Mapping[str, Player]:
     return MappingProxyType(result)
 
 
-PLAYERS = build_catalog((RANDOM, ALPHABETA, QUIESCENCE))
+PLAYERS = build_catalog((RANDOM, ALPHABETA, QUIESCENCE, POLICY))
 
 
 def get_player(kind: str) -> Player:
@@ -30,4 +32,12 @@ def get_player(kind: str) -> Player:
 
 
 def list_players() -> list[PlayerInfo]:
-    return [player.info for player in PLAYERS.values()]
+    result = []
+    for player in PLAYERS.values():
+        if player.available is not None and not player.available():
+            continue
+        info = player.info
+        if player.checkpoint is not None:
+            info = replace(info, checkpoint_sha256=player.checkpoint())
+        result.append(info)
+    return result

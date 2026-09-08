@@ -21,6 +21,7 @@ Read these implementations in order:
 | [Random](random/README.md) | Seeded decisions and the legal-move boundary |
 | [Alpha-beta](alphabeta/README.md) | Alternating perspectives, pruning, iterative deepening |
 | [Quiescence](quiescence/README.md) | Looking beyond an exchange at the normal search horizon |
+| [Learned policy](policy/README.md) | Board encoding, legal masking, and checkpoint-backed inference |
 
 ## One extension point
 
@@ -30,6 +31,10 @@ Every module exports `PLAYER`, a `Player` descriptor with `PlayerInfo` and a
 SDK dependency, class hierarchy requirement, or arbitrary executable loading.
 The local teacher stays outside this catalog so evaluated players do not gain
 teacher access implicitly.
+
+Checkpoint-backed players can additionally expose a checkpoint-digest callable
+and an availability predicate. The shared boundary pins the digest, and the
+catalog uses these hooks to expose configured players without adapter allowlists.
 
 ```python
 from qi.game import Game, legal_moves
@@ -72,7 +77,8 @@ callback; quiescence plugs into it, sharing the search loop and budget. No searc
 value cache is keyed by board alone: repetition and the ply ceiling need history.
 
 `Decision` reports total nodes, completed ordinary depth, score, and optional
-quiescence diagnostics. `Choice` adds provenance. The shared settings cover the
-current players; model/checkpoint and inference-budget contracts belong to the
-future learned-player slice. See [runtime contracts](../../../docs/baselines.md)
+quiescence diagnostics, model calls, and checkpoint identity. `Choice` adds
+provenance. Learned-policy encoding and inference budgets are documented in its
+module; training stays in the [trainer](../learning/README.md).
+See [runtime contracts](../../../docs/baselines.md)
 for serialization, seeding, and evaluation limits.

@@ -356,3 +356,24 @@ test("catalog failure preserves human play and permits explicit retry", async ({
   ).toHaveCount(1);
   expect(calls).toBe(2);
 });
+
+test("configured learned policy plays and identifies its checkpoint", async ({
+  page,
+}) => {
+  test.skip(
+    !process.env.QI_POLICY_CHECKPOINT,
+    "Requires an explicit local policy checkpoint",
+  );
+  await start(page);
+  await page.getByLabel("Opponent", { exact: true }).selectOption("policy");
+  await page.getByLabel("You play", { exact: true }).selectOption("black");
+  await expect(page.locator(".moves li")).toHaveCount(1);
+  await page.getByText("Last computer move", { exact: true }).click();
+  await expect(page.getByText(/policy-mlp-v1/)).toBeVisible();
+  await expect(page.getByText(/1 model pass/)).toBeVisible();
+  await expect(page.getByText(/Checkpoint [a-f0-9]{12}/)).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath("learned-policy.png"),
+    fullPage: true,
+  });
+});

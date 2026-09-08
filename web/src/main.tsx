@@ -37,6 +37,8 @@ type Choice = {
   elapsed_ms: number;
   qnodes: number;
   max_qply: number;
+  checkpoint_sha256: string | null;
+  model_calls: number;
 };
 type OpponentResult = { position: Position; choice: Choice };
 const symbols: Record<string, string> = {
@@ -573,9 +575,17 @@ function App() {
                 <p>
                   {lastChoice.move} · {lastChoice.player_version}
                   <br />
-                  {lastChoice.nodes} nodes · depth {lastChoice.completed_depth}{" "}
+                  {lastChoice.model_calls > 0
+                    ? `${lastChoice.model_calls} model pass`
+                    : `${lastChoice.nodes} nodes · depth ${lastChoice.completed_depth}`}{" "}
                   · {lastChoice.elapsed_ms.toFixed(0)} ms · seed{" "}
                   {lastChoice.seed}
+                  {lastChoice.checkpoint_sha256 && (
+                    <>
+                      <br />
+                      Checkpoint {lastChoice.checkpoint_sha256.slice(0, 12)}
+                    </>
+                  )}
                   {lastChoice.qnodes > 0 && (
                     <>
                       <br />

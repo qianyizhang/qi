@@ -18,6 +18,7 @@ Project scope and milestone direction: [Project plan](project.md).
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Local external analysis: [Teacher](teacher.md).
+Local supervised policy training: [Trainer](../src/qi/learning/README.md).
 Coordinates and replay operations: [Interface](interface.md).
 Training adjudication: [xiangqi-training-v1](xiangqi-training-v1.md).
 

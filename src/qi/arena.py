@@ -5,7 +5,7 @@ from importlib.metadata import version
 from platform import platform, python_version
 
 from qi.game import Game, GameError, Side
-from qi.players import Choice, PlayerConfig, choose
+from qi.players import Choice, PlayerConfig, bind_config, choose
 from qi.protocol import Snapshot
 
 
@@ -38,6 +38,7 @@ def play_match(red: PlayerConfig, black: PlayerConfig, opening: Game | None = No
         raise GameError("invalid_opening", "Opening must replay from the standard initial position.")
     if game.outcome:
         raise GameError("game_over", "The opening is already terminal.")
+    red, black = bind_config(red), bind_config(black)
     turns = []
     while (outcome := game.outcome) is None:
         config = red if game.turn == "red" else black

@@ -55,6 +55,7 @@ created by `scripts/bootstrap_agents.py`. Edit skills only under
 make install   # sync Python/web deps and bootstrap agent symlinks
 make lint      # Ruff lint/format checks and docs (check_docs.py)
 make test      # test suite
+make test-learning # optional CPU policy-training integration checks
 make check     # lint, tests, and production browser build
 make format    # auto-format and auto-fix
 make play      # build and serve the local browser board
@@ -69,6 +70,9 @@ contracts arrive with behavior; avoid speculative packages. Vocabulary authority
 `docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a
 README and tests. Register implementations once in its catalog; adapters discover
 metadata and dispatch through the shared `choose` boundary.
+The optional trainer lives in `src/qi/learning/`; checkpoint-backed inference
+lives in its player module. `QI_POLICY_CHECKPOINT` selects an explicit local file,
+loaded and pinned per process. HTTP does not accept checkpoint paths.
 
 ## Testing
 
