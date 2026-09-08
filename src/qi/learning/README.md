@@ -2,7 +2,7 @@
 description: Run a bounded local teacher-imitation experiment and interpret its evidence.
 scope: supervised policy learning
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -143,6 +143,17 @@ actual steps but is excluded from comparison. CLI exits nonzero for incomplete
 runs. There is no resume or overwrite. Abrupt process termination can leave a
 `running` summary and an orphan checkpoint; use a fresh run path rather than
 inferring completion. This is separate from the search-only experiment module.
+
+## Recorded results
+
+[AB-LEARN-002](../../../records/work-items/items/AB-LEARN-002-policy-generalization.md)
+records the completed data-size experiment: more examples improved held-out
+imitation within its fixed split, with substantial overfitting remaining.
+[AB-LEARN-003](../../../records/work-items/items/AB-LEARN-003-local-policy-tuning.md)
+records learning-rate, duration, regularization, width and orientation experiments.
+Their selected alternatives did not improve fresh-test move agreement, so the
+production model and training defaults remain unchanged. That final test has
+been inspected and should not be reused for adaptive configuration selection.
 
 ## Checks
 
