@@ -111,7 +111,9 @@ weights remain optional local artifacts; default checks need neither.
 To train the first local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
 It covers a bounded CPU run, checkpoint reload, held-out agreement, and arena
 comparison. Set `QI_POLICY_CHECKPOINT` to expose the trained player in CLI and
-browser play. `make test-learning` runs the optional hermetic learning checks.
+browser play. The walkthrough also covers fixed-split data-size experiments and
+explicit `--device mps` training. `make test-learning` runs CPU learning checks;
+`make test-learning-mps` explicitly checks Metal training and CPU checkpoint reload.
 
 ## Rules and verification
 

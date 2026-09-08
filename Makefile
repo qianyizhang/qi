@@ -1,4 +1,4 @@
-.PHONY: install lint test test-learning check format authoring-check web-build play
+.PHONY: install lint test test-learning test-learning-mps check format authoring-check web-build play
 install:
 	uv sync --locked
 	uv run python scripts/bootstrap_agents.py
@@ -16,6 +16,8 @@ test:
 	npm test --prefix web
 test-learning:
 	uv run --locked --extra learning pytest tests/test_learning.py
+test-learning-mps:
+	QI_TEST_MPS=1 uv run --locked --extra learning pytest tests/test_learning_mps.py
 check: lint test web-build
 format:
 	uv run ruff check --fix src scripts tests conftest.py

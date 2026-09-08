@@ -108,3 +108,140 @@ def test_mask_excludes_highest_illegal_logit_and_checkpoint_stays_pinned(fitted,
     assert (again.move, again.checkpoint_sha256) == (choice.move, choice.checkpoint_sha256)
     with pytest.raises(GameError, match="pinned"):
         choose(Game(), PlayerConfig("policy", checkpoint_sha256=report["checkpoint_sha256"]))
+
+
+def test_cpu_configuration_metrics_and_legacy_checkpoint_metadata(tiny_dataset, tmp_path):
+    path = tmp_path / "cpu.pt"
+    report = train(tiny_dataset, path, steps=10, threads=2)
+    assert report["training_device"] == "cpu" and report["training_threads"] == 2
+    assert report["status"] == "complete" and report["inference_device"] == "cpu"
+    for split in ("train", "validation"):
+        assert report[split]["cross_entropy"] >= 0
+        assert 0 < report[split]["random_legal_agreement"] <= 1
+    payload = torch.load(path, weights_only=True)
+    del payload["metadata"]["training_device"]
+    del payload["metadata"]["training_threads"]
+    legacy = tmp_path / "legacy.pt"
+    torch.save(payload, legacy)
+    assert load_checkpoint(str(legacy)).metadata.training_device == "cpu"
+
+
+def test_invalid_device_and_validation_subset_leave_no_checkpoint(tiny_dataset, tmp_path, monkeypatch):
+    path = tmp_path / "rejected.pt"
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
+    with pytest.raises(GameError, match="MPS requires"):
+        train(tiny_dataset, path, device="mps")
+    with pytest.raises(GameError, match="training inputs only"):
+        train(tiny_dataset, path, train_inputs=[tiny_dataset.split_labels("validation")[0].input_sha256])
+    assert not path.exists()
+
+
+def test_learning_curve_runs_same_seeds_and_held_out_inputs(tiny_dataset, tmp_path):
+    from qi.learning.experiment import LearningPlan, run_experiment
+
+    output = tmp_path / "curve"
+    result = run_experiment(
+        tiny_dataset, tiny_dataset.reserved_corpus, LearningPlan(sizes=[3, 6], seeds=[7, 17], steps=5), output
+    )
+    assert result["status"] == "complete" and len(result["trials"]) == 4
+    manifest = json.loads((output / "manifest.json").read_text())
+    assert json.loads((output / "summary.json").read_text()) == result
+    for trial in result["trials"]:
+        metadata = trial["report"]["metadata"]
+        assert metadata["validation_inputs"] == manifest["validation_inputs"]
+        assert metadata["train_inputs"] == manifest["ordered_train_inputs"][: trial["size"]]
+        assert metadata["seed"] == trial["seed"]
+    assert all(row["complete_seeds"] == 2 and "validation_agreement_mean" in row for row in result["curve"])
+    with pytest.raises(GameError, match="fresh experiment"):
+        run_experiment(tiny_dataset, tiny_dataset.reserved_corpus, LearningPlan(sizes=[3]), output)
+
+
+@pytest.mark.parametrize("stop", ["deadline", "failure"])
+def test_learning_curve_preserves_completed_work_on_stop(tiny_dataset, tmp_path, monkeypatch, stop):
+    import importlib
+
+    experiment = importlib.import_module("qi.learning.experiment")
+    trainer = importlib.import_module("qi.learning.train")
+    clock = [0.0]
+    calls = []
+    monkeypatch.setattr(experiment, "perf_counter", lambda: clock[0])
+
+    def interrupted_train(*args, **kwargs):
+        if calls:
+            raise GameError("injected_failure", "test failure")
+        report = train(*args, **kwargs)
+        calls.append(report)
+        if stop == "deadline":
+            clock[0] = 601
+        return report
+
+    monkeypatch.setattr(trainer, "train", interrupted_train)
+    output = tmp_path / stop
+    plan = experiment.LearningPlan(sizes=[3], seeds=[7, 17], steps=2)
+    if stop == "failure":
+        with pytest.raises(GameError, match="test failure"):
+            experiment.run_experiment(tiny_dataset, tiny_dataset.reserved_corpus, plan, output)
+    else:
+        experiment.run_experiment(tiny_dataset, tiny_dataset.reserved_corpus, plan, output)
+    saved = json.loads((output / "summary.json").read_text())
+    assert saved["status"] == ("failed" if stop == "failure" else "deadline")
+    assert len(saved["trials"]) == 1
+    assert saved["curve"] == [{"size": 3, "complete_seeds": 1, "expected_seeds": 2}]
+
+
+def test_experiment_cli_preview_creates_no_output(tiny_dataset, tmp_path):
+    from typer.testing import CliRunner
+
+    from qi.cli import app
+
+    data, corpus, output = tmp_path / "data.json", tmp_path / "corpus.json", tmp_path / "run"
+    data.write_text(tiny_dataset.model_dump_json())
+    corpus.write_text(tiny_dataset.reserved_corpus.model_dump_json())
+    result = CliRunner().invoke(
+        app,
+        [
+            "learn",
+            "experiment",
+            "--data",
+            str(data),
+            "--corpus",
+            str(corpus),
+            "--output",
+            str(output),
+            "--sizes",
+            "3,6",
+            "--preview",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.stdout)["planned_trials"] == 6
+    assert not output.exists()
+
+
+def test_experiment_deadline_cli_exits_nonzero_and_retains_status(tiny_dataset, tmp_path):
+    data, corpus, output = tmp_path / "data.json", tmp_path / "corpus.json", tmp_path / "run"
+    data.write_text(tiny_dataset.model_dump_json())
+    corpus.write_text(tiny_dataset.reserved_corpus.model_dump_json())
+    result = subprocess.run(
+        [
+            "qi",
+            "learn",
+            "experiment",
+            "--data",
+            str(data),
+            "--corpus",
+            str(corpus),
+            "--output",
+            str(output),
+            "--sizes",
+            "3",
+            "--total-seconds",
+            "0.000000001",
+        ],
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode == 1
+    assert json.loads(result.stdout)["status"] == "deadline"
+    assert json.loads(result.stderr)["error"]["code"] == "experiment_incomplete"
+    assert json.loads((output / "summary.json").read_text())["trials"] == []

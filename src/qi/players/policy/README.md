@@ -57,5 +57,7 @@ Checkpoints contain versioned metadata and this architecture's state dictionary.
 Loading uses explicit CPU placement and `weights_only=True`, following
 [PyTorch's state-dictionary loading guidance](https://docs.pytorch.org/tutorials/beginner/basics/saveloadrun_tutorial.html).
 Metadata includes the dataset, reserved corpus, teacher binary/network, actual
-training inputs, validation inputs, seed, completed steps, and PyTorch version.
+training inputs, validation inputs, seed, completed steps, PyTorch version, training device and CPU thread count.
+Legacy checkpoints default the latter fields to CPU and one thread. Training may
+use MPS; saved tensors and this inference path remain on CPU.
 Shape, dtype, finite weights, and split consistency are checked before use.

@@ -32,6 +32,8 @@ class CheckpointMetadata(BaseModel):
     steps: int = Field(ge=1)
     learning_rate: float = Field(gt=0)
     torch_version: str
+    training_device: Literal["cpu", "mps"] = "cpu"
+    training_threads: int = Field(default=1, ge=1, le=32)
 
 
 def make_model() -> nn.Sequential:

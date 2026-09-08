@@ -75,7 +75,8 @@ Milestone 1 is implemented; verification lives in the
 Milestone 2 now has baseline players, CLI matches, and a fixed evaluation corpus
 with paired-color batch summaries and a local UCI teacher adapter validated with
 pinned Pikafish. See [teacher setup and limits](teacher.md). See [baseline contracts](baselines.md).
-Milestone 3 has an initial CPU policy-training pipeline. Plain MCTS with random
+Milestone 3 has CPU/MPS policy training and bounded data-size learning curves
+under [ADR-0003](adr/0003-pytorch-mps-training.md). Plain MCTS with random
 rollouts is also implemented independently of training; see its
 [module guide](../src/qi/players/mcts/README.md). Learned value estimation, PUCT,
 self-play training, and the LLM track remain planned.

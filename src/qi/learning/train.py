@@ -1,8 +1,10 @@
 """Bounded supervised move classification; no value targets or teacher calls."""
 
 import io
+import os
 from pathlib import Path
 from time import perf_counter
+from typing import Literal
 
 import torch
 from torch import nn
@@ -30,8 +32,13 @@ def measure(policy: LoadedPolicy, labels: list[Label]) -> tuple[dict, list[str]]
         started = perf_counter()
         predictions.append(policy.predict(game))
         timings.append((perf_counter() - started) * 1000)
+    features, mask, targets = tensors(labels)
+    with torch.inference_mode():
+        loss = nn.functional.cross_entropy(policy.model(features).masked_fill(~mask, float("-inf")), targets)
     return {
         "positions": len(labels),
+        "cross_entropy": float(loss),
+        "random_legal_agreement": sum(1 / len(legal_moves(game.board, game.turn)) for game in games) / len(games),
         "agreement": sum(move == label.analysis.move for move, label in zip(predictions, labels, strict=True))
         / len(labels),
         "legal_outputs": sum(
@@ -39,6 +46,22 @@ def measure(policy: LoadedPolicy, labels: list[Label]) -> tuple[dict, list[str]]
         ),
         "mean_inference_ms": sum(timings) / len(timings),
     }, predictions
+
+
+def validate_device(device: str, threads: int) -> None:
+    if device not in {"cpu", "mps"} or not 1 <= threads <= 32:
+        raise GameError("invalid_device", "Use cpu or mps and 1-32 CPU threads.")
+    if device == "mps" and (
+        not torch.backends.mps.is_available() or os.environ.get("PYTORCH_ENABLE_MPS_FALLBACK") == "1"
+    ):
+        raise GameError(
+            "mps_unavailable", "MPS requires GPU access with CPU fallback disabled; explicitly select cpu otherwise."
+        )
+
+
+def synchronize(device: str) -> None:
+    if device == "mps":
+        torch.mps.synchronize()
 
 
 def train(
@@ -50,24 +73,41 @@ def train(
     seconds: float = 60,
     learning_rate: float = 0.01,
     diagnostic_examples: int = 0,
+    device: Literal["cpu", "mps"] = "cpu",
+    threads: int = 1,
+    train_inputs: list[str] | None = None,
 ) -> dict:
     if not 1 <= steps <= 2000 or not 0 < seconds <= 120 or not 0 < learning_rate <= 0.1 or diagnostic_examples < 0:
         raise GameError("invalid_budget", "Use 1-2000 steps, at most 120 seconds, and learning rate in (0, 0.1].")
+    validate_device(device, threads)
     if checkpoint.exists():
         raise GameError("checkpoint_exists", "Choose a new checkpoint path; training never overwrites weights.")
     dataset = Dataset.model_validate(dataset.model_dump())
     train_labels = dataset.split_labels("train")
+    if train_inputs is not None:
+        available = {label.input_sha256: label for label in train_labels}
+        if (
+            diagnostic_examples
+            or not train_inputs
+            or len(set(train_inputs)) != len(train_inputs)
+            or not set(train_inputs) <= available.keys()
+        ):
+            raise GameError(
+                "invalid_subset", "Select distinct training inputs only; do not combine with diagnostic examples."
+            )
+        train_labels = [available[key] for key in train_inputs]
     if diagnostic_examples:
         if diagnostic_examples > len(train_labels):
             raise GameError("invalid_budget", "Diagnostic subset exceeds available training labels.")
         train_labels = train_labels[:diagnostic_examples]
     validation_labels = dataset.split_labels("validation")
-    torch.set_num_threads(1)
+    torch.set_num_threads(threads)
     torch.manual_seed(seed)
-    features, mask, targets = tensors(train_labels)
-    model = make_model()
+    features, mask, targets = (tensor.to(device) for tensor in tensors(train_labels))
+    model = make_model().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_fn = nn.CrossEntropyLoss()
+    synchronize(device)
     started = perf_counter()
     initial_loss = None
     completed = 0
@@ -83,12 +123,15 @@ def train(
         loss.backward()
         optimizer.step()
         completed += 1
+    synchronize(device)
     optimization_seconds = perf_counter() - started
     if completed == 0:
         raise GameError("training_timeout", "No optimization step completed before the deadline.")
     model.eval()
     with torch.inference_mode():
         final_loss = float(loss_fn(model(features).masked_fill(~mask, float("-inf")), targets))
+    model.to("cpu")
+    torch.set_num_threads(1)
     teacher = train_labels[0].analysis
     metadata = CheckpointMetadata(
         dataset_sha256=dataset.digest,
@@ -101,6 +144,8 @@ def train(
         steps=completed,
         learning_rate=learning_rate,
         torch_version=str(torch.__version__),
+        training_device=device,
+        training_threads=threads,
     )
     policy = LoadedPolicy(model, metadata, "unsaved")
     train_stats, train_predictions = measure(policy, train_labels)
@@ -117,6 +162,10 @@ def train(
     if not reload_equal:
         raise GameError("checkpoint_mismatch", "Reloaded checkpoint predictions differ from trained weights.")
     return {
+        "status": "complete" if completed == steps else "deadline",
+        "training_device": device,
+        "training_threads": threads,
+        "inference_device": "cpu",
         "checkpoint": str(checkpoint.resolve()),
         "checkpoint_sha256": loaded.sha256,
         "metadata": metadata.model_dump(),

@@ -56,6 +56,7 @@ make install   # sync Python/web deps and bootstrap agent symlinks
 make lint      # Ruff lint/format checks and docs (check_docs.py)
 make test      # test suite
 make test-learning # optional CPU policy-training integration checks
+make test-learning-mps # opt-in Metal training and CPU checkpoint reload
 make check     # lint, tests, and production browser build
 make format    # auto-format and auto-fix
 make play      # build and serve the local browser board
@@ -73,6 +74,9 @@ metadata and dispatch through the shared `choose` boundary.
 The optional trainer lives in `src/qi/learning/`; checkpoint-backed inference
 lives in its player module. `QI_POLICY_CHECKPOINT` selects an explicit local file,
 loaded and pinned per process. HTTP does not accept checkpoint paths.
+[ADR-0003](docs/adr/0003-pytorch-mps-training.md) fixes PyTorch with explicit CPU/MPS
+training, CPU inference, and an optional GPU test lane. The trainer guide owns
+nested-data learning curves and their partial-run semantics.
 
 `src/qi/experiments/` owns local search plans, execution evidence, validation,
 and report generation. Reports are projections; players/referee remain outcome
