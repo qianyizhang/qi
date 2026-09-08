@@ -1,6 +1,7 @@
 """UCT selection, bounded random rollouts, and side-to-move value backup."""
 
 from collections.abc import Callable
+from contextlib import ExitStack
 from dataclasses import dataclass, field
 from math import isfinite, log, sqrt
 from random import Random
@@ -8,6 +9,7 @@ from random import Random
 from qi.game import Game, GameError, legal_moves
 from qi.players.common import BudgetExhausted, NodeBudget, evaluate
 from qi.players.core import Decision, MctsStats, Player, PlayerConfig, PlayerInfo, RootMove
+from qi.players.trace import enabled, event, note, span, traced
 
 LeafEvaluator = Callable[[Game], float]
 BudgetedLeafEvaluator = Callable[[Game, NodeBudget], float]
@@ -60,6 +62,7 @@ def backup(path: list[Node], estimate: float) -> None:
     for node in reversed(path):
         node.visits += 1
         node.total_value += estimate
+        event("backup", node.game, visits=node.visits, mean_value=node.mean_value, backed_value=estimate)
         estimate = -estimate
 
 
@@ -83,53 +86,70 @@ class Search:
         self.budget.visit()
         self.tree_visits += 1
 
+    @traced("rollout")
     def rollout(self, start: Game) -> float:
         game = start
         steps = 0
+        trace_parent = None
         while not game.outcome and steps < self.rollout_plies and self.budget.nodes < self.budget.limit:
             self.budget.visit()
             self.rollout_steps += 1
             steps += 1
             game = game.apply(self.rng.choice(sorted(legal_moves(game.board, game.turn))))
+            if trace_parent is None:
+                trace_parent = event("rollout-step", game, step=steps)
+            else:
+                trace_parent = event("rollout-step", game, step=steps, parent=trace_parent)
         estimate = (
             value(game, lambda position: self.budgeted_leaf(position, self.budget))
             if self.budgeted_leaf
             else value(game, self.leaf)
         )
+        note(leaf_board=game.board, leaf_side=game.turn, leaf_value=estimate)
         if game.outcome:
+            note(reason="terminal")
             self.terminal_simulations += 1
         elif steps == self.rollout_plies:
+            note(reason="rollout-limit")
             self.rollout_cutoffs += 1
         else:
+            note(reason="work-limit")
             self.budget_cutoffs += 1
         return estimate if game.turn == start.turn else -estimate
 
     def run(self, root: Node) -> MctsStats:
         while self.budget.nodes < self.budget.limit:
-            self.visit_tree()
-            node, path = root, [root]
-            while not node.game.outcome and self.budget.nodes < self.budget.limit:
+            with ExitStack() as scopes:
+                scopes.enter_context(span("simulation", root.game, simulation=root.visits + 1))
                 self.visit_tree()
-                if node.untried:
-                    move = node.untried.pop()
-                    child = Node.create(node.game.apply(move), self.rng)
-                    node.children[move] = child
-                    node = child
+                node, path = root, [root]
+                while not node.game.outcome and self.budget.nodes < self.budget.limit:
+                    self.visit_tree()
+                    if node.untried:
+                        move = node.untried.pop()
+                        child = Node.create(node.game.apply(move), self.rng)
+                        node.children[move] = child
+                        node = child
+                        path.append(node)
+                        scopes.enter_context(span("expansion", node.game, unsearched_moves=node.untried.copy()))
+                        break
+                    node = node.select_child()
                     path.append(node)
+                    scopes.enter_context(span("selection", node.game, visits=node.visits, mean_value=node.mean_value))
+                if len(path) == 1:
+                    self.unfinished_simulations += 1
+                    note(reason="root-only", backed_up=False)
                     break
-                node = node.select_child()
-                path.append(node)
-            if len(path) == 1:
-                self.unfinished_simulations += 1
-                break
-            self.max_tree_depth = max(self.max_tree_depth, len(path) - 1)
-            try:
-                estimate = self.rollout(node.game)
-            except BudgetExhausted:
-                self.unfinished_simulations += 1
-                self.leaf_aborts += 1
-                break
-            backup(path, estimate)
+                self.max_tree_depth = max(self.max_tree_depth, len(path) - 1)
+                try:
+                    estimate = self.rollout(node.game)
+                except BudgetExhausted:
+                    self.unfinished_simulations += 1
+                    self.leaf_aborts += 1
+                    note(reason="discarded-leaf", backed_up=False)
+                    break
+                backup(path, estimate)
+                note(backed_up=True)
         roots = tuple(
             RootMove(move, child.visits, -child.mean_value)
             if (child := root.children.get(move)) and child.visits
@@ -164,6 +184,19 @@ def search(
     root = Node.create(game, rng)
     worker = Search(NodeBudget(config.nodes), rng, config.rollout_plies, leaf, budgeted_leaf=budgeted_leaf)
     stats = worker.run(root)
+    if enabled():
+        pending = [(root, None)]
+        while pending:
+            node, parent = pending.pop()
+            key = event(
+                "mcts-tree",
+                node.game,
+                parent=parent,
+                visits=node.visits,
+                mean_value=node.mean_value,
+                unsearched_moves=node.untried.copy(),
+            )
+            pending.extend((child, key) for child in reversed(list(node.children.values())))
     # Coordinate order breaks ties; unvisited moves never outrank a completed sample.
     best = max(stats.root_moves, key=lambda move: (move.visits, move.mean_value if move.mean_value is not None else -2))
     return Decision(

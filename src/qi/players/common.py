@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from qi.game import Game, legal_moves, owner, parse_move
+from qi.players.trace import event
 
 MATE = 100_000
 VALUES = {"K": 0, "R": 900, "C": 450, "N": 400, "B": 200, "A": 200, "P": 100}
@@ -54,3 +55,4 @@ class NodeBudget:
         if self.nodes >= self.limit:
             raise BudgetExhausted
         self.nodes += 1
+        event("work", visit=self.nodes)
