@@ -25,18 +25,20 @@ player chooses legal actions; the referee owns outcomes. See the [core model](..
 | The small model can fit training examples but generalization is limited | [Initial imitation](../work-items/items/AB-LEARN-001-policy-imitation.md) | New representation or materially different dataset |
 | More training data improved held-out imitation | [Initial curve](../work-items/items/AB-LEARN-002-policy-generalization.md), [16× scaling](../work-items/items/AB-LEARN-004-dataset-scaling.md); fixed recipe, shallow teacher, random early-game sources | Learning curve flattens or curriculum/teacher changes |
 | Tested tuning alternatives did not improve fresh-test top-1 agreement | [Tuning](../work-items/items/AB-LEARN-003-local-policy-tuning.md); small-data regime | Substantially different data scale; this is not a universal rejection of width or regularization |
-| More source games at equal label count might help | [Source-coverage investigation](../work-items/items/AB-LEARN-006-source-coverage.md) proves matched selection is feasible; the learning effect remains unmeasured | Run the controlled exploratory comparison |
+| Broader source coverage improved imitation at equal label count | [Source-coverage comparison](../work-items/items/AB-LEARN-006-source-coverage.md): 14.15% → 16.83% agreement; all nine paired fits favored 192 × 4 over 48 × 16, across three source blocks; previously inspected holdout | Fresh source/holdout confirmation, or changed teacher, phase distribution, label budget or representation |
 
 ## Unknowns
 
-Source-game coverage versus label count; label quality; curriculum coverage; residual
+Transfer of the observed source-coverage benefit; label quality; curriculum coverage; residual
 overconfidence; whether imitation improvements translate into match outcomes.
 Different inspected test sets cannot be compared as if they were one benchmark.
 
 ## Frontier
 
-Prepare the [source-coverage comparison](../work-items/items/AB-LEARN-006-source-coverage.md)
-using the [experiment method](../../docs/experiments.md) and full configs.
+Use broader source coverage as the working choice for the next comparable
+fixed-label dataset. The [completed comparison](../work-items/items/AB-LEARN-006-source-coverage.md)
+supports a fresh-source, untouched-holdout confirmation using the
+[experiment method](../../docs/experiments.md) and full configs.
 [Training Data decisions](../work-items/items/AB-DATA-001-training-data-boundary.md)
 own curriculum vocabulary and composition. No new training run is scheduled here.
 
@@ -53,6 +55,12 @@ Work-item records own execution status; this page owns only the synthesis.
 scaling under a fixed recipe. Preserve both findings and their conditions. An
 apparent conflict should first be checked for changes in data, teacher, budget,
 metric or implementation before commissioning another experiment.
+
+2026-09-09: holding 768 labels and move-number coverage fixed, increasing source
+games from 48 to 192 improved held-out agreement by 2.68 percentage points on
+average. The direction held across all three source blocks and three seeds each.
+Both cases memorized training labels; generalization remains limited. Preserve
+the exploratory holdout boundary when using this result to choose future data.
 
 ## Closeout
 

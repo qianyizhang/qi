@@ -13,6 +13,7 @@ from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import ACTIONS, action_id, encode
 from qi.players.policy.runtime import CheckpointMetadata, LoadedPolicy, load_checkpoint, make_model
 from qi.training_data.assembly import TrainingDataset
+from qi.training_data.selection import SelectedDataset
 from qi.training_data.v1 import Dataset, Label
 
 
@@ -68,7 +69,7 @@ def synchronize(device: str) -> None:
 
 
 def train(
-    dataset: Dataset | TrainingDataset,
+    dataset: Dataset | TrainingDataset | SelectedDataset,
     checkpoint: Path,
     *,
     seed: int = 7,

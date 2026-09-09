@@ -218,6 +218,30 @@ def test_experiment_cli_preview_creates_no_output(tiny_dataset, tmp_path):
     assert not output.exists()
 
 
+def test_selected_dataset_runs_and_reloads_saved_config(tiny_dataset, tmp_path):
+    from qi.learning.config import DataSettings, Recipe, TrainingSettings, load_recipe
+    from qi.learning.runs import run_recipe
+    from qi.training_data.loading import load_dataset
+    from qi.training_data.selection import select_training
+
+    selected = select_training(
+        tiny_dataset, [label.input_sha256 for label in tiny_dataset.split_labels("train")[:2]], selection_id="two"
+    )
+    path = tmp_path / "selected.json"
+    path.write_text(selected.model_dump_json())
+    recipe = Recipe(data=DataSettings(dataset=str(path)), training=TrainingSettings(updates=2))
+    source = tmp_path / "recipe.json"
+    source.write_text(recipe.model_dump_json())
+    result = run_recipe(recipe, selected, tmp_path / "run", source_config=source)
+    saved = load_recipe(tmp_path / "run" / "config.json")
+    assert load_dataset(type(path)(saved.data.dataset)).digest == selected.digest
+    report = result["trials"][0]["report"]
+    assert report["metadata"]["dataset_sha256"] == selected.digest
+    assert report["train"]["positions"] == 2
+    assert report["validation"]["positions"] == len(tiny_dataset.split_labels("validation"))
+    assert report["reload_predictions_equal"]
+
+
 def test_experiment_deadline_cli_exits_nonzero_and_retains_status(tiny_dataset, tmp_path):
     data, corpus, output = tmp_path / "data.json", tmp_path / "corpus.json", tmp_path / "run"
     data.write_text(tiny_dataset.model_dump_json())

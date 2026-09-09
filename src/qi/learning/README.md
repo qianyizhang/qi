@@ -45,9 +45,9 @@ sections and all declared settings. Library implementation details remain govern
 by code and the dependency lock; this is not a dump of every PyTorch parameter.
 Dataset generation, split construction and teacher labeling happen before this
 runner. The embedded reserved corpus and existing dataset validation remain in force.
-Config mode accepts the original v1 dataset or a complete frozen Training Data
-dataset. Incomplete mixtures fail before execution; per-slice diagnostics from the
-shared trainer remain in each trial report.
+Config mode accepts the original v1 dataset, explicit historical selections, or
+a complete frozen Training Data dataset. Incomplete mixtures fail before execution;
+per-slice diagnostics from the shared trainer remain in each trial report.
 
 A recipe optionally adds named `cases` and a `seeds` list:
 

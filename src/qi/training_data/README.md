@@ -38,6 +38,14 @@ selection and composition; the referee owns outcomes and the trainer owns weight
 
 ## Selection and provenance
 
+`selection.py` supports bounded reuse of historical v1 labels. Its
+`selected-legacy-dataset-v1` format retains exact selected training labels, all
+held-out labels, contributing replay sources, and the parent dataset digest.
+`select_training` rejects missing, duplicate and held-out input IDs; it reuses
+the v1 replay/leakage validator without claiming to regenerate the selected data.
+The original artifact stays unchanged. This is an explicit historical selection
+adapter; new generated mixtures continue through `assembly.py`.
+
 Each `SourcePlan` declares a named/versioned start, split, actor mode, number of
 independent continuations, additional-ply budget (1–300), samples per continuation
 (1–16), and an absolute-ply sampling window. Generation allows at most 2048 games
