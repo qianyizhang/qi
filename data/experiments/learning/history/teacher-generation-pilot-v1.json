@@ -1,0 +1,759 @@
+{
+  "purpose": "Non-conclusive local teacher-generation evidence; not a production recipe or strength claim",
+  "date": "2026-09-09",
+  "teacher": {
+    "id": "pikafish-2026-01-02-apple-silicon",
+    "release": "https://github.com/official-pikafish/Pikafish/releases/tag/Pikafish-2026-01-02",
+    "source": "https://github.com/official-pikafish/Pikafish/tree/Pikafish-2026-01-02",
+    "archive_url": "https://github.com/official-pikafish/Pikafish/releases/download/Pikafish-2026-01-02/Pikafish.2026-01-02.7z",
+    "archive_sha256": "84257063905615919fb4ee6a70273a94843bb6ec04c45e3ac706098838bc1a49",
+    "engine": "MacOS/pikafish-apple-silicon",
+    "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+    "network": "pikafish.nnue",
+    "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+    "engine_license": "GPL-3.0; upstream Copying.txt",
+    "network_license": "Upstream NNUE-License.md: no commercial use without permission",
+    "validated_scope": "Personal, local, noncommercial analysis only; no redistribution or training-data licensing conclusion"
+  },
+  "evidence": {
+    "pikafish-throughput-20260909/results.json": {
+      "sha256": "23e223c5e9b9f6902e86227d0b9ae9365664d35fd68d5885695b4cd649fffb1c",
+      "summary": [
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "fresh",
+          "workers": 1,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 5.578362924799192,
+          "min": 5.472188754954064,
+          "max": 5.678168954112402,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "fresh",
+          "workers": 2,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 9.978794890341696,
+          "min": 9.949946070764316,
+          "max": 10.406449353630343,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "fresh",
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 18.625650139571302,
+          "min": 17.67932847278769,
+          "max": 18.630358775966275,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 1,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 113.3623959254486,
+          "min": 106.42154237672278,
+          "max": 117.10249376721796,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 2,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 120.67252305896376,
+          "min": 117.52574000150983,
+          "max": 121.48039040335607,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 111.7535647621252,
+          "min": 100.04300473238261,
+          "max": 113.12181684418464,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 1,
+          "threads": 2,
+          "hash_mb": 16,
+          "median_labels_per_second": 106.88675409767029,
+          "min": 102.225734941118,
+          "max": 108.90035426278406,
+          "moves_different_from_fresh": 17,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 1,
+          "threads": 4,
+          "hash_mb": 16,
+          "median_labels_per_second": 99.54854032040801,
+          "min": 82.44385346791393,
+          "max": 101.21864763530368,
+          "moves_different_from_fresh": 14,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 2,
+          "threads": 2,
+          "hash_mb": 16,
+          "median_labels_per_second": 110.91555364043639,
+          "min": 108.98553593282543,
+          "max": 113.05988935559836,
+          "moves_different_from_fresh": 14,
+          "queries": 72
+        },
+        {
+          "nodes": 1000,
+          "depth": 3,
+          "mode": "persistent",
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 64,
+          "median_labels_per_second": 108.18803079899726,
+          "min": 101.24113532887267,
+          "max": 110.59897233178911,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "fresh",
+          "workers": 1,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 5.491552956289583,
+          "min": 5.420040685950766,
+          "max": 5.589657317315516,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "fresh",
+          "workers": 2,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 10.092938617395468,
+          "min": 10.038793486940556,
+          "max": 10.09874008190454,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "fresh",
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 17.8941232596921,
+          "min": 17.420687556364292,
+          "max": 18.067766555202773,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 1,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 102.48566905701003,
+          "min": 96.2713087183061,
+          "max": 106.9644633379995,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 2,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 107.36235468220787,
+          "min": 106.05978878886359,
+          "max": 118.02195208493767,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 16,
+          "median_labels_per_second": 109.7316757387115,
+          "min": 99.78551312265009,
+          "max": 111.04318713082071,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 1,
+          "threads": 2,
+          "hash_mb": 16,
+          "median_labels_per_second": 98.13923913773579,
+          "min": 97.31496851001582,
+          "max": 101.54575185660129,
+          "moves_different_from_fresh": 29,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 1,
+          "threads": 4,
+          "hash_mb": 16,
+          "median_labels_per_second": 87.37951552855755,
+          "min": 86.26583495698681,
+          "max": 97.01887593617973,
+          "moves_different_from_fresh": 26,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 2,
+          "threads": 2,
+          "hash_mb": 16,
+          "median_labels_per_second": 104.32393726581392,
+          "min": 103.61122908071232,
+          "max": 104.84927916034191,
+          "moves_different_from_fresh": 35,
+          "queries": 72
+        },
+        {
+          "nodes": 10000,
+          "depth": 6,
+          "mode": "persistent",
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 64,
+          "median_labels_per_second": 101.2682617668158,
+          "min": 81.80723554707289,
+          "max": 101.50879801305837,
+          "moves_different_from_fresh": 0,
+          "queries": 72
+        }
+      ]
+    },
+    "pikafish-throughput-20260909/sustained.json": {
+      "sha256": "96d3594697c0f30b975327c12902259c1e4b90c3bcdadfb76a81546f57dd16eb",
+      "summary": [
+        {
+          "workers": 1,
+          "threads": 1,
+          "hash_mb": 16,
+          "median": 288.72547762103676,
+          "min": 276.90721067218175,
+          "max": 293.1631035385606,
+          "different_moves": 0,
+          "queries": 3600
+        },
+        {
+          "workers": 2,
+          "threads": 1,
+          "hash_mb": 16,
+          "median": 497.3852389604181,
+          "min": 493.6559470003111,
+          "max": 505.27255426187605,
+          "different_moves": 0,
+          "queries": 3600
+        },
+        {
+          "workers": 2,
+          "threads": 2,
+          "hash_mb": 16,
+          "median": 460.0367952754656,
+          "min": 449.9429204118024,
+          "max": 477.25089946822834,
+          "different_moves": 1619,
+          "queries": 3600
+        },
+        {
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 16,
+          "median": 824.5677912031915,
+          "min": 779.9793597899844,
+          "max": 862.3835570912266,
+          "different_moves": 0,
+          "queries": 3600
+        },
+        {
+          "workers": 4,
+          "threads": 1,
+          "hash_mb": 64,
+          "median": 720.6231591651872,
+          "min": 679.0383047107947,
+          "max": 737.6362746284227,
+          "different_moves": 0,
+          "queries": 3600
+        },
+        {
+          "workers": 8,
+          "threads": 1,
+          "hash_mb": 16,
+          "median": 1121.124805839606,
+          "min": 980.2467351844444,
+          "max": 1217.5447170937225,
+          "different_moves": 0,
+          "queries": 3600
+        }
+      ]
+    },
+    "pikafish-depth-cap-20260909/summary.json": {
+      "sha256": "71dc1b7dbc958b71cc1e77f9f013fee213df29e71fa9af45cec07a9954048663",
+      "summary": {
+        "throughput": [
+          {
+            "workers": 1,
+            "capped": {
+              "median": 272.32060986221126,
+              "min": 266.39695188907234,
+              "max": 277.0862381921865
+            },
+            "node_only": {
+              "median": 114.47964143548984,
+              "min": 107.73424117436079,
+              "max": 114.84206024758696
+            },
+            "throughput_loss_percent": 57.961447907518185
+          },
+          {
+            "workers": 4,
+            "capped": {
+              "median": 567.2909497916042,
+              "min": 548.7345852240503,
+              "max": 586.4217704207857
+            },
+            "node_only": {
+              "median": 301.17094321754024,
+              "min": 278.9694386766016,
+              "max": 303.6990383411519
+            },
+            "throughput_loss_percent": 46.91067373308597
+          },
+          {
+            "workers": 8,
+            "capped": {
+              "median": 683.7834921201261,
+              "min": 637.8250879029503,
+              "max": 689.1988435633904
+            },
+            "node_only": {
+              "median": 371.48108736239163,
+              "min": 357.60718346230016,
+              "max": 388.93454197604154
+            },
+            "throughput_loss_percent": 45.67270318115103
+          }
+        ],
+        "quality": [
+          {
+            "nodes": 10000,
+            "depth_cap": 6,
+            "mean_actual_nodes": 1824.138888888889,
+            "median_reported_depth": 6.0,
+            "min_reported_depth": 6,
+            "max_reported_depth": 6,
+            "agreement_1m": 24,
+            "agreement_100k": 24
+          },
+          {
+            "nodes": 10000,
+            "depth_cap": null,
+            "mean_actual_nodes": 9640.472222222223,
+            "median_reported_depth": 10.0,
+            "min_reported_depth": 8,
+            "max_reported_depth": 245,
+            "agreement_1m": 26,
+            "agreement_100k": 27
+          },
+          {
+            "nodes": 100000,
+            "depth_cap": null,
+            "mean_actual_nodes": 92259.41666666667,
+            "median_reported_depth": 15.0,
+            "min_reported_depth": 12,
+            "max_reported_depth": 245,
+            "agreement_1m": 31,
+            "agreement_100k": 36
+          },
+          {
+            "nodes": 1000000,
+            "depth_cap": null,
+            "mean_actual_nodes": 917488.3611111111,
+            "median_reported_depth": 20.5,
+            "min_reported_depth": 17,
+            "max_reported_depth": 245,
+            "agreement_1m": 36,
+            "agreement_100k": 31
+          }
+        ],
+        "changed_moves": 11,
+        "toward_reference": 5,
+        "away_from_reference": 3,
+        "query_count": 4464,
+        "repeatable_throughput_moves": true,
+        "tactics": [
+          {
+            "position": "immediate-win-1",
+            "winning_moves": [
+              "d5c7",
+              "h8d8"
+            ],
+            "correct_by_budget": [
+              true,
+              true,
+              true,
+              true
+            ]
+          },
+          {
+            "position": "immediate-win-2",
+            "winning_moves": [
+              "d2d1"
+            ],
+            "correct_by_budget": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        ]
+      }
+    },
+    "pikafish-multipv-20260909/summary.json": {
+      "sha256": "2336ac4b09478d522813576adc83a26cefd0f44af1e94a28918fea5187c55aa8",
+      "summary": {
+        "cost": [
+          {
+            "nodes": 10000,
+            "depth": null,
+            "multipv": 1,
+            "off": {
+              "qps": 264.20154413939974,
+              "min": 261.91156500916145,
+              "max": 267.86411868099526,
+              "mean_nodes": 9701.916666666666,
+              "median_complete_depth": 9.0,
+              "missing_complete_sets": 0
+            },
+            "on": {
+              "qps": 265.39102048952583,
+              "min": 261.014778521645,
+              "max": 270.8644639405964,
+              "mean_nodes": 9701.916666666666,
+              "median_complete_depth": 9.0,
+              "missing_complete_sets": 0
+            },
+            "wdl_throughput_change_percent": 0.4502155178542466
+          },
+          {
+            "nodes": 10000,
+            "depth": null,
+            "multipv": 5,
+            "off": {
+              "qps": 296.4050388893511,
+              "min": 295.26572123508214,
+              "max": 303.2627278764827,
+              "mean_nodes": 10005.666666666666,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "on": {
+              "qps": 297.2323028291089,
+              "min": 296.5423781389804,
+              "max": 300.4247254589597,
+              "mean_nodes": 10005.666666666666,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "wdl_throughput_change_percent": 0.279099148535944
+          },
+          {
+            "nodes": 10000,
+            "depth": null,
+            "multipv": "all",
+            "off": {
+              "qps": 349.0304108186501,
+              "min": 341.6378617310147,
+              "max": 353.17324972779915,
+              "mean_nodes": 10005.666666666666,
+              "median_complete_depth": 3.0,
+              "missing_complete_sets": 0
+            },
+            "on": {
+              "qps": 348.64384270914485,
+              "min": 324.97386891602395,
+              "max": 349.06285713844085,
+              "mean_nodes": 10005.666666666666,
+              "median_complete_depth": 3.0,
+              "missing_complete_sets": 0
+            },
+            "wdl_throughput_change_percent": -0.11075485044371725
+          },
+          {
+            "nodes": null,
+            "depth": 6,
+            "multipv": 1,
+            "off": {
+              "qps": 441.0094706853594,
+              "min": 439.5586281769867,
+              "max": 451.8443019301045,
+              "mean_nodes": 1571.0833333333333,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "on": {
+              "qps": 443.8977235663132,
+              "min": 441.33622619479854,
+              "max": 444.0708903637398,
+              "mean_nodes": 1571.0833333333333,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "wdl_throughput_change_percent": 0.654918561378115
+          },
+          {
+            "nodes": null,
+            "depth": 6,
+            "multipv": 5,
+            "off": {
+              "qps": 315.72269417558414,
+              "min": 314.16621242144737,
+              "max": 316.2295945493573,
+              "mean_nodes": 7253.583333333333,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "on": {
+              "qps": 311.6774839358214,
+              "min": 308.79857224173423,
+              "max": 315.7496933729576,
+              "mean_nodes": 7253.583333333333,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "wdl_throughput_change_percent": -1.2812541874208994
+          },
+          {
+            "nodes": null,
+            "depth": 6,
+            "multipv": "all",
+            "off": {
+              "qps": 156.75370066712594,
+              "min": 155.60070984450692,
+              "max": 157.9154547265786,
+              "mean_nodes": 33323.916666666664,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "on": {
+              "qps": 154.67614166085613,
+              "min": 153.80334860029677,
+              "max": 157.30161310330413,
+              "mean_nodes": 33323.916666666664,
+              "median_complete_depth": 6.0,
+              "missing_complete_sets": 0
+            },
+            "wdl_throughput_change_percent": -1.3253652050496778
+          }
+        ],
+        "quality": [
+          {
+            "nodes": 10000,
+            "depth": 6,
+            "positions": 36,
+            "median_complete_depth": 2.0,
+            "jsd": 0.032799291283075384,
+            "jsd_count": 36,
+            "top5_jsd": 0.03780717726442771,
+            "top5_jsd_count": 36,
+            "tau": 0.668885466273204,
+            "tau_count": 35,
+            "top5_tau": 0.503735730183874,
+            "top5_tau_count": 35,
+            "expected_score_mae": 0.03742741344990197,
+            "expected_score_mae_count": 36,
+            "original_singlepv_choice_loss": 0.01376388888888889,
+            "original_singlepv_choice_loss_count": 36,
+            "multipv_choice_loss": 0.014166666666666668,
+            "multipv_choice_loss_count": 36
+          },
+          {
+            "nodes": 10000,
+            "depth": null,
+            "positions": 36,
+            "median_complete_depth": 2.0,
+            "jsd": 0.0331973927709815,
+            "jsd_count": 36,
+            "top5_jsd": 0.03774698496822011,
+            "top5_jsd_count": 36,
+            "tau": 0.6709637318944992,
+            "tau_count": 35,
+            "top5_tau": 0.5097591162032423,
+            "top5_tau_count": 35,
+            "expected_score_mae": 0.03777984400545753,
+            "expected_score_mae_count": 36,
+            "original_singlepv_choice_loss": 0.011138888888888891,
+            "original_singlepv_choice_loss_count": 36,
+            "multipv_choice_loss": 0.014166666666666668,
+            "multipv_choice_loss_count": 36
+          },
+          {
+            "nodes": 100000,
+            "depth": null,
+            "positions": 36,
+            "median_complete_depth": 6.0,
+            "jsd": 0.013263972305210198,
+            "jsd_count": 36,
+            "top5_jsd": 0.015440965836387733,
+            "top5_jsd_count": 36,
+            "tau": 0.7755228422478672,
+            "tau_count": 35,
+            "top5_tau": 0.5394840254575768,
+            "top5_tau_count": 35,
+            "expected_score_mae": 0.02067252887475997,
+            "expected_score_mae_count": 36,
+            "original_singlepv_choice_loss": 0.0017222222222222222,
+            "original_singlepv_choice_loss_count": 36,
+            "multipv_choice_loss": 0.002652777777777781,
+            "multipv_choice_loss_count": 36
+          },
+          {
+            "nodes": 1000000,
+            "depth": null,
+            "positions": 36,
+            "median_complete_depth": 10.5,
+            "jsd": 0.0,
+            "jsd_count": 36,
+            "top5_jsd": 0.0,
+            "top5_jsd_count": 36,
+            "tau": 1.0,
+            "tau_count": 35,
+            "top5_tau": 1.0,
+            "top5_tau_count": 35,
+            "expected_score_mae": 0.0,
+            "expected_score_mae_count": 36,
+            "original_singlepv_choice_loss": 0.003097222222222224,
+            "original_singlepv_choice_loss_count": 36,
+            "multipv_choice_loss": 0.002416666666666667,
+            "multipv_choice_loss_count": 36
+          }
+        ],
+        "metrics": "JSD bits averaged per move then per position; tau-b on score rankings with mate ordering; last complete same-depth exact set. Top-5 subset fixed by 1M reference rank. References are estimates, not ground truth.",
+        "total_queries": 4464
+      }
+    },
+    "pikafish-root-trace-20260909/summary.json": {
+      "sha256": "346bb27b2df2498d71cfc420ac65e9bf22acb1091a2bcba4038b037ffbf3286a",
+      "summary": {
+        "invariance": "All 36 positions and 720 timed repeats: identical best moves and nodes; release/local/trace agree on 36 positions.",
+        "latest_bounds": {
+          "-1": 1391,
+          "1": 7,
+          "0": 14
+        },
+        "total_root_moves": 1412,
+        "ever_exact": 152,
+        "median_exact_depth": 2.5,
+        "median_trace_complete_depth": 9.0,
+        "references": [
+          {
+            "nodes": 50000,
+            "median_complete_depth": 9.0,
+            "effort_recall": 0.6358381502890174,
+            "stale_exact_rank_recall": 0.4797687861271676,
+            "reference_moves_with_exact": 0.4913294797687861,
+            "reference_best_in_effort5": 33,
+            "upper_exceeded": 39,
+            "upper_pairs": 144,
+            "earlier_exact_median_abs_cp_error": 25.0
+          },
+          {
+            "nodes": 100000,
+            "median_complete_depth": 10.0,
+            "effort_recall": 0.630057803468208,
+            "stale_exact_rank_recall": 0.4797687861271676,
+            "reference_moves_with_exact": 0.48554913294797686,
+            "reference_best_in_effort5": 32,
+            "upper_exceeded": 36,
+            "upper_pairs": 144,
+            "earlier_exact_median_abs_cp_error": 25
+          },
+          {
+            "nodes": 1000000,
+            "median_complete_depth": 15.0,
+            "effort_recall": 0.630057803468208,
+            "stale_exact_rank_recall": 0.47398843930635837,
+            "reference_moves_with_exact": 0.48554913294797686,
+            "reference_best_in_effort5": 32,
+            "upper_exceeded": 29,
+            "upper_pairs": 145,
+            "earlier_exact_median_abs_cp_error": 25
+          }
+        ],
+        "timing": {
+          "baseline": {
+            "median": 264.66501515650714,
+            "min": 259.05339871431084,
+            "max": 265.7499521687774
+          },
+          "trace": {
+            "median": 264.928758151371,
+            "min": 259.035411491714,
+            "max": 265.9392000302343
+          },
+          "change_percent": 0.09965162743852396
+        }
+      }
+    }
+  }
+}

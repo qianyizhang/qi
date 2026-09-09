@@ -2,7 +2,7 @@
 description: Local UCI teacher contract, pinned Pikafish setup, and validation limits.
 scope: external teacher interface
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -11,7 +11,8 @@ document_class: coordination
 `src/qi/teacher.py` owns read-only local teacher analysis. `qi teach` accepts a
 replay snapshot and explicit engine/network paths. The external process proposes
 a move; qi verifies legality. The teacher never replaces referee outcomes or
-becomes accessible to baseline evaluation players. No training pipeline is added.
+becomes accessible to baseline evaluation players.
+[Training Data](../src/qi/training_data/README.md) owns its use for dataset preparation.
 
 ## Pinned local setup
 
@@ -48,9 +49,12 @@ MultiPV 1, no pondering, and an explicit network path. It sends `ucinewgame`, wa
 for `readyok`, then sends `position startpos moves ...` with the entire history.
 Terminal or unreconstructible qi states are rejected before launch.
 
-`go nodes N depth D` provides engine-native stopping limits. Reported node counts
-may exceed the request; these are not qi alpha-beta nodes or a shared compute
-measure. The timeout covers process startup and protocol execution (default 10 s,
+`go nodes N depth D` provides engine-native stopping limits. For example,
+`go nodes 10000 depth 6` requests at most roughly 10,000 engine nodes and an
+ordinary depth of six plies (three move pairs); either limit can stop the search.
+It does not request exactly 10,000 nodes or guarantee every branch reaches depth 6.
+Reported node counts may exceed the request; these are not qi alpha-beta nodes
+or a shared compute measure. The timeout covers process startup and protocol execution (default 10 s,
 maximum 120 s), excluding prelaunch file hashing and final process cleanup.
 Output is capped at 1 MiB. Processes are killed/reaped on completion or failure.
 There is no retry or substitute move. Timeout, crash, unsupported options,
@@ -63,6 +67,56 @@ and is explicitly engine-native from the side to move. A best move can be applie
 through the normal guarded `qi apply` command. Engine scores and search lines do
 not certify qi outcomes; only the returned best move is checked against qi.
 Pikafish's repetition/chasing adjudication differs from `xiangqi-training-v1`.
+
+## Search settings and query speed
+
+The [glossary](glossary/ddd.md#learning-track) defines teacher queries, node/depth
+limits, hash memory, workers, threads and query throughput. These search concepts
+are not exclusive to Pikafish; its UCI options supply the concrete settings here.
+
+| Setting | Effect on work and queries per second |
+| :-- | :-- |
+| Nodes | Raising the limit permits more search and usually reduces throughput when this limit binds. It may have little effect when depth stops the query first. |
+| Depth | Raising depth can expand search work sharply, reducing throughput. The node cap can prevent the requested depth from completing. More search can change labels; it does not certify their correctness. |
+| Hash (MiB) | A larger transposition table can save repeated search in longer queries, but costs RAM and initialization/reset work. It need not speed up short queries. With four workers, Hash=16 reserves 64 MiB for tables plus network and other process memory. |
+| Workers / Threads | More workers analyze independent positions; more threads cooperate on each position. Both compete for CPU and memory. Tune aggregate throughput at fixed query limits rather than assuming more threads are faster. |
+| Persistent process | Reusing the process and loaded network amortizes startup. Reset search state between independent queries when comparing against fresh-process labels. This remains a benchmark prototype in qi. |
+
+Measure successful queries divided by total wall time, including setup and
+validation when reporting end-to-end query throughput. Engine nodes per second
+omits adapter overhead. Dataset preparation also spends time on trajectories,
+sampling, validation and assembly, and can retain fewer examples than queries.
+See the [preparation advisory](../src/qi/training_data/README.md#dataset-generation-advisory-non-conclusive)
+for non-conclusive generation guidance and the supporting experiments.
+
+## Candidate output and observational limits
+
+A principal variation (PV) is a candidate move followed by an analyzed continuation.
+Pikafish's MultiPV option requests several leading variations **and changes search
+allocation**; it is not a display-only limit. A complete update has up to K candidate
+lines, with further updates as search progresses. At fixed nodes, more candidates
+can reduce depth; at fixed depth, they can require substantially more nodes.
+
+Upstream `UCI_ShowWDL` adds three integers per candidate line: win, draw and loss
+estimates summing to 1000, from the root side-to-move's perspective. For example,
+`wdl 76 913 11` means 7.6% / 91.3% / 1.1% conditional on choosing that line's
+first move. This is an engine-calibrated outcome distribution, not a probability
+of selecting that move or a validated win rate for qi's student/ruleset.
+WDL distributions across different moves do not sum to one.
+
+The current adapter fixes MultiPV=1 and does not parse WDL. Multi-candidate
+analysis exists only in local experiment scripts. Those comparisons use complete,
+unique candidate sets with exact scores at a common reported depth; an incomplete
+final update must not silently mix estimates from different depths.
+
+A normal MultiPV=1 search can establish only bounds for many alternatives and
+can discard their scores. The local instrumented prototype captures completed
+root returns without additional searches, including their bound and depth and
+any older exact-window score. An exact-window score is a search estimate, not a
+proof. Bounds at one selective horizon need not bound a deeper search's estimate.
+Unknown/stale/bounded evidence cannot supply a precise top-five ranking or a full
+WDL distribution. The [pilot report](../records/reports/2026-09-09-teacher-generation-advisory.md)
+records what the prototype preserved and what remains untested.
 
 ## Licensing and evidence boundary
 

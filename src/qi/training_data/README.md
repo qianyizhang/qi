@@ -129,6 +129,38 @@ mixture seed fixed across comparisons. Training reports include every quota slic
 plus observed mode/phase/theme/objective slices; diagnostic tags can overlap and
 must not be summed as independent sample counts.
 
+## Dataset generation advisory (non-conclusive)
+
+The [teacher-generation pilot](../../../records/reports/2026-09-09-teacher-generation-advisory.md)
+compares worker throughput, search budgets, MultiPV and observational root traces.
+It supports these investigation priorities, not a new default recipe:
+
+- **Generation throughput:** prioritize persistent processes and run-scoped engine/network
+  identity checks. Start benchmarking one thread and 16 MiB hash per worker; tune
+  worker count on the target machine. Eight workers were fastest tested on the
+  local shallow workload; four alongside training is an untested headroom proposal.
+- **Supervision quality:** keep the teacher and node/depth limits explicit. Neither
+  depth 6 nor node-only 10k was established as the best budget. Compare candidate
+  recipes on a broader held-out corpus at equal total preparation cost before
+  changing defaults. Record actual nodes, retained examples/s and source coverage.
+- **Evaluation:** use stronger-reference score loss and, when all candidates have
+  comparable estimates, WDL divergence and rank correlation. Exact-move agreement
+  measures compatibility. MultiPV changes search allocation; increasing it under
+  fixed nodes reduces depth. WDL output alone had little measured cost.
+- **Observability:** a MultiPV=1 root trace can preserve search while exposing
+  effort, bounds and older scores. It is a diagnostic, not a best-five ranking or
+  a complete probability distribution; never fill missing estimates with zero.
+- **Concurrent generation/training:** retain frozen datasets for controlled
+  comparisons. Saved, validated chunks with fixed held-out families are a possible
+  future streaming boundary; throughput contention and learning benefit remain untested.
+
+**Current support:** `qi data prepare` is sequential and starts a fresh teacher
+process per query. The adapter fixes Threads=1, Hash=16 and MultiPV=1; preparation
+requires a depth and exposes no persistence, worker, WDL, MultiPV or root-trace
+options. Training consumes frozen datasets. The experiments changed none of these
+contracts. See the [teacher guide](../../../docs/teacher.md#search-settings-and-query-speed)
+for setting semantics and the linked report for evidence and review triggers.
+
 ## Commands and partial work
 
 For a copyable end-to-end **dataset preparation** recipe, use `config.py`'s
