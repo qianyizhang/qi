@@ -25,6 +25,7 @@ alone cannot rerun them. Dataset paths in recipes resolve relative to the config
 | Completed data-scaling execution | [Recipe](data-scaling-v1.json), [record](history/data-scaling-v1.json) | `artifacts/learning/data-scaling-v1/curve-cached/` |
 | CPU/MPS benchmark | [Record](history/device-benchmark.json) | `artifacts/learning/device-benchmark/` |
 | Framework comparison | [Record](history/framework-benchmark.json) | `artifacts/learning/framework-benchmark/` |
+| Source-coverage feasibility (no training) | [Audit](history/source-coverage-feasibility.json), [proposed study](../../../records/work-items/items/AB-LEARN-006-source-coverage.md) | `artifacts/learning/source-coverage-investigation-v1/` |
 
 `history/` records are explicitly retrospective, contain source links and limitations,
 and are not accepted as runnable configs. Continuous tuning fits produced checkpoint

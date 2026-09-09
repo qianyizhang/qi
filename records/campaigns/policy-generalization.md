@@ -25,7 +25,7 @@ player chooses legal actions; the referee owns outcomes. See the [core model](..
 | The small model can fit training examples but generalization is limited | [Initial imitation](../work-items/items/AB-LEARN-001-policy-imitation.md) | New representation or materially different dataset |
 | More training data improved held-out imitation | [Initial curve](../work-items/items/AB-LEARN-002-policy-generalization.md), [16× scaling](../work-items/items/AB-LEARN-004-dataset-scaling.md); fixed recipe, shallow teacher, random early-game sources | Learning curve flattens or curriculum/teacher changes |
 | Tested tuning alternatives did not improve fresh-test top-1 agreement | [Tuning](../work-items/items/AB-LEARN-003-local-policy-tuning.md); small-data regime | Substantially different data scale; this is not a universal rejection of width or regularization |
-| More source games at equal label count might help | Proposed comparison, not established by the data-size studies | A controlled source-coverage experiment |
+| More source games at equal label count might help | [Source-coverage investigation](../work-items/items/AB-LEARN-006-source-coverage.md) proves matched selection is feasible; the learning effect remains unmeasured | Run the controlled exploratory comparison |
 
 ## Unknowns
 
@@ -35,8 +35,9 @@ Different inspected test sets cannot be compared as if they were one benchmark.
 
 ## Frontier
 
-Use the [experiment method](../../docs/experiments.md) and full configs for the next
-comparison. [Training Data decisions](../work-items/items/AB-DATA-001-training-data-boundary.md)
+Prepare the [source-coverage comparison](../work-items/items/AB-LEARN-006-source-coverage.md)
+using the [experiment method](../../docs/experiments.md) and full configs.
+[Training Data decisions](../work-items/items/AB-DATA-001-training-data-boundary.md)
 own curriculum vocabulary and composition. No new training run is scheduled here.
 
 ## Work

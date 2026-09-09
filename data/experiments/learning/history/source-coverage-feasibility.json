@@ -1,0 +1,45 @@
+{
+  "purpose": "selection feasibility only; no policy, loss, or teacher-target comparison",
+  "dataset_sha256": "dd458c3547c0915737d7621c372968dc987b71d76606afc58c0caaeae2f3da3b",
+  "selection_seed": 401,
+  "contributing_train_games": 792,
+  "labels_per_train_source": {
+    "15": 27,
+    "16": 765
+  },
+  "full_16_label_sources": 765,
+  "sources_with_four_per_eight_ply_band": 32,
+  "heldout_games": 264,
+  "heldout_positions": 4219,
+  "source_dataset": "artifacts/learning/data-scaling-v1/curve-cached/dataset.json",
+  "selection_artifact": "artifacts/learning/source-coverage-investigation-v1/selection-audit.json",
+  "checks": [
+    {
+      "block": 0,
+      "concentrated_games": 48,
+      "broader_games": 192,
+      "labels_per_case": 768,
+      "matched_ply_histogram": true,
+      "shared_inputs": 192
+    },
+    {
+      "block": 1,
+      "concentrated_games": 48,
+      "broader_games": 192,
+      "labels_per_case": 768,
+      "matched_ply_histogram": true,
+      "shared_inputs": 192
+    },
+    {
+      "block": 2,
+      "concentrated_games": 48,
+      "broader_games": 192,
+      "labels_per_case": 768,
+      "matched_ply_histogram": true,
+      "shared_inputs": 192
+    }
+  ],
+  "disjoint_broader_source_games": 576,
+  "training_runs": 0,
+  "teacher_queries": 0
+}
