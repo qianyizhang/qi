@@ -9,14 +9,15 @@ from typing import Literal
 import torch
 from torch import nn
 
-from qi.game import GameError, legal_moves
+from qi.game import Game, GameError, legal_moves
 from qi.learning.data import Dataset, Label
 from qi.players.policy.encoding import ACTIONS, action_id, encode
 from qi.players.policy.runtime import CheckpointMetadata, LoadedPolicy, load_checkpoint, make_model
 
 
-def tensors(labels: list[Label]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    games = [label.analysis.snapshot.game() for label in labels]
+def tensors(labels: list[Label], games: list[Game] | None = None) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    if games is None:
+        games = [label.analysis.snapshot.game() for label in labels]
     features = torch.tensor([encode(game) for game in games], dtype=torch.float32)
     mask = torch.zeros((len(games), ACTIONS), dtype=torch.bool)
     for index, game in enumerate(games):
@@ -25,14 +26,15 @@ def tensors(labels: list[Label]) -> tuple[torch.Tensor, torch.Tensor, torch.Tens
     return features, mask, targets
 
 
-def measure(policy: LoadedPolicy, labels: list[Label]) -> tuple[dict, list[str]]:
-    games = [label.analysis.snapshot.game() for label in labels]
+def measure(policy: LoadedPolicy, labels: list[Label], games: list[Game] | None = None) -> tuple[dict, list[str]]:
+    if games is None:
+        games = [label.analysis.snapshot.game() for label in labels]
     predictions, timings = [], []
     for game in games:
         started = perf_counter()
         predictions.append(policy.predict(game))
         timings.append((perf_counter() - started) * 1000)
-    features, mask, targets = tensors(labels)
+    features, mask, targets = tensors(labels, games)
     with torch.inference_mode():
         loss = nn.functional.cross_entropy(policy.model(features).masked_fill(~mask, float("-inf")), targets)
     return {
@@ -101,9 +103,19 @@ def train(
             raise GameError("invalid_budget", "Diagnostic subset exceeds available training labels.")
         train_labels = train_labels[:diagnostic_examples]
     validation_labels = dataset.split_labels("validation")
+    # Replay in source order once, then reuse immutable games through reporting/reload.
+    # Nested subsets interleave sources; replaying that order repeatedly thrashes caches.
+    selected = {label.input_sha256 for label in train_labels + validation_labels}
+    games = {
+        label.input_sha256: label.analysis.snapshot.game()
+        for label in sorted(dataset.labels, key=lambda label: label.source_id)
+        if label.input_sha256 in selected
+    }
+    train_games = [games[label.input_sha256] for label in train_labels]
+    validation_games = [games[label.input_sha256] for label in validation_labels]
     torch.set_num_threads(threads)
     torch.manual_seed(seed)
-    features, mask, targets = (tensor.to(device) for tensor in tensors(train_labels))
+    features, mask, targets = (tensor.to(device) for tensor in tensors(train_labels, train_games))
     model = make_model().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_fn = nn.CrossEntropyLoss()
@@ -148,16 +160,16 @@ def train(
         training_threads=threads,
     )
     policy = LoadedPolicy(model, metadata, "unsaved")
-    train_stats, train_predictions = measure(policy, train_labels)
-    validation_stats, validation_predictions = measure(policy, validation_labels)
+    train_stats, train_predictions = measure(policy, train_labels, train_games)
+    validation_stats, validation_predictions = measure(policy, validation_labels, validation_games)
     buffer = io.BytesIO()
     torch.save({"metadata": metadata.model_dump(), "state_dict": model.state_dict()}, buffer)
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     with checkpoint.open("xb") as stream:
         stream.write(buffer.getvalue())
     loaded = load_checkpoint(str(checkpoint.resolve()))
-    reloaded_train = [loaded.predict(label.analysis.snapshot.game()) for label in train_labels]
-    reloaded_validation = [loaded.predict(label.analysis.snapshot.game()) for label in validation_labels]
+    reloaded_train = [loaded.predict(game) for game in train_games]
+    reloaded_validation = [loaded.predict(game) for game in validation_games]
     reload_equal = train_predictions == reloaded_train and validation_predictions == reloaded_validation
     if not reload_equal:
         raise GameError("checkpoint_mismatch", "Reloaded checkpoint predictions differ from trained weights.")

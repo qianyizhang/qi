@@ -5,7 +5,7 @@ status: stable
 last_update: 2026-09-09
 document_class: work_record
 work_id: AB-LEARN-004
-work_status: wip
+work_status: done
 work_kind: research
 added: 2026-09-09
 tags: domain
@@ -47,6 +47,8 @@ semantics. No architecture, curriculum, value target or search change in this st
 | --- | --- | --- | --- | --- |
 | 2026-09-09 | Codex | — | wip | User requested a substantial data-size experiment first. |
 
+| 2026-09-09 | Codex | wip | done | Nine locked fits and independent verification complete; data scaling improves imitation. |
+
 ## Implementation Ledger
 
 ### 2026-09-09 — decision: lock the comparison before generation
@@ -61,3 +63,64 @@ semantics. No architecture, curriculum, value target or search change in this st
 - Follow-up: filter previously inspected dataset inputs before fitting; record
   retained input identities and counts. Evaluate all nine locked fits once.
 - Review: not-required. Weekly quota at start: 7% used, below the user's 25% stop.
+
+### 2026-09-09 — finding: data scaling improves the fixed policy
+
+- Evidence: generated 16896 labels from 1056 source games in 890.5 seconds.
+  Removed 32 inputs overlapping any earlier smoke, tuning or final-test dataset;
+  retained 12645 training positions and 4219 validation positions from 264 games.
+  Dataset SHA-256:
+  `dd458c3547c0915737d7621c372968dc987b71d76606afc58c0caaeae2f3da3b`.
+- Results, mean over initialization seeds 7/17/27:
+
+  | Training positions | Train agreement | Held-out agreement ± seed SD | Held-out cross-entropy |
+  | ---: | ---: | ---: | ---: |
+  | 768 | 100.00% | 16.74% ± 0.15 pp | 10.873 |
+  | 3072 | 99.98% | 21.27% ± 0.51 pp | 9.413 |
+  | 12288 | 96.47% | 25.70% ± 0.42 pp | 7.981 |
+
+- Interpretation: 16× more training data adds 8.96 percentage points, a 53.5%
+  relative increase in exact teacher agreement. Each 4× data increase adds about
+  4.5 points; no flattening is evident over these three sizes. A paired bootstrap
+  over the 264 validation games (5000 draws, seed 211, averaging the three model
+  seeds) gives an approximate 95% interval of 7.53–10.42 points for the largest
+  gain. It does not cover training-data or teacher uncertainty. Random-legal
+  expected agreement is 2.85%. These new results cannot be directly compared with
+  the earlier 14.96% score on a different 254-position test.
+- Consequence: prioritize further data scaling over another architecture sweep.
+  Substantial overfitting remains, and this unchanged random early-game curriculum
+  with shallow labels does not establish playing strength. The inspected holdout
+  can support only a prespecified continuation; adaptive tuning needs a fresh test.
+- Follow-up: a larger fixed-recipe study remains a candidate, not a scheduled run.
+  Check preprocessing/reporting costs before expanding the next data budget.
+- Review: local evidence/contract review; no separate reviewer agent.
+
+### 2026-09-09 — deviation and verification: remove repeated replay work
+
+- Evidence: the first matrix exposed repeated reconstruction of interleaved game
+  histories in tensors, scoring and reload checks. It was deliberately interrupted
+  after five completed fits; its partial manifest/checkpoints remain under
+  `artifacts/learning/data-scaling-v1/curve/` with status `interrupted`.
+- Change: each fit still validates its dataset, then replays selected positions in
+  source order and reuses immutable game objects through training and reporting.
+  The final nine-fit matrix ran from scratch under `curve-cached/`; all five
+  comparable checkpoints have equal metadata and bit-identical weights.
+- Timing: final matrix 712.8 seconds, including per-fit preparation/reporting/save;
+  summed MPS optimization 34.28 seconds. Observed 768-position trials fell from
+  about 87 to 58 seconds, and 3072-position trials from 164 to 66 seconds. These
+  timings are run observations, not an isolated performance benchmark. Dataset
+  preparation and independent result verification are separate from matrix time.
+- Verification: all nine CPU checkpoints reproduced single-position legal actions,
+  losses and curve aggregates. Input exclusions, teacher identity, source splits,
+  exact nested subsets and fixed recipes passed. Real serial/parallel teacher
+  checks returned identical selections and moves. `make check`: 308 Python tests
+  passed, one opt-in GPU skip, three browser tests, lint/docs/build passed; the
+  opt-in Metal test also passed before the replay change, and the full final MPS
+  matrix verifies the changed path. Two pre-existing framework deprecation warnings.
+- Evidence locations: `artifacts/learning/data-scaling-v1/` retains generation and
+  selection records, raw/filtered datasets, both matrices, scripts, independent
+  `verification.json`, summary and PNG/SVG learning curves. Artifacts stay local;
+  no model was selected using validation or activated for play.
+- Stop: the requested 16× comparison is complete. Weekly quota at closeout: 8%
+  used, below the user's 25% soft stop. No reset credit or remote training used.
+- Review: verified locally against replay contracts and saved checkpoint bytes.

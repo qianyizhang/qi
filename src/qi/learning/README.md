@@ -84,6 +84,9 @@ The network predicts 8100 logits. Illegal logits are masked before cross-entropy
 loss is minus the log probability assigned to the teacher move among legal moves.
 Adam updates weights on the training split only. The fixed final checkpoint is
 measured on validation; validation does not select steps or tune parameters.
+Each fit validates the dataset, replays selected positions in source-game order,
+and reuses those immutable game objects for tensors, scoring and reload checks.
+This avoids repeatedly replaying interleaved source histories at larger sizes.
 
 Defaults: seed 7, 200 full-batch steps, learning rate 0.01, CPU, one thread.
 The 60-second budget covers the optimization loop, checked between steps; setup,
@@ -162,6 +165,11 @@ records learning-rate, duration, regularization, width and orientation experimen
 Their selected alternatives did not improve fresh-test move agreement, so the
 production model and training defaults remain unchanged. That final test has
 been inspected and should not be reused for adaptive configuration selection.
+[AB-LEARN-004](../../../records/work-items/items/AB-LEARN-004-dataset-scaling.md)
+records the larger fixed-policy curve: 768 / 3072 / 12288 training positions
+achieved 16.74% / 21.27% / 25.70% teacher agreement on one fresh 4219-position
+holdout, averaged over three seeds. Data scaling helped while substantial
+overfitting remained; these results do not establish playing strength.
 
 ## Scale the dataset with the model fixed
 
