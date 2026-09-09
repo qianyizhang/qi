@@ -3,9 +3,11 @@
 import pytest
 from pydantic import ValidationError
 
-from qi.game import Game
-from qi.learning.data import Dataset, reserved_inputs
+from qi.game import Game, GameError, legal_moves
+from qi.learning.data import Dataset, generate, reserved_inputs
 from qi.players.policy.encoding import input_key
+from qi.protocol import Snapshot
+from qi.teacher import TeacherConfig
 
 
 def test_splits_are_by_source_and_observations_are_disjoint(tiny_dataset):
@@ -51,3 +53,31 @@ def test_equivalent_boards_share_input_identity_despite_history():
     repeated = game.apply("b0c2").apply("b9c7").apply("c2b0").apply("c7b9")
     assert game.state_hash != repeated.state_hash
     assert input_key(game) == input_key(repeated)
+
+
+def test_scaled_parallel_generation_preserves_serial_selection_and_splits(tiny_dataset, tmp_path):
+    teacher = TeacherConfig(tmp_path / "fake-engine", tmp_path / "fake-network")
+
+    def labeler(game, config):
+        return tiny_dataset.labels[0].analysis.model_copy(
+            update={
+                "snapshot": Snapshot(moves=list(game.moves)),
+                "state_hash": game.state_hash,
+                "move": sorted(legal_moves(game.board, game.turn))[0],
+            }
+        )
+
+    kwargs = dict(seed=211, games=72, plies=24, samples=16, labeler=labeler)
+    serial = generate(tiny_dataset.reserved_corpus, teacher, **kwargs)
+    parallel = generate(tiny_dataset.reserved_corpus, teacher, workers=4, **kwargs)
+    assert len(serial.sources) > 64 and len(serial.labels) > 1024
+    assert parallel.digest == serial.digest
+    assert len({label.input_sha256 for label in serial.labels}) == len(serial.labels)
+    assert Dataset.model_validate_json(parallel.model_dump_json()).digest == serial.digest
+
+
+@pytest.mark.parametrize("kwargs", [{"games": 2049}, {"workers": 0}, {"workers": 5}, {"seconds": 7201}])
+def test_generation_limits_reject_before_teacher_calls(tiny_dataset, tmp_path, kwargs):
+    teacher = TeacherConfig(tmp_path / "fake-engine", tmp_path / "fake-network")
+    with pytest.raises(GameError, match="4-2048"):
+        generate(tiny_dataset.reserved_corpus, teacher, labeler=lambda *_: pytest.fail("Unexpected query"), **kwargs)

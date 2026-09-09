@@ -1,6 +1,7 @@
 """Replayable teacher labels, source-game splits, and observation-level exclusions."""
 
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from hashlib import sha256
 from random import Random
@@ -14,6 +15,9 @@ from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import ENCODING, input_key
 from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, analyze
+
+MAX_SOURCES = 2048
+MAX_LABELS = MAX_SOURCES * 16
 
 
 class SourceGame(BaseModel):
@@ -60,8 +64,8 @@ class Dataset(BaseModel):
     generator: Literal["seeded-random-trajectories-v1"] = "seeded-random-trajectories-v1"
     seed: int
     reserved_corpus: Corpus
-    sources: list[SourceGame] = Field(min_length=2, max_length=64)
-    labels: list[Label] = Field(min_length=2, max_length=1024)
+    sources: list[SourceGame] = Field(min_length=2, max_length=MAX_SOURCES)
+    labels: list[Label] = Field(min_length=2, max_length=MAX_LABELS)
 
     @model_validator(mode="after")
     def validate_data(self) -> Self:
@@ -121,47 +125,64 @@ def generate(
     plies: int = 32,
     samples: int = 8,
     seconds: float = 300,
+    workers: int = 1,
     labeler: Callable[[Game, TeacherConfig], TeacherAnalysis] = analyze,
 ) -> Dataset:
-    if not 4 <= games <= 64 or not 2 <= plies <= 100 or not 1 <= samples <= 16 or not 0 < seconds <= 600:
-        raise GameError("invalid_budget", "Use 4-64 games, 2-100 plies, 1-16 samples/game, and at most 600 seconds.")
+    if (
+        not 4 <= games <= MAX_SOURCES
+        or not 2 <= plies <= 100
+        or not 1 <= samples <= 16
+        or not 0 < seconds <= 7200
+        or not 1 <= workers <= 4
+    ):
+        raise GameError(
+            "invalid_budget", "Use 4-2048 games, 2-100 plies, 1-16 samples/game, 1-4 workers, and at most 7200 seconds."
+        )
     rng = Random(seed)
     validation_ids = set(rng.sample(range(games), max(1, games // 4)))
     seen = reserved_inputs(corpus)
     sources, labels = [], []
     deadline = monotonic() + seconds
-    for index in range(games):
-        game = Game()
-        candidates = []
-        for _ in range(plies):
+
+    def query(candidate: Game) -> TeacherAnalysis:
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            raise GameError("dataset_timeout", "Dataset generation exceeded its deadline; no dataset emitted.")
+        return labeler(candidate, replace(teacher, timeout_seconds=min(teacher.timeout_seconds, remaining)))
+
+    # Executor.map preserves seeded selection order regardless of engine completion order.
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for index in range(games):
+            game = Game()
+            candidates = []
+            for _ in range(plies):
+                if monotonic() >= deadline:
+                    raise GameError("dataset_timeout", "Dataset generation exceeded its deadline; no dataset emitted.")
+                if game.outcome:
+                    break
+                if input_key(game) not in seen:
+                    candidates.append(game)
+                game = game.apply(rng.choice(sorted(legal_moves(game.board, game.turn))))
+            source_id = f"game-{index:03d}"
+            sources.append(
+                SourceGame(
+                    id=source_id,
+                    split="validation" if index in validation_ids else "train",
+                    snapshot=Snapshot(moves=list(game.moves)),
+                )
+            )
+            rng.shuffle(candidates)
+            selected = []
+            for candidate in candidates:
+                key = input_key(candidate)
+                if key in seen:
+                    continue
+                selected.append(candidate)
+                seen.add(key)
+                if len(selected) == samples:
+                    break
+            for candidate, result in zip(selected, executor.map(query, selected), strict=True):
+                labels.append(Label(source_id=source_id, input_sha256=input_key(candidate), analysis=result))
             if monotonic() >= deadline:
                 raise GameError("dataset_timeout", "Dataset generation exceeded its deadline; no dataset emitted.")
-            if game.outcome:
-                break
-            if input_key(game) not in seen:
-                candidates.append(game)
-            game = game.apply(rng.choice(sorted(legal_moves(game.board, game.turn))))
-        source_id = f"game-{index:03d}"
-        sources.append(
-            SourceGame(
-                id=source_id,
-                split="validation" if index in validation_ids else "train",
-                snapshot=Snapshot(moves=list(game.moves)),
-            )
-        )
-        rng.shuffle(candidates)
-        accepted = 0
-        for candidate in candidates:
-            key = input_key(candidate)
-            if key in seen:
-                continue
-            remaining = deadline - monotonic()
-            if remaining <= 0:
-                raise GameError("dataset_timeout", "Dataset generation exceeded its deadline; no dataset emitted.")
-            result = labeler(candidate, replace(teacher, timeout_seconds=min(teacher.timeout_seconds, remaining)))
-            labels.append(Label(source_id=source_id, input_sha256=key, analysis=result))
-            seen.add(key)
-            accepted += 1
-            if accepted == samples:
-                break
     return Dataset(seed=seed, reserved_corpus=corpus, sources=sources, labels=labels)

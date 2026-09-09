@@ -27,6 +27,7 @@ def build_dataset(
     nodes: int = 1000,
     depth: int = 3,
     seconds: float = 300,
+    workers: int = 1,
 ) -> None:
     """Generate replayable random trajectories and label disjoint, nonreserved inputs."""
     if output.exists():
@@ -39,6 +40,7 @@ def build_dataset(
         plies=plies,
         samples=samples,
         seconds=seconds,
+        workers=workers,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x") as stream:

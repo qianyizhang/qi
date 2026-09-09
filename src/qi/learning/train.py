@@ -77,8 +77,8 @@ def train(
     threads: int = 1,
     train_inputs: list[str] | None = None,
 ) -> dict:
-    if not 1 <= steps <= 2000 or not 0 < seconds <= 120 or not 0 < learning_rate <= 0.1 or diagnostic_examples < 0:
-        raise GameError("invalid_budget", "Use 1-2000 steps, at most 120 seconds, and learning rate in (0, 0.1].")
+    if not 1 <= steps <= 2000 or not 0 < seconds <= 600 or not 0 < learning_rate <= 0.1 or diagnostic_examples < 0:
+        raise GameError("invalid_budget", "Use 1-2000 steps, at most 600 seconds, and learning rate in (0, 0.1].")
     validate_device(device, threads)
     if checkpoint.exists():
         raise GameError("checkpoint_exists", "Choose a new checkpoint path; training never overwrites weights.")

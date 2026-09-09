@@ -38,7 +38,7 @@ def test_insufficient_data_and_stale_reserved_corpus_fail_before_execution(tiny_
         {"seeds": [7, 7]},
         {"seeds": [-1]},
         {"device": "cuda"},
-        {"total_seconds": 601},
+        {"total_seconds": 7201},
     ],
 )
 def test_invalid_plans_are_rejected(kwargs):

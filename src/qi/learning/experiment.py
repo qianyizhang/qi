@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from qi.evaluation import Corpus
 from qi.game import GameError
-from qi.learning.data import Dataset
+from qi.learning.data import MAX_LABELS, Dataset
 
 
 class LearningPlan(BaseModel):
@@ -26,13 +26,13 @@ class LearningPlan(BaseModel):
     threads: int = Field(default=1, ge=1, le=32)
     steps: int = Field(default=200, ge=1, le=2000)
     learning_rate: float = Field(default=0.01, gt=0, le=0.1)
-    fit_seconds: float = Field(default=60.0, gt=0, le=120)
-    total_seconds: float = Field(default=600.0, gt=0, le=600)
+    fit_seconds: float = Field(default=60.0, gt=0, le=600)
+    total_seconds: float = Field(default=600.0, gt=0, le=7200)
 
     @model_validator(mode="after")
     def validate_matrix(self) -> Self:
-        if self.sizes != sorted(set(self.sizes)) or not 1 <= self.sizes[0] <= self.sizes[-1] <= 1024:
-            raise ValueError("Sizes must be distinct, increasing, and within 1-1024.")
+        if self.sizes != sorted(set(self.sizes)) or not 1 <= self.sizes[0] <= self.sizes[-1] <= MAX_LABELS:
+            raise ValueError("Sizes must be distinct, increasing, and within 1-32768.")
         if len(set(self.seeds)) != len(self.seeds) or any(not 0 <= seed < 2**63 for seed in self.seeds):
             raise ValueError("Seeds must be distinct integers in [0, 2**63).")
         return self

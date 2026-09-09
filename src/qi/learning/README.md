@@ -70,6 +70,14 @@ labels from random trajectories are sufficient to exercise the pipeline, not a
 representative teaching curriculum. New evaluation corpora must also be excluded
 when constructing their training datasets; exclusions describe the embedded corpus.
 
+For a larger data-size study, generation accepts up to 2048 source games and
+32768 labels, with an explicit deadline up to 7200 seconds. `--workers 1` remains
+the default; `--workers 4` runs at most four independent single-threaded teacher
+processes concurrently. Each query still starts a fresh engine with the same
+settings. Parallel completion does not change seeded sampling, source splits or
+label order. The total deadline also covers queued queries; an error waits for
+in-flight queries to finish or reach their own deadlines and emits no dataset.
+
 ## Optimization (`train.py`)
 
 The network predicts 8100 logits. Illegal logits are masked before cross-entropy:
@@ -154,6 +162,32 @@ records learning-rate, duration, regularization, width and orientation experimen
 Their selected alternatives did not improve fresh-test move agreement, so the
 production model and training defaults remain unchanged. That final test has
 been inspected and should not be reused for adaptive configuration selection.
+
+## Scale the dataset with the model fixed
+
+```bash
+uv run --extra learning qi learn dataset \
+  --corpus data/evaluation/search-positions-v1.json \
+  --engine artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon \
+  --network artifacts/teachers/pikafish-2026-01-02/pikafish.nnue \
+  --output artifacts/learning/scaled-data.json \
+  --seed 211 --games 1056 --samples 16 --workers 4 --seconds 7200
+
+uv run --extra learning qi learn experiment \
+  --data artifacts/learning/scaled-data.json \
+  --corpus data/evaluation/search-positions-v1.json \
+  --output artifacts/learning/scaled-curve \
+  --sizes 768,3072,12288 --device mps --fit-seconds 600 --total-seconds 7200
+```
+
+The experiment accepts sizes through 32768, at most 600 seconds per fit and
+7200 seconds for the matrix; defaults remain unchanged. Training is still full
+batch: every update sees the entire chosen subset, so larger sizes also use more
+compute. This measures the benefit of more data with the same number of passes
+and optimizer updates, not equal compute. Full-batch tensor memory grows with
+dataset size; the supported cap is a bound, not a memory guarantee on every host.
+Games can end early and duplicate inputs are removed, so the generator does not
+guarantee a requested training count. Preview rejects insufficient data.
 
 ## Checks
 
