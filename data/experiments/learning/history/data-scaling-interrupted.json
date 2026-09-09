@@ -1,0 +1,104 @@
+{
+  "retrospective": true,
+  "recipe": "../data-scaling-interrupted.json",
+  "sources": [
+    "artifacts/learning/data-scaling-v1/curve/manifest.json",
+    "artifacts/learning/data-scaling-v1/curve/summary.json"
+  ],
+  "unknowns": [],
+  "limitations": [
+    "Recipe reconstructs declared settings; original implementation identity remains in the source manifest. Rerunning uses current code."
+  ],
+  "status": "interrupted",
+  "error": {
+    "type": "KeyboardInterrupt",
+    "message": ""
+  },
+  "elapsed_seconds": 649.1544542079937,
+  "planned_trials": 9,
+  "dataset_sha256": "dd458c3547c0915737d7621c372968dc987b71d76606afc58c0caaeae2f3da3b",
+  "source_sha256": "ba347ffc638ffe626f0b2675e1dc23a61bc546b4e2546ccbeca5c1fb8d5be0aa",
+  "observations": [
+    {
+      "size": 768,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve/size-768-seed-7.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16615311685233466,
+      "validation_cross_entropy": 10.940938949584961
+    },
+    {
+      "size": 768,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve/size-768-seed-17.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16947143872955678,
+      "validation_cross_entropy": 10.786543846130371
+    },
+    {
+      "size": 768,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve/size-768-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16662716283479498,
+      "validation_cross_entropy": 10.891411781311035
+    },
+    {
+      "size": 3072,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve/size-3072-seed-7.pt",
+      "train_agreement": 0.9996744791666666,
+      "validation_agreement": 0.21782412894050723,
+      "validation_cross_entropy": 9.415268898010254
+    },
+    {
+      "size": 3072,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve/size-3072-seed-17.pt",
+      "train_agreement": 0.9996744791666666,
+      "validation_agreement": 0.20573595638776962,
+      "validation_cross_entropy": 9.35755729675293
+    }
+  ],
+  "curve": [
+    {
+      "size": 768,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 1.0,
+      "train_agreement_std": 0.0,
+      "train_cross_entropy_mean": 0.0023253935699661574,
+      "train_cross_entropy_std": 0.00028290596362805036,
+      "validation_agreement_mean": 0.1674172394722288,
+      "validation_agreement_std": 0.001465373863553094,
+      "validation_cross_entropy_mean": 10.872964859008789,
+      "validation_cross_entropy_std": 0.06436706559262122,
+      "random_legal_agreement": 0.028522436043386265
+    },
+    {
+      "size": 3072,
+      "complete_seeds": 2,
+      "expected_seeds": 3
+    },
+    {
+      "size": 12288,
+      "complete_seeds": 0,
+      "expected_seeds": 3
+    }
+  ]
+}

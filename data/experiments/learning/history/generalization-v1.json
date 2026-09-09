@@ -1,0 +1,210 @@
+{
+  "retrospective": true,
+  "recipe": "../generalization-v1.json",
+  "sources": [
+    "artifacts/learning/generalization-v1/manifest.json",
+    "artifacts/learning/generalization-v1/summary.json"
+  ],
+  "unknowns": [],
+  "limitations": [
+    "Recipe reconstructs declared settings; original implementation identity remains in the source manifest. Rerunning uses current code."
+  ],
+  "status": "complete",
+  "error": null,
+  "elapsed_seconds": 6.990442957998312,
+  "planned_trials": 12,
+  "dataset_sha256": "129d0b5a986a5df124ce8a40c4af2b5a01dac2fcc4e3cfabeb728efd56d6a118",
+  "source_sha256": "a67816f29030c901be9ca1c1b3c2fb9fabac7b89d6a54d5b41e7252eecc88176",
+  "observations": [
+    {
+      "size": 96,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-96-seed-7.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.12749003984063745,
+      "validation_cross_entropy": 16.955928802490234
+    },
+    {
+      "size": 96,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-96-seed-17.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.11155378486055777,
+      "validation_cross_entropy": 17.098697662353516
+    },
+    {
+      "size": 96,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-96-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.11952191235059761,
+      "validation_cross_entropy": 16.241840362548828
+    },
+    {
+      "size": 192,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-192-seed-7.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.13545816733067728,
+      "validation_cross_entropy": 13.316986083984375
+    },
+    {
+      "size": 192,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-192-seed-17.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.10358565737051793,
+      "validation_cross_entropy": 13.430961608886719
+    },
+    {
+      "size": 192,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-192-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.14342629482071714,
+      "validation_cross_entropy": 13.258877754211426
+    },
+    {
+      "size": 384,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-384-seed-7.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.1752988047808765,
+      "validation_cross_entropy": 11.32197380065918
+    },
+    {
+      "size": 384,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-384-seed-17.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.1553784860557769,
+      "validation_cross_entropy": 11.243998527526855
+    },
+    {
+      "size": 384,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-384-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16733067729083664,
+      "validation_cross_entropy": 11.42724323272705
+    },
+    {
+      "size": 768,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-768-seed-7.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.1952191235059761,
+      "validation_cross_entropy": 11.000670433044434
+    },
+    {
+      "size": 768,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-768-seed-17.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.199203187250996,
+      "validation_cross_entropy": 11.050701141357422
+    },
+    {
+      "size": 768,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 60.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/generalization-v1/size-768-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.21115537848605578,
+      "validation_cross_entropy": 10.909185409545898
+    }
+  ],
+  "curve": [
+    {
+      "size": 96,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 1.0,
+      "train_agreement_std": 0.0,
+      "train_cross_entropy_mean": 0.0003214495761009554,
+      "train_cross_entropy_std": 1.793550092904501e-05,
+      "validation_agreement_mean": 0.11952191235059761,
+      "validation_agreement_std": 0.006505948852013753,
+      "validation_cross_entropy_mean": 16.76548894246419,
+      "validation_cross_entropy_std": 0.37483473093458025,
+      "random_legal_agreement": 0.02667291862173918
+    },
+    {
+      "size": 192,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 1.0,
+      "train_agreement_std": 0.0,
+      "train_cross_entropy_mean": 0.0008131240999015669,
+      "train_cross_entropy_std": 5.639431430909234e-05,
+      "validation_agreement_mean": 0.12749003984063745,
+      "validation_agreement_std": 0.017213122704934556,
+      "validation_cross_entropy_mean": 13.33560848236084,
+      "validation_cross_entropy_std": 0.0714763762882332,
+      "random_legal_agreement": 0.02667291862173918
+    },
+    {
+      "size": 384,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 1.0,
+      "train_agreement_std": 0.0,
+      "train_cross_entropy_mean": 0.0016000781130666535,
+      "train_cross_entropy_std": 0.0002360539527500709,
+      "validation_agreement_mean": 0.16600265604249667,
+      "validation_agreement_std": 0.008186472779507277,
+      "validation_cross_entropy_mean": 11.331071853637695,
+      "validation_cross_entropy_std": 0.07508544653471594,
+      "random_legal_agreement": 0.02667291862173918
+    },
+    {
+      "size": 768,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 1.0,
+      "train_agreement_std": 0.0,
+      "train_cross_entropy_mean": 0.0029166146026303372,
+      "train_cross_entropy_std": 0.0002778328141658827,
+      "validation_agreement_mean": 0.20185922974767595,
+      "validation_agreement_std": 0.006771606259751381,
+      "validation_cross_entropy_mean": 10.986852327982584,
+      "validation_cross_entropy_std": 0.0585939735704562,
+      "random_legal_agreement": 0.02667291862173918
+    }
+  ]
+}

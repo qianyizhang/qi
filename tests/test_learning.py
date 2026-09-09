@@ -164,7 +164,7 @@ def test_learning_curve_preserves_completed_work_on_stop(tiny_dataset, tmp_path,
     trainer = importlib.import_module("qi.learning.train")
     clock = [0.0]
     calls = []
-    monkeypatch.setattr(experiment, "perf_counter", lambda: clock[0])
+    monkeypatch.setattr(importlib.import_module("qi.learning.runs"), "perf_counter", lambda: clock[0])
 
     def interrupted_train(*args, **kwargs):
         if calls:

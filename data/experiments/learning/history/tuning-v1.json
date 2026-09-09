@@ -1,0 +1,1425 @@
+{
+  "retrospective": true,
+  "runnable_by_current_config": false,
+  "dataset_sha256": "129d0b5a986a5df124ce8a40c4af2b5a01dac2fcc4e3cfabeb728efd56d6a118",
+  "script_sha256": "b8915df09dcec0b222c3f641348ac935c04e1cf7f3f35a04c6453272aaf8c0bf",
+  "sources": [
+    "artifacts/learning/tuning-v1/manifest.json",
+    "artifacts/learning/tuning-v1/results.json",
+    "artifacts/learning/tuning-v1/sweep.py"
+  ],
+  "unknowns": [
+    "Full repository source identity was not recorded by the prototype; the script digest is retained in its original manifest."
+  ],
+  "limitations": [
+    "50/200/800-update observations are checkpoints along each continuous fit, not independent training runs. Prototype architecture/loss variants remain historical."
+  ],
+  "shared_config": {
+    "data": {
+      "dataset": "artifacts/learning/generalization-v1-data.json",
+      "train_size": 768,
+      "selection": "source-order"
+    },
+    "model": {
+      "family": "one-hidden-layer-relu-mlp",
+      "input_size": 1261,
+      "output_size": 8100
+    },
+    "objective": {
+      "name": "legal-masked-teacher-move"
+    },
+    "optimizer": {
+      "name": "adam"
+    },
+    "training": {
+      "batching": "full",
+      "updates": 800,
+      "precision": "float32"
+    },
+    "evaluation": {
+      "split": "tuning (original dataset validation)",
+      "metrics": [
+        "agreement",
+        "cross_entropy"
+      ],
+      "checkpoint_updates": [
+        50,
+        200,
+        800
+      ]
+    },
+    "execution": {
+      "device": "mps",
+      "threads": 1,
+      "total_seconds": 600,
+      "fit_seconds": null
+    }
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "model": {
+        "hidden_width": 64,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.01,
+        "weight_decay": 0.0
+      },
+      "objective": {
+        "legal_label_smoothing": 0.0
+      }
+    },
+    {
+      "name": "slower",
+      "model": {
+        "hidden_width": 64,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.003,
+        "weight_decay": 0.0
+      },
+      "objective": {
+        "legal_label_smoothing": 0.0
+      }
+    },
+    {
+      "name": "decay",
+      "model": {
+        "hidden_width": 64,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.003,
+        "weight_decay": 0.01
+      },
+      "objective": {
+        "legal_label_smoothing": 0.0
+      }
+    },
+    {
+      "name": "smooth",
+      "model": {
+        "hidden_width": 64,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.003,
+        "weight_decay": 0.0
+      },
+      "objective": {
+        "legal_label_smoothing": 0.1
+      }
+    },
+    {
+      "name": "regularized",
+      "model": {
+        "hidden_width": 64,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.003,
+        "weight_decay": 0.01
+      },
+      "objective": {
+        "legal_label_smoothing": 0.1
+      }
+    },
+    {
+      "name": "wide128",
+      "model": {
+        "hidden_width": 128,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.003,
+        "weight_decay": 0.01
+      },
+      "objective": {
+        "legal_label_smoothing": 0.1
+      }
+    },
+    {
+      "name": "wide256",
+      "model": {
+        "hidden_width": 256,
+        "encoding": "absolute"
+      },
+      "optimizer": {
+        "learning_rate": 0.003,
+        "weight_decay": 0.01
+      },
+      "objective": {
+        "legal_label_smoothing": 0.1
+      }
+    }
+  ],
+  "seeds": [
+    7,
+    17,
+    27
+  ],
+  "observations": [
+    {
+      "config": "baseline",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.2277743329977966,
+      "checkpoint": "baseline-seed-7-step-50.pt",
+      "checkpoint_sha256": "06fefd127b333b5f164fc549c342fc1b2130d53d7f8cc790298ba879ec7ee0ef",
+      "train": {
+        "positions": 768,
+        "correct": 760,
+        "agreement": 0.9895833134651184,
+        "cross_entropy": 0.09443557262420654
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 54,
+        "agreement": 0.2151394486427307,
+        "cross_entropy": 8.309739112854004
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 0.651780415995745,
+      "checkpoint": "baseline-seed-7-step-200.pt",
+      "checkpoint_sha256": "72ed9291708d845ca14d64c27d9b953f6dcbf6e3ec168fb1b8c86c4dc370d913",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.002866351045668125
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 49,
+        "agreement": 0.19521912932395935,
+        "cross_entropy": 11.000659942626953
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 2.2966626239940524,
+      "checkpoint": "baseline-seed-7-step-800.pt",
+      "checkpoint_sha256": "2444b56199ba1702c14523d0f9ee994b47c403be9c782f7b0eba7e6758c2993b",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.0002338475314900279
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 51,
+        "agreement": 0.2031872570514679,
+        "cross_entropy": 12.986846923828125
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.13561104100517696,
+      "checkpoint": "baseline-seed-17-step-50.pt",
+      "checkpoint_sha256": "78d7de1d27174ad2b6180f58f5936f826eaa92409addfd3865b6e84f72d28aec",
+      "train": {
+        "positions": 768,
+        "correct": 761,
+        "agreement": 0.9908854365348816,
+        "cross_entropy": 0.10506121069192886
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 51,
+        "agreement": 0.2031872570514679,
+        "cross_entropy": 7.911051273345947
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 0.5469347910038778,
+      "checkpoint": "baseline-seed-17-step-200.pt",
+      "checkpoint_sha256": "2d0cea23367aca24423369f5b1453382e97f1e16bf0c12c2a2d71b0ebf17ef4b",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.00260433298535645
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 50,
+        "agreement": 0.19920319318771362,
+        "cross_entropy": 11.049713134765625
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 2.1817260820025695,
+      "checkpoint": "baseline-seed-17-step-800.pt",
+      "checkpoint_sha256": "2672066dba1d6ba3a0611d1ed92f8a1928bb3f360671817eb41ac96c1917079a",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.00019373302347958088
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 47,
+        "agreement": 0.1872510015964508,
+        "cross_entropy": 13.714005470275879
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.13655854199896567,
+      "checkpoint": "baseline-seed-27-step-50.pt",
+      "checkpoint_sha256": "ad49806f87123847ad9355340a4a8060bb33c64ec90f3af277acd22540e6f9e5",
+      "train": {
+        "positions": 768,
+        "correct": 758,
+        "agreement": 0.9869791865348816,
+        "cross_entropy": 0.11193543672561646
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 51,
+        "agreement": 0.2031872570514679,
+        "cross_entropy": 8.08481502532959
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 0.5495168749985169,
+      "checkpoint": "baseline-seed-27-step-200.pt",
+      "checkpoint_sha256": "06fc1eeaa620d3381bbe316ce706ed45d6310b6c23b8d321fb7da1b83de52fb4",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.003279219614341855
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 53,
+        "agreement": 0.21115538477897644,
+        "cross_entropy": 10.909162521362305
+      }
+    },
+    {
+      "config": "baseline",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 2.198663999995915,
+      "checkpoint": "baseline-seed-27-step-800.pt",
+      "checkpoint_sha256": "9101e89d87bf6b2d130f234ec0bca33474c0d368feee6d6d128f2b533b2a8b1c",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.0002570185752119869
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 55,
+        "agreement": 0.21912351250648499,
+        "cross_entropy": 12.889657974243164
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.134800791995076,
+      "checkpoint": "slower-seed-7-step-50.pt",
+      "checkpoint_sha256": "790a8c278ad72636bf7e99bb027e15830f1650b8bb7c5097c90316b4a035beaa",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 0.9475640654563904
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 48,
+        "agreement": 0.19123506546020508,
+        "cross_entropy": 4.5912065505981445
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 0.5396559579967288,
+      "checkpoint": "slower-seed-7-step-200.pt",
+      "checkpoint_sha256": "63c6898ed69559cc18e918fa4b92e4a783f8b910c0c6988ffa815f96d87e6e12",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.029436184093356133
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 54,
+        "agreement": 0.2151394486427307,
+        "cross_entropy": 7.2441534996032715
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 2.1910493739997037,
+      "checkpoint": "slower-seed-7-step-800.pt",
+      "checkpoint_sha256": "9ac96da5c0d47f96ebf4f4137cc02abce4187bb98131a0a1114205c8b854355f",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.0013299324782565236
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 57,
+        "agreement": 0.22709164023399353,
+        "cross_entropy": 9.438970565795898
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.13662449999537785,
+      "checkpoint": "slower-seed-17-step-50.pt",
+      "checkpoint_sha256": "ef9ac63bb759d04139ecab5cdbeb89973d3d390fdca3ecaa0d4f8051953d4b59",
+      "train": {
+        "positions": 768,
+        "correct": 591,
+        "agreement": 0.76953125,
+        "cross_entropy": 0.9645960927009583
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 50,
+        "agreement": 0.19920319318771362,
+        "cross_entropy": 4.5485358238220215
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 0.5433508329952019,
+      "checkpoint": "slower-seed-17-step-200.pt",
+      "checkpoint_sha256": "0f10f6c23d2e72b0c08542597e4d8a41f02ff79362c587e061858a4fc56f56ce",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.03115633688867092
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 53,
+        "agreement": 0.21115538477897644,
+        "cross_entropy": 7.221571922302246
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 2.2003603749908507,
+      "checkpoint": "slower-seed-17-step-800.pt",
+      "checkpoint_sha256": "fbe1aa989af33ed1f5763a92d26980dba5cbd593503d911f53abb4014e672e37",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.0013874643482267857
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 53,
+        "agreement": 0.21115538477897644,
+        "cross_entropy": 9.523937225341797
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.13419016700208886,
+      "checkpoint": "slower-seed-27-step-50.pt",
+      "checkpoint_sha256": "2502b8f039ebe0637e5e1114b3734671b1c77b232db0add234a7b4e81e561d9e",
+      "train": {
+        "positions": 768,
+        "correct": 597,
+        "agreement": 0.77734375,
+        "cross_entropy": 0.9824841618537903
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 48,
+        "agreement": 0.19123506546020508,
+        "cross_entropy": 4.494107246398926
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 0.5495463749975897,
+      "checkpoint": "slower-seed-27-step-200.pt",
+      "checkpoint_sha256": "c81defe4292aae2478ef6771001907bcf54cc2f4afdaa9d58abdce07c82285d8",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.033500175923109055
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 53,
+        "agreement": 0.21115538477897644,
+        "cross_entropy": 6.994369983673096
+      }
+    },
+    {
+      "config": "slower",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 2.18563195799652,
+      "checkpoint": "slower-seed-27-step-800.pt",
+      "checkpoint_sha256": "136818fda174f63d1dbeface8f35e98e39e5d1e753e1728f2abd47b77ef3672f",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.0014785100938752294
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 50,
+        "agreement": 0.19920319318771362,
+        "cross_entropy": 9.155434608459473
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.14500983299512882,
+      "checkpoint": "decay-seed-7-step-50.pt",
+      "checkpoint_sha256": "806d22946b6a8d4bd039782cbe7713f5b99f456c3152e2679e9bacfe8bbb2b70",
+      "train": {
+        "positions": 768,
+        "correct": 415,
+        "agreement": 0.5403645634651184,
+        "cross_entropy": 1.7182222604751587
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 48,
+        "agreement": 0.19123506546020508,
+        "cross_entropy": 3.5446853637695312
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 0.5602004579923232,
+      "checkpoint": "decay-seed-7-step-200.pt",
+      "checkpoint_sha256": "0ea1b021b48322972d022404876b8afcab418f1d75690445ae705474888ac15f",
+      "train": {
+        "positions": 768,
+        "correct": 622,
+        "agreement": 0.8098958134651184,
+        "cross_entropy": 0.9040682911872864
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.6336007118225098
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 2.2182337919948623,
+      "checkpoint": "decay-seed-7-step-800.pt",
+      "checkpoint_sha256": "c710714977f456977bb0d99b1f0bbe828c96e308b6fa687d9e982f7a81698165",
+      "train": {
+        "positions": 768,
+        "correct": 629,
+        "agreement": 0.8190104365348816,
+        "cross_entropy": 0.8934783339500427
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.623196840286255
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.13611912499618484,
+      "checkpoint": "decay-seed-17-step-50.pt",
+      "checkpoint_sha256": "b513fc3b4156661f9379b96541566bb538bac4376e8c476e8553bd05ef299543",
+      "train": {
+        "positions": 768,
+        "correct": 394,
+        "agreement": 0.5130208134651184,
+        "cross_entropy": 1.748862385749817
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 47,
+        "agreement": 0.1872510015964508,
+        "cross_entropy": 3.5709948539733887
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 0.5444809589971555,
+      "checkpoint": "decay-seed-17-step-200.pt",
+      "checkpoint_sha256": "0007572dc0021546fd841c86bc872b3e2a84f01c3f0914592660963236cd6686",
+      "train": {
+        "positions": 768,
+        "correct": 623,
+        "agreement": 0.8111979365348816,
+        "cross_entropy": 0.9072815775871277
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.6370315551757812
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 2.204745292001462,
+      "checkpoint": "decay-seed-17-step-800.pt",
+      "checkpoint_sha256": "703946acb646098cc3714334bb54055a77600cb509a024ad7819c1d44564e867",
+      "train": {
+        "positions": 768,
+        "correct": 627,
+        "agreement": 0.81640625,
+        "cross_entropy": 0.8932380676269531
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.6237971782684326
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.13611662499897648,
+      "checkpoint": "decay-seed-27-step-50.pt",
+      "checkpoint_sha256": "86f087e25aae23a8e35f8e50d602d08c1ebee1e4253534182c94b6c275d15e28",
+      "train": {
+        "positions": 768,
+        "correct": 390,
+        "agreement": 0.5078125,
+        "cross_entropy": 1.755143165588379
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 47,
+        "agreement": 0.1872510015964508,
+        "cross_entropy": 3.5631935596466064
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 0.5447509580044425,
+      "checkpoint": "decay-seed-27-step-200.pt",
+      "checkpoint_sha256": "68dea06835f4b9f706b43eb0e6d25fe944735ac943f2baee346903e60315887e",
+      "train": {
+        "positions": 768,
+        "correct": 623,
+        "agreement": 0.8111979365348816,
+        "cross_entropy": 0.9095447659492493
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.6292247772216797
+      }
+    },
+    {
+      "config": "decay",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 2.192294000007678,
+      "checkpoint": "decay-seed-27-step-800.pt",
+      "checkpoint_sha256": "6fa5528fbb955bd4cf538deaea32b1dc1fc5e3dd74add101aa0474d5bfbb79e7",
+      "train": {
+        "positions": 768,
+        "correct": 629,
+        "agreement": 0.8190104365348816,
+        "cross_entropy": 0.8936716914176941
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 46,
+        "agreement": 0.18326693773269653,
+        "cross_entropy": 3.621793508529663
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.3356816669984255,
+      "checkpoint": "smooth-seed-7-step-50.pt",
+      "checkpoint_sha256": "60367648f568ed1027931211a83d2c863a43a1708f29b73a3e2c70086d258120",
+      "train": {
+        "positions": 768,
+        "correct": 615,
+        "agreement": 0.80078125,
+        "cross_entropy": 0.9932622313499451
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 49,
+        "agreement": 0.19521912932395935,
+        "cross_entropy": 3.4462890625
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 0.9746997509937501,
+      "checkpoint": "smooth-seed-7-step-200.pt",
+      "checkpoint_sha256": "7b65d377872f2b0990bdaf7e8db017f30297cb0461409c5883817b8394d1cd61",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.1428331732749939
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 50,
+        "agreement": 0.19920319318771362,
+        "cross_entropy": 3.7313714027404785
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 3.593488875994808,
+      "checkpoint": "smooth-seed-7-step-800.pt",
+      "checkpoint_sha256": "6fb2c22657a08f020b83b1b7c1d33d1ffc08e1e01dc1abb250de0310f195fb05",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.10719809681177139
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 41,
+        "agreement": 0.16334661841392517,
+        "cross_entropy": 4.054416656494141
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.217289250002068,
+      "checkpoint": "smooth-seed-17-step-50.pt",
+      "checkpoint_sha256": "9e64fec82fe54cf5ac6065f1ca3877a34ef85dd73d7342bbd03aed1bb80f175f",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.0126076936721802
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 51,
+        "agreement": 0.2031872570514679,
+        "cross_entropy": 3.4253640174865723
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 0.8727787499956321,
+      "checkpoint": "smooth-seed-17-step-200.pt",
+      "checkpoint_sha256": "d193550fd9651a6939ae40b81f5eed9b1e71ac4cdb4c9c2953c85ecd4c9a08b3",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.14502204954624176
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 47,
+        "agreement": 0.1872510015964508,
+        "cross_entropy": 3.6707468032836914
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 3.4782422079952084,
+      "checkpoint": "smooth-seed-17-step-800.pt",
+      "checkpoint_sha256": "1e6adbb6b5ca84e1d1c57e46b62a10eefbd0255a62811e993ed18ceb3c97b65f",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.1074112057685852
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 41,
+        "agreement": 0.16334661841392517,
+        "cross_entropy": 3.8741488456726074
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.21660966600029496,
+      "checkpoint": "smooth-seed-27-step-50.pt",
+      "checkpoint_sha256": "27a4fa4c6dfb904aa9372c9a0040efa3454e8658993f8fceb653ad810ad2a853",
+      "train": {
+        "positions": 768,
+        "correct": 596,
+        "agreement": 0.7760416865348816,
+        "cross_entropy": 1.0317326784133911
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3971340656280518
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 0.8761367490005796,
+      "checkpoint": "smooth-seed-27-step-200.pt",
+      "checkpoint_sha256": "f460bddbc167ebd665e42fb35588c78f11ea32905e5d19f96fb2259916ef003d",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.14766450226306915
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 51,
+        "agreement": 0.2031872570514679,
+        "cross_entropy": 3.581631898880005
+      }
+    },
+    {
+      "config": "smooth",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 3.485807041004591,
+      "checkpoint": "smooth-seed-27-step-800.pt",
+      "checkpoint_sha256": "3c664e3efa2d7e8e0904c6bcc89d4b25b48f2c0c32ab17c0198b8e7a0556c74b",
+      "train": {
+        "positions": 768,
+        "correct": 768,
+        "agreement": 1.0,
+        "cross_entropy": 0.10749220848083496
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 37,
+        "agreement": 0.14741036295890808,
+        "cross_entropy": 4.049617290496826
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.2153448329991079,
+      "checkpoint": "regularized-seed-7-step-50.pt",
+      "checkpoint_sha256": "2f0cb355cfba3a989a145b09210db91eab4ed9c895ab899f0ae7f11865a2703b",
+      "train": {
+        "positions": 768,
+        "correct": 401,
+        "agreement": 0.5221354365348816,
+        "cross_entropy": 1.833799958229065
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 49,
+        "agreement": 0.19521912932395935,
+        "cross_entropy": 3.365906000137329
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 0.8748683739977423,
+      "checkpoint": "regularized-seed-7-step-200.pt",
+      "checkpoint_sha256": "fe618f2d1f93fc1fa26eb6335563b8dda16d6a7e7aefda900017a7e62a105845",
+      "train": {
+        "positions": 768,
+        "correct": 607,
+        "agreement": 0.7903645634651184,
+        "cross_entropy": 1.1139131784439087
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.390854597091675
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 3.446562081997399,
+      "checkpoint": "regularized-seed-7-step-800.pt",
+      "checkpoint_sha256": "f8281e70a60e8f26f025976499ff9fc2feb689818c673237991ce0a1772f8e6e",
+      "train": {
+        "positions": 768,
+        "correct": 609,
+        "agreement": 0.79296875,
+        "cross_entropy": 1.1039785146713257
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.384207010269165
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.21544737499789335,
+      "checkpoint": "regularized-seed-17-step-50.pt",
+      "checkpoint_sha256": "0c61db64d7ce2a1d32ebe69b527f5357060c506c7c07e950a59f01c1f82569b9",
+      "train": {
+        "positions": 768,
+        "correct": 386,
+        "agreement": 0.5026041865348816,
+        "cross_entropy": 1.8625808954238892
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 49,
+        "agreement": 0.19521912932395935,
+        "cross_entropy": 3.3899874687194824
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 0.873424540994165,
+      "checkpoint": "regularized-seed-17-step-200.pt",
+      "checkpoint_sha256": "84af5499a3863c02062570e75361503d3f408ab016646a3f82a629cf6965a811",
+      "train": {
+        "positions": 768,
+        "correct": 605,
+        "agreement": 0.7877604365348816,
+        "cross_entropy": 1.1159049272537231
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.390199899673462
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 3.503796582990617,
+      "checkpoint": "regularized-seed-17-step-800.pt",
+      "checkpoint_sha256": "33b8e06aa4eb6727dff671488858a95fabd40cc06b8a011dce72c6a31a0cc64a",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.1057977676391602
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.3852174282073975
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.2166705420022481,
+      "checkpoint": "regularized-seed-27-step-50.pt",
+      "checkpoint_sha256": "4adbf488cde8d614627be75169a551d85e13afc77e7711279c321bae238f2c6a",
+      "train": {
+        "positions": 768,
+        "correct": 386,
+        "agreement": 0.5026041865348816,
+        "cross_entropy": 1.8669549226760864
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 48,
+        "agreement": 0.19123506546020508,
+        "cross_entropy": 3.3764712810516357
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 0.8748792920014239,
+      "checkpoint": "regularized-seed-27-step-200.pt",
+      "checkpoint_sha256": "7cef599188eacbbdbff0406b6761a367f087f5f7d62160236c1a2dd252b92c28",
+      "train": {
+        "positions": 768,
+        "correct": 607,
+        "agreement": 0.7903645634651184,
+        "cross_entropy": 1.116780400276184
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 46,
+        "agreement": 0.18326693773269653,
+        "cross_entropy": 3.388216257095337
+      }
+    },
+    {
+      "config": "regularized",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 3.4959740420017624,
+      "checkpoint": "regularized-seed-27-step-800.pt",
+      "checkpoint_sha256": "7dad7345b8fdeeece1d01e63a468fdfa8747723e5847b23de7ff084afe3be226",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.1060124635696411
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.383195400238037
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.3392284580040723,
+      "checkpoint": "wide128-seed-7-step-50.pt",
+      "checkpoint_sha256": "5b6aef36813cf71cb897013542dbcb2099e13c708af577eab4b9d700478e0e0f",
+      "train": {
+        "positions": 768,
+        "correct": 468,
+        "agreement": 0.609375,
+        "cross_entropy": 1.5600367784500122
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 51,
+        "agreement": 0.2031872570514679,
+        "cross_entropy": 3.3690433502197266
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 1.0836787080042996,
+      "checkpoint": "wide128-seed-7-step-200.pt",
+      "checkpoint_sha256": "747eebb6a152e88183e084ed64e68612d60ef6719c24def38845b8eb7a575194",
+      "train": {
+        "positions": 768,
+        "correct": 607,
+        "agreement": 0.7903645634651184,
+        "cross_entropy": 1.1070871353149414
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3859782218933105
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 4.001336916007858,
+      "checkpoint": "wide128-seed-7-step-800.pt",
+      "checkpoint_sha256": "3188e8888042e992fc446c0166171cd86042c4d2833b1f5057d3a4edaec584ab",
+      "train": {
+        "positions": 768,
+        "correct": 610,
+        "agreement": 0.7942708134651184,
+        "cross_entropy": 1.0999423265457153
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3851044178009033
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.24293754099926446,
+      "checkpoint": "wide128-seed-17-step-50.pt",
+      "checkpoint_sha256": "9540352d2b1a5582573365fb649bd67c02c3974b6e0d00e3e26e99b803c29791",
+      "train": {
+        "positions": 768,
+        "correct": 451,
+        "agreement": 0.5872395634651184,
+        "cross_entropy": 1.621437430381775
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 48,
+        "agreement": 0.19123506546020508,
+        "cross_entropy": 3.3782758712768555
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 0.9719550000008894,
+      "checkpoint": "wide128-seed-17-step-200.pt",
+      "checkpoint_sha256": "e73a9a2c8b002eeb23db054b7a55e6e714ddb3f20dc95b648f4e9a5a2e77da33",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.1077055931091309
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3878681659698486
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 3.897409458004404,
+      "checkpoint": "wide128-seed-17-step-800.pt",
+      "checkpoint_sha256": "a81f21bf2d28d9144947835c0ea5d98b9954087835fd1eba35dc6a7ec07c74cf",
+      "train": {
+        "positions": 768,
+        "correct": 609,
+        "agreement": 0.79296875,
+        "cross_entropy": 1.1031138896942139
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.384502410888672
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.24293775000114692,
+      "checkpoint": "wide128-seed-27-step-50.pt",
+      "checkpoint_sha256": "1d7a21088d7c8a0be74e26705ecb0e27b3fdf9f90d30c82f9e87739a227133f6",
+      "train": {
+        "positions": 768,
+        "correct": 446,
+        "agreement": 0.5807291865348816,
+        "cross_entropy": 1.6209355592727661
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 48,
+        "agreement": 0.19123506546020508,
+        "cross_entropy": 3.381406307220459
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 0.9723128749974421,
+      "checkpoint": "wide128-seed-27-step-200.pt",
+      "checkpoint_sha256": "dedb9e0e14ce48bc6d8416f27961b15f3290c874513c5b8d3ba41d255ae481f3",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.109332799911499
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.3866891860961914
+      }
+    },
+    {
+      "config": "wide128",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 3.9205090410032426,
+      "checkpoint": "wide128-seed-27-step-800.pt",
+      "checkpoint_sha256": "9d1ecd71a184dabfcbc10a4847b1774bfe868eae65c3e86f0e38517ad3a227af",
+      "train": {
+        "positions": 768,
+        "correct": 605,
+        "agreement": 0.7877604365348816,
+        "cross_entropy": 1.104688286781311
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.3828330039978027
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 7,
+      "steps": 50,
+      "optimization_seconds": 0.4020937090026564,
+      "checkpoint": "wide256-seed-7-step-50.pt",
+      "checkpoint_sha256": "105086b865c665de6e7cc2d96c355056b55e9b0b95aa22d8f69111ec23e93c93",
+      "train": {
+        "positions": 768,
+        "correct": 532,
+        "agreement": 0.6927083134651184,
+        "cross_entropy": 1.2973322868347168
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.390126943588257
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 7,
+      "steps": 200,
+      "optimization_seconds": 1.288903251006559,
+      "checkpoint": "wide256-seed-7-step-200.pt",
+      "checkpoint_sha256": "b17d45a93dd49f17cb398e08e61da635457ed599f0511faa671a290449b8870f",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.1057003736495972
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.3839426040649414
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 7,
+      "steps": 800,
+      "optimization_seconds": 4.8588331260107225,
+      "checkpoint": "wide256-seed-7-step-800.pt",
+      "checkpoint_sha256": "f69e0dce6016a98875004aef72f663618312d48cf8cf03d2ed7319dcf747a4e4",
+      "train": {
+        "positions": 768,
+        "correct": 612,
+        "agreement": 0.796875,
+        "cross_entropy": 1.0976866483688354
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 43,
+        "agreement": 0.17131474614143372,
+        "cross_entropy": 3.3826048374176025
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 17,
+      "steps": 50,
+      "optimization_seconds": 0.2945629169989843,
+      "checkpoint": "wide256-seed-17-step-50.pt",
+      "checkpoint_sha256": "d65132625792c82abda0f6af82009d6ee900429e0d371861a8bf8a8cd2f82844",
+      "train": {
+        "positions": 768,
+        "correct": 536,
+        "agreement": 0.6979166865348816,
+        "cross_entropy": 1.3259235620498657
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 44,
+        "agreement": 0.175298810005188,
+        "cross_entropy": 3.380744218826294
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 17,
+      "steps": 200,
+      "optimization_seconds": 1.184061042004032,
+      "checkpoint": "wide256-seed-17-step-200.pt",
+      "checkpoint_sha256": "fd4cc56e04c45f4b22b549a349b0fbb4c9c58eabc5a0d4cd821d70f6bcb5c2d0",
+      "train": {
+        "positions": 768,
+        "correct": 606,
+        "agreement": 0.7890625,
+        "cross_entropy": 1.1060314178466797
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3840930461883545
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 17,
+      "steps": 800,
+      "optimization_seconds": 4.768085251009325,
+      "checkpoint": "wide256-seed-17-step-800.pt",
+      "checkpoint_sha256": "9a058942e521a00748f89c4d35ce31bc6def23788d7741333ba665b6d55a581b",
+      "train": {
+        "positions": 768,
+        "correct": 610,
+        "agreement": 0.7942708134651184,
+        "cross_entropy": 1.0987929105758667
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3830454349517822
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 27,
+      "steps": 50,
+      "optimization_seconds": 0.2913443750003353,
+      "checkpoint": "wide256-seed-27-step-50.pt",
+      "checkpoint_sha256": "d8c23224adb4352a78ebd661e8b58c36236cf0b38f34109987cbcec9f8455fc4",
+      "train": {
+        "positions": 768,
+        "correct": 529,
+        "agreement": 0.6888020634651184,
+        "cross_entropy": 1.3105427026748657
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.389285087585449
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 27,
+      "steps": 200,
+      "optimization_seconds": 1.159450166996976,
+      "checkpoint": "wide256-seed-27-step-200.pt",
+      "checkpoint_sha256": "4ca55be1efa279efc9de8d91b194770d63fb9277e9092006a7fcb301d1bf8284",
+      "train": {
+        "positions": 768,
+        "correct": 607,
+        "agreement": 0.7903645634651184,
+        "cross_entropy": 1.1057820320129395
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3840205669403076
+      }
+    },
+    {
+      "config": "wide256",
+      "seed": 27,
+      "steps": 800,
+      "optimization_seconds": 4.755458958992676,
+      "checkpoint": "wide256-seed-27-step-800.pt",
+      "checkpoint_sha256": "87ef33f05f1a208845749b6f0c20610f861080fce1770cc341d191df54d86d8f",
+      "train": {
+        "positions": 768,
+        "correct": 611,
+        "agreement": 0.7955729365348816,
+        "cross_entropy": 1.0994840860366821
+      },
+      "tuning": {
+        "positions": 251,
+        "correct": 45,
+        "agreement": 0.17928287386894226,
+        "cross_entropy": 3.3844218254089355
+      }
+    }
+  ]
+}

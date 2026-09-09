@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "name": "generalization-v1",
+  "derived_from": "../../../artifacts/learning/generalization-v1/manifest.json",
+  "origin_config": null,
+  "data": {
+    "dataset": "../../../artifacts/learning/generalization-v1/dataset.json",
+    "train_size": null,
+    "selection": "source-interleaved",
+    "subset_seed": 7
+  },
+  "model": {
+    "architecture": "mlp-1261-64-8100-v1",
+    "encoding": "absolute-board-turn-v1"
+  },
+  "objective": {
+    "name": "legal-masked-teacher-move"
+  },
+  "optimizer": {
+    "name": "adam",
+    "learning_rate": 0.01
+  },
+  "training": {
+    "batching": "full",
+    "updates": 200,
+    "seed": 7,
+    "precision": "float32"
+  },
+  "evaluation": {
+    "split": "validation",
+    "metrics": [
+      "agreement",
+      "cross_entropy"
+    ]
+  },
+  "execution": {
+    "device": "mps",
+    "threads": 1,
+    "fit_seconds": 60.0,
+    "total_seconds": 600.0
+  },
+  "cases": [
+    {
+      "name": "size-96",
+      "overrides": {
+        "data": {
+          "train_size": 96
+        }
+      }
+    },
+    {
+      "name": "size-192",
+      "overrides": {
+        "data": {
+          "train_size": 192
+        }
+      }
+    },
+    {
+      "name": "size-384",
+      "overrides": {
+        "data": {
+          "train_size": 384
+        }
+      }
+    },
+    {
+      "name": "size-768",
+      "overrides": {
+        "data": {
+          "train_size": 768
+        }
+      }
+    }
+  ],
+  "seeds": [
+    7,
+    17,
+    27
+  ]
+}

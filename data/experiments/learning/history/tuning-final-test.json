@@ -1,0 +1,794 @@
+{
+  "retrospective": true,
+  "sources": [
+    "artifacts/learning/tuning-v1/selection.json",
+    "artifacts/learning/tuning-v1/final-test-report.json"
+  ],
+  "unknowns": [],
+  "limitations": [
+    "Evaluation of preselected existing prototype checkpoints; no new training. Exact test inputs remain in the local source report."
+  ],
+  "selection": {
+    "status": "locked_before_final_test",
+    "final_test_generator": {
+      "seed": 101,
+      "games": 16,
+      "plies": 32,
+      "samples": 16,
+      "teacher_nodes": 1000,
+      "teacher_depth": 3
+    },
+    "exclude_inputs_from": "generalization-v1-data.json, all training and tuning inputs",
+    "candidates": [
+      {
+        "id": "baseline",
+        "width": 64,
+        "lr": 0.01,
+        "decay": 0,
+        "smooth": 0,
+        "steps": 200
+      },
+      {
+        "id": "slower",
+        "width": 64,
+        "lr": 0.003,
+        "decay": 0,
+        "smooth": 0,
+        "steps": 200
+      },
+      {
+        "id": "regularized",
+        "width": 64,
+        "lr": 0.003,
+        "decay": 0.01,
+        "smooth": 0.1,
+        "steps": 50
+      }
+    ],
+    "seeds": [
+      7,
+      17,
+      27
+    ],
+    "selection_reason": "Compare the best tuning top-1 recipe and a confidence-control recipe against the original baseline. No fresh-test-driven retuning. Top-1 gain below a few percentage points on this small test will not justify changing the default."
+  },
+  "result": {
+    "selection_sha256": "52d9ca927bb102902fa9e891c578c76539a2de8af3886a8407abe08aede9aab8",
+    "dataset_sha256": "7d4ba9dc6649c883926003b0343b81cf310f144e25447840c6037fa005634ab4",
+    "role": "All new source games are final-test-only regardless of the generator split tags.",
+    "generated_labels": 256,
+    "excluded_overlaps": 2,
+    "source_counts": {
+      "game-000": 15,
+      "game-001": 16,
+      "game-002": 16,
+      "game-003": 16,
+      "game-004": 16,
+      "game-005": 16,
+      "game-006": 16,
+      "game-007": 16,
+      "game-008": 16,
+      "game-009": 16,
+      "game-010": 16,
+      "game-011": 16,
+      "game-012": 15,
+      "game-013": 16,
+      "game-014": 16,
+      "game-015": 16
+    },
+    "random_legal_agreement": 0.02877727337181568,
+    "random_legal_cross_entropy": 3.639951705932617,
+    "trials": [
+      {
+        "config": "baseline",
+        "seed": 7,
+        "checkpoint_sha256": "72ed9291708d845ca14d64c27d9b953f6dcbf6e3ec168fb1b8c86c4dc370d913",
+        "correct": 37,
+        "positions": 254,
+        "agreement": 0.14566929638385773,
+        "cross_entropy": 14.296175956726074,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 2
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 6
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 3
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 1
+          }
+        }
+      },
+      {
+        "config": "baseline",
+        "seed": 17,
+        "checkpoint_sha256": "2d0cea23367aca24423369f5b1453382e97f1e16bf0c12c2a2d71b0ebf17ef4b",
+        "correct": 38,
+        "positions": 254,
+        "agreement": 0.14960630238056183,
+        "cross_entropy": 14.195144653320312,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 2
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 6
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 4
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 1
+          }
+        }
+      },
+      {
+        "config": "baseline",
+        "seed": 27,
+        "checkpoint_sha256": "06fc1eeaa620d3381bbe316ce706ed45d6310b6c23b8d321fb7da1b83de52fb4",
+        "correct": 39,
+        "positions": 254,
+        "agreement": 0.15354330837726593,
+        "cross_entropy": 14.042025566101074,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 7
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 3
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 1
+          }
+        }
+      },
+      {
+        "config": "slower",
+        "seed": 7,
+        "checkpoint_sha256": "63c6898ed69559cc18e918fa4b92e4a783f8b910c0c6988ffa815f96d87e6e12",
+        "correct": 39,
+        "positions": 254,
+        "agreement": 0.15354330837726593,
+        "cross_entropy": 8.998126983642578,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 7
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 3
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 2
+          }
+        }
+      },
+      {
+        "config": "slower",
+        "seed": 17,
+        "checkpoint_sha256": "0f10f6c23d2e72b0c08542597e4d8a41f02ff79362c587e061858a4fc56f56ce",
+        "correct": 37,
+        "positions": 254,
+        "agreement": 0.14566929638385773,
+        "cross_entropy": 8.94981861114502,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 2
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 6
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 4
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 1
+          }
+        }
+      },
+      {
+        "config": "slower",
+        "seed": 27,
+        "checkpoint_sha256": "c81defe4292aae2478ef6771001907bcf54cc2f4afdaa9d58abdce07c82285d8",
+        "correct": 34,
+        "positions": 254,
+        "agreement": 0.13385826349258423,
+        "cross_entropy": 8.839774131774902,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 7
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 2
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 2
+          }
+        }
+      },
+      {
+        "config": "regularized",
+        "seed": 7,
+        "checkpoint_sha256": "2f0cb355cfba3a989a145b09210db91eab4ed9c895ab899f0ae7f11865a2703b",
+        "correct": 27,
+        "positions": 254,
+        "agreement": 0.10629921406507492,
+        "cross_entropy": 3.77394962310791,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 5
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 2
+          }
+        }
+      },
+      {
+        "config": "regularized",
+        "seed": 17,
+        "checkpoint_sha256": "0c61db64d7ce2a1d32ebe69b527f5357060c506c7c07e950a59f01c1f82569b9",
+        "correct": 29,
+        "positions": 254,
+        "agreement": 0.11417322605848312,
+        "cross_entropy": 3.787018060684204,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 5
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 2
+          }
+        }
+      },
+      {
+        "config": "regularized",
+        "seed": 27,
+        "checkpoint_sha256": "4adbf488cde8d614627be75169a551d85e13afc77e7711279c321bae238f2c6a",
+        "correct": 27,
+        "positions": 254,
+        "agreement": 0.10629921406507492,
+        "cross_entropy": 3.7881720066070557,
+        "by_source": {
+          "game-000": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-001": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-002": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-003": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-004": {
+            "positions": 16,
+            "correct": 4
+          },
+          "game-005": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-006": {
+            "positions": 16,
+            "correct": 3
+          },
+          "game-007": {
+            "positions": 16,
+            "correct": 5
+          },
+          "game-008": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-009": {
+            "positions": 16,
+            "correct": 2
+          },
+          "game-010": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-011": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-012": {
+            "positions": 15,
+            "correct": 1
+          },
+          "game-013": {
+            "positions": 16,
+            "correct": 0
+          },
+          "game-014": {
+            "positions": 16,
+            "correct": 1
+          },
+          "game-015": {
+            "positions": 16,
+            "correct": 3
+          }
+        }
+      }
+    ],
+    "summary": [
+      {
+        "config": "baseline",
+        "agreement": 0.14960630238056183,
+        "agreement_std": 0.003214551935400853,
+        "cross_entropy": 14.17778205871582,
+        "correct_counts": [
+          37,
+          38,
+          39
+        ]
+      },
+      {
+        "config": "slower",
+        "agreement": 0.1443569560845693,
+        "agreement_std": 0.008089784744719134,
+        "cross_entropy": 8.929239908854166,
+        "correct_counts": [
+          39,
+          37,
+          34
+        ]
+      },
+      {
+        "config": "regularized",
+        "agreement": 0.10892388472954433,
+        "agreement_std": 0.00371184485045543,
+        "cross_entropy": 3.78304656346639,
+        "correct_counts": [
+          27,
+          29,
+          27
+        ]
+      }
+    ]
+  }
+}

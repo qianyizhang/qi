@@ -1,0 +1,163 @@
+{
+  "retrospective": true,
+  "recipe": "../data-scaling-v1.json",
+  "sources": [
+    "artifacts/learning/data-scaling-v1/curve-cached/manifest.json",
+    "artifacts/learning/data-scaling-v1/curve-cached/summary.json"
+  ],
+  "unknowns": [],
+  "limitations": [
+    "Recipe reconstructs declared settings; original implementation identity remains in the source manifest. Rerunning uses current code."
+  ],
+  "status": "complete",
+  "error": null,
+  "elapsed_seconds": 712.757766374998,
+  "planned_trials": 9,
+  "dataset_sha256": "dd458c3547c0915737d7621c372968dc987b71d76606afc58c0caaeae2f3da3b",
+  "source_sha256": "4e0d254b345e776be44038a1dc412793f23877915384f997ff22b185c83f4826",
+  "observations": [
+    {
+      "size": 768,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-768-seed-7.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16615311685233466,
+      "validation_cross_entropy": 10.940938949584961
+    },
+    {
+      "size": 768,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-768-seed-17.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16947143872955678,
+      "validation_cross_entropy": 10.786543846130371
+    },
+    {
+      "size": 768,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-768-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.16662716283479498,
+      "validation_cross_entropy": 10.891411781311035
+    },
+    {
+      "size": 3072,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-3072-seed-7.pt",
+      "train_agreement": 0.9996744791666666,
+      "validation_agreement": 0.21782412894050723,
+      "validation_cross_entropy": 9.415268898010254
+    },
+    {
+      "size": 3072,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-3072-seed-17.pt",
+      "train_agreement": 0.9996744791666666,
+      "validation_agreement": 0.20573595638776962,
+      "validation_cross_entropy": 9.35755729675293
+    },
+    {
+      "size": 3072,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-3072-seed-27.pt",
+      "train_agreement": 1.0,
+      "validation_agreement": 0.21450580706328515,
+      "validation_cross_entropy": 9.465664863586426
+    },
+    {
+      "size": 12288,
+      "seed": 7,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-12288-seed-7.pt",
+      "train_agreement": 0.97265625,
+      "validation_agreement": 0.2628584972742356,
+      "validation_cross_entropy": 7.918387413024902
+    },
+    {
+      "size": 12288,
+      "seed": 17,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-12288-seed-17.pt",
+      "train_agreement": 0.9547526041666666,
+      "validation_agreement": 0.25456269258118036,
+      "validation_cross_entropy": 7.873616695404053
+    },
+    {
+      "size": 12288,
+      "seed": 27,
+      "status": "complete",
+      "completed_updates": 200,
+      "fit_seconds": 600.0,
+      "checkpoint": "/Users/zhangqy/pkgs/qi/artifacts/learning/data-scaling-v1/curve-cached/size-12288-seed-27.pt",
+      "train_agreement": 0.966796875,
+      "validation_agreement": 0.2536146006162598,
+      "validation_cross_entropy": 8.1499662399292
+    }
+  ],
+  "curve": [
+    {
+      "size": 768,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 1.0,
+      "train_agreement_std": 0.0,
+      "train_cross_entropy_mean": 0.0023253935699661574,
+      "train_cross_entropy_std": 0.00028290596362805036,
+      "validation_agreement_mean": 0.1674172394722288,
+      "validation_agreement_std": 0.001465373863553094,
+      "validation_cross_entropy_mean": 10.872964859008789,
+      "validation_cross_entropy_std": 0.06436706559262122,
+      "random_legal_agreement": 0.028522436043386265
+    },
+    {
+      "size": 3072,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 0.999782986111111,
+      "train_agreement_std": 0.00015345199244501474,
+      "train_cross_entropy_mean": 0.011694970851143202,
+      "train_cross_entropy_std": 0.0010197327795441345,
+      "validation_agreement_mean": 0.21268863079718733,
+      "validation_agreement_std": 0.0050995147548723785,
+      "validation_cross_entropy_mean": 9.412830352783203,
+      "validation_cross_entropy_std": 0.04416840030899154,
+      "random_legal_agreement": 0.028522436043386265
+    },
+    {
+      "size": 12288,
+      "complete_seeds": 3,
+      "expected_seeds": 3,
+      "train_agreement_mean": 0.9647352430555556,
+      "train_agreement_std": 0.007453092344216335,
+      "train_cross_entropy_mean": 0.1559398720661799,
+      "train_cross_entropy_std": 0.028510001848192114,
+      "validation_agreement_mean": 0.25701193015722523,
+      "validation_agreement_std": 0.004152226702526954,
+      "validation_cross_entropy_mean": 7.980656782786052,
+      "validation_cross_entropy_std": 0.12110704217798955,
+      "random_legal_agreement": 0.028522436043386265
+    }
+  ]
+}

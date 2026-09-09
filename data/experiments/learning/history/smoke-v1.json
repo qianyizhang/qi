@@ -1,0 +1,121 @@
+{
+  "retrospective": true,
+  "runnable_by_current_config": false,
+  "sources": [
+    "artifacts/learning/diagnostic-v1-report.json",
+    "artifacts/learning/policy-v1-report.json",
+    "git:58b64de:src/qi/learning/train.py"
+  ],
+  "unknowns": [
+    "Original reports did not record a complete source/environment identity."
+  ],
+  "limitations": [
+    "CPU/full-batch/float32/one-thread settings recovered from the original trainer source. Original evaluation did not report cross-entropy. No outer deadline existed."
+  ],
+  "runs": [
+    {
+      "name": "diagnostic-v1",
+      "config": {
+        "data": {
+          "dataset": "artifacts/learning/smoke-v1.json",
+          "selection": "source-order",
+          "train_size": 8
+        },
+        "model": {
+          "architecture": "mlp-1261-64-8100-v1",
+          "encoding": "absolute-board-turn-v1"
+        },
+        "objective": {
+          "name": "legal-masked-teacher-move"
+        },
+        "optimizer": {
+          "name": "adam",
+          "learning_rate": 0.01
+        },
+        "training": {
+          "batching": "full",
+          "updates": 200,
+          "seed": 7,
+          "precision": "float32"
+        },
+        "evaluation": {
+          "split": "validation",
+          "metrics": [
+            "agreement"
+          ]
+        },
+        "execution": {
+          "device": "cpu",
+          "threads": 1,
+          "fit_seconds": 60.0,
+          "total_seconds": null
+        }
+      },
+      "completed_updates": 200,
+      "train": {
+        "positions": 8,
+        "agreement": 1.0,
+        "legal_outputs": 8,
+        "mean_inference_ms": 0.10682287495455967
+      },
+      "validation": {
+        "positions": 32,
+        "agreement": 0.0,
+        "legal_outputs": 32,
+        "mean_inference_ms": 0.08324593746067421
+      }
+    },
+    {
+      "name": "policy-v1",
+      "config": {
+        "data": {
+          "dataset": "artifacts/learning/smoke-v1.json",
+          "selection": "source-order",
+          "train_size": 96
+        },
+        "model": {
+          "architecture": "mlp-1261-64-8100-v1",
+          "encoding": "absolute-board-turn-v1"
+        },
+        "objective": {
+          "name": "legal-masked-teacher-move"
+        },
+        "optimizer": {
+          "name": "adam",
+          "learning_rate": 0.01
+        },
+        "training": {
+          "batching": "full",
+          "updates": 200,
+          "seed": 7,
+          "precision": "float32"
+        },
+        "evaluation": {
+          "split": "validation",
+          "metrics": [
+            "agreement"
+          ]
+        },
+        "execution": {
+          "device": "cpu",
+          "threads": 1,
+          "fit_seconds": 60.0,
+          "total_seconds": null
+        }
+      },
+      "completed_updates": 200,
+      "train": {
+        "positions": 96,
+        "agreement": 1.0,
+        "legal_outputs": 96,
+        "mean_inference_ms": 0.07699615625256229
+      },
+      "validation": {
+        "positions": 32,
+        "agreement": 0.0,
+        "legal_outputs": 32,
+        "mean_inference_ms": 0.07694656248702358
+      }
+    }
+  ]
+}

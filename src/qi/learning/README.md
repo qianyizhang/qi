@@ -20,6 +20,84 @@ implemented single-generator pipeline.
 There is no value head, engine-score regression, self-play improvement loop,
 PUCT, or GPU requirement.
 
+## Declarative experiments
+
+Use `qi learn run --config <recipe.json> --preview` before a new comparison.
+Execution adds `--output <fresh-directory>`; scientific settings cannot be
+overridden on this command line. Existing `train` and `experiment` commands
+remain compatible and now also save config artifacts.
+
+Recipes use seven sections, validated in `config.py`:
+
+| Section | Current settings |
+| --- | --- |
+| `data` | Prepared dataset path, training size, source-order or source-interleaved selection, subset seed |
+| `model` | Existing architecture and encoding identifiers; unsupported alternatives fail |
+| `objective` | Existing legal-masked teacher-move objective |
+| `optimizer` | Adam and learning rate |
+| `training` | Full-batch updates, initialization seed, float32 |
+| `evaluation` | Dataset validation split; agreement and cross-entropy |
+| `execution` | CPU/MPS, threads, per-fit and total elapsed allowances |
+
+Omitted settings resolve to schema-v1 defaults. Saved configs include all seven
+sections and all declared settings. Library implementation details remain governed
+by code and the dependency lock; this is not a dump of every PyTorch parameter.
+Dataset generation, split construction and teacher labeling happen before this
+runner. The embedded reserved corpus and existing dataset validation remain in force.
+Config mode accepts the original v1 dataset or a complete frozen Training Data
+dataset. Incomplete mixtures fail before execution; per-slice diagnostics from the
+shared trainer remain in each trial report.
+
+A recipe optionally adds named `cases` and a `seeds` list:
+
+```json
+{
+  "schema_version": 1,
+  "name": "data-size",
+  "data": {"dataset": "dataset.json"},
+  "cases": [
+    {"name": "small", "overrides": {"data": {"train_size": 96}}},
+    {"name": "larger", "overrides": {"data": {"train_size": 192}}}
+  ],
+  "seeds": [7, 17, 27]
+}
+```
+
+Cases apply one level of section-field overrides, then run in listed case/seed
+order. Case names must be distinct ignoring capitalization, including on macOS.
+A missing case list means one case; a missing seed list uses the base
+training seed. Dataset, total allowance and initialization seed cannot be
+overridden inside a case. Use the shared dataset/allowance and `seeds` instead.
+Up to 16 cases and eight distinct seeds are supported. This initial comparison
+shape is provisional. It does not automatically certify comparability or perform
+adaptive selection. All trial metrics remain available; means/seed standard
+deviations require a complete seed group. Additional diagnostic metrics in the
+training report remain unchanged.
+
+Paths resolve relative to the config file, not the shell working directory.
+`runs.py` preserves `dataset.json`, a fully resolved `config.json`, the existing
+style of manifest, and `summary.json`. Each started trial additionally saves
+`<case>-seed-N.config.json`, its result JSON and CPU checkpoint. The trial config
+records concrete training size and the effective fit allowance after the remaining
+total budget is applied. Pending trials remain in the manifest; failures retain
+the active trial name and config. Deadline semantics match the existing elapsed
+allowances: setup/reporting and a bounded step can overrun them.
+
+Copy either the whole saved recipe or a single trial config, edit a parameter,
+and pass the copy to the same command. Saved configs carry `origin_config`; the
+new run records that origin as `derived_from` automatically. Preserve that field
+when copying. These are local file links, not additional content fingerprints.
+Saved configured runs reference their preserved dataset by absolute local path,
+so moving a copied config within this machine does not change its input. Moving
+the dataset to another machine requires updating that path. Reusing a config
+starts training from its seed; it does not resume checkpoint weights.
+The legacy single-fit command saves `<checkpoint-filename>.config.json` and references
+its original dataset path; the legacy matrix also preserves its dataset copy.
+
+Historical settings and limits are in the [experiment index](../../../data/experiments/learning/README.md).
+Use the [experiment method](../../../docs/experiments.md) to record expectations,
+selection versus confirmation, conclusions and revisit triggers.
+
 ## Run the small experiment
 
 Install the optional learning extra and the [local teacher](../../../docs/teacher.md).

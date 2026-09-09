@@ -1,12 +1,11 @@
 """Bounded learning curves over fixed data, nested subsets, and explicit seeds."""
 
 import json
+import subprocess
 import sys
 from hashlib import sha256
 from pathlib import Path
 from random import Random
-from statistics import mean, pstdev
-from time import perf_counter
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -84,81 +83,63 @@ def write_json(path: Path, value: dict) -> None:
     temporary.replace(path)
 
 
-def summarize(trials: list[dict], plan: LearningPlan) -> list[dict]:
-    rows = []
-    for size in plan.sizes:
-        complete = [trial for trial in trials if trial["size"] == size and trial["report"]["status"] == "complete"]
-        row = {"size": size, "complete_seeds": len(complete), "expected_seeds": len(plan.seeds)}
-        # CONTRACT: Only complete seed groups enter the learning curve.
-        if len(complete) == len(plan.seeds):
-            for split in ("train", "validation"):
-                for metric in ("agreement", "cross_entropy"):
-                    values = [trial["report"][split][metric] for trial in complete]
-                    row[f"{split}_{metric}_mean"] = mean(values)
-                    row[f"{split}_{metric}_std"] = pstdev(values)
-            row["random_legal_agreement"] = complete[0]["report"]["validation"]["random_legal_agreement"]
-        rows.append(row)
-    return rows
-
-
-def run_experiment(dataset: Dataset, corpus: Corpus, plan: LearningPlan, output: Path) -> dict:
-    manifest = preview(dataset, corpus, plan)
-    from qi.learning.train import train, validate_device
-
-    validate_device(plan.device, plan.threads)
-    if output.exists():
-        raise GameError(
-            "experiment_exists", "Choose a fresh experiment directory; runs are never overwritten or resumed."
-        )
-    # Include the complete local implementation and dependency identity, not Git authorship.
+def source_identity() -> dict:
     root = Path(__file__).resolve().parents[3]
     files = [*sorted((root / "src/qi").rglob("*.py")), root / "pyproject.toml", root / "uv.lock"]
     digest = sha256()
     for path in files:
         digest.update(str(path.relative_to(root)).encode() + b"\0" + path.read_bytes() + b"\0")
-    manifest.update(source_sha256=digest.hexdigest(), python=sys.version)
-    output.mkdir(parents=True)
-    (output / "dataset.json").write_text(dataset.model_dump_json() + "\n")
-    write_json(output / "manifest.json", manifest)
-    started = perf_counter()
-    result = {"status": "running", "planned_trials": manifest["planned_trials"], "trials": [], "curve": []}
-
-    def save() -> None:
-        result["elapsed_seconds"] = perf_counter() - started
-        result["curve"] = summarize(result["trials"], plan)
-        write_json(output / "summary.json", result)
-
-    save()
+    identity = {"source_sha256": digest.hexdigest(), "python": sys.version, "git_revision": None, "git_dirty": None}
     try:
-        for size in plan.sizes:
-            for seed in plan.seeds:
-                remaining = plan.total_seconds - (perf_counter() - started)
-                if remaining <= 0:
-                    result["status"] = "deadline"
-                    save()
-                    return result
-                name = f"size-{size}-seed-{seed}"
-                report = train(
-                    dataset,
-                    output / f"{name}.pt",
-                    seed=seed,
-                    steps=plan.steps,
-                    seconds=min(plan.fit_seconds, remaining),
-                    learning_rate=plan.learning_rate,
-                    device=plan.device,
-                    threads=plan.threads,
-                    train_inputs=manifest["ordered_train_inputs"][:size],
-                )
-                write_json(output / f"{name}.json", report)
-                result["trials"].append({"size": size, "seed": seed, "report": report})
-                save()
-        result["status"] = (
-            "complete" if all(t["report"]["status"] == "complete" for t in result["trials"]) else "incomplete"
+        revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True)
+        status = subprocess.run(
+            ["git", "status", "--porcelain", "--", "src/qi", "pyproject.toml", "uv.lock"],
+            cwd=root,
+            capture_output=True,
+            text=True,
         )
-    except (Exception, KeyboardInterrupt) as exc:
-        result["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
-        result["error"] = {"type": type(exc).__name__, "message": str(exc)}
-        save()
-        raise
-    save()
-    return result
+    except OSError:
+        return identity
+    identity.update(
+        git_revision=revision.stdout.strip() if revision.returncode == 0 else None,
+        git_dirty=bool(status.stdout) if status.returncode == 0 else None,
+    )
+    return identity
+
+
+def summarize(trials: list[dict], plan: LearningPlan) -> list[dict]:
+    """Compatibility projection of the shared complete-seed summaries."""
+    from qi.learning.runs import summarize_cases
+
+    planned = [{"case": f"size-{size}"} for size in plan.sizes for _ in plan.seeds]
+    converted = [{**trial, "case": f"size-{trial['size']}"} for trial in trials]
+    rows = summarize_cases(converted, planned)
+    for size, row in zip(plan.sizes, rows, strict=True):
+        row.pop("case")
+        row["size"] = size
+    return rows
+
+
+def run_experiment(dataset: Dataset, corpus: Corpus, plan: LearningPlan, output: Path) -> dict:
+    """Keep the flag-based curve API as an adapter to the configured executor."""
+    from qi.learning.config import Recipe
+    from qi.learning.runs import _execute
+
+    manifest = preview(dataset, corpus, plan)
+    recipe = Recipe.model_validate(
+        {
+            "name": "learning-curve",
+            "data": {"dataset": str((output / "dataset.json").resolve()), "subset_seed": plan.subset_seed},
+            "optimizer": {"learning_rate": plan.learning_rate},
+            "training": {"updates": plan.steps},
+            "execution": {
+                "device": plan.device,
+                "threads": plan.threads,
+                "fit_seconds": plan.fit_seconds,
+                "total_seconds": plan.total_seconds,
+            },
+            "cases": [{"name": f"size-{size}", "overrides": {"data": {"train_size": size}}} for size in plan.sizes],
+            "seeds": plan.seeds,
+        }
+    )
+    return _execute(recipe, dataset, output, legacy_manifest=manifest, legacy_plan=plan)

@@ -109,6 +109,9 @@ For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and
 weights remain optional local artifacts; default checks need neither.
 
 To train the first local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
+For repeatable comparisons, use `qi learn run --config <recipe.json> --preview`,
+then add `--output <fresh-directory>` to execute. Saved configs can be copied and
+edited; the [experiment index](data/experiments/learning/README.md) links existing recipes and findings.
 It covers a bounded CPU run, checkpoint reload, held-out agreement, and arena
 comparison. Set `QI_POLICY_CHECKPOINT` to expose the trained player in CLI and
 browser play. The walkthrough also covers fixed-split data-size experiments and

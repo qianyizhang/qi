@@ -21,6 +21,7 @@ Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).
 Search experiment tracking and local reports: [Experiments](../src/qi/experiments/README.md).
+Experiment method and durable findings: [Method](experiments.md), [policy generalization](../records/campaigns/policy-generalization.md).
 Local external analysis: [Teacher](teacher.md).
 Local supervised policy training: [Trainer](../src/qi/learning/README.md).
 Coordinates and replay operations: [Interface](interface.md).
@@ -52,6 +53,7 @@ their implementation details.
 | `docs/rules/` | Portable governance doctrine |
 | `docs/glossary/` | Canonical domain vocabulary |
 | `records/work-items/` | Work-item lifecycle and durable item records |
+| `records/campaigns/` | Bounded questions and evidence synthesis across experiments |
 
 When an optional area such as docs/adr/, docs/models.md, records/campaigns/,
 records/reports/, sources/, or archive/ needs a durable route, add one here and

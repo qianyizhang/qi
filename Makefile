@@ -15,7 +15,7 @@ test:
 	uv run pytest
 	npm test --prefix web
 test-learning:
-	uv run --locked --extra learning pytest tests/test_learning.py
+	uv run --locked --extra learning pytest tests/test_learning.py tests/test_learning_config.py
 test-learning-mps:
 	QI_TEST_MPS=1 uv run --locked --extra learning pytest tests/test_learning_mps.py
 check: lint test web-build

@@ -14,6 +14,32 @@ from qi.teacher import TeacherConfig
 app = typer.Typer(no_args_is_help=True, help="Bounded local teacher-imitation experiments.")
 
 
+@app.command("run")
+def configured_run(
+    config: Annotated[Path, typer.Option()],
+    output: Annotated[Path | None, typer.Option()] = None,
+    preview_only: Annotated[bool, typer.Option("--preview")] = False,
+) -> None:
+    """Run a JSON recipe or a saved trial config; scientific settings belong to the file."""
+    from qi.learning.config import load_dataset, load_recipe
+    from qi.learning.runs import preview_recipe, run_recipe
+
+    recipe = load_recipe(config)
+    dataset = load_dataset(Path(recipe.data.dataset))
+    if preview_only:
+        typer.echo(json.dumps(preview_recipe(recipe, dataset)))
+        return
+    if output is None:
+        raise GameError("missing_output", "Provide --output for execution, or use --preview.")
+    try:
+        result = run_recipe(recipe, dataset, output, source_config=config)
+    except ImportError as exc:
+        raise GameError("learning_not_installed", "Install the learning extra: uv sync --extra learning.") from exc
+    typer.echo(json.dumps(result))
+    if result["status"] != "complete":
+        raise GameError("experiment_incomplete", "The requested cases are incomplete; see summary.json.")
+
+
 @app.command("dataset")
 def build_dataset(
     corpus: Annotated[Path, typer.Option()],
@@ -70,12 +96,38 @@ def train_policy(
     threads: int = 1,
 ) -> None:
     """Fit a CPU/MPS policy and save a CPU-compatible checkpoint."""
+    from qi.learning.config import RunConfig
+
+    resolved = RunConfig.model_validate(
+        {
+            "data": {
+                "dataset": str(data.resolve()),
+                "selection": "source-order",
+                "train_size": diagnostic_examples or None,
+            },
+            "optimizer": {"learning_rate": learning_rate},
+            "training": {"seed": seed, "updates": steps},
+            "execution": {"device": device, "threads": threads, "fit_seconds": seconds},
+        }
+    )
     try:
-        from qi.learning.train import train
+        from qi.learning.train import train, validate_device
     except ImportError as exc:
         raise GameError("learning_not_installed", "Install the learning extra: uv sync --extra learning.") from exc
+    dataset = Dataset.model_validate_json(data.read_text())
+    resolved.data.train_size = len(resolved.training_inputs(dataset))
+    config_path = checkpoint.with_name(checkpoint.name + ".config.json")
+    resolved.origin_config = str(config_path.resolve())
+    validate_device(device, threads)
+    if checkpoint.exists():
+        raise GameError("checkpoint_exists", "Choose a new checkpoint path; training never overwrites weights.")
+    if config_path.exists():
+        raise GameError("config_exists", "Choose a new checkpoint path; its saved config already exists.")
+    checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    with config_path.open("x") as stream:
+        stream.write(resolved.model_dump_json(indent=2) + "\n")
     result = train(
-        Dataset.model_validate_json(data.read_text()),
+        dataset,
         checkpoint,
         seed=seed,
         steps=steps,
