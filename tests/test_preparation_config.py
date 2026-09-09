@@ -1,12 +1,16 @@
 """Preparation configs pin generation inputs and preserve incomplete evidence."""
 
 import json
+import os
+import sys
+from pathlib import Path
 
 import pytest
 from typer.testing import CliRunner
 
 from qi.cli import app
 from qi.game import GameError
+from qi.teacher import digest
 from qi.training_data.assembly import Bucket, MixtureRecipe
 from qi.training_data.config import PreparationConfig, SupervisionSettings, load_preparation, prepare_dataset
 from qi.training_data.contracts import fingerprint
@@ -131,3 +135,89 @@ def test_prepare_cli_uses_saved_config_and_reports_incompleteness(preparation, t
     path.write_text(config.model_dump_json())
     result = CliRunner().invoke(app, ["data", "prepare", "--config", str(path), "--output", str(tmp_path / "short")])
     assert getattr(result.exception, "code", None) == "preparation_incomplete"
+
+
+@pytest.fixture
+def executable_preparation(preparation, tmp_path):
+    config, _, _ = preparation
+    engine = Path(config.supervision.engine)
+    engine.write_text(f"""#!{sys.executable}
+import os, sys
+from pathlib import Path
+from qi.game import replay, legal_moves
+Path({str(tmp_path / "pid")!r}).write_text(str(os.getpid()))
+queries = 0
+for raw in sys.stdin:
+    command = raw.strip()
+    if command == 'uci':
+        print('id name Test Teacher')
+        for name in ('Threads', 'Hash', 'MultiPV', 'Ponder', 'EvalFile'):
+            print('option name ' + name + ' type string')
+        print('uciok', flush=True)
+    elif command == 'isready':
+        print('readyok', flush=True)
+    elif command.startswith('position startpos'):
+        moves = command.split()[3:]
+    elif command.startswith('go '):
+        queries += 1
+        if Path({str(tmp_path / "fail")!r}).exists() and queries == 4:
+            sys.exit(3)
+        game = replay(tuple(moves))
+        print('bestmove ' + sorted(legal_moves(game.board, game.turn))[0], flush=True)
+""")
+    engine.chmod(0o700)
+    config.supervision.engine_sha256 = digest(engine)
+    config.assembly.supervision_fingerprint = fingerprint("supervision-v1", teacher_spec(config.supervision.teacher()))
+    config.actor_teacher = config.supervision.model_copy(update={"nodes": 101})
+    return config
+
+
+def test_persistent_preparation_matches_fresh_and_hashes_once(executable_preparation, tmp_path, monkeypatch):
+    config = executable_preparation
+    fresh = tmp_path / "fresh"
+    assert prepare_dataset(config, fresh)["status"] == "complete"
+    config.teacher_process = "persistent"
+    hashes = []
+
+    def counted(path):
+        hashes.append(path)
+        return digest(path)
+
+    monkeypatch.setattr("qi.teacher.digest", counted)
+    output = tmp_path / "persistent"
+    assert prepare_dataset(config, output)["status"] == "complete"
+    assert hashes == [Path(config.supervision.engine), Path(config.supervision.network)]
+    before = load_dataset(fresh / "dataset.json").model_dump()
+    after = load_dataset(output / "dataset.json").model_dump()
+    for dataset in (before, after):
+        for example in dataset["library"]["examples"]:
+            example["analysis"].pop("elapsed_ms")
+    assert before == after
+    assert load_preparation(output / "config.json").teacher_process == "persistent"
+    with pytest.raises(ProcessLookupError):
+        os.kill(int((tmp_path / "pid").read_text()), 0)
+
+
+def test_persistent_preparation_retains_partial_evidence(executable_preparation, tmp_path):
+    config = executable_preparation
+    config.teacher_process = "persistent"
+    (tmp_path / "fail").touch()
+    output = tmp_path / "partial-session"
+    result = prepare_dataset(config, output)
+    assert result["status"] == result["generation_status"] == "incomplete"
+    assert result["examples"] == 3
+    assert "exited" in result["failure"]
+    assert len(json.loads((output / "library.json").read_text())["examples"]) == 3
+    assert not (output / "dataset.json").exists()
+    with pytest.raises(ProcessLookupError):
+        os.kill(int((tmp_path / "pid").read_text()), 0)
+
+
+def test_persistent_preparation_rejects_conflicting_actor_pins(executable_preparation, tmp_path):
+    config = executable_preparation
+    config.teacher_process = "persistent"
+    config.actor_teacher.network_sha256 = "0" * 64
+    with pytest.raises(GameError, match="differ"):
+        prepare_dataset(config, tmp_path / "bad-pins")
+    assert not (tmp_path / "bad-pins").exists()
+    assert not (tmp_path / "pid").exists()

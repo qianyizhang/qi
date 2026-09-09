@@ -11,7 +11,7 @@ import pytest
 
 from qi.game import Game, GameError, replay
 from qi.protocol import Snapshot
-from qi.teacher import TeacherAnalysis, TeacherConfig, analyze, digest, read_info
+from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherSession, analyze, digest, read_info
 
 
 def fake_teacher(tmp_path: Path, mode: str = "ok") -> TeacherConfig:
@@ -20,6 +20,7 @@ def fake_teacher(tmp_path: Path, mode: str = "ok") -> TeacherConfig:
 import os, sys, time
 from pathlib import Path
 mode = {mode!r}
+queries = 0
 Path({str(tmp_path / "pid")!r}).write_text(str(os.getpid()))
 for raw in sys.stdin:
     command = raw.strip()
@@ -41,6 +42,19 @@ for raw in sys.stdin:
     elif command == "isready":
         print("readyok", flush=True)
     elif command.startswith("go "):
+        queries += 1
+        if queries == 2:
+            if mode == "late-hang":
+                time.sleep(20)
+            if mode == "late-exit":
+                sys.exit(3)
+            if mode == "late-flood":
+                print("x" * 1_100_000, flush=True)
+            if mode == "late-illegal":
+                print("bestmove a0a9", flush=True)
+                continue
+        if mode == "large-ok":
+            print("info string " + "x" * 600_000)
         print("info depth 3 nodes 42 score mate -2 upperbound pv b9c7")
         move = "a0a9" if mode == "illegal" else "b9c7"
         if mode == "none":
@@ -139,3 +153,86 @@ def test_teacher_cli_and_error_stream(tmp_path) -> None:
     result = subprocess.run(command, text=True, capture_output=True)
     assert result.returncode == 1 and not result.stdout
     assert json.loads(result.stderr)["error"]["code"] == "teacher_illegal_move"
+
+
+def test_session_reuses_process_resets_history_budget_and_identity(tmp_path, monkeypatch):
+    config = fake_teacher(tmp_path, "large-ok")
+    game = replay(("b2e2",))
+    fresh = analyze(game, config)
+    hashes = []
+    original_digest = digest
+
+    def counted(path):
+        hashes.append(path)
+        return original_digest(path)
+
+    monkeypatch.setattr("qi.teacher.digest", counted)
+    (tmp_path / "commands").unlink()
+    with TeacherSession(config) as session:
+        first = session.analyze(game, config)
+        pid = int((tmp_path / "pid").read_text())
+        second = session.analyze(replay(("h2e2",)), replace(config, nodes=200, depth=4))
+        assert int((tmp_path / "pid").read_text()) == pid
+        assert session.engine.process.poll() is None
+        assert first.model_dump(exclude={"elapsed_ms"}) == fresh.model_dump(exclude={"elapsed_ms"})
+        assert second.snapshot.moves == ["h2e2"]
+        assert second.requested_nodes == 200 and second.requested_depth == 4
+        assert hashes == [config.engine, config.network]
+    commands = (tmp_path / "commands").read_text().splitlines()
+    assert commands.count("uci") == 1
+    assert commands.count("ucinewgame") == commands.count("isready") == 2
+    assert commands[-4:] == ["ucinewgame", "isready", "position startpos moves h2e2", "go nodes 200 depth 4"]
+    with pytest.raises(ProcessLookupError):
+        os.kill(pid, 0)
+    with pytest.raises(GameError, match="closed"):
+        session.analyze(game, config)
+
+
+@pytest.mark.parametrize(
+    "mode,code",
+    [
+        ("late-hang", "teacher_timeout"),
+        ("late-exit", "teacher_exit"),
+        ("late-flood", "teacher_output_limit"),
+        ("late-illegal", "teacher_illegal_move"),
+    ],
+)
+def test_late_session_failure_reaps_and_never_retries(tmp_path, mode, code):
+    config = fake_teacher(tmp_path, mode)
+    game = replay(("b2e2",))
+    with TeacherSession(config) as session:
+        session.analyze(game, config)
+        with pytest.raises(GameError) as error:
+            session.analyze(game, replace(config, timeout_seconds=0.1))
+        assert error.value.code == code
+        with pytest.raises(ProcessLookupError):
+            os.kill(int((tmp_path / "pid").read_text()), 0)
+        with pytest.raises(GameError, match="closed"):
+            session.analyze(game, config)
+    assert (tmp_path / "commands").read_text().splitlines().count("uci") == 1
+
+
+def test_session_renews_query_deadline_and_rejects_different_files(tmp_path, monkeypatch):
+    config = fake_teacher(tmp_path)
+    game = replay(("b2e2",))
+    with TeacherSession(config) as session:
+        session.analyze(game, config)
+        session.engine.deadline = 0
+        session.analyze(game, config)
+        other = tmp_path / "other.nnue"
+        other.write_bytes(b"another network")
+        with pytest.raises(GameError, match="same engine"):
+            session.analyze(game, replace(config, network=other))
+        assert session.closed
+    with pytest.raises(ProcessLookupError):
+        os.kill(int((tmp_path / "pid").read_text()), 0)
+
+
+def test_session_cancellation_reaps_process(tmp_path):
+    config = fake_teacher(tmp_path)
+    with pytest.raises(KeyboardInterrupt), TeacherSession(config) as session:
+        session.analyze(replay(("b2e2",)), config)
+        raise KeyboardInterrupt
+    with pytest.raises(ProcessLookupError):
+        os.kill(int((tmp_path / "pid").read_text()), 0)
+    assert session.closed

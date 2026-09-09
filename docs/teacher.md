@@ -43,7 +43,7 @@ uses POSIX selectors and is not a Windows implementation.
 ## Protocol and records
 
 Following the [upstream UCI contract](https://github.com/official-pikafish/Pikafish/wiki/UCI-%26-Commands),
-each analysis launches a fresh process, waits for `uciok`, requires a named engine
+fresh analysis launches a process, waits for `uciok`, requires a named engine
 and Threads/Hash/MultiPV/Ponder/EvalFile options, sets one thread, 16 MiB hash,
 MultiPV 1, no pondering, and an explicit network path. It sends `ucinewgame`, waits
 for `readyok`, then sends `position startpos moves ...` with the entire history.
@@ -56,7 +56,8 @@ It does not request exactly 10,000 nodes or guarantee every branch reaches depth
 Reported node counts may exceed the request; these are not qi alpha-beta nodes
 or a shared compute measure. The timeout covers process startup and protocol execution (default 10 s,
 maximum 120 s), excluding prelaunch file hashing and final process cleanup.
-Output is capped at 1 MiB. Processes are killed/reaped on completion or failure.
+Output is capped at 1 MiB per query. Fresh processes are killed/reaped on query
+completion or failure.
 There is no retry or substitute move. Timeout, crash, unsupported options,
 malformed diagnostics, and illegal best moves fail with structured CLI stderr.
 
@@ -67,6 +68,28 @@ and is explicitly engine-native from the side to move. A best move can be applie
 through the normal guarded `qi apply` command. Engine scores and search lines do
 not certify qi outcomes; only the returned best move is checked against qi.
 Pikafish's repetition/chasing adjudication differs from `xiangqi-training-v1`.
+
+## Persistent preparation sessions
+
+`TeacherSession` exposes the same validated analysis path as `analyze`, with a
+single lazy process reused sequentially. `qi data prepare` opts in through
+`teacher_process: "persistent"`; `qi teach` and direct `analyze` remain fresh.
+Preparation verifies engine/network hashes once before execution and shares that
+pinned identity. Files must stay unchanged during the run. Actor/supervisor budgets
+can differ, but their engine/network files must match for this single session.
+
+Handshake/options run once. Every query sends `ucinewgame`, waits for `readyok`,
+then supplies full history and its own node/depth limits. Each query has a new
+protocol deadline and 1 MiB output allowance; the first includes startup/handshake.
+A failure permanently closes the session without retry; the enclosing preparation
+also closes it on success or cancellation and retains normal incomplete evidence.
+Existing analysis and supervision schemas remain unchanged. Per-query elapsed time
+excludes initial identity hashing and includes startup only on the first query;
+use whole-preparation wall time when comparing throughput.
+
+[AB-DATA-004](../records/work-items/items/AB-DATA-004-persistent-teacher.md)
+records full preparation equivalence and throughput, separate from the earlier
+query-only prototype. Process reuse does not establish label quality.
 
 ## Search settings and query speed
 
@@ -80,7 +103,7 @@ are not exclusive to Pikafish; its UCI options supply the concrete settings here
 | Depth | Raising depth can expand search work sharply, reducing throughput. The node cap can prevent the requested depth from completing. More search can change labels; it does not certify their correctness. |
 | Hash (MiB) | A larger transposition table can save repeated search in longer queries, but costs RAM and initialization/reset work. It need not speed up short queries. With four workers, Hash=16 reserves 64 MiB for tables plus network and other process memory. |
 | Workers / Threads | More workers analyze independent positions; more threads cooperate on each position. Both compete for CPU and memory. Tune aggregate throughput at fixed query limits rather than assuming more threads are faster. |
-| Persistent process | Reusing the process and loaded network amortizes startup. Reset search state between independent queries when comparing against fresh-process labels. This remains a benchmark prototype in qi. |
+| Persistent process | Reusing the process and loaded network amortizes startup. The opt-in preparation session resets search state between queries. Fresh execution remains the default; see the bounded comparison below. |
 
 Measure successful queries divided by total wall time, including setup and
 validation when reporting end-to-end query throughput. Engine nodes per second

@@ -11,7 +11,7 @@ from qi.evaluation import Corpus
 from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import input_key
 from qi.protocol import Snapshot
-from qi.teacher import TeacherAnalysis, TeacherConfig, analyze, digest
+from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity, analyze
 from qi.training_data.contracts import (
     Example,
     GenerationRecipe,
@@ -26,13 +26,15 @@ from qi.training_data.contracts import (
 from qi.training_data.v1 import reserved_inputs
 
 
-def teacher_spec(config: TeacherConfig) -> dict:
+def teacher_spec(config: TeacherConfig, identity: TeacherIdentity | None = None) -> dict:
+    identity = identity or TeacherIdentity.read(config)
+    identity.require(config)
     return {
         "target": "legal-teacher-move-v1",
         "authority": "teacher-preference",
         "adapter": "uci-teacher-v1",
-        "engine_sha256": digest(config.engine),
-        "network_sha256": digest(config.network),
+        "engine_sha256": identity.engine_sha256,
+        "network_sha256": identity.network_sha256,
         "settings": {"Threads": "1", "Hash": "16", "MultiPV": "1", "Ponder": "false"},
         "nodes": config.nodes,
         "depth": config.depth,
@@ -47,13 +49,14 @@ def generate_library(
     actor_teacher: TeacherConfig | None = None,
     labeler: Callable[[Game, TeacherConfig], TeacherAnalysis] = analyze,
     checkpoint: Callable[[Library], None] | None = None,
+    teacher_identity: TeacherIdentity | None = None,
 ) -> Library:
     recipe = GenerationRecipe.model_validate(recipe.model_dump())
     recipe.require_current()
     actor_teacher = actor_teacher or teacher
     deadline = monotonic() + recipe.seconds
-    label_spec = teacher_spec(teacher)
-    actor_spec = label_spec if actor_teacher == teacher else teacher_spec(actor_teacher)
+    label_spec = teacher_spec(teacher, teacher_identity)
+    actor_spec = label_spec if actor_teacher == teacher else teacher_spec(actor_teacher, teacher_identity)
     reserved = reserved_inputs(corpus)
     sources, examples = [], {}
     failure = None

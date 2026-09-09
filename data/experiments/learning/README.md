@@ -71,3 +71,16 @@ Existing projections must match exactly; the script refuses to overwrite a chang
 record. Durable conclusions and review triggers live in the linked work items and
 [campaign](../../../records/campaigns/policy-generalization.md), not inferred from
 configuration compatibility.
+
+
+## Persistent teacher preparation
+
+[AB-DATA-004](../../../records/work-items/items/AB-DATA-004-persistent-teacher.md)
+records three paired full preparations using the existing two-mode recipe and
+1000-node/depth-3 teacher. All normalized datasets matched; persistent execution
+reduced median preparation time from 4.829 to 0.227 seconds in this small pilot.
+[Compact results](history/persistent-teacher-v1.json) retain measurements, hashes and
+resolved settings. Raw runs and executed-source copies remain local under
+`artifacts/learning/persistent-teacher-v1/`. Reproduce with
+`scripts/check_persistent_teacher.py`; this is performance evidence, not a training
+or teacher-quality finding. Fresh execution remains the default.

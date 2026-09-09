@@ -28,8 +28,8 @@ selection and composition; the referee owns outcomes and the trainer owns weight
 - `generation.py` uses one continuation loop for random and teacher-guided actors.
   The supervisor is independently configured; the Python API accepts a different
   `actor_teacher`. Cached actor analysis is reused only after checking its exact
-  replay state and supervision specification. Each UCI query still starts a fresh
-  bounded teacher process. No persistent sessions or speculative provider registry.
+  replay state and supervision specification. Queries default to fresh bounded
+  processes; configured preparation can opt into one persistent teacher session.
 - `assembly.py` freezes one supervision recipe into `dataset-manifest-v1`.
   `training-dataset-v2` bundles the manifest with its addressable example library.
   The trainer accepts either format without pretending a mixture is a v1 random
@@ -154,11 +154,10 @@ It supports these investigation priorities, not a new default recipe:
   comparisons. Saved, validated chunks with fixed held-out families are a possible
   future streaming boundary; throughput contention and learning benefit remain untested.
 
-**Current support:** `qi data prepare` is sequential and starts a fresh teacher
-process per query. The adapter fixes Threads=1, Hash=16 and MultiPV=1; preparation
-requires a depth and exposes no persistence, worker, WDL, MultiPV or root-trace
-options. Training consumes frozen datasets. The experiments changed none of these
-contracts. See the [teacher guide](../../../docs/teacher.md#search-settings-and-query-speed)
+**Current support:** `qi data prepare` is sequential, with fresh processes by
+default and opt-in single-process reuse. The adapter fixes Threads=1, Hash=16 and
+MultiPV=1; preparation requires a depth and exposes no worker-pool, WDL, MultiPV
+or root-trace options. Training consumes frozen datasets. See the [teacher guide](../../../docs/teacher.md#search-settings-and-query-speed)
 for setting semantics and the linked report for evidence and review triggers.
 
 ## Commands and partial work
@@ -172,6 +171,28 @@ The assembly supervision fingerprint must match the configured label provider.
 Teacher supervision supplies preferences, not ground truth; generation mode
 chooses who plays. Omitted `actor_teacher` reuses the supervision teacher for
 teacher-guided actions, under the existing exact-state/spec reuse checks.
+
+Set `"teacher_process": "persistent"` in a preparation config to reuse one lazy,
+sequential UCI process for the run. Omitted settings mean `"fresh"`. Actor and
+supervisor may use different query budgets, but persistent mode requires the same
+engine/network paths and matching content pins. Both files are hashed once before
+output creation, and their identity is shared by generation and the loaded session;
+keep those files unchanged during preparation. No automatic retries or restarts.
+Each query resets search state with `ucinewgame`/`isready`, sends the full history,
+and refreshes its timeout and output cap. Completion, failure and cancellation
+close/reap the process. The resolved config records the execution mode; supervision
+and frozen-selection identities retain their existing meanings. Analysis timings
+and therefore byte-format dataset hashes can differ between modes.
+
+The [persistent preparation work item](../../../records/work-items/items/AB-DATA-004-persistent-teacher.md)
+owns the bounded equivalence/throughput evidence. Reproduce its six preparations
+with:
+
+```bash
+uv run python scripts/check_persistent_teacher.py \
+  --config data/experiments/learning/preparation-two-mode-v1.json \
+  --output artifacts/learning/persistent-comparison
+```
 
 The [two-mode example](../../../data/experiments/learning/preparation-two-mode-v1.json)
 pins the local Pikafish installation used by this repository. Change locators when

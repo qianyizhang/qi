@@ -67,7 +67,7 @@ def digest(path: Path) -> str:
 
 
 class UciProcess:
-    """One fresh engine per analysis, with a shared protocol deadline and output cap."""
+    """Engine pipe with a per-query protocol deadline and output cap."""
 
     def __init__(self, config: TeacherConfig):
         self.deadline = monotonic() + config.timeout_seconds
@@ -147,37 +147,101 @@ def read_info(lines: list[str]) -> tuple[int | None, int | None, TeacherScore | 
     return nodes, depth, score
 
 
-def analyze(game: Game, config: TeacherConfig) -> TeacherAnalysis:
-    if game.outcome:
-        raise GameError("game_over", "Cannot query a teacher after the game ends.")
-    snapshot = Snapshot(moves=list(game.moves))
-    if snapshot.game() != game:
-        raise GameError("invalid_state", "Teacher input must replay from the standard initial position.")
-    engine_hash, network_hash = digest(config.engine), digest(config.network)
-    settings = {
-        "Threads": "1",
-        "Hash": "16",
-        "MultiPV": "1",
-        "Ponder": "false",
-        "EvalFile": str(config.network.resolve()),
-    }
-    started = perf_counter()
-    engine = UciProcess(config)
-    try:
-        engine.send("uci")
-        handshake = engine.until("uciok")
-        name = next((line.removeprefix("id name ") for line in handshake if line.startswith("id name ")), "")
-        options = {
-            line.split(" type ")[0].removeprefix("option name ")
-            for line in handshake
-            if line.startswith("option name ")
+@dataclass(frozen=True)
+class TeacherIdentity:
+    engine: Path
+    network: Path
+    engine_sha256: str
+    network_sha256: str
+
+    @classmethod
+    def read(cls, config: TeacherConfig) -> "TeacherIdentity":
+        return cls(config.engine.resolve(), config.network.resolve(), digest(config.engine), digest(config.network))
+
+    def require(self, config: TeacherConfig) -> None:
+        if (config.engine.resolve(), config.network.resolve()) != (self.engine, self.network):
+            raise GameError("teacher_mismatch", "Pinned identity belongs to different teacher files.")
+
+
+class TeacherSession:
+    """Sequential, lazy engine session; any failed query permanently closes it."""
+
+    def __init__(self, config: TeacherConfig, *, identity: TeacherIdentity | None = None):
+        self.config = config
+        # CONTRACT: supplied identity must have been verified for these files by the caller.
+        if identity is not None:
+            identity.require(config)
+        self.identity = identity
+        self.engine: UciProcess | None = None
+        self.closed = False
+        self.name = ""
+        self.settings = {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false",
+            "EvalFile": str(config.network.resolve()),
         }
-        if not name or not settings.keys() <= options:
-            raise GameError(
-                "teacher_protocol", "Teacher must identify itself and support Threads, Hash, MultiPV, Ponder, EvalFile."
-            )
-        for key, value in settings.items():
-            engine.send(f"setoption name {key} value {value}")
+
+    def __enter__(self) -> "TeacherSession":
+        return self
+
+    def __exit__(self, *_exc) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self.closed = True
+        if self.engine is not None:
+            self.engine.close()
+            self.engine = None
+
+    def analyze(self, game: Game, config: TeacherConfig) -> TeacherAnalysis:
+        try:
+            return self._analyze(game, config)
+        except BaseException:
+            self.close()
+            raise
+
+    def _analyze(self, game: Game, config: TeacherConfig) -> TeacherAnalysis:
+        if self.closed:
+            raise GameError("teacher_closed", "Teacher session is closed; queries are not retried.")
+        if (config.engine.resolve(), config.network.resolve()) != (
+            self.config.engine.resolve(),
+            self.config.network.resolve(),
+        ):
+            raise GameError("teacher_mismatch", "One teacher session requires the same engine and network paths.")
+        if game.outcome:
+            raise GameError("game_over", "Cannot query a teacher after the game ends.")
+        snapshot = Snapshot(moves=list(game.moves))
+        if snapshot.game() != game:
+            raise GameError("invalid_state", "Teacher input must replay from the standard initial position.")
+        if self.identity is None:
+            self.identity = TeacherIdentity.read(config)
+        started = perf_counter()
+        if self.engine is None:
+            self.engine = UciProcess(config)
+            engine = self.engine
+            settings = self.settings
+            engine.send("uci")
+            handshake = engine.until("uciok")
+            name = next((line.removeprefix("id name ") for line in handshake if line.startswith("id name ")), "")
+            options = {
+                line.split(" type ")[0].removeprefix("option name ")
+                for line in handshake
+                if line.startswith("option name ")
+            }
+            if not name or not settings.keys() <= options:
+                raise GameError(
+                    "teacher_protocol",
+                    "Teacher must identify itself and support Threads, Hash, MultiPV, Ponder, EvalFile.",
+                )
+            for key, value in settings.items():
+                engine.send(f"setoption name {key} value {value}")
+            self.name = name
+        else:
+            engine = self.engine
+            engine.deadline = monotonic() + config.timeout_seconds
+            engine.total = len(engine.pending)
         engine.send("ucinewgame")
         engine.send("isready")
         engine.until("readyok")
@@ -201,10 +265,10 @@ def analyze(game: Game, config: TeacherConfig) -> TeacherAnalysis:
             snapshot=snapshot,
             state_hash=game.state_hash,
             move=move,
-            engine_name=name,
-            engine_sha256=engine_hash,
-            network_sha256=network_hash,
-            settings=settings,
+            engine_name=self.name,
+            engine_sha256=self.identity.engine_sha256,
+            network_sha256=self.identity.network_sha256,
+            settings=self.settings,
             requested_nodes=config.nodes,
             requested_depth=config.depth,
             timeout_seconds=config.timeout_seconds,
@@ -214,5 +278,8 @@ def analyze(game: Game, config: TeacherConfig) -> TeacherAnalysis:
             elapsed_ms=(perf_counter() - started) * 1000,
             search_info=info,
         )
-    finally:
-        engine.close()
+
+
+def analyze(game: Game, config: TeacherConfig) -> TeacherAnalysis:
+    with TeacherSession(config) as session:
+        return session.analyze(game, config)

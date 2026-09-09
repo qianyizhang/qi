@@ -122,3 +122,7 @@ Invocation policy:
 - Route precise unfinished work through `records/work-items/backlog.md`; use an
   optional Campaign only at the threshold in `docs/rules/governance.md`.
 - Follow `docs/rules/doc.md` for documentation lifecycle and frontmatter.
+- For documentation hygiene involving experiments, follow `docs/experiments.md`
+  for evidence and correction rules. Check the linked module guide for executable
+  semantics and the cited work record or run evidence for measured claims; keep
+  imitation agreement distinct from playing strength.

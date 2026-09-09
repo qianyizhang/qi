@@ -1,0 +1,522 @@
+{
+  "schema_version": 1,
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "git_revision": "a42d72609f73f1239a2d379c15fd267499d1b35e",
+  "git_status": " M src/qi/teacher.py\n M src/qi/training_data/config.py\n M src/qi/training_data/generation.py\n M tests/test_preparation_config.py\n M tests/test_teacher.py\n?? records/work-items/items/AB-DATA-004-persistent-teacher.md\n?? scripts/check_persistent_teacher.py\n",
+  "source_sha256": {
+    "scripts/check_persistent_teacher.py": "1afbff57f103bc2b6cd3babfd9b864fa8b75d7e498d6e488967dc04ba51eba2a",
+    "src/qi/__init__.py": "300157874196c0d2ada3cecc34d70f2d31bd02652bbf094aeb2d6a20fc542396",
+    "src/qi/api.py": "22eb8c12b57d2f076b3e2ac8b056c4b8c2c42b42824f2686fb7eea28b5d43497",
+    "src/qi/arena.py": "2879c90d5751341a4bc4df1bea51bf96c63950bbf6a7a084687bbf7797b77d79",
+    "src/qi/artifacts.py": "86bab6403162c2523705800a45279abaae9e3e899db90eb2b8a15532d827e73e",
+    "src/qi/cli.py": "dcd89e55b68257eb716528451e628211b4085c894c0b312312eb953f50221642",
+    "src/qi/evaluation.py": "a272e1de54f9ff20132f60bbfa8a61cb71551f4516029dabc8caa535c4e62f17",
+    "src/qi/evaluation_cli.py": "2645d4d8ba814c0dda28a08f6a5ae0569778ef68c1939fc79aa6d5825adfefbb",
+    "src/qi/experiments/__init__.py": "3639ad40f99af4c1b3bc88b2d15ef8ba39da2b07a18aa00138b0670b6e8bfe03",
+    "src/qi/experiments/cli.py": "07421a17cfee00ead447ed04656f7f65658ec21599ab409fbfdec354468772d5",
+    "src/qi/experiments/evidence.py": "353dcc13593fa471f93de4544f9d32d9988bd9a878270dce6e740d22fb74eff0",
+    "src/qi/experiments/glossary.py": "04515ab323e1e659673c4e19630e4ef5dd4acfe4c41ba5591ab10583f37b0657",
+    "src/qi/experiments/inspect.py": "3b464cb07b69ab20c9170b6c447377c6669632116109d912ef75911e3c680aa3",
+    "src/qi/experiments/model.py": "fcf15a5365b4f173b132ea33ead3236f2ceaae918c9586a4647b7eceacb9e639",
+    "src/qi/experiments/report.py": "d679048ceadbe9d938dddb2ce5894d8587420ba8014c5e0b7af50df6d34b7015",
+    "src/qi/experiments/runner.py": "81c4492ea5a5be507deae3e64469898dd98d81f24be7c3d62226be65ce125b8b",
+    "src/qi/experiments/test_experiments.py": "ae0fd680c8bceb7e254357478f12eec9557902a6c7a48e3a0877c5716f06dcb9",
+    "src/qi/experiments/test_glossary.py": "eb39397491297858d875b24e266e639ba8a531fe327ca710293d8ad2882a830e",
+    "src/qi/game.py": "4b3c24f3f7c38fd529c660f2f704a6c1222818ec42b8209734220491ea2c202e",
+    "src/qi/learning/__init__.py": "d526333eb3026fa2cfb8be42ae096c86d91915995fcd9261ba22c11b32f874e7",
+    "src/qi/learning/cli.py": "99a00be201600d9a5b95dea0ac201a7a7772f41f4d986bfccb1441c60e9ef13a",
+    "src/qi/learning/config.py": "2c8ebda940ab47bcb1121f9246a9009ab5a8a473e18ad5b820f4c52a3411d514",
+    "src/qi/learning/experiment.py": "e12968ee74a83aa5de4e37f360f8316ae3907477a643aa496a99c93e59cae7af",
+    "src/qi/learning/runs.py": "e2d54be0dacec1b8913e21a49d1171ef27d78c54c7e2db62451bd88a4340c821",
+    "src/qi/learning/test_config.py": "dc7e1573a40310d73de221fb7359aa832fc8d0c4f70d3477b44d72313e163c0c",
+    "src/qi/learning/test_experiment.py": "3661559b1b63b87d282e8b220a1835a10845584657dd385486bcb7fdb5f4f9ec",
+    "src/qi/learning/train.py": "5df13621f740685b75b3dc02e7e56162079b32005375e6528ebd1139742077ab",
+    "src/qi/players/__init__.py": "4fbd25c4efc35e61cd4dbb4bf750478e42eb0c3dcd3e9366286caff44d4e4836",
+    "src/qi/players/alphabeta/__init__.py": "a538e2b873d239908b4f6581fbab529728760a423a1b1ee6482a7880d2c5674c",
+    "src/qi/players/alphabeta/test_alphabeta.py": "ef2cbfe85f3f5320bfd20064e597919126441146db75316056466cbc61ad1d21",
+    "src/qi/players/catalog.py": "93475fbd9d57c62e81e623c80e403b425565664443f9f5e383f0f37f1940e1b0",
+    "src/qi/players/common.py": "07c53dc44336b62781fea7c5305e72ba2debbd0977a270284198d5ad61072858",
+    "src/qi/players/components/__init__.py": "a0ffbdffaaf989c9be8eb0da272c387e593b4247dca424f5b0827f86dd514169",
+    "src/qi/players/components/exchange/__init__.py": "bcec481449c9783d1f2f24c5d7790359d2550633edc034abb8cbe014325b7cbc",
+    "src/qi/players/components/exchange/test_exchange.py": "8d876e0813698d67aa2ffacb8236015017516eaf5329c5b18b95a0e791a1b1bd",
+    "src/qi/players/components/extensions/__init__.py": "6f448ebc74061d5026b17939d6b22536d538ff097d4c59818d17d31bdefcfa8b",
+    "src/qi/players/components/extensions/test_extensions.py": "f0710881de79d5e1c8e62cb45639b94feb540c08457065d78603219e77e2655b",
+    "src/qi/players/components/ordering/__init__.py": "c55c1fdf146f7dd9155748e314eb9cba5689a487eb2c174a29ef8c49ea185c60",
+    "src/qi/players/components/ordering/test_ordering.py": "5c4a30d003cd89737fcda68ad4497191b8b912b1eb9fdae1e9b44ed2bbd5975b",
+    "src/qi/players/components/positional/__init__.py": "ec229b973208a6fbf1b6ef094d53d13afe7c7e88ca3c6ab16aeb6852a750a5ce",
+    "src/qi/players/components/positional/test_positional.py": "3525926388e844b6cf808cb0bfb8ba20e86db39dc64480ca390d02e2106c070e",
+    "src/qi/players/components/transpositions/__init__.py": "19873ba79e2c5d819d00be24ff3babeac7156c5c125361ed5e50d733795ab136",
+    "src/qi/players/components/transpositions/test_transpositions.py": "1829987634c22ac7fa1c1d9a412ef776741b101f6e3cdf2614dcfc5a268d290e",
+    "src/qi/players/core.py": "4b6f243f44877f538155c7b61e86fb2b10e3d0bee38217014424cc0b59003d3a",
+    "src/qi/players/enhanced/__init__.py": "dff86fddc8f4d38ecf5147acadb440b827850fa304a2131bd56274c76f76a527",
+    "src/qi/players/enhanced/test_enhanced.py": "f917a9c694f982f01b3c5c3166f84794b968b4aa9c4343046566abf1849d383d",
+    "src/qi/players/mcts/__init__.py": "8522e358795ed59d2ff4c87bfa32ea34e4c021a5752277c255956d52d03c8309",
+    "src/qi/players/mcts/test_mcts.py": "425ddb1d88e69aeb7fe1d5c19974ab1e927c9e1ef63434dba3ef43a9dbe1fc64",
+    "src/qi/players/mcts_quiescence/__init__.py": "9b76afb7d6469dff84cdba2ace0736e519c7d6773337d6162f309258cfcdee0a",
+    "src/qi/players/mcts_quiescence/test_mcts_quiescence.py": "9fcd7c5d4e116b2dedc50f145a6540946f32193ad56af9cde7c202a53cae9c0f",
+    "src/qi/players/policy/__init__.py": "03341eac7668429ee30f6017b7df00c955c59ce620a62b7b2a6487bc2aa577f2",
+    "src/qi/players/policy/encoding.py": "d032e4f63c4c8d9b9977973f39b0f01edac3fb5db65994dceb3c888f29a86bfe",
+    "src/qi/players/policy/runtime.py": "421d78e8886725cadf78ca65bb573c596903c45c68f3daf78d4323abdc622548",
+    "src/qi/players/policy/test_encoding.py": "fcb694e3b6bcab7677e0e1ccf0add067f6dc07a0148187028f141defb2b35336",
+    "src/qi/players/quiescence/__init__.py": "f2550dbcbb12746febe0450e6aef0bfb0da8f0e3105426bfe5c4704889cc524c",
+    "src/qi/players/quiescence/test_quiescence.py": "0fa42cfc228272e7c720c2dddc17af490e33f1aa9d323c34c3b0c3df1f113bba",
+    "src/qi/players/random/__init__.py": "8b2e9488e03d47b5cff688fa00dd32e0bcc31128d8476de01cc83803cfdcc1f8",
+    "src/qi/players/random/test_random.py": "2611b39723016081213bf6e530d8d698a3f1fbfc3b23668ba730660399668916",
+    "src/qi/players/test_trace.py": "7e40a34c2d048a3d51d6c45aa0925ce25a07e112d7d2a96c0b8a4442f11736d5",
+    "src/qi/players/trace.py": "459351027febfef482cd1958219fdcf06eeb31e02f03c88522292fce8e2b39a2",
+    "src/qi/protocol.py": "d8e0a621df3e6ff479ee23cac10fd2d9aa2c3fbed8d12b8a8f649dc17188164e",
+    "src/qi/scoring.py": "27d1158132337253e12bb377454ccac332cef6fb81964b52c8a95d0c3cb1d53d",
+    "src/qi/teacher.py": "7e7048a126d999149ef4f0424959749f08e0c4c64c4c8f79a29949c47e9c1579",
+    "src/qi/test_game.py": "ffdc0a6e2f0c1be49f19784124bbb84bdd36aa4cba652d2d82d3306c4224f862",
+    "src/qi/test_scoring.py": "10663f5977379d94e51dbc75b9c3f5cf82bdcd42b3de134dde64cb9380b570e9",
+    "src/qi/training_data/__init__.py": "69bcade30ff3c370605883d71418af40d96629243df0d779156a7f745dbda281",
+    "src/qi/training_data/assembly.py": "321e1ba509089f60010a825cdc067496df731024e28f28cbd742e6ac2d168cc7",
+    "src/qi/training_data/cli.py": "c37f1e6c694d594e81d895291d0d40c75454a5fafef562e7c7fe1798fa3db7f1",
+    "src/qi/training_data/config.py": "8127bfdf5caa9fdb38da5b90dc7aa095755396ea558ca284a917dc5e697e5509",
+    "src/qi/training_data/contracts.py": "2b26655571b9bfe346d661f5eec86ca7e18588c888ecabda012d8a13e68b52bc",
+    "src/qi/training_data/generation.py": "97b71081ad05798bf08b7199107d9a823416c0294c036b346f14a9d43de0e2dd",
+    "src/qi/training_data/loading.py": "157027a9cf95b6d5bd57fe30fee94ad83c59fa0b71cd77d9e5b6c123682ba231",
+    "src/qi/training_data/selection.py": "56d4d7bbb81a19d380de4ed43c2c5f71117e3f8920a9363dd4abb935fe999b84",
+    "src/qi/training_data/test_pipeline.py": "f139be36d654498ba637fcd2e672144038a1813b6011a3eaf6ea126ace332c10",
+    "src/qi/training_data/test_selection.py": "1156f82d11e92b87c422b0196bb427fe3972ba66e94d195ddd0d2766e00e6546",
+    "src/qi/training_data/test_v1.py": "9194b66f6367bb4e923cacf1e3d1e658dbaf179bb943aaa72b9e4042df8611fd",
+    "src/qi/training_data/v1.py": "bdb026a7d80aafaf7c49c70be1fd039ae1d762673e6bc28f8106d146473bb676",
+    "pyproject.toml": "d59d70e1ecd72b06df6cb347a5d0583d88aaae0e49630f3f24c48cb846b850f2",
+    "uv.lock": "ebe18db64d745de0a4e9b36c4266034eba7d7f157d0e9ebca5fd5a1f5b341e1a"
+  },
+  "config": {
+    "schema_version": "dataset-preparation-v1",
+    "corpus": "/Users/zhangqy/pkgs/qi/data/evaluation/search-positions-v1.json",
+    "corpus_sha256": "81f5c6bb7988abf9eec84222adc6e511457b3967484e5e32e29558b15298eab5",
+    "generation": {
+      "id": "configured-two-mode-v1",
+      "version": "continuations-v2",
+      "phase_policy": "mobile-material-development-v1",
+      "seed": 1901,
+      "seconds": 120.0,
+      "sources": [
+        {
+          "id": "random-train",
+          "mode": "random",
+          "split": "train",
+          "start": {
+            "id": "standard",
+            "version": "1",
+            "snapshot": {
+              "schema_version": 1,
+              "ruleset": "xiangqi-training-v1",
+              "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+              "moves": []
+            },
+            "family_id": null,
+            "themes": [],
+            "objective": null,
+            "curated_phase": null,
+            "phase_authority": null
+          },
+          "games": 1,
+          "additional_plies": 12,
+          "samples": 4,
+          "window": {
+            "min_ply": 3,
+            "max_ply": 299,
+            "stride": 1,
+            "phases": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ]
+          }
+        },
+        {
+          "id": "random-validation",
+          "mode": "random",
+          "split": "validation",
+          "start": {
+            "id": "standard",
+            "version": "1",
+            "snapshot": {
+              "schema_version": 1,
+              "ruleset": "xiangqi-training-v1",
+              "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+              "moves": []
+            },
+            "family_id": null,
+            "themes": [],
+            "objective": null,
+            "curated_phase": null,
+            "phase_authority": null
+          },
+          "games": 1,
+          "additional_plies": 12,
+          "samples": 4,
+          "window": {
+            "min_ply": 3,
+            "max_ply": 299,
+            "stride": 1,
+            "phases": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ]
+          }
+        },
+        {
+          "id": "teacher-guided-train",
+          "mode": "teacher-guided",
+          "split": "train",
+          "start": {
+            "id": "guided-train",
+            "version": "1",
+            "snapshot": {
+              "schema_version": 1,
+              "ruleset": "xiangqi-training-v1",
+              "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+              "moves": [
+                "b0c2"
+              ]
+            },
+            "family_id": "guided-train",
+            "themes": [],
+            "objective": null,
+            "curated_phase": null,
+            "phase_authority": null
+          },
+          "games": 1,
+          "additional_plies": 12,
+          "samples": 4,
+          "window": {
+            "min_ply": 3,
+            "max_ply": 299,
+            "stride": 1,
+            "phases": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ]
+          }
+        },
+        {
+          "id": "teacher-guided-validation",
+          "mode": "teacher-guided",
+          "split": "validation",
+          "start": {
+            "id": "guided-validation",
+            "version": "1",
+            "snapshot": {
+              "schema_version": 1,
+              "ruleset": "xiangqi-training-v1",
+              "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+              "moves": [
+                "h0g2"
+              ]
+            },
+            "family_id": "guided-validation",
+            "themes": [],
+            "objective": null,
+            "curated_phase": null,
+            "phase_authority": null
+          },
+          "games": 1,
+          "additional_plies": 12,
+          "samples": 4,
+          "window": {
+            "min_ply": 3,
+            "max_ply": 299,
+            "stride": 1,
+            "phases": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ]
+          }
+        }
+      ]
+    },
+    "supervision": {
+      "target": "legal-teacher-move-v1",
+      "authority": "teacher-preference",
+      "engine": "/Users/zhangqy/pkgs/qi/artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon",
+      "network": "/Users/zhangqy/pkgs/qi/artifacts/teachers/pikafish-2026-01-02/pikafish.nnue",
+      "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+      "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+      "nodes": 1000,
+      "depth": 3,
+      "timeout_seconds": 10.0
+    },
+    "actor_teacher": null,
+    "teacher_process": "fresh",
+    "assembly": {
+      "id": "configured-two-mode-v1",
+      "version": "frozen-mixture-v1",
+      "seed": 7,
+      "supervision_fingerprint": "6f3e4bb4337beb23cd0da60f1c65c8a4175b312e8c28cab189159f7995aa4c29",
+      "overlap_policy": "first-bucket-wins",
+      "buckets": [
+        {
+          "id": "random-train",
+          "split": "train",
+          "count": 2,
+          "modes": [
+            "random"
+          ],
+          "phases": [
+            "opening",
+            "middlegame",
+            "endgame",
+            "unknown"
+          ],
+          "themes": [],
+          "objective": null
+        },
+        {
+          "id": "random-validation",
+          "split": "validation",
+          "count": 2,
+          "modes": [
+            "random"
+          ],
+          "phases": [
+            "opening",
+            "middlegame",
+            "endgame",
+            "unknown"
+          ],
+          "themes": [],
+          "objective": null
+        },
+        {
+          "id": "teacher-guided-train",
+          "split": "train",
+          "count": 2,
+          "modes": [
+            "teacher-guided"
+          ],
+          "phases": [
+            "opening",
+            "middlegame",
+            "endgame",
+            "unknown"
+          ],
+          "themes": [],
+          "objective": null
+        },
+        {
+          "id": "teacher-guided-validation",
+          "split": "validation",
+          "count": 2,
+          "modes": [
+            "teacher-guided"
+          ],
+          "phases": [
+            "opening",
+            "middlegame",
+            "endgame",
+            "unknown"
+          ],
+          "themes": [],
+          "objective": null
+        }
+      ]
+    }
+  },
+  "comparison_exclusions": [
+    "analysis.elapsed_ms",
+    "analysis.search_info time/nps values"
+  ],
+  "runs": [
+    {
+      "pair": 0,
+      "mode": "fresh",
+      "seconds": 4.99668075000227,
+      "result": {
+        "status": "complete",
+        "generation_status": "complete",
+        "examples": 16,
+        "failure": null,
+        "actual": {
+          "random-train": 2,
+          "random-validation": 2,
+          "teacher-guided-train": 2,
+          "teacher-guided-validation": 2
+        },
+        "dataset_sha256": "9e412cdd8844194fc840c5df61029bec1882faa755e972b895de1735af98c408",
+        "dataset_manifest_fingerprint": "320fe78670e3e7c8763fb0ba1cd8e5012576db02b8aef94992cf0cce2414c2d7"
+      },
+      "retained_examples": 8,
+      "retained_examples_per_second": 1.6010628655825903,
+      "semantic_sha256": "e762a2fc84288c08942705d7b1099f2f0fd0ce944fecabbc11deeb78e6ce108e",
+      "files_sha256": {
+        "config.json": "22feb1ccdec5b1325781745b65e33c9555794472b4dadc173b6cccb1f4bc3adc",
+        "dataset.json": "4ca3957c6d8292d6f15fb8a9744f4febec23d737c3388b7564c73558ce6ce777",
+        "library.json": "acfc69c6d2a592627b1dc5fb887d20152c2019d9c2f0ece54ab241565d45a0bf",
+        "summary.json": "85ffb1f40922172413ece2d95d44235a967d9d3a3974a26f0ff1f4c2608b51e3"
+      }
+    },
+    {
+      "pair": 0,
+      "mode": "persistent",
+      "seconds": 0.22667437500786036,
+      "result": {
+        "status": "complete",
+        "generation_status": "complete",
+        "examples": 16,
+        "failure": null,
+        "actual": {
+          "random-train": 2,
+          "random-validation": 2,
+          "teacher-guided-train": 2,
+          "teacher-guided-validation": 2
+        },
+        "dataset_sha256": "ffb8b738e1bd0d68fd3f343384a3be6c66e6fed1b5688d9483d6889d7f4c278f",
+        "dataset_manifest_fingerprint": "320fe78670e3e7c8763fb0ba1cd8e5012576db02b8aef94992cf0cce2414c2d7"
+      },
+      "retained_examples": 8,
+      "retained_examples_per_second": 35.29291742713566,
+      "semantic_sha256": "e762a2fc84288c08942705d7b1099f2f0fd0ce944fecabbc11deeb78e6ce108e",
+      "files_sha256": {
+        "config.json": "f9dc578879a43d87c57db48e26d482dc8cc12d152d84e12ca8cab54529105d67",
+        "dataset.json": "b36ed357992aacadc313d230ebf49dad505006bd7ac9c41671c666e1be49a884",
+        "library.json": "fe318df648a1a0c279766bbc7b697598c011bb9676558b02eda1acb88355a448",
+        "summary.json": "33f7044510baded7d3a22d5620ed7548caab5dbf18cf77e8840d56f849715250"
+      }
+    },
+    {
+      "pair": 1,
+      "mode": "persistent",
+      "seconds": 0.22674662499048281,
+      "result": {
+        "status": "complete",
+        "generation_status": "complete",
+        "examples": 16,
+        "failure": null,
+        "actual": {
+          "random-train": 2,
+          "random-validation": 2,
+          "teacher-guided-train": 2,
+          "teacher-guided-validation": 2
+        },
+        "dataset_sha256": "1f86904d5bb94445f3b95ab4cc8be7a362ae8b358ff3dfc8166c3538da01695a",
+        "dataset_manifest_fingerprint": "320fe78670e3e7c8763fb0ba1cd8e5012576db02b8aef94992cf0cce2414c2d7"
+      },
+      "retained_examples": 8,
+      "retained_examples_per_second": 35.28167177939598,
+      "semantic_sha256": "e762a2fc84288c08942705d7b1099f2f0fd0ce944fecabbc11deeb78e6ce108e",
+      "files_sha256": {
+        "config.json": "f9dc578879a43d87c57db48e26d482dc8cc12d152d84e12ca8cab54529105d67",
+        "dataset.json": "f861b12ad4f86d673c621b16f27c6e49f80621c4ca3689eb35d73b92c8add9e7",
+        "library.json": "04104e9e40130e1ec1620ce259ecff2cc6980954e8d18f9d506dc87b872744a1",
+        "summary.json": "d666b6e4a36f523e655bfe32ec98e647d83dfa937b257d7156a9caf8ab477272"
+      }
+    },
+    {
+      "pair": 1,
+      "mode": "fresh",
+      "seconds": 4.8094780829997035,
+      "result": {
+        "status": "complete",
+        "generation_status": "complete",
+        "examples": 16,
+        "failure": null,
+        "actual": {
+          "random-train": 2,
+          "random-validation": 2,
+          "teacher-guided-train": 2,
+          "teacher-guided-validation": 2
+        },
+        "dataset_sha256": "7f8b53d58231aa91ec8d52a4c6b4e6ba1c8ecaf2e03905b9b8c4b443f1b07be6",
+        "dataset_manifest_fingerprint": "320fe78670e3e7c8763fb0ba1cd8e5012576db02b8aef94992cf0cce2414c2d7"
+      },
+      "retained_examples": 8,
+      "retained_examples_per_second": 1.6633821512313343,
+      "semantic_sha256": "e762a2fc84288c08942705d7b1099f2f0fd0ce944fecabbc11deeb78e6ce108e",
+      "files_sha256": {
+        "config.json": "22feb1ccdec5b1325781745b65e33c9555794472b4dadc173b6cccb1f4bc3adc",
+        "dataset.json": "b7a46bcc43eb0eb74c4fb5561efcc3ec1bc9e96923a4edc426db8325b534d812",
+        "library.json": "0d3cd27153b051f42b56281bb76c7ccf520180092e7882dd6a6fa2f992c11239",
+        "summary.json": "f2e1b93aa1b86ef3e3428710d121e6f910bcadb9ee3fd09d4386b13870605bf5"
+      }
+    },
+    {
+      "pair": 2,
+      "mode": "fresh",
+      "seconds": 4.829445334005868,
+      "result": {
+        "status": "complete",
+        "generation_status": "complete",
+        "examples": 16,
+        "failure": null,
+        "actual": {
+          "random-train": 2,
+          "random-validation": 2,
+          "teacher-guided-train": 2,
+          "teacher-guided-validation": 2
+        },
+        "dataset_sha256": "e64a9511f9cef8b9d63120e52b445176be33626253e197eb663dd0f9b4dddefe",
+        "dataset_manifest_fingerprint": "320fe78670e3e7c8763fb0ba1cd8e5012576db02b8aef94992cf0cce2414c2d7"
+      },
+      "retained_examples": 8,
+      "retained_examples_per_second": 1.656504928975821,
+      "semantic_sha256": "e762a2fc84288c08942705d7b1099f2f0fd0ce944fecabbc11deeb78e6ce108e",
+      "files_sha256": {
+        "config.json": "22feb1ccdec5b1325781745b65e33c9555794472b4dadc173b6cccb1f4bc3adc",
+        "dataset.json": "bde9e0d7750d664b179b19fc53762016a301c380d2c907ebbffdf00fce818db4",
+        "library.json": "a8e14b76b51ee679dd33a640acdb13bea55cb54f35963c848bebd212b47e5c65",
+        "summary.json": "7d607597bd7820a57c4e7eb9ee761ff4ab75f4dc68390e95c80e3121cb55f916"
+      }
+    },
+    {
+      "pair": 2,
+      "mode": "persistent",
+      "seconds": 0.22727387500344776,
+      "result": {
+        "status": "complete",
+        "generation_status": "complete",
+        "examples": 16,
+        "failure": null,
+        "actual": {
+          "random-train": 2,
+          "random-validation": 2,
+          "teacher-guided-train": 2,
+          "teacher-guided-validation": 2
+        },
+        "dataset_sha256": "b78d908cf4cc99468892aec81079a0562c339f4de9b725c21d2edaabfa83f069",
+        "dataset_manifest_fingerprint": "320fe78670e3e7c8763fb0ba1cd8e5012576db02b8aef94992cf0cce2414c2d7"
+      },
+      "retained_examples": 8,
+      "retained_examples_per_second": 35.1998222403637,
+      "semantic_sha256": "e762a2fc84288c08942705d7b1099f2f0fd0ce944fecabbc11deeb78e6ce108e",
+      "files_sha256": {
+        "config.json": "f9dc578879a43d87c57db48e26d482dc8cc12d152d84e12ca8cab54529105d67",
+        "dataset.json": "8118fc80174d2a92568e866edb3cfe9858a4510830ed4b412b5e24267be93bdc",
+        "library.json": "4764edcbb23be3a5380bf15e0d2e0dfa00b8d1efd598e699f5e2f053c7dbbfdf",
+        "summary.json": "c599f80bbf96b762c3107863b016b70916f934a473b8b4bd60afb50d2d926f9e"
+      }
+    }
+  ],
+  "pairs": [
+    {
+      "pair": 0,
+      "content_equal": true,
+      "speedup": 22.04343013994855
+    },
+    {
+      "pair": 1,
+      "content_equal": true,
+      "speedup": 21.210803394324262
+    },
+    {
+      "pair": 2,
+      "content_equal": true,
+      "speedup": 21.24945215957006
+    }
+  ],
+  "complete": true,
+  "raw_evidence": "artifacts/learning/persistent-teacher-v1/",
+  "independent_raw_comparison": "All six raw datasets equal after removing only elapsed_ms and UCI time/nps values."
+}
