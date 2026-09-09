@@ -7,7 +7,7 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from qi.evaluation import Corpus
-from qi.game import START_BOARD, Game, legal_moves
+from qi.game import START_BOARD, Game, GameError, legal_moves
 from qi.players.policy.encoding import ENCODING, input_key
 from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis
@@ -71,6 +71,8 @@ class StartingPosition(Contract):
 
     @model_validator(mode="after")
     def validate_start(self) -> Self:
+        if len(set(self.themes)) != len(self.themes) or any(not theme.strip() for theme in self.themes):
+            raise ValueError("Starting-position themes must be distinct and nonblank.")
         if self.snapshot.game().outcome:
             raise ValueError("Starting positions must be replay-backed and nonterminal.")
         if self.snapshot.moves and not self.family_id:
@@ -110,11 +112,17 @@ class SourcePlan(Contract):
 
 class GenerationRecipe(Contract):
     id: str = Field(min_length=1)
-    version: Literal["continuations-v1"] = "continuations-v1"
+    version: Literal["continuations-v1", "continuations-v2"] = "continuations-v2"
     phase_policy: Literal[PHASE_POLICY] = PHASE_POLICY
     seed: int = 7
     seconds: float = Field(default=300, gt=0, le=7200)
     sources: list[SourcePlan] = Field(min_length=1)
+
+    def require_current(self) -> None:
+        if self.version != "continuations-v2":
+            raise GameError(
+                "obsolete_recipe", "Use continuations-v2 for generation; v1 remains readable in saved libraries."
+            )
 
     @model_validator(mode="after")
     def validate_recipe(self) -> Self:

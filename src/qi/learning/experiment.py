@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from qi.evaluation import Corpus
 from qi.game import GameError
-from qi.learning.data import MAX_LABELS, Dataset
+from qi.training_data.v1 import MAX_LABELS, Dataset
 
 
 class LearningPlan(BaseModel):

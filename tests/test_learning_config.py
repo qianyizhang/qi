@@ -89,12 +89,12 @@ def test_configured_runs_preserve_partial_evidence(tiny_dataset, tmp_path, monke
 
 def test_configured_run_accepts_complete_frozen_data_and_rejects_shortfalls(tiny_dataset, tmp_path):
     from qi.game import legal_moves
-    from qi.learning.config import load_dataset
     from qi.protocol import Snapshot
     from qi.teacher import TeacherConfig
     from qi.training_data.assembly import Bucket, MixtureRecipe, assemble
     from qi.training_data.contracts import GenerationRecipe, SourcePlan, StartingPosition
     from qi.training_data.generation import generate_library, teacher_spec
+    from qi.training_data.loading import load_dataset
 
     teacher = TeacherConfig(tmp_path / "fake-engine", tmp_path / "fake-network")
     spec = teacher_spec(teacher)

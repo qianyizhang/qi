@@ -19,7 +19,7 @@ from qi.training_data.contracts import (
     example_phase,
     fingerprint,
 )
-from qi.training_data.legacy import Label, reserved_inputs
+from qi.training_data.v1 import Label, reserved_inputs
 
 
 class Bucket(Contract):
@@ -81,7 +81,7 @@ def select(library: Library, recipe: MixtureRecipe) -> tuple[list[Selection], di
     sources = {s.id: s for s in library.sources}
     plans = {p.id: p for p in library.recipe.sources}
     reserved = reserved_inputs(library.reserved_corpus)
-    candidates = []
+    candidates = {}
     targets, observation_splits = {}, {}
     for example in sorted(library.examples, key=lambda e: e.fingerprint):
         if example.supervision_fingerprint != recipe.supervision_fingerprint:
@@ -96,16 +96,22 @@ def select(library: Library, recipe: MixtureRecipe) -> tuple[list[Selection], di
         previous = targets.setdefault(key, example.analysis.move)
         if previous != example.analysis.move:
             raise ValueError("Ambiguous supervision for the same model observation.")
-        candidates.append(example)
+        candidates.setdefault(key, []).append(example)
     # Independent bucket RNGs keep the held-out selection fixed when training quotas change.
     selections, used = [], set()
     actual = {b.id: 0 for b in recipe.buckets}
     assigned = {b.id: [] for b in recipe.buckets}
-    for example in candidates:
+    for aliases in candidates.values():
         for bucket in recipe.buckets:
-            matches = sorted(sid for sid in example.source_ids if bucket.matches(example, sources[sid], library))
+            matches = [
+                (example, sid)
+                for example in aliases
+                for sid in sorted(example.source_ids)
+                if bucket.matches(example, sources[sid], library)
+            ]
             if matches:
-                assigned[bucket.id].append((example, matches[0]))
+                # Ownership is per model observation, including its alternate replay histories.
+                assigned[bucket.id].append(matches[0])
                 break
     for bucket in recipe.buckets:
         rows = assigned[bucket.id]

@@ -15,8 +15,7 @@ The accepted [Training Data model](../../../docs/models.md) and
 [ADR-0004](../../../docs/adr/0004-training-data-bounded-context.md) describe the
 implemented extraction and composition boundary; see the
 [Training Data guide](../training_data/README.md) for new mixture commands. The
-legacy dataset commands below retain the
-implemented single-generator pipeline.
+v1 dataset commands below retain their existing generator and artifact format.
 There is no value head, engine-score regression, self-play improvement loop,
 PUCT, or GPU requirement.
 
@@ -25,7 +24,9 @@ PUCT, or GPU requirement.
 Use `qi learn run --config <recipe.json> --preview` before a new comparison.
 Execution adds `--output <fresh-directory>`; scientific settings cannot be
 overridden on this command line. Existing `train` and `experiment` commands
-remain compatible and now also save config artifacts.
+remain supported and save config artifacts. `qi learn train` accepts both v1
+datasets and complete frozen mixtures, and saves `<checkpoint>.report.json` with
+its metrics. The duplicate `qi data train` command has been removed.
 
 Recipes use seven sections, validated in `config.py`:
 

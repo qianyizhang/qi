@@ -10,10 +10,10 @@ import torch
 from torch import nn
 
 from qi.game import Game, GameError, legal_moves
-from qi.learning.data import Dataset, Label
 from qi.players.policy.encoding import ACTIONS, action_id, encode
 from qi.players.policy.runtime import CheckpointMetadata, LoadedPolicy, load_checkpoint, make_model
 from qi.training_data.assembly import TrainingDataset
+from qi.training_data.v1 import Dataset, Label
 
 
 def tensors(labels: list[Label], games: list[Game] | None = None) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:

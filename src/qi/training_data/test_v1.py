@@ -4,10 +4,10 @@ import pytest
 from pydantic import ValidationError
 
 from qi.game import Game, GameError, legal_moves
-from qi.learning.data import Dataset, generate, reserved_inputs
 from qi.players.policy.encoding import input_key
 from qi.protocol import Snapshot
 from qi.teacher import TeacherConfig
+from qi.training_data.v1 import Dataset, generate, reserved_inputs
 
 
 def test_splits_are_by_source_and_observations_are_disjoint(tiny_dataset):

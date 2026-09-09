@@ -23,7 +23,7 @@ from qi.training_data.contracts import (
     state_fingerprint,
     supervision_spec,
 )
-from qi.training_data.legacy import reserved_inputs
+from qi.training_data.v1 import reserved_inputs
 
 
 def teacher_spec(config: TeacherConfig) -> dict:
@@ -49,9 +49,11 @@ def generate_library(
     checkpoint: Callable[[Library], None] | None = None,
 ) -> Library:
     recipe = GenerationRecipe.model_validate(recipe.model_dump())
+    recipe.require_current()
     actor_teacher = actor_teacher or teacher
-    label_spec, actor_spec = teacher_spec(teacher), teacher_spec(actor_teacher)
     deadline = monotonic() + recipe.seconds
+    label_spec = teacher_spec(teacher)
+    actor_spec = label_spec if actor_teacher == teacher else teacher_spec(actor_teacher)
     reserved = reserved_inputs(corpus)
     sources, examples = [], {}
     failure = None
@@ -81,19 +83,21 @@ def generate_library(
             examples=list(examples.values()),
             status=status,
             failure=failure,
-        )
+        ).model_copy(deep=True)
 
     for plan in recipe.sources:
         for index in range(plan.games):
-            source_id = fingerprint(
-                "generated-source-v1",
-                {
-                    "seed": recipe.seed,
-                    "plan": plan.model_dump(),
-                    "index": index,
-                },
-            )
-            rng = Random(source_id)
+            actor_identity = {
+                "seed": recipe.seed,
+                "plan_id": plan.id,
+                "mode": plan.mode,
+                "start": state_fingerprint(plan.start.snapshot),
+                "index": index,
+                "actor": actor_spec if plan.mode == "teacher-guided" else "sorted-legal-random-v1",
+            }
+            source_id = fingerprint("generated-source-v2", {"actor": actor_identity, "plan": plan.model_dump()})
+            rng = Random(fingerprint("continuation-actor-v2", actor_identity))
+            sampler_rng = Random(fingerprint("position-sampler-v2", actor_identity))
             game = plan.start.snapshot.game()
             candidates, cached = [], {}
             reason = "ply-budget"
@@ -119,7 +123,7 @@ def generate_library(
                     game = game.apply(move)
                 if game.outcome:
                     reason = "terminal"
-                rng.shuffle(candidates)
+                sampler_rng.shuffle(candidates)
                 retained = 0
                 seen = set()
                 for candidate in candidates:
@@ -163,9 +167,10 @@ def generate_library(
                     stop_reason=reason,
                 )
             )
-            current = snapshot("incomplete")
-            if checkpoint:
-                checkpoint(current)
-            if failure:
-                return current
+            if checkpoint is not None or failure:
+                current = snapshot("incomplete")
+                if checkpoint is not None:
+                    checkpoint(current)
+                if failure:
+                    return current
     return snapshot("complete")

@@ -5,9 +5,10 @@ from statistics import mean, pstdev
 from time import perf_counter
 
 from qi.game import GameError
-from qi.learning.config import PreparedDataset, Recipe
+from qi.learning.config import Recipe
 from qi.learning.experiment import LearningPlan, source_identity, summarize, write_json
 from qi.training_data.assembly import TrainingDataset
+from qi.training_data.loading import PreparedDataset
 
 
 def preview_recipe(recipe: Recipe, dataset: PreparedDataset) -> dict:

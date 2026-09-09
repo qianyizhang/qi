@@ -8,8 +8,8 @@ import typer
 
 from qi.evaluation import Corpus
 from qi.game import GameError
-from qi.learning.data import Dataset, generate
 from qi.teacher import TeacherConfig
+from qi.training_data.v1 import Dataset, generate
 
 app = typer.Typer(no_args_is_help=True, help="Bounded local teacher-imitation experiments.")
 
@@ -21,8 +21,9 @@ def configured_run(
     preview_only: Annotated[bool, typer.Option("--preview")] = False,
 ) -> None:
     """Run a JSON recipe or a saved trial config; scientific settings belong to the file."""
-    from qi.learning.config import load_dataset, load_recipe
+    from qi.learning.config import load_recipe
     from qi.learning.runs import preview_recipe, run_recipe
+    from qi.training_data.loading import load_dataset
 
     recipe = load_recipe(config)
     dataset = load_dataset(Path(recipe.data.dataset))
@@ -97,6 +98,7 @@ def train_policy(
 ) -> None:
     """Fit a CPU/MPS policy and save a CPU-compatible checkpoint."""
     from qi.learning.config import RunConfig
+    from qi.training_data.loading import load_dataset
 
     resolved = RunConfig.model_validate(
         {
@@ -114,15 +116,18 @@ def train_policy(
         from qi.learning.train import train, validate_device
     except ImportError as exc:
         raise GameError("learning_not_installed", "Install the learning extra: uv sync --extra learning.") from exc
-    dataset = Dataset.model_validate_json(data.read_text())
+    dataset = load_dataset(data)
     resolved.data.train_size = len(resolved.training_inputs(dataset))
     config_path = checkpoint.with_name(checkpoint.name + ".config.json")
+    report_path = checkpoint.with_name(checkpoint.name + ".report.json")
     resolved.origin_config = str(config_path.resolve())
     validate_device(device, threads)
     if checkpoint.exists():
         raise GameError("checkpoint_exists", "Choose a new checkpoint path; training never overwrites weights.")
     if config_path.exists():
         raise GameError("config_exists", "Choose a new checkpoint path; its saved config already exists.")
+    if report_path.exists():
+        raise GameError("report_exists", "Choose a new checkpoint path; its saved report already exists.")
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     with config_path.open("x") as stream:
         stream.write(resolved.model_dump_json(indent=2) + "\n")
@@ -137,6 +142,9 @@ def train_policy(
         device=device,
         threads=threads,
     )
+    with report_path.open("x") as stream:
+        json.dump(result, stream, indent=2, allow_nan=False)
+        stream.write("\n")
     typer.echo(json.dumps(result))
     if result["status"] != "complete":
         raise GameError(

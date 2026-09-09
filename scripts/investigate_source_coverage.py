@@ -6,7 +6,7 @@ from collections import Counter, defaultdict, deque
 from pathlib import Path
 from random import Random
 
-from qi.learning.data import Dataset
+from qi.training_data.v1 import Dataset
 
 
 def ply(label) -> int:

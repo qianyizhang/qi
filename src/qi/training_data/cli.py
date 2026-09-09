@@ -9,7 +9,7 @@ import typer
 from qi.evaluation import Corpus
 from qi.game import GameError
 from qi.teacher import TeacherConfig
-from qi.training_data.assembly import MixtureRecipe, TrainingDataset, assemble
+from qi.training_data.assembly import MixtureRecipe, assemble
 from qi.training_data.contracts import GenerationRecipe, Library
 from qi.training_data.generation import generate_library
 
@@ -34,6 +34,7 @@ def generate_command(
 ) -> None:
     """Save reusable examples after each source; report bounded partial work explicitly."""
     settings = GenerationRecipe.model_validate_json(recipe.read_text())
+    settings.require_current()
     reserved = Corpus.model_validate_json(corpus.read_text())
     teacher = TeacherConfig(engine, network, nodes=nodes, depth=depth)
     fresh_output(output)
@@ -70,38 +71,3 @@ def assemble_command(
     typer.echo(dataset.manifest.model_dump_json())
     if dataset.manifest.status != "complete":
         raise GameError("mixture_incomplete", "Requested quotas were not met; inspect the saved manifest.")
-
-
-@app.command("train")
-def train_command(
-    dataset: Annotated[Path, typer.Option()],
-    checkpoint: Annotated[Path, typer.Option()],
-    steps: int = 200,
-    seconds: float = 60,
-    seed: int = 7,
-    learning_rate: float = 0.01,
-    device: str = "cpu",
-    threads: int = 1,
-) -> None:
-    """Train a complete frozen mixture and save per-slice measurements beside weights."""
-    materialized = TrainingDataset.model_validate_json(dataset.read_text())
-    materialized.require_complete()
-    report_path = checkpoint.with_suffix(".report.json")
-    fresh_output(report_path)
-    try:
-        from qi.learning.train import train
-    except ImportError as exc:
-        raise GameError("learning_not_installed", "Install the learning extra: uv sync --extra learning.") from exc
-    result = train(
-        materialized,
-        checkpoint,
-        steps=steps,
-        seconds=seconds,
-        seed=seed,
-        learning_rate=learning_rate,
-        device=device,
-        threads=threads,
-    )
-    with report_path.open("x") as stream:
-        json.dump(result, stream, indent=2)
-    typer.echo(json.dumps(result))

@@ -10,7 +10,7 @@ document_class: coordination
 
 This is the accepted architectural model. The first Training Data slice is
 implemented in `src/qi/training_data/`; its README owns executable formats and
-policy details. `src/qi/learning/data.py` preserves the legacy compatibility API. [ADR-0004](adr/0004-training-data-bounded-context.md)
+policy details. `src/qi/training_data/v1.py` owns the supported v1 artifact format. [ADR-0004](adr/0004-training-data-bounded-context.md)
 records the boundary decision. The [glossary](glossary/ddd.md) owns terminology.
 
 ## Ownership

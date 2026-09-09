@@ -3,21 +3,12 @@
 from pathlib import Path
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter, model_validator
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
 from qi.game import GameError
-from qi.learning.data import MAX_LABELS, Dataset
 from qi.players.policy.encoding import ARCHITECTURE, ENCODING
-from qi.training_data.assembly import TrainingDataset
-
-type PreparedDataset = Dataset | TrainingDataset
-
-
-def load_dataset(path: Path) -> PreparedDataset:
-    dataset = TypeAdapter(PreparedDataset).validate_json(path.read_text())
-    if isinstance(dataset, TrainingDataset):
-        dataset.require_complete()
-    return dataset
+from qi.training_data.loading import PreparedDataset
+from qi.training_data.v1 import MAX_LABELS
 
 
 class Settings(BaseModel):

@@ -4,9 +4,11 @@ import pytest
 
 from qi.evaluation import Corpus, Opening
 from qi.game import legal_moves
-from qi.learning.data import generate
 from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig
+from qi.training_data.contracts import GenerationRecipe, SourcePlan, StartingPosition
+from qi.training_data.generation import generate_library, teacher_spec
+from qi.training_data.v1 import generate
 
 
 @pytest.fixture
@@ -43,3 +45,53 @@ def tiny_dataset(tmp_path):
         )
 
     return generate(corpus, TeacherConfig(engine, network), games=4, plies=8, samples=3, labeler=labeler)
+
+
+@pytest.fixture
+def data_setup(tiny_dataset, tmp_path):
+    teacher = TeacherConfig(tmp_path / "fake-engine", tmp_path / "fake-network", nodes=100, depth=2)
+    calls = []
+
+    def labeler(game, config):
+        calls.append((game.state_hash, config.nodes))
+        spec = teacher_spec(config)
+        return tiny_dataset.labels[0].analysis.model_copy(
+            update={
+                "snapshot": Snapshot(moves=list(game.moves)),
+                "state_hash": game.state_hash,
+                "move": sorted(legal_moves(game.board, game.turn))[0],
+                "engine_sha256": spec["engine_sha256"],
+                "network_sha256": spec["network_sha256"],
+                "settings": spec["settings"],
+                "requested_nodes": config.nodes,
+                "requested_depth": config.depth,
+            }
+        )
+
+    plans = []
+    for mode in ("random", "teacher-guided"):
+        for split, move in (("train", "b0c2"), ("validation", "h0g2")):
+            start = (
+                StartingPosition(id="initial", version="1")
+                if mode == "random"
+                else StartingPosition(
+                    id=f"teacher-{split}",
+                    version="1",
+                    family_id=f"family-{split}",
+                    snapshot=Snapshot(moves=[move]),
+                    themes=["development"],
+                )
+            )
+            plans.append(
+                SourcePlan(id=f"{mode}-{split}", mode=mode, split=split, start=start, additional_plies=8, samples=3)
+            )
+    recipe = GenerationRecipe(id="fixture", sources=plans)
+    return recipe, tiny_dataset.reserved_corpus, teacher, labeler, calls
+
+
+@pytest.fixture
+def library(data_setup):
+    recipe, corpus, teacher, labeler, _ = data_setup
+    result = generate_library(recipe, corpus, teacher, labeler=labeler)
+    assert result.status == "complete", result.failure
+    return result

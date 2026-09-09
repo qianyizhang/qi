@@ -14,9 +14,12 @@ selection and composition; the referee owns outcomes and the trainer owns weight
 
 ## Formats and compatibility
 
-- `legacy.py` is the unchanged v1 random generator and Dataset validator.
-  `qi.learning.data` re-exports that API. Existing `qi learn dataset` commands,
+- `v1.py` owns the supported v1 random generator and Dataset validator.
+  Callers import it directly; the `qi.learning.data` forwarding shim was removed.
+  Existing `qi learn dataset` commands,
   seeded choices, source splits, labels and artifact digests retain their meanings.
+- `loading.py` loads supported prepared-data formats and refuses incomplete
+  mixtures before training. This contract lives outside optimization configuration.
 - `contracts.py` defines replay-backed starting positions, generation recipes,
   source provenance and reusable examples (`example-library-v1`). Every example
   contains the actual analysis and all contributing source IDs. The fingerprint
@@ -39,6 +42,14 @@ Each `SourcePlan` declares a named/versioned start, split, actor mode, number of
 independent continuations, additional-ply budget (1–300), samples per continuation
 (1–16), and an absolute-ply sampling window. Generation allows at most 2048 games
 and 7200 seconds. Selection shuffles eligible nonterminal positions reproducibly.
+New generation uses `continuations-v2`: actor randomness depends on the seed,
+plan ID, replay-backed start, actor recipe and continuation index. Sampling uses
+its own random stream. Changing the window, sample quota or total game count no
+longer changes existing trajectories. Source fingerprints also pin the actor
+recipe. Old `continuations-v1` libraries remain readable, but regeneration must
+explicitly upgrade the recipe version; its random stream changes. No old generator
+branch or import alias is kept for that experimental continuation scheme.
+
 Reaching the sample quota does not terminate game continuation. Exhausting a ply
 budget is `ply-budget`, not a fabricated draw. Only the referee supplies terminal
 outcomes, including its existing 300-ply draw rule.
@@ -49,8 +60,9 @@ Independent games from the standard initial board can have separate families.
 Family IDs remain declared provenance: hashes cannot discover an undisclosed
 relationship between two different historical positions.
 
-Starting-position themes describe scenario membership and are inherited by its
-continuations. They do not assert a tactical feature remains true at every ply.
+Starting-position themes must be distinct and nonblank. They describe scenario
+membership and are inherited by its continuations. They do not assert a tactical
+feature remains true at every ply.
 The optional `win-in-one` objective admits only labels whose chosen move actually
 wins immediately under the referee. The target remains a teacher preference;
 an engine mate score is never promoted to a general forced-win proof.
@@ -77,11 +89,16 @@ afresh. The sampling window filters phase separately from min/max ply and stride
 
 Buckets filter split, mode, phase, required themes and optional objective.
 `first-bucket-wins` resolves overlapping eligibility **before quota filling**:
-a later bucket cannot borrow candidates assigned to an earlier one. Each retained
+a later bucket cannot borrow candidates assigned to an earlier one, including
+alternate histories exposing the same model observation. Each retained
 model observation counts once. Requested counts live in the recipe; actual counts
 and complete/incomplete status live in the manifest. Missing quotas are never
 redistributed. Validation reconstructs selection and verifies the fingerprint on
 load, so editing counts, references or completion flags cannot bypass the contract.
+Review corrected an edge case where alternate histories could bypass bucket
+priority. An affected old manifest fails validation and must be explicitly
+reassembled from its library; it is never silently rewritten. The saved phase
+pilots retain their original manifest fingerprints.
 
 Assembly excludes every reserved evaluation history prefix and rejects any
 remaining observation with cross-split lineage or conflicting target moves under
@@ -110,11 +127,18 @@ must not be summed as independent sample counts.
 qi data generate --recipe generation.json --corpus data/evaluation/search-positions-v1.json \
   --engine /path/to/pikafish --network /path/to/pikafish.nnue --output library.json
 qi data assemble --library library.json --recipe mixture.json --output dataset.json
-qi data train --dataset dataset.json --checkpoint policy.pt --device cpu --steps 30
+qi learn train --data dataset.json --checkpoint policy.pt --device cpu --steps 30
 ```
 
-Generation checkpoints the newly created library after each source. A failed
-teacher query preserves successfully labeled examples and an explicit failure;
+Training has one command boundary: `qi learn train` for a single fit, or
+`qi learn run` for a configured experiment. The duplicate `qi data train` command
+was removed. Single fits save `<checkpoint>.config.json` and
+`<checkpoint>.report.json`, including slice diagnostics; a partial fit returns
+nonzero after saving its report and completed checkpoint.
+
+Generation checkpoints the newly created library after each source. Retained
+checkpoint objects are independent snapshots; later lineage merges do not mutate
+earlier receipts. A failed teacher query preserves successfully labeled examples and an explicit failure;
 reruns require new output paths. Assembly saves shortfalls and returns nonzero.
 The trainer rejects incomplete mixtures before optimization or checkpoint writes.
 Generation completion means source attempts finished, not that future composition

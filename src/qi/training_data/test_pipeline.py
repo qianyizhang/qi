@@ -8,7 +8,6 @@ from pydantic import ValidationError
 
 from qi.game import Game, GameError, legal_moves
 from qi.protocol import Snapshot
-from qi.teacher import TeacherConfig
 from qi.training_data.assembly import Bucket, MixtureRecipe, TrainingDataset, assemble
 from qi.training_data.contracts import (
     GenerationRecipe,
@@ -20,57 +19,7 @@ from qi.training_data.contracts import (
     observation_fingerprint,
     state_fingerprint,
 )
-from qi.training_data.generation import generate_library, teacher_spec
-
-
-@pytest.fixture
-def data_setup(tiny_dataset, tmp_path):
-    teacher = TeacherConfig(tmp_path / "fake-engine", tmp_path / "fake-network", nodes=100, depth=2)
-    calls = []
-
-    def labeler(game, config):
-        calls.append((game.state_hash, config.nodes))
-        spec = teacher_spec(config)
-        return tiny_dataset.labels[0].analysis.model_copy(
-            update={
-                "snapshot": Snapshot(moves=list(game.moves)),
-                "state_hash": game.state_hash,
-                "move": sorted(legal_moves(game.board, game.turn))[0],
-                "engine_sha256": spec["engine_sha256"],
-                "network_sha256": spec["network_sha256"],
-                "settings": spec["settings"],
-                "requested_nodes": config.nodes,
-                "requested_depth": config.depth,
-            }
-        )
-
-    plans = []
-    for mode in ("random", "teacher-guided"):
-        for split, move in (("train", "b0c2"), ("validation", "h0g2")):
-            start = (
-                StartingPosition(id="initial", version="1")
-                if mode == "random"
-                else StartingPosition(
-                    id=f"teacher-{split}",
-                    version="1",
-                    family_id=f"family-{split}",
-                    snapshot=Snapshot(moves=[move]),
-                    themes=["development"],
-                )
-            )
-            plans.append(
-                SourcePlan(id=f"{mode}-{split}", mode=mode, split=split, start=start, additional_plies=8, samples=3)
-            )
-    recipe = GenerationRecipe(id="fixture", sources=plans)
-    return recipe, tiny_dataset.reserved_corpus, teacher, labeler, calls
-
-
-@pytest.fixture
-def library(data_setup):
-    recipe, corpus, teacher, labeler, _ = data_setup
-    result = generate_library(recipe, corpus, teacher, labeler=labeler)
-    assert result.status == "complete", result.failure
-    return result
+from qi.training_data.generation import generate_library
 
 
 def mixture(library, count=2):
@@ -264,7 +213,7 @@ def test_curated_phase_requires_provenance_and_only_applies_to_exact_start(data_
 def test_reserved_history_prefixes_are_excluded_before_quota_accounting(library):
     from qi.evaluation import Opening
     from qi.players.policy.encoding import input_key
-    from qi.training_data.legacy import reserved_inputs
+    from qi.training_data.v1 import reserved_inputs
 
     example = library.examples[0]
     library.reserved_corpus.openings.append(
@@ -318,3 +267,79 @@ def test_deadline_keeps_an_explicit_unfinished_source(data_setup, monkeypatch):
     assert library.sources[0].stop_reason == "deadline"
     assert library.sources[0].snapshot.game().outcome is None
     assert not library.examples
+
+
+def test_sampling_settings_and_game_count_do_not_change_existing_trajectory(data_setup):
+    recipe, corpus, teacher, labeler, _ = data_setup
+    recipe.sources = [recipe.sources[0]]
+    baseline = generate_library(recipe, corpus, teacher, labeler=labeler)
+    changed = recipe.model_copy(deep=True)
+    changed.sources[0].samples = 1
+    changed.sources[0].games = 2
+    changed.sources[0].window.min_ply = 2
+    result = generate_library(changed, corpus, teacher, labeler=labeler)
+    assert baseline.sources[0].snapshot == result.sources[0].snapshot
+
+
+def test_retained_checkpoint_objects_do_not_gain_future_lineage(data_setup):
+    recipe, corpus, teacher, labeler, _ = data_setup
+    recipe.sources = [recipe.sources[2]]
+    recipe.sources[0].games = 2
+    recipe.sources[0].samples = 8
+    checkpoints = []
+    generate_library(recipe, corpus, teacher, labeler=labeler, checkpoint=checkpoints.append)
+    assert len(checkpoints[0].sources) == 1
+    assert all(len(e.source_ids) == 1 for e in checkpoints[0].examples)
+    Library.model_validate(checkpoints[0].model_dump())
+
+
+def test_duplicate_themes_cannot_inflate_diagnostic_slice_counts():
+    with pytest.raises(ValidationError, match="themes"):
+        StartingPosition(id="duplicate", version="1", themes=["development", "development"])
+
+
+def test_first_bucket_owns_all_histories_of_the_same_observation(data_setup):
+    recipe, corpus, teacher, labeler, _ = data_setup
+    histories = [
+        ["b0c2", "b9c7", "h0g2", "h9g7"],
+        ["b0c2"],
+        ["h0g2", "h9g7", "b0c2", "b9c7"],
+        ["a3a4"],
+    ]
+    recipe.sources = [
+        SourcePlan(
+            id=f"alias-{i}",
+            mode="teacher-guided" if i == 2 else "random",
+            split="validation" if i == 3 else "train",
+            additional_plies=1,
+            samples=1,
+            start=StartingPosition(
+                id=f"start-{i}", version="1", family_id=f"family-{i}", snapshot=Snapshot(moves=moves)
+            ),
+        )
+        for i, moves in enumerate(histories)
+    ]
+    library = generate_library(recipe, corpus, teacher, labeler=labeler)
+    for seed in range(12):
+        recipe = MixtureRecipe(
+            id="aliases",
+            seed=seed,
+            supervision_fingerprint=library.examples[0].supervision_fingerprint,
+            buckets=[
+                Bucket(id="first", split="train", modes=["random"], count=1),
+                Bucket(id="later", split="train", modes=["teacher-guided"], count=1),
+                Bucket(id="held-out", split="validation", count=1),
+            ],
+        )
+        dataset = assemble(library, recipe)
+        assert dataset.manifest.actual["later"] == 0
+
+
+def test_old_generation_recipes_remain_readable_but_cannot_silently_regenerate(data_setup, library):
+    old = library.model_dump()
+    old["recipe"]["version"] = "continuations-v1"
+    assert Library.model_validate(old).recipe.version == "continuations-v1"
+    recipe, corpus, teacher, labeler, _ = data_setup
+    recipe.version = "continuations-v1"
+    with pytest.raises(GameError, match="continuations-v2"):
+        generate_library(recipe, corpus, teacher, labeler=labeler)
