@@ -8,9 +8,9 @@ document_class: coordination
 
 # Core model
 
-This is the accepted architectural model. Training Data extraction and new
-generation modes are not implemented yet; current generation remains in
-`src/qi/learning/data.py`. [ADR-0004](adr/0004-training-data-bounded-context.md)
+This is the accepted architectural model. The first Training Data slice is
+implemented in `src/qi/training_data/`; its README owns executable formats and
+policy details. `src/qi/learning/data.py` preserves the legacy compatibility API. [ADR-0004](adr/0004-training-data-bounded-context.md)
 records the boundary decision. The [glossary](glossary/ddd.md) owns terminology.
 
 ## Ownership
@@ -111,7 +111,7 @@ teacher timing and therefore are not the proposed frozen-manifest fingerprint.
 ## Implementation route
 
 The [first build slice](../records/work-items/items/AB-DATA-002-first-training-data-slice.md)
-will prove the boundary with existing random generation, teacher-guided
+implements the boundary with existing random generation, teacher-guided
 continuations and a two-mode frozen mixture. Learner-driven generation,
 recorded-game ingestion, heterogeneous supervision and dynamic training curricula
 remain later extensions. Package layout, phase thresholds and initial mixture

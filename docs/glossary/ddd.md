@@ -248,12 +248,12 @@ to a canonical term; they do not introduce different meanings.
 | LLM | 大语言模型 | A large language model that could be evaluated or trained to choose moves or use tools. The detailed LLM experiment interface remains undecided. | The current alpha-beta or MCTS player | large language model |
 
 
-## Training Data (accepted model; extraction pending)
+## Training Data
 
-These terms describe the accepted [core model](../models.md). Their appearance
-here does not imply that new generators, fingerprints or dataset manifests are
-already implemented. Existing MCTS Rollout and legacy evaluation Opening fields
-keep their current contracts.
+These terms describe the accepted [core model](../models.md). The
+[Training Data guide](../../src/qi/training_data/README.md) identifies implemented
+formats and later extensions. Existing MCTS Rollout and legacy evaluation Opening
+fields keep their current contracts.
 
 | Term | 中文 | Meaning | _Avoid_ | Aliases |
 | :-- | :-- | :-- | :-- | :-- |

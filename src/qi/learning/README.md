@@ -13,7 +13,9 @@ only uses them. This first experiment predicts a teacher's chosen legal move.
 [ADR-0003](../../../docs/adr/0003-pytorch-mps-training.md) records the PyTorch/MPS decision.
 The accepted [Training Data model](../../../docs/models.md) and
 [ADR-0004](../../../docs/adr/0004-training-data-bounded-context.md) describe the
-pending extraction and composition boundary; the commands below remain the
+implemented extraction and composition boundary; see the
+[Training Data guide](../training_data/README.md) for new mixture commands. The
+legacy dataset commands below retain the
 implemented single-generator pipeline.
 There is no value head, engine-score regression, self-play improvement loop,
 PUCT, or GPU requirement.

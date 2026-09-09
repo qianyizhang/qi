@@ -19,9 +19,11 @@ from qi.learning.cli import app as learning_app
 from qi.players import PlayerConfig, choose, list_players
 from qi.protocol import Snapshot, inspect
 from qi.teacher import TeacherConfig, analyze
+from qi.training_data.cli import app as training_data_app
 
 app = typer.Typer(no_args_is_help=True, help="Qi: local Xiangqi play and deterministic replay.")
 app.add_typer(learning_app, name="learn")
+app.add_typer(training_data_app, name="data")
 app.add_typer(experiments_app, name="experiment")
 app.add_typer(evaluation_app, name="eval")
 

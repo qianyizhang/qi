@@ -23,6 +23,7 @@ class CheckpointMetadata(BaseModel):
     architecture: Literal[ARCHITECTURE] = ARCHITECTURE
     objective: Literal["legal-masked-teacher-move"] = "legal-masked-teacher-move"
     dataset_sha256: str = Field(min_length=64, max_length=64)
+    dataset_manifest_fingerprint: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     reserved_corpus_sha256: str = Field(min_length=64, max_length=64)
     teacher_engine_sha256: str = Field(min_length=64, max_length=64)
     teacher_network_sha256: str = Field(min_length=64, max_length=64)

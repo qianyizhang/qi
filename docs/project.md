@@ -66,8 +66,8 @@ Larger model choices, accelerator budgets, and LLM trainer versions remain open.
 The [core model](models.md) owns cross-context relationships. The referee owns
 legality, transitions and outcomes; players select actions under budgets.
 [ADR-0004](adr/0004-training-data-bounded-context.md) assigns selection, supervision
-provenance and dataset composition to Training Data; extraction from the current
-trainer and new generation modes remain pending. Trainers prepare model inputs
+provenance and dataset composition to Training Data. Its first slice supports
+random and teacher-guided continuations with frozen mixtures. Trainers prepare model inputs
 and change weights using frozen data. Search and training
 call Python directly; HTTP and CLI validation stay outside simulation loops.
 Do not create generic multi-game abstractions before a second game needs them.

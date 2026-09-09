@@ -58,6 +58,7 @@ allowed_paths = [
     "src/qi/players/README.md", "src/qi/players/random/README.md",
     "src/qi/players/alphabeta/README.md", "src/qi/players/quiescence/README.md",
     "src/qi/players/policy/README.md", "src/qi/learning/README.md",
+    "src/qi/training_data/README.md",
     "src/qi/players/mcts/README.md",
     "src/qi/players/components/README.md",
     "src/qi/players/components/ordering/README.md", "src/qi/players/components/positional/README.md",

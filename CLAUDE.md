@@ -26,7 +26,7 @@ The referee owns rules and outcomes; players choose actions; Training Data owns
 example selection, supervision provenance and dataset composition; trainers
 prepare model inputs and update weights. Replay must reproduce results under an
 explicit ruleset and history. `docs/models.md` owns the accepted relationships
-and identifies the pending Training Data implementation; `docs/project.md` owns
+and routes the Training Data implementation; `docs/project.md` owns
 project direction and constraints.
 
 ## Authority map
@@ -74,7 +74,9 @@ contracts arrive with behavior; avoid speculative packages. Vocabulary authority
 `docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a
 README and tests. Register implementations once in its catalog; adapters discover
 metadata and dispatch through the shared `choose` boundary.
-The optional trainer lives in `src/qi/learning/`; checkpoint-backed inference
+Training data generation and frozen mixtures live in `src/qi/training_data/`; its
+README owns formats, phase policies, quotas and compatibility. The optional
+trainer lives in `src/qi/learning/`; checkpoint-backed inference
 lives in its player module. `QI_POLICY_CHECKPOINT` selects an explicit local file,
 loaded and pinned per process. HTTP does not accept checkpoint paths.
 [ADR-0003](docs/adr/0003-pytorch-mps-training.md) fixes PyTorch with explicit CPU/MPS

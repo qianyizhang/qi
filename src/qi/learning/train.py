@@ -13,6 +13,7 @@ from qi.game import Game, GameError, legal_moves
 from qi.learning.data import Dataset, Label
 from qi.players.policy.encoding import ACTIONS, action_id, encode
 from qi.players.policy.runtime import CheckpointMetadata, LoadedPolicy, load_checkpoint, make_model
+from qi.training_data.assembly import TrainingDataset
 
 
 def tensors(labels: list[Label], games: list[Game] | None = None) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -67,7 +68,7 @@ def synchronize(device: str) -> None:
 
 
 def train(
-    dataset: Dataset,
+    dataset: Dataset | TrainingDataset,
     checkpoint: Path,
     *,
     seed: int = 7,
@@ -84,7 +85,9 @@ def train(
     validate_device(device, threads)
     if checkpoint.exists():
         raise GameError("checkpoint_exists", "Choose a new checkpoint path; training never overwrites weights.")
-    dataset = Dataset.model_validate(dataset.model_dump())
+    dataset = type(dataset).model_validate(dataset.model_dump())
+    if isinstance(dataset, TrainingDataset):
+        dataset.require_complete()
     train_labels = dataset.split_labels("train")
     if train_inputs is not None:
         available = {label.input_sha256: label for label in train_labels}
@@ -147,6 +150,7 @@ def train(
     teacher = train_labels[0].analysis
     metadata = CheckpointMetadata(
         dataset_sha256=dataset.digest,
+        dataset_manifest_fingerprint=dataset.manifest.fingerprint if isinstance(dataset, TrainingDataset) else None,
         reserved_corpus_sha256=dataset.reserved_corpus.digest,
         teacher_engine_sha256=teacher.engine_sha256,
         teacher_network_sha256=teacher.network_sha256,
@@ -173,7 +177,18 @@ def train(
     reload_equal = train_predictions == reloaded_train and validation_predictions == reloaded_validation
     if not reload_equal:
         raise GameError("checkpoint_mismatch", "Reloaded checkpoint predictions differ from trained weights.")
+    slice_stats = {}
+    if isinstance(dataset, TrainingDataset):
+        labels_by_input = {label.input_sha256: label for label in train_labels + validation_labels}
+        for name, keys in dataset.slice_inputs().items():
+            keys = [key for key in keys if key in labels_by_input]
+            slice_stats[name] = (
+                measure(loaded, [labels_by_input[key] for key in keys], [games[key] for key in keys])[0]
+                if keys
+                else {"positions": 0, "agreement": None, "cross_entropy": None}
+            )
     return {
+        "slices": slice_stats,
         "status": "complete" if completed == steps else "deadline",
         "training_device": device,
         "training_threads": threads,

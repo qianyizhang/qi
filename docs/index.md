@@ -16,6 +16,7 @@ stale route, and preserve the owning authority. Doctrine:
 
 Project scope and milestone direction: [Project plan](project.md).
 Accepted ownership and Training Data model: [Core model](models.md).
+Generation, frozen mixtures and phase policies: [Training Data](../src/qi/training_data/README.md).
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).
