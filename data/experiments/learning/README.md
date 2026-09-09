@@ -9,7 +9,9 @@ document_class: artifact
 # Learning experiment records
 
 Use the [method](../../../docs/experiments.md) and [trainer guide](../../../src/qi/learning/README.md)
-for new experiments. JSON recipes here can be previewed with `qi learn run --config`.
+for new experiments. Training recipes here can be previewed with `qi learn run --config`.
+The [preparation example](preparation-two-mode-v1.json) instead runs through
+`qi data prepare --config`; source-coverage protocol JSON is consumed by its study script.
 The historical recipes reconstruct settings, not the original implementation.
 Their prepared datasets and weights are local, ignored artifacts; a fresh clone
 alone cannot rerun them. Dataset paths in recipes resolve relative to the config file.
@@ -27,11 +29,24 @@ alone cannot rerun them. Dataset paths in recipes resolve relative to the config
 | Framework comparison | [Record](history/framework-benchmark.json) | `artifacts/learning/framework-benchmark/` |
 | Source-coverage feasibility (no training) | [Audit](history/source-coverage-feasibility.json), [study record](../../../records/work-items/items/AB-LEARN-006-source-coverage.md) | `artifacts/learning/source-coverage-investigation-v1/` |
 | Source-coverage comparison (18 complete fits) | [Results](history/source-coverage-v1.json), [interpretation](../../../records/work-items/items/AB-LEARN-006-source-coverage.md); six full recipes under `source-coverage-v1/` | `artifacts/learning/source-coverage-v1/` |
+| Fresh source-coverage preparation shortfall (zero fits) | [Original protocol](source-coverage-confirmation-v1/protocol.json), [shortfall](history/source-coverage-confirmation-shortfall.json) | `artifacts/learning/source-coverage-confirmation-v1/` |
+| Fresh source-coverage confirmation (18 complete fits) | [Results](history/source-coverage-confirmation-v2.json), [amended protocol](source-coverage-confirmation-v2/protocol.json), [feasibility](history/source-coverage-confirmation-feasibility.json), [work record](../../../records/work-items/items/AB-LEARN-007-fresh-source-confirmation.md); six full recipes under `source-coverage-confirmation-v2/` | `artifacts/learning/source-coverage-confirmation-v2/` |
 
 The source-coverage recipes group three initialization seeds for each prepared
 dataset. The recorded study executed the same eighteen fits individually so the
 first fit could also provide timing. Its saved per-trial configs preserve the
 actual allowances; replay recipes use the subsequent measured allowance.
+
+For the fresh confirmation, `scripts/confirm_source_coverage.py` owns generation
+and preparation; `scripts/run_source_coverage.py` owns profile, run and summarize.
+Run these study scripts from the repository root: protocol paths are
+repository-relative, unlike paths in preparation and training configs.
+The amended protocol pins a full local sampler audit. Reconstruct that audit with
+`scripts/audit_fresh_coverage.py --config <protocol> --output <fresh-directory>`
+and compare its digest before generation. Large datasets, full input selections,
+source snapshots and checkpoints remain local; the tracked compact findings
+alone cannot recreate an absent artifact directory. Preserve the original
+shortfall separately from the completed amended attempt.
 
 `history/` records are explicitly retrospective, contain source links and limitations,
 and are not accepted as runnable configs. Continuous tuning fits produced checkpoint

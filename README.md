@@ -2,7 +2,7 @@
 description: Setup and usage for the local qi Xiangqi game.
 scope: project setup
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -10,7 +10,8 @@ document_class: coordination
 
 A local Xiangqi board for pass-and-play or games against pluggable local
 opponents, with a Python referee, structured CLI, and portable save/replay.
-Fixed evaluation batches and local Pikafish analysis support future learning work.
+Fixed evaluation batches, local Pikafish supervision and optional policy training
+support bounded learning experiments.
 
 ## Setup and play
 
@@ -108,7 +109,16 @@ uv run qi choose --state game.json --player mcts-quiescence --nodes 512 --rollou
 For local Pikafish analysis, see [teacher setup](docs/teacher.md). Engine and
 weights remain optional local artifacts; default checks need neither.
 
-To train the first local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
+Prepare a frozen dataset from a saved recipe:
+
+```bash
+uv run qi data prepare --config data/experiments/learning/preparation-two-mode-v1.json \
+  --output artifacts/learning/my-prepared-data
+```
+
+The [Training Data guide](src/qi/training_data/README.md#commands-and-partial-work)
+owns generation modes, teacher supervision, pinned inputs and partial-work behavior.
+To train a local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
 For repeatable comparisons, use `qi learn run --config <recipe.json> --preview`,
 then add `--output <fresh-directory>` to execute. Saved configs can be copied and
 edited; the [experiment index](data/experiments/learning/README.md) links existing recipes and findings.

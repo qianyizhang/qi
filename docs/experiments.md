@@ -45,6 +45,10 @@ The [trainer guide](../src/qi/learning/README.md) owns executable recipe semanti
 Recipes use seven sections: data, model, objective, optimizer, training, evaluation,
 and execution. Data refers to a prepared dataset; dataset generation and curriculum
 composition belong to [Training Data](models.md), not to the training runner.
+`qi data prepare --config` accepts a separate complete preparation config for
+trajectory generation, teacher supervision and assembly; its frozen output becomes
+the training config's `data.dataset`. The [Training Data guide](../src/qi/training_data/README.md)
+owns this contract and a two-mode example.
 
 Tracked recipes live in `data/experiments/learning/`. Each configured execution
 saves a fully resolved recipe and a concrete config for every started trial.

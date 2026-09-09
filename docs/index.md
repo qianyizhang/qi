@@ -54,6 +54,7 @@ their implementation details.
 | `docs/glossary/` | Canonical domain vocabulary |
 | `records/work-items/` | Work-item lifecycle and durable item records |
 | `records/campaigns/` | Bounded questions and evidence synthesis across experiments |
+| `records/reports/` | Scoped audit findings and their promoted destinations |
 
 When an optional area such as docs/adr/, docs/models.md, records/campaigns/,
 records/reports/, sources/, or archive/ needs a durable route, add one here and

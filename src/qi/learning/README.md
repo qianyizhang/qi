@@ -45,6 +45,9 @@ sections and all declared settings. Library implementation details remain govern
 by code and the dependency lock; this is not a dump of every PyTorch parameter.
 Dataset generation, split construction and teacher labeling happen before this
 runner. The embedded reserved corpus and existing dataset validation remain in force.
+Use the separate `qi data prepare --config` command for
+[configured preparation](../training_data/README.md#commands-and-partial-work),
+then set `data.dataset` to its frozen output. Training configs do not trigger generation.
 Config mode accepts the original v1 dataset, explicit historical selections, or
 a complete frozen Training Data dataset. Incomplete mixtures fail before execution;
 per-slice diagnostics from the shared trainer remain in each trial report.
@@ -98,6 +101,14 @@ its original dataset path; the legacy matrix also preserves its dataset copy.
 Historical settings and limits are in the [experiment index](../../../data/experiments/learning/README.md).
 Use the [experiment method](../../../docs/experiments.md) to record expectations,
 selection versus confirmation, conclusions and revisit triggers.
+
+For comparable fixed-label experiments with the current small policy and shallow
+teacher on early random play, prefer broader source coverage. The
+[fresh confirmation](../../../records/work-items/items/AB-LEARN-007-fresh-source-confirmation.md)
+supports this working choice; four labels per game is not a general optimum or
+a changed generator default. Revisit it when teacher, phase distribution, label
+budget or representation changes. The [campaign](../../../records/campaigns/policy-generalization.md)
+owns the current evidence synthesis and remaining questions.
 
 ## Run the small experiment
 

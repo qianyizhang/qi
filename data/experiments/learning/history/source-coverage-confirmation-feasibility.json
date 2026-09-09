@@ -1,0 +1,21 @@
+{
+  "purpose": "Data-only sampler feasibility; zero teacher queries or model predictions; placeholder targets discarded",
+  "games_per_block": 512,
+  "blocks": [
+    {
+      "block": 0,
+      "eligible_sources": 253,
+      "holdout_positions": 2013
+    },
+    {
+      "block": 1,
+      "eligible_sources": 285,
+      "holdout_positions": 2011
+    },
+    {
+      "block": 2,
+      "eligible_sources": 254,
+      "holdout_positions": 2013
+    }
+  ]
+}

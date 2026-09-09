@@ -131,6 +131,38 @@ must not be summed as independent sample counts.
 
 ## Commands and partial work
 
+For a copyable end-to-end **dataset preparation** recipe, use `config.py`'s
+`PreparationConfig` (`dataset-preparation-v1`). It records the reserved corpus
+and digest, `generation` with each source's `mode`, `supervision` with engine and
+network paths/hashes and query budgets, optional independent `actor_teacher`,
+and the existing `assembly` recipe. All file paths resolve relative to the config.
+The assembly supervision fingerprint must match the configured label provider.
+Teacher supervision supplies preferences, not ground truth; generation mode
+chooses who plays. Omitted `actor_teacher` reuses the supervision teacher for
+teacher-guided actions, under the existing exact-state/spec reuse checks.
+
+The [two-mode example](../../../data/experiments/learning/preparation-two-mode-v1.json)
+pins the local Pikafish installation used by this repository. Change locators when
+moving it; changing engine bytes also requires explicitly updating the pins.
+
+```bash
+qi data prepare --config data/experiments/learning/preparation-two-mode-v1.json \
+  --output artifacts/learning/prepared-example
+qi learn train --data artifacts/learning/prepared-example/dataset.json \
+  --checkpoint artifacts/learning/prepared-example/policy.pt --steps 30
+```
+
+Preparation saves the resolved `config.json`, checkpointed `library.json`,
+`dataset.json` when assembly is possible, and `summary.json`. Hash mismatches fail
+before output creation or teacher queries. Generation failure or assembly failure
+returns nonzero and retains evidence. Preparation does not train or silently use
+a partial library after failed generation. For configured training, set the
+training recipe's `data.dataset` to the frozen output; the library and manifest
+already carry generation and supervision provenance. Generation is never an
+implicit side effect of previewing or running a training config.
+
+The individual generation/assembly commands remain available:
+
 ```bash
 qi data generate --recipe generation.json --corpus data/evaluation/search-positions-v1.json \
   --engine /path/to/pikafish --network /path/to/pikafish.nnue --output library.json

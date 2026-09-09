@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "name": "block-2-concentrated",
+  "derived_from": null,
+  "origin_config": null,
+  "data": {
+    "dataset": "../../../../artifacts/learning/source-coverage-confirmation-v2/study/datasets/block-2-concentrated.json",
+    "train_size": 768,
+    "selection": "source-order",
+    "subset_seed": 7
+  },
+  "model": {
+    "architecture": "mlp-1261-64-8100-v1",
+    "encoding": "absolute-board-turn-v1"
+  },
+  "objective": {
+    "name": "legal-masked-teacher-move"
+  },
+  "optimizer": {
+    "name": "adam",
+    "learning_rate": 0.01
+  },
+  "training": {
+    "batching": "full",
+    "updates": 200,
+    "seed": 7,
+    "precision": "float32"
+  },
+  "evaluation": {
+    "split": "validation",
+    "metrics": [
+      "agreement",
+      "cross_entropy"
+    ]
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 1,
+    "fit_seconds": 78.8400117509882,
+    "total_seconds": 236.5200352529646
+  },
+  "cases": [],
+  "seeds": [
+    7,
+    17,
+    27
+  ]
+}

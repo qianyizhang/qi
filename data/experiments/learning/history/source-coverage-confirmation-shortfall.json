@@ -1,0 +1,12 @@
+{
+  "work_id": "AB-LEARN-007",
+  "status": "preparation_shortfall",
+  "completed_generation_blocks": 1,
+  "required_training_sources_per_block": 192,
+  "block_0_full_eligible_sources": 155,
+  "block_0_removed_prior_observations": 83,
+  "block_1_retained_answers": 2540,
+  "training_runs": 0,
+  "reason": "Stopped ongoing generation after data-only audit proved block 0 infeasible; no scientific fits launched.",
+  "artifact_directory": "artifacts/learning/source-coverage-confirmation-v1"
+}

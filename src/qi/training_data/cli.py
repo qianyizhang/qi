@@ -10,10 +10,23 @@ from qi.evaluation import Corpus
 from qi.game import GameError
 from qi.teacher import TeacherConfig
 from qi.training_data.assembly import MixtureRecipe, assemble
+from qi.training_data.config import load_preparation, prepare_dataset
 from qi.training_data.contracts import GenerationRecipe, Library
 from qi.training_data.generation import generate_library
 
 app = typer.Typer(no_args_is_help=True, help="Replay-backed training examples and frozen mixtures.")
+
+
+@app.command("prepare")
+def prepare_command(
+    config: Annotated[Path, typer.Option()],
+    output: Annotated[Path, typer.Option()],
+) -> None:
+    """Generate and assemble from one pinned preparation config, without training."""
+    result = prepare_dataset(load_preparation(config), output)
+    typer.echo(json.dumps(result))
+    if result["status"] != "complete":
+        raise GameError("preparation_incomplete", "Preparation incomplete; inspect the saved library and summary.")
 
 
 def fresh_output(path: Path) -> None:

@@ -46,7 +46,7 @@ index_file = "docs/index.md"
 # Area routes required in the compact navigator. Complete file discovery belongs
 # to generated Human View, not docs/index.md.
 index_route_areas = [
-    "docs/", "docs/adr/", "docs/glossary/", "docs/rules/", "records/work-items/", "records/campaigns/",
+    "docs/", "docs/adr/", "docs/glossary/", "docs/rules/", "records/work-items/", "records/campaigns/", "records/reports/",
 ]
 
 [tool.doc_governance.document_classes.coordination]

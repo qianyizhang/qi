@@ -109,7 +109,7 @@ def summarize(output: Path, report_path: Path) -> None:
     }
     if len(study["trials"]) != 18 or {(t["block"], t["case"], t["seed"]) for t in study["trials"]} != expected:
         raise ValueError("The study must contain the exact 18 declared fits.")
-    rows, heldout, training_inputs = [], None, {}
+    rows, holdouts, training_inputs = [], {}, {}
     for trial in study["trials"]:
         folder = output / "runs" / trial["name"]
         result = json.loads((folder / "summary.json").read_text())
@@ -128,10 +128,11 @@ def summarize(output: Path, report_path: Path) -> None:
             raise ValueError("Trial differs from the fixed step/seed plan.")
         if report["training_device"] != "cpu" or report["training_threads"] != 1 or metadata["learning_rate"] != 0.01:
             raise ValueError("Trial differs from the fixed device/optimizer plan.")
-        if heldout is None:
-            heldout = metadata["validation_inputs"]
-        if metadata["validation_inputs"] != heldout or len(heldout) != 4219:
-            raise ValueError("Held-out inputs must match exactly in every fit.")
+        holdout_group = str(trial["block"]) if "holdout_counts" in study else "shared"
+        heldout = holdouts.setdefault(holdout_group, metadata["validation_inputs"])
+        expected_count = study.get("holdout_counts", {}).get(holdout_group, 4219)
+        if metadata["validation_inputs"] != heldout or len(heldout) != expected_count:
+            raise ValueError("Held-out inputs must match exactly within each declared comparison.")
         keys = metadata["train_inputs"]
         group = (trial["block"], trial["case"])
         if keys != training_inputs.setdefault(group, keys) or len(set(keys)) != 768 or set(keys) & set(heldout):
@@ -187,7 +188,8 @@ def summarize(output: Path, report_path: Path) -> None:
             "training_runs": len(rows),
             "parent_dataset_sha256": study["parent_dataset_sha256"],
             "artifact_directory": str(output),
-            "holdout_positions": len(heldout),
+            "holdout_positions": len({key for keys in holdouts.values() for key in keys}),
+            "holdout_counts": {key: len(keys) for key, keys in holdouts.items()},
             "holdout_status": study["holdout_status"],
             "delta_direction": "broader minus concentrated",
             "profile": json.loads((output / "profile.json").read_text()),

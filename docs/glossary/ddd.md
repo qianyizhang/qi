@@ -258,6 +258,9 @@ fields keep their current contracts.
 | Term | 中文 | Meaning | _Avoid_ | Aliases |
 | :-- | :-- | :-- | :-- | :-- |
 | Training Data | 训练数据上下文 | The bounded context that owns example selection, supervision provenance and dataset composition for trainers. | Weight optimization | — |
+| Dataset preparation | 数据集制备 | Generates trajectories, supplies supervision and freezes an assembled dataset under a saved preparation config. | GT generation | PreparationConfig |
+| Generation mode | 轨迹生成模式 | The move chooser used to produce a continuation: currently random or teacher-guided. It does not choose the supervision authority. | Ground-truth mode | mode |
+| Teacher supervision | 教师监督 | Teacher-preference move targets under pinned engine, network and search settings. The teacher need not be the actor that played the game. | Ground truth; proven best move | SupervisionSettings; supervision |
 | Trajectory source | 轨迹来源 | Produces or replays a game with its actor and origin recorded. | The supervision provider | — |
 | Continuation | 对局续行 | Additional play from a stated starting position under declared limits and move choosers. | An MCTS Rollout by default | — |
 | Position sampler | 局面采样器 | Selects positions from trajectories under explicit conditions and budgets. | Choosing the next game move | — |
