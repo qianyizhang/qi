@@ -2,7 +2,7 @@
 description: Canonical domain and technical vocabulary, including beginner explanations used by the experiment report.
 scope: domain vocabulary
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -168,7 +168,7 @@ to a canonical term; they do not introduce different meanings.
 | Experiment run | 实验运行 | One execution of a plan with its environment, saved units, and status. A run can stop before the planned matrix finishes. | Assuming a run is complete | run |
 | Matrix | 实验组合矩阵 | All planned combinations of positions, players, budgets, and seeds, plus selected paired games. A time limit may leave some combinations missing. | Equally sampled results when units are missing | comparison matrix; planned |
 | Corpus | 局面集 | The fixed collection of saved positions used for evaluation. Its identity and provenance travel with the plan. Selected examples are not necessarily representative of all play. | Automatically representative benchmark data | corpus; purpose |
-| Opening | 起始局面 | A saved starting point for a probe or match. In this experiment corpus, it can be the initial board, an opening sequence, a midgame, or a tactical position. | Only the standard initial position | openings; opening_id; game_openings |
+| Opening | 起始局面 | Legacy evaluation name for a saved starting position, including midgame or tactical positions. New Training Data vocabulary uses Starting position; the existing corpus fields retain their meaning. | The opening game phase | openings; opening_id; game_openings |
 | Probe | 单局面测试 | One move decision from one fixed position under one configuration. It tests local behavior without playing a whole game. | A complete match | probes; Fixed-position probes |
 | Recorded unit | 实验记录单元 | One planned probe or game, with its exact job settings, saved decisions, final saved position, and status. | A whole experiment run | unit; units; job; unit_id |
 | Turn record | 着法记录 | One saved actual decision: ply number, color, selected move, identity guard, and diagnostics. | A pair of turns | turns; choice |
@@ -208,7 +208,7 @@ to a canonical term; they do not introduce different meanings.
 | Projection | 派生视图 | A view generated from another source, such as the report from verified units or these tooltips from the glossary. Regenerating the view does not change the original experiment. | A new source of truth | derived view |
 | Hash | 哈希指纹 | A compact fingerprint computed from content. Matching hashes identify matching content under the hash scheme; they do not prove authorship or prevent someone replacing all records. | A digital signature | hashes; fingerprint; digest; sha256 |
 | SHA-256 | SHA-256 哈希算法 | The fingerprint algorithm used for source, corpus, plan, unit, and checkpoint identities. A changed digest signals changed input content. | Encryption or a signed certificate | source_sha256; corpus_sha256; plan_sha256; unit_sha256; checkpoint_sha256; glossary_sha256 |
-| Identifier | 标识符 | A stable name or key for an item, such as a recipe, position, unit, or event. It is distinct from a content hash or display description. | A content fingerprint | id; label; description; kind |
+| Identifier | 标识符 | A name or lookup key for an item. A logical scenario or recipe name can remain stable across revisions; a fingerprint can serve as a content-derived key for one exact revision. | Assuming a logical name fixes content | id; label; description; kind |
 | Schema version | 格式版本 | The version of a saved record's structure and interpretation. Readers reject unsupported formats rather than guessing their meaning. | A player algorithm version | schema_version |
 | Player version | 行棋算法版本 | An identifier for a recipe's decision or budget semantics. It is more precise than the recipe's display name. | The general qi package version | version; player_version; player_versions |
 | JSON | JSON 数据格式 | JavaScript Object Notation: the structured text format used for raw records. Keys name fields; arrays contain lists; null means no value is present. | Executable instructions | raw decision evidence; raw units; null |
@@ -246,3 +246,33 @@ to a canonical term; they do not introduce different meanings.
 | SFT | 监督微调 | Supervised fine-tuning: updating a pretrained model using desired examples. The LLM SFT track remains planned. | Reinforcement learning | — |
 | Reinforcement learning | 强化学习 | Updating behavior using rewards or outcomes rather than only imitating a supplied answer. It remains a later learning direction in qi. | Current search-only comparisons | RL |
 | LLM | 大语言模型 | A large language model that could be evaluated or trained to choose moves or use tools. The detailed LLM experiment interface remains undecided. | The current alpha-beta or MCTS player | large language model |
+
+
+## Training Data (accepted model; extraction pending)
+
+These terms describe the accepted [core model](../models.md). Their appearance
+here does not imply that new generators, fingerprints or dataset manifests are
+already implemented. Existing MCTS Rollout and legacy evaluation Opening fields
+keep their current contracts.
+
+| Term | 中文 | Meaning | _Avoid_ | Aliases |
+| :-- | :-- | :-- | :-- | :-- |
+| Training Data | 训练数据上下文 | The bounded context that owns example selection, supervision provenance and dataset composition for trainers. | Weight optimization | — |
+| Trajectory source | 轨迹来源 | Produces or replays a game with its actor and origin recorded. | The supervision provider | — |
+| Continuation | 对局续行 | Additional play from a stated starting position under declared limits and move choosers. | An MCTS Rollout by default | — |
+| Position sampler | 局面采样器 | Selects positions from trajectories under explicit conditions and budgets. | Choosing the next game move | — |
+| Starting position | 起始局面 | The replay-backed state from which a continuation, probe or match begins; it can belong to any game phase. | Opening phase | — |
+| Game phase | 对局阶段 | A board-based opening, middlegame, endgame or unknown classification under a named policy, with curated labels recorded separately by provenance. | A ply-number range | — |
+| Theme | 局面主题 | A descriptive category such as cannon tactics or defending against check; several themes may apply to one position. | A mutually exclusive game phase | — |
+| Scenario | 场景 | A named selection of positions and descriptive tags, optionally with an objective and answer authority. | An implied proven solution | — |
+| Sampling window | 采样窗口 | The part of a trajectory eligible for position selection. | The continuation's stopping limit | — |
+| Supervision provider | 监督提供方 | Supplies a training target with its specification and answer authority. | The actor that played the observed move | — |
+| Supervision specification | 监督规格 | The target contract and teacher or answer-authority configuration that determine how a label is interpreted. | Unqualified ground truth | — |
+| Labeled example | 带标注样本 | A replayable state paired with a target and its supervision specification, retaining source provenance. | An unlabeled state | — |
+| Quota bucket | 配额分组 | One explicit mixture group to which a retained example contributes once. | Every overlapping descriptive tag | — |
+| Source family | 来源族 | Related variations and continuations kept together for splitting; independent games sharing only the standard initial board remain separate families. | Every game with the same initial board | — |
+| Dataset manifest | 数据集清单 | A frozen selection of example references and their order, splits, quota membership, recipe, seed and governing policy versions. | An execution-timing record | — |
+| State fingerprint | 状态指纹 | A content fingerprint of the ruleset, starting state and full recorded history. Existing state_hash is the current replay identity. | A board-only observation fingerprint | — |
+| Observation fingerprint | 观测指纹 | A content fingerprint of a versioned model-observation scheme and its exposed input. | Full-history state identity | — |
+| Example fingerprint | 样本指纹 | A content fingerprint of a state, supervision specification and target, used to reference one labeled example. | A state fingerprint alone | — |
+| Dataset fingerprint | 数据集指纹 | A content fingerprint of the canonical frozen dataset manifest. Existing dataset digests have their own unchanged versioned semantics. | A logical dataset name | — |

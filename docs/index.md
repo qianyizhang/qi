@@ -2,7 +2,7 @@
 description: Compact navigator over authority areas, rules, glossary, and agent flows in qi.
 scope: documentation navigator index
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -15,6 +15,7 @@ stale route, and preserve the owning authority. Doctrine:
 `docs/rules/governance.md` "Scoped authority and core models".
 
 Project scope and milestone direction: [Project plan](project.md).
+Accepted ownership and Training Data model: [Core model](models.md).
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).

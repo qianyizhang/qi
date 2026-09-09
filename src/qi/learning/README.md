@@ -11,6 +11,10 @@ document_class: coordination
 The trainer updates weights; the [policy player](../players/policy/README.md)
 only uses them. This first experiment predicts a teacher's chosen legal move.
 [ADR-0003](../../../docs/adr/0003-pytorch-mps-training.md) records the PyTorch/MPS decision.
+The accepted [Training Data model](../../../docs/models.md) and
+[ADR-0004](../../../docs/adr/0004-training-data-bounded-context.md) describe the
+pending extraction and composition boundary; the commands below remain the
+implemented single-generator pipeline.
 There is no value head, engine-score regression, self-play improvement loop,
 PUCT, or GPU requirement.
 

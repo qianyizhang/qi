@@ -2,7 +2,7 @@
 description: Project scope, architecture direction, and learning milestones.
 scope: project direction
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -63,8 +63,12 @@ policy; its [work item](../records/work-items/items/AB-LEARN-001-policy-imitatio
 records the working pipeline and unsuccessful held-out generalization smoke.
 Larger model choices, accelerator budgets, and LLM trainer versions remain open.
 
-The referee owns legality, transitions, and outcomes. A player selects an action
-under a budget. A trainer changes model weights using data. Search and training
+The [core model](models.md) owns cross-context relationships. The referee owns
+legality, transitions and outcomes; players select actions under budgets.
+[ADR-0004](adr/0004-training-data-bounded-context.md) assigns selection, supervision
+provenance and dataset composition to Training Data; extraction from the current
+trainer and new generation modes remain pending. Trainers prepare model inputs
+and change weights using frozen data. Search and training
 call Python directly; HTTP and CLI validation stay outside simulation loops.
 Do not create generic multi-game abstractions before a second game needs them.
 

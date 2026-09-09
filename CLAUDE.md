@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-09
 document_class: coordination
 ---
 
@@ -22,9 +22,12 @@ and deterministic replay under `docs/xiangqi-training-v1.md`.
 
 ## Core model and governing invariant
 
-The referee owns rules and outcomes; players choose actions; trainers update
-weights. Replay must reproduce results under an explicit ruleset and history.
-See `docs/project.md` for the implementation constraints.
+The referee owns rules and outcomes; players choose actions; Training Data owns
+example selection, supervision provenance and dataset composition; trainers
+prepare model inputs and update weights. Replay must reproduce results under an
+explicit ruleset and history. `docs/models.md` owns the accepted relationships
+and identifies the pending Training Data implementation; `docs/project.md` owns
+project direction and constraints.
 
 ## Authority map
 
