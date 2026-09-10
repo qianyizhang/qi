@@ -150,7 +150,41 @@ def test_complete_paired_run_and_corruption(study_setup, tmp_path, monkeypatch):
     assert a["evaluation_inputs"] == b["evaluation_inputs"]
     assert a["evaluation"]["agreement"] == b["evaluation"]["agreement"]
     assert json.loads((output / "protocol.json").read_text())["support"]["nodes"] == 1_000_000
-    assert verify(output)["verified"]
+    torch = pytest.importorskip("torch")
+    torch.set_num_threads(2)
+    messages = []
+
+    def progress(message):
+        assert torch.get_num_threads() == 1
+        messages.append(message)
+
+    try:
+        assert verify(output, progress=progress)["verified"]
+        assert torch.get_num_threads() == 2
+        assert any("block 1/1" in message for message in messages)
+        receipt_path = output / "receipts.json"
+        original_receipts = receipt_path.read_text()
+        receipts = json.loads(original_receipts)
+        receipts.pop("block-0-baseline-seed-7.pt")
+        receipt_path.write_text(json.dumps(receipts))
+        with pytest.raises(ValueError, match="Missing checkpoint receipt"):
+            verify(output)
+        assert torch.get_num_threads() == 2
+        receipt_path.write_text(original_receipts)
+        answers_path = output / "answers.jsonl"
+        original_answers = answers_path.read_text()
+        answers = [json.loads(line) for line in original_answers.splitlines()]
+        answers[0]["analysis"]["state_hash"] = "wrong-input"
+        answers_path.write_text("\n".join(json.dumps(row) for row in answers) + "\n")
+        receipts = json.loads(original_receipts)
+        receipts["answers.jsonl"] = sha256(answers_path.read_bytes()).hexdigest()
+        receipt_path.write_text(json.dumps(receipts))
+        with pytest.raises(ValueError, match="changed the frozen input"):
+            verify(output)
+        answers_path.write_text(original_answers)
+        receipt_path.write_text(original_receipts)
+    finally:
+        torch.set_num_threads(1)
     rows = json.loads((output / "status.json").read_text())["trials"]
     rows[1]["evaluation_inputs"] = ["wrong"]
     with pytest.raises(ValueError, match="different inputs"):
@@ -201,3 +235,45 @@ def test_deadline_does_not_shrink_matrix(study_setup, tmp_path, monkeypatch):
     result = run(study, tmp_path / "deadline")
     assert result["status"] == "deadline"
     assert result["summary"]["planned_fits"] == 2 and result["queries"] == 0
+
+
+@pytest.mark.parametrize("seeds", [[-1, 2**64 - 1], [2**64], [-(2**63) - 1]])
+def test_invalid_seeds_fail_before_preparation(study_setup, seeds):
+    _, study, _ = study_setup
+    with pytest.raises(ValueError, match="PyTorch initializations"):
+        Study.model_validate({**study.model_dump(), "seeds": seeds})
+
+
+def test_preflight_failure_receipts_are_verifiable(study_setup, tmp_path):
+    from qi.learning.teacher_quality_verify import verify
+
+    pytest.importorskip("torch")
+    _, study, _ = study_setup
+    output = tmp_path / "bad-parent"
+    result = run(study.model_copy(update={"dataset_file_sha256": ["0" * 64]}), output)
+    assert result["status"] == "failed"
+    verified = verify(output)
+    assert verified["scope"] == "preflight-failure-receipts"
+    assert verified["summary"]["completed_fits"] == 0
+
+
+def test_script_rejects_conflicting_modes_and_reports_missing_file(tmp_path, monkeypatch, capsys):
+    import runpy
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parents[3] / "scripts/run_teacher_quality.py"
+    monkeypatch.setattr(sys, "argv", [str(script), "--verify", "--config", "ignored.json", "--output", str(tmp_path)])
+    with pytest.raises(SystemExit) as failure:
+        runpy.run_path(str(script), run_name="__main__")
+    assert failure.value.code == 2
+    assert "not allowed" in capsys.readouterr().err
+    monkeypatch.setattr(
+        sys, "argv", [str(script), "--config", str(tmp_path / "missing.json"), "--output", str(tmp_path)]
+    )
+    with pytest.raises(SystemExit) as failure:
+        runpy.run_path(str(script), run_name="__main__")
+    assert failure.value.code == 1
+    captured = capsys.readouterr()
+    assert json.loads(captured.err)["status"] == "error"
+    assert "Traceback" not in captured.err and not captured.out

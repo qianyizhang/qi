@@ -357,7 +357,8 @@ guarantee a requested training count. Preview rejects insufficient data.
 `teacher_quality.py` runs the locked [AB-LEARN-009](../../../records/work-items/items/AB-LEARN-009-teacher-quality.md)
 comparison. Its study config is separate from a training `Recipe`: it pins parent
 dataset bytes, teacher assets, source/position counts, seeds and the total allowance.
-Paths resolve from the repository root. The study writes complete per-fit recipes.
+Paths resolve from the repository root. Invalid or equivalent PyTorch seeds are
+rejected before teacher preparation. The study writes complete per-fit recipes.
 
 ```bash
 uv run python scripts/run_teacher_quality.py \
@@ -377,6 +378,13 @@ metrics and paired summaries without querying a teacher or training again.
 Raw answers, source copies, file receipts, failures and planned denominators
 remain in the evidence directory. Study completion does not imply an improvement.
 
+Choose exactly one of `--config` (run) or `--verify` (inspect saved evidence).
+Verification uses one CPU thread and restores the caller's setting afterward;
+progress messages go to stderr and its JSON result goes to stdout. Missing files,
+invalid configs and receipt mismatches report concise errors. A failed preflight
+with no queries or fits can verify its retained receipts with scope
+`preflight-failure-receipts`; this does not certify dataset or checkpoint evidence.
+
 ## Checks
 
 `make check` covers encoding and dataset contracts without requiring torch.
@@ -387,7 +395,6 @@ ordinary pytest suite. Neither test lane needs an installed teacher.
 
 `make test-learning-mps` explicitly requires Metal access and checks a real GPU
 fit plus CPU deployment/reload. Ordinary tests skip that lane.
-
 
 For two independently selectable checkpoints in Play or paired evaluation, use
 [named player bindings](../players/README.md#named-player-bindings). Each binding

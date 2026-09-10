@@ -1,6 +1,7 @@
 """Recompute completed study evidence without querying a teacher or fitting weights."""
 
 import json
+from collections.abc import Callable
 from hashlib import sha256
 from math import isclose
 from pathlib import Path
@@ -14,32 +15,72 @@ from qi.training_data.relabel import relabel
 from qi.training_data.v1 import Label
 
 
-def verify(output: Path) -> dict:
+def verify(output: Path, *, progress: Callable[[str], None] | None = None) -> dict:
+    """Verify saved evidence with one CPU thread, restoring the caller's setting."""
+    import torch
+
+    threads = torch.get_num_threads()
+    try:
+        torch.set_num_threads(1)
+        return _verify(output.resolve(), progress or (lambda _message: None))
+    finally:
+        torch.set_num_threads(threads)
+
+
+def _verify(output: Path, progress: Callable[[str], None]) -> dict:
     from qi.learning.train import measure
     from qi.players.policy.runtime import load_checkpoint
 
     def read(name):
+        if name not in receipts:
+            raise ValueError(f"Missing file receipt: {name}")
         return json.loads((output / name).read_text())
 
     def require(condition, message):
         if not condition:
             raise ValueError(message)
 
-    receipts = read("receipts.json")
+    progress("Checking saved file receipts")
+    receipts = json.loads((output / "receipts.json").read_text())
     for name, expected in receipts.items():
         require(sha256((output / name).read_bytes()).hexdigest() == expected, f"Receipt mismatch: {name}")
-    for name, expected in read("source.json")["preserved_files_sha256"].items():
-        require(sha256((output / "source" / name).read_bytes()).hexdigest() == expected, f"Source mismatch: {name}")
     study = Study.model_validate(read("study.json"))
     state = read("status.json")
+    if state["phase"] == "preflight" and state["status"] in ("failed", "deadline", "interrupted"):
+        require(
+            not state["trials"] and state["queries"] == 0 and bool(state.get("error")),
+            "Missing frozen protocol for a started study",
+        )
+        summary = summarize([], study)
+        require(summary == state["summary"], "Summary mismatch")
+        return {
+            "verified": True,
+            "scope": "preflight-failure-receipts",
+            "status": state["status"],
+            "queries": 0,
+            "summary": summary,
+        }
+    require("protocol.json" in receipts, "Missing frozen protocol for a started study")
+    for name, expected in read("source.json")["preserved_files_sha256"].items():
+        require(sha256((output / "source" / name).read_bytes()).hexdigest() == expected, f"Source mismatch: {name}")
+    progress("Replaying parent data and frozen input selection")
     selected, protocol = prepare_inputs(study)
     require(protocol == read("protocol.json"), "Frozen selection/protocol mismatch")
     answers = {}
+    require("answers.jsonl" in receipts, "Missing file receipt: answers.jsonl")
+    lookup = {(block, label.input_sha256): label for block, dataset in enumerate(selected) for label in dataset.labels}
     for line in (output / "answers.jsonl").read_text().splitlines():
         record = json.loads(line)
         key = (record["block"], record["phase"], record["input_sha256"])
         require(key not in answers, "Duplicate teacher query")
+        require(record["phase"] in ("strong-labels", "reference", "candidate-reference"), "Unknown query phase")
+        label = lookup.get((record["block"], record["input_sha256"]))
+        require(label is not None, "Unknown query input")
         analysis = TeacherAnalysis.model_validate(record["analysis"])
+        require(
+            analysis.snapshot == label.analysis.snapshot and analysis.state_hash == label.analysis.state_hash,
+            "Teacher query changed the frozen input",
+        )
         require(
             (analysis.engine_sha256, analysis.network_sha256) == (study.engine_sha256, study.network_sha256)
             and analysis.requested_depth is None
@@ -49,9 +90,16 @@ def verify(output: Path) -> dict:
         answers[key] = analysis
     require(len(answers) == state["queries"], "Query denominator mismatch")
     for block, baseline in enumerate(selected):
+        progress(f"Checking block {block + 1}/{len(selected)} data and checkpoints")
+        require(f"block-{block}-baseline.json" in receipts, "Missing baseline receipt")
         require(load_dataset(output / f"block-{block}-baseline.json") == baseline, "Baseline selection mismatch")
         if not (output / f"block-{block}-strong.json").exists():
+            require(
+                state["status"] != "complete" and not any(r["block"] == block for r in state["trials"]),
+                "Missing relabeled dataset for started fits",
+            )
             continue  # Interrupted preparation is evidence, not a completed block.
+        require(f"block-{block}-strong.json" in receipts, "Missing relabeled dataset receipt")
         strong = load_dataset(output / f"block-{block}-strong.json")
         rebuilt = relabel(
             baseline,
@@ -78,6 +126,7 @@ def verify(output: Path) -> dict:
             dataset = baseline if row["case"] == "baseline" else strong
             config = Recipe.model_validate(read(f"{name}.config.json"))
             report = read(f"{name}.report.json")
+            require(f"{name}.pt" in receipts, "Missing checkpoint receipt")
             policy = load_checkpoint(str(output / f"{name}.pt"), row["checkpoint_sha256"])
             metadata = policy.metadata
             require(
@@ -105,6 +154,10 @@ def verify(output: Path) -> dict:
     summary = summarize(state["trials"], study)
     require(summary == state["summary"], "Summary mismatch")
     if state["status"] == "complete":
-        require(summary["completed_fits"] == summary["planned_fits"], "Incomplete planned fits")
+        require(
+            summary["completed_fits"] == summary["planned_fits"]
+            and summary["complete_blocks"] == summary["planned_blocks"],
+            "Incomplete planned fits or blocks",
+        )
         require(len(answers) == len(selected) * (study.train_positions + 3 * study.validation_games), "Missing queries")
     return {"verified": True, "status": state["status"], "queries": len(answers), "summary": summary}

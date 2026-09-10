@@ -44,6 +44,10 @@ class Study(BaseModel):
     def identities(self):
         if len(self.datasets) != len(self.dataset_file_sha256) or len(set(self.seeds)) != len(self.seeds):
             raise ValueError("Require one digest per dataset and distinct training seeds.")
+        if any(not -(2**63) <= seed < 2**64 for seed in self.seeds) or len(
+            {seed % 2**64 for seed in self.seeds}
+        ) != len(self.seeds):
+            raise ValueError("Seeds must be distinct PyTorch initializations in [-2**63, 2**64).")
         return self
 
 

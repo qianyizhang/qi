@@ -145,6 +145,20 @@ agreement and candidate-score measurements and predeclare which governs decision
 
 ## Implementation Ledger
 
+### 2026-09-10 — cleanup: verification and superseded instructions
+
+- Reject conflicting CLI modes and invalid/equivalent PyTorch seeds before
+  preparation; expose run failures without a traceback. Verification reports
+  progress, uses one CPU thread and restores the caller's thread setting.
+- Require receipts for consumed evidence and validate raw query input identities.
+  Empty preflight failures report the narrower `preflight-failure-receipts` scope.
+  Superseded audit instructions and the earlier running catalog revision remain
+  available in collapsed historical sections; supported legacy readers remain.
+- `make check`: 478 Python tests passed, one opt-in MPS skip, five browser tests
+  passed. Rechecking all existing checkpoints and teacher evidence produced an
+  identical [verification result](../../../artifacts/learning/teacher-quality-v1-cleanup-verification.json).
+  This cleanup ran no new training or teacher queries and changes no finding.
+
 ### 2026-09-10 — verification: complete execution, mixed learning signal
 
 - Frozen source executed the exact matrix. The saved-evidence verifier reloaded
@@ -188,6 +202,12 @@ agreement and candidate-score measurements and predeclare which governs decision
   planned denominators. The verifier reconstructs selection, derived labels,
   candidate scores, checkpoint predictions, reference metrics and paired summaries.
 
+<details>
+<summary>Superseded audit proposal and scope transition — historical decisions only</summary>
+
+The standalone audit below was replaced by the Locked Comparison above. Its
+open follow-ups describe the earlier discussion, not outstanding work.
+
 ### 2026-09-10 — decision: audit sample, allowance and initial measures
 
 - Evidence: user accepted the recommended position sample and initial quality
@@ -221,6 +241,8 @@ agreement and candidate-score measurements and predeclare which governs decision
   measure. No new teacher queries, fitting or implementation have begun.
 - Review: ratified for the change of direction; execution details remain open.
 
+</details>
+
 ### 2026-09-10 — decision: controlled training protocol locked
 
 - Evidence: user answered "yes" to the recommended 18-fit matrix, 384-position
@@ -235,6 +257,11 @@ agreement and candidate-score measurements and predeclare which governs decision
   when proceeding from this interview. No further product-scope decision is open.
 - Review: ratified; no additional confirmation of these decisions is required.
 
+
+## Catalog revisions
+
+<details>
+<summary>Revision 1 — running (superseded by the completed revision below)</summary>
 
 ```experiment
 {
@@ -284,6 +311,11 @@ agreement and candidate-score measurements and predeclare which governs decision
   "novelty": "Prior pilots compared teacher answers without training students. This study isolates label budget in paired student fits and uses one shared stronger evaluator."
 }
 ```
+
+</details>
+
+### Revision 2 — completed finding
+
 
 
 ```experiment
