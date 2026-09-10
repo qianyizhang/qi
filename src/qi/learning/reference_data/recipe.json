@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "name": "reference-v1",
+  "derived_from": null,
+  "origin_config": null,
+  "data": {
+    "dataset": "dataset.json",
+    "train_size": 8,
+    "selection": "source-interleaved",
+    "subset_seed": 7
+  },
+  "model": {
+    "architecture": "mlp-1261-64-8100-v1",
+    "encoding": "absolute-board-turn-v1"
+  },
+  "objective": {
+    "name": "legal-masked-teacher-move"
+  },
+  "optimizer": {
+    "name": "adam",
+    "learning_rate": 0.01
+  },
+  "training": {
+    "batching": "full",
+    "updates": 100,
+    "seed": 7,
+    "precision": "float32"
+  },
+  "evaluation": {
+    "split": "validation",
+    "metrics": [
+      "agreement",
+      "cross_entropy"
+    ]
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 1,
+    "fit_seconds": 60.0,
+    "total_seconds": 120.0
+  },
+  "cases": [],
+  "seeds": []
+}

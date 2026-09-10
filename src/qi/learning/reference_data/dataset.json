@@ -1,0 +1,978 @@
+{
+  "schema_version": "training-dataset-v2",
+  "library": {
+    "schema_version": "example-library-v1",
+    "recipe": {
+      "id": "reference-synthetic-v1",
+      "version": "continuations-v2",
+      "phase_policy": "mobile-material-development-v1",
+      "seed": 7,
+      "seconds": 300.0,
+      "sources": [
+        {
+          "id": "train",
+          "mode": "random",
+          "split": "train",
+          "start": {
+            "id": "initial",
+            "version": "1",
+            "snapshot": {
+              "schema_version": 1,
+              "ruleset": "xiangqi-training-v1",
+              "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+              "moves": []
+            },
+            "family_id": null,
+            "themes": [],
+            "objective": null,
+            "curated_phase": null,
+            "phase_authority": null
+          },
+          "games": 2,
+          "additional_plies": 8,
+          "samples": 4,
+          "window": {
+            "min_ply": 0,
+            "max_ply": 299,
+            "stride": 1,
+            "phases": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ]
+          }
+        },
+        {
+          "id": "validation",
+          "mode": "random",
+          "split": "validation",
+          "start": {
+            "id": "initial",
+            "version": "1",
+            "snapshot": {
+              "schema_version": 1,
+              "ruleset": "xiangqi-training-v1",
+              "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+              "moves": []
+            },
+            "family_id": null,
+            "themes": [],
+            "objective": null,
+            "curated_phase": null,
+            "phase_authority": null
+          },
+          "games": 2,
+          "additional_plies": 8,
+          "samples": 4,
+          "window": {
+            "min_ply": 0,
+            "max_ply": 299,
+            "stride": 1,
+            "phases": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ]
+          }
+        }
+      ]
+    },
+    "reserved_corpus": {
+      "schema_version": 1,
+      "id": "reference-reserved-v1",
+      "purpose": "evaluation",
+      "provenance": "Synthetic workflow fixture; sorted-first legal labels, no teacher or strength claim.",
+      "openings": [
+        {
+          "id": "initial",
+          "description": "Reserved initial board",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": []
+          }
+        }
+      ]
+    },
+    "sources": [
+      {
+        "id": "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9",
+        "family_id": "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9",
+        "plan_id": "train",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "b2b5",
+            "a9a8",
+            "b5h5",
+            "b7b8",
+            "h5h3",
+            "b8b7",
+            "h2d2",
+            "a8b8"
+          ]
+        },
+        "actor_spec": {
+          "mode": "random",
+          "recipe": "sorted-legal-random-v1"
+        },
+        "stop_reason": "ply-budget"
+      },
+      {
+        "id": "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c",
+        "family_id": "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c",
+        "plan_id": "train",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "e3e4",
+            "b7b8",
+            "h2i2",
+            "c9e7",
+            "i2c2",
+            "a6a5",
+            "d0e1",
+            "b8d8"
+          ]
+        },
+        "actor_spec": {
+          "mode": "random",
+          "recipe": "sorted-legal-random-v1"
+        },
+        "stop_reason": "ply-budget"
+      },
+      {
+        "id": "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780",
+        "family_id": "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780",
+        "plan_id": "validation",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "b2e2",
+            "i6i5",
+            "e0e1",
+            "b7e7",
+            "e2c2",
+            "e7b7",
+            "b0a2",
+            "a9a7"
+          ]
+        },
+        "actor_spec": {
+          "mode": "random",
+          "recipe": "sorted-legal-random-v1"
+        },
+        "stop_reason": "ply-budget"
+      },
+      {
+        "id": "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a",
+        "family_id": "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a",
+        "plan_id": "validation",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "c0e2",
+            "c9e7",
+            "a0a2",
+            "b7c7",
+            "h2f2",
+            "h7f7",
+            "e2c0",
+            "f7f8"
+          ]
+        },
+        "actor_spec": {
+          "mode": "random",
+          "recipe": "sorted-legal-random-v1"
+        },
+        "stop_reason": "ply-budget"
+      }
+    ],
+    "examples": [
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2b5",
+              "a9a8",
+              "b5h5"
+            ]
+          },
+          "state_hash": "5e7b9442d5e9a28c5ec86267b91e925abd1cc52d15f55ab617b996983c90734b",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2b5",
+              "a9a8",
+              "b5h5",
+              "b7b8",
+              "h5h3"
+            ]
+          },
+          "state_hash": "0838e483a279705faabcfe19b1138a40614458e7ad0ceff7e60a6d3bc3e2c999",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2b5",
+              "a9a8",
+              "b5h5",
+              "b7b8",
+              "h5h3",
+              "b8b7"
+            ]
+          },
+          "state_hash": "19be4182f52d7f448c4cc796c0431c84affd14c3c0b4af7d749fbf9a346cd59f",
+          "move": "a0a1",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2b5",
+              "a9a8",
+              "b5h5",
+              "b7b8"
+            ]
+          },
+          "state_hash": "cd2dec6607356807bf52eb725ec4f7defa2b2093ee12c9d341b6176a251f8845",
+          "move": "a0a1",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "e3e4",
+              "b7b8",
+              "h2i2"
+            ]
+          },
+          "state_hash": "f3fc812519e9b08f53a5a91ed08051d3f4dbe38d61c387077df5213e697cc716",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "e3e4",
+              "b7b8"
+            ]
+          },
+          "state_hash": "ebc1ba15052fac6eec6ab695a23ef0a5606736601f2fcb86040d0987df24badd",
+          "move": "a0a1",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "e3e4"
+            ]
+          },
+          "state_hash": "2718c3a52fc636ae0d99ff0ba74b8a189b9f25fa90be2575b4eca9013225faf6",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "e3e4",
+              "b7b8",
+              "h2i2",
+              "c9e7",
+              "i2c2",
+              "a6a5"
+            ]
+          },
+          "state_hash": "23c9b520206b6475205249f74c01e703e6c37ff3a71f2d2f4416bcc1094761e1",
+          "move": "a0a1",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2e2"
+            ]
+          },
+          "state_hash": "40291ab7ac63a01d5f78e60d8ba0bcc2031487ab1d46da7795dced43e5e5ac84",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2e2",
+              "i6i5",
+              "e0e1",
+              "b7e7",
+              "e2c2"
+            ]
+          },
+          "state_hash": "a545b2cc939d85afb7e169143785fd36f601f3f873dc2128e92353881d694ee0",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2e2",
+              "i6i5",
+              "e0e1",
+              "b7e7"
+            ]
+          },
+          "state_hash": "d25c4cf218346f61124ffbd72fe5cd846c2bcd500e4cc59e764958c2ab301c0f",
+          "move": "a0a1",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "b2e2",
+              "i6i5",
+              "e0e1",
+              "b7e7",
+              "e2c2",
+              "e7b7",
+              "b0a2"
+            ]
+          },
+          "state_hash": "f158d97982562bc3c5ee88cbff78449b3fa36ae6609ea4fd3eea5c8d16eff8a1",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "c0e2",
+              "c9e7",
+              "a0a2",
+              "b7c7",
+              "h2f2",
+              "h7f7"
+            ]
+          },
+          "state_hash": "1b3e5cebf723eebc4b0e5702ca170681df8c083869484d1c89aeac761c521548",
+          "move": "a2a0",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "c0e2",
+              "c9e7",
+              "a0a2",
+              "b7c7",
+              "h2f2",
+              "h7f7",
+              "e2c0"
+            ]
+          },
+          "state_hash": "c38f828dd5968e974c2789018f326121e24e152da7ce5a3c8da6172b5ed65629",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "c0e2",
+              "c9e7",
+              "a0a2"
+            ]
+          },
+          "state_hash": "2722e54e678764e8d53472f53860066409835fa66c9b1b3be113195f42b41780",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a"
+        ]
+      },
+      {
+        "analysis": {
+          "schema_version": 1,
+          "adapter_version": "uci-teacher-v1",
+          "snapshot": {
+            "schema_version": 1,
+            "ruleset": "xiangqi-training-v1",
+            "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "moves": [
+              "c0e2"
+            ]
+          },
+          "state_hash": "1afceac7a125852f4ec0fad55e260c3c43f2d67858ed76d61e4505c672925711",
+          "move": "a6a5",
+          "engine_name": "synthetic-sorted-first-legal-v1 (not an engine)",
+          "engine_sha256": "aaf81ee53d9151500c8a0918d72de40fd93939898f3adf4e162fca877da1b359",
+          "network_sha256": "dc2e21c938db4075f8b8043a9e660df3620faf1dfef84ff1e2bcbdcd965dbc93",
+          "settings": {
+            "Threads": "1",
+            "Hash": "16",
+            "MultiPV": "1",
+            "Ponder": "false"
+          },
+          "requested_nodes": 1,
+          "requested_depth": 1,
+          "timeout_seconds": 10.0,
+          "reported_nodes": null,
+          "reported_depth": null,
+          "score": null,
+          "elapsed_ms": 0.0,
+          "search_info": [],
+          "invalid_actions": 0,
+          "retries": 0
+        },
+        "source_ids": [
+          "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a"
+        ]
+      }
+    ],
+    "status": "complete",
+    "failure": null
+  },
+  "manifest": {
+    "schema_version": "dataset-manifest-v1",
+    "phase_policy": "mobile-material-development-v1",
+    "recipe": {
+      "id": "reference-synthetic-v1",
+      "version": "frozen-mixture-v1",
+      "seed": 7,
+      "supervision_fingerprint": "8fa02eeffa15cf3b514d3a8469884f210df1f067f6c56f07f1a7380969024c80",
+      "overlap_policy": "first-bucket-wins",
+      "buckets": [
+        {
+          "id": "train",
+          "split": "train",
+          "count": 8,
+          "modes": [
+            "random",
+            "teacher-guided"
+          ],
+          "phases": [
+            "opening",
+            "middlegame",
+            "endgame",
+            "unknown"
+          ],
+          "themes": [],
+          "objective": null
+        },
+        {
+          "id": "validation",
+          "split": "validation",
+          "count": 4,
+          "modes": [
+            "random",
+            "teacher-guided"
+          ],
+          "phases": [
+            "opening",
+            "middlegame",
+            "endgame",
+            "unknown"
+          ],
+          "themes": [],
+          "objective": null
+        }
+      ]
+    },
+    "selections": [
+      {
+        "example": "254db11c639d702ebdbb63472bdd6e3fc3a50c87bbd2be61d0cda38099d067bf",
+        "source_id": "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c",
+        "bucket": "train"
+      },
+      {
+        "example": "0a8d9bc4e6be1b57c74c36e6ba94287d3350f7a2cd82c4bc42c07c9a1872cf93",
+        "source_id": "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9",
+        "bucket": "train"
+      },
+      {
+        "example": "bb022a18e2f0f0a7dc6313092687ceaeef9486b8264de9491caf5ae6b5306bcf",
+        "source_id": "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9",
+        "bucket": "train"
+      },
+      {
+        "example": "3cf1a8a21efd9261bfcd75e128e9ed3f375a129b3de62c93bdeafba3df606e3f",
+        "source_id": "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c",
+        "bucket": "train"
+      },
+      {
+        "example": "d58c20a1ac4680de637730b27097da3f22e817cf88f1c7b81173294d493d9fe2",
+        "source_id": "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9",
+        "bucket": "train"
+      },
+      {
+        "example": "e48ceed70da21e4773cc2bb4970d8963c245ae48d420c89c6448ca1fc031af49",
+        "source_id": "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c",
+        "bucket": "train"
+      },
+      {
+        "example": "292f76d0c7165273d5a149ef4996aaaf2af7034425b513f2103699a55a1d8a78",
+        "source_id": "f7de0e55fb0c3240924372bcda757e209daadd532acb71bd677b1dab96f7c8c9",
+        "bucket": "train"
+      },
+      {
+        "example": "c8d6ee0b9e03340d9f3667825f0cc5c75ef4ea8e9579b4ff9e0f9304f9165ca9",
+        "source_id": "e5640afd4099da42d6eef96c7d5b7e4bbe0fbd2271926dbd740b44c6856cd43c",
+        "bucket": "train"
+      },
+      {
+        "example": "f820429f0f1e5166bc64a66f0ea7f77769ea47a1390558309bfa3dcf26772ef5",
+        "source_id": "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a",
+        "bucket": "validation"
+      },
+      {
+        "example": "5343534980553673e40105c9c0eb0c51836d3787915404c05252076f4e102a6b",
+        "source_id": "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a",
+        "bucket": "validation"
+      },
+      {
+        "example": "0c40c8282ffc575da685617f658281f186965765bf5c951603717060929dec12",
+        "source_id": "d888e7c8bb0cce247eee3039ed4f980e5ccdbc439ae026ecaeb875790f926780",
+        "bucket": "validation"
+      },
+      {
+        "example": "3b0dc6e288163fd04ae67d9e215e5b0c29eac6635802966b023a43fd8ba167c5",
+        "source_id": "397fb9cac308cea8ae24ecb47fb77a25f97bf8a5eaea41f3bdbbaa0e201c375a",
+        "bucket": "validation"
+      }
+    ],
+    "actual": {
+      "train": 8,
+      "validation": 4
+    },
+    "status": "complete",
+    "fingerprint": "27a668c98feb65dce0623afefed6f0cccb339be8d0ce845f765de59604f8f7fd"
+  }
+}

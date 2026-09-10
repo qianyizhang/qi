@@ -81,8 +81,10 @@ Schema version 1 fixes config interpretation. Future readers must preserve that
 meaning or require an explicit migration. Loading an old recipe under new code is a
 new execution, not proof of historical reproduction.
 
-Keep recipes, compact findings, and necessary experiment scripts in Git. Datasets,
-weights and detailed run outputs remain local under ignored `artifacts/`; they are
+Keep recipes, compact findings, and necessary experiment scripts in Git. The tiny
+synthetic [reference fixture](../src/qi/learning/README.md#reference-reproduction)
+is also tracked and packaged so reproduction does not depend on local artifacts.
+Other datasets, weights and detailed run outputs remain local under ignored `artifacts/`; they are
 not backed up by Git. The [historical index](../data/experiments/learning/README.md)
 records availability, reconstruction limits, and evidence paths. Historical config
 projections are retrospective: unknown values stay unknown and unsupported

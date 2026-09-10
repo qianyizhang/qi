@@ -47,6 +47,18 @@ The server binds to localhost. Remote multiplayer is outside this slice.
 
 ## CLI
 
+To check a small teacher-free CPU training run after installing the learning extra:
+
+```bash
+uv sync --locked --extra learning
+uv run --locked --extra learning qi learn reference --output artifacts/reference-v1
+```
+
+This uses a bundled synthetic fixture and writes fresh training artifacts plus
+`verification.json`. It checks workflow consistency against a macOS CPU baseline;
+it does not measure playing strength. See the [reference guide](src/qi/learning/README.md#reference-reproduction)
+for tolerances and the clean-package check.
+
 Commands emit JSON. Snapshots are inputs to subsequent commands:
 
 ```bash

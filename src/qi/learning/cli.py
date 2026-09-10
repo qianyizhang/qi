@@ -14,6 +14,26 @@ from qi.training_data.v1 import Dataset, generate
 app = typer.Typer(no_args_is_help=True, help="Bounded local teacher-imitation experiments.")
 
 
+@app.command("reference")
+def reference_run(
+    output: Annotated[Path | None, typer.Option()] = None,
+    preview_only: Annotated[bool, typer.Option("--preview")] = False,
+) -> None:
+    """Run and verify the bundled tiny CPU experiment without a teacher or checkout."""
+    from qi.learning.reference import run_reference
+
+    try:
+        result = run_reference(output, preview_only=preview_only)
+    except ImportError as exc:
+        raise GameError(
+            "learning_not_installed",
+            "Install this qi distribution with its learning extra; in a checkout: uv sync --locked --extra learning.",
+        ) from exc
+    typer.echo(json.dumps(result))
+    if result.get("status") == "failed":
+        raise GameError("reference_failed", "Reference checks failed; see verification.json.")
+
+
 @app.command("run")
 def configured_run(
     config: Annotated[Path, typer.Option()],

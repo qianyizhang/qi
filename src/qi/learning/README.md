@@ -110,6 +110,65 @@ a changed generator default. Revisit it when teacher, phase distribution, label
 budget or representation changes. The [campaign](../../../records/campaigns/policy-generalization.md)
 owns the current evidence synthesis and remaining questions.
 
+## Reference reproduction
+
+After installing the learning extra, run a tiny synthetic experiment without a
+teacher, network access, GPU or source checkout:
+
+```bash
+qi learn reference --preview
+qi learn reference --output reference-run
+```
+
+In the checkout, prefix these commands with `uv run --locked --extra learning`.
+The output directory must be fresh. The packaged `reference_data/` bundle contains
+a frozen Training Data mixture (8 training and 4 validation positions), a resolved
+recipe (seed 7, CPU, one thread, 100 updates), and `expected.json`.
+Random trajectories have disjoint source games; targets are the lexicographically
+first legal move. Teacher-shaped metadata explicitly names a synthetic labeler;
+engine/network hashes identify text markers, not real teacher binaries. This proves
+workflow behavior, with no move-quality or generalization claim.
+
+The existing runner saves the dataset, configs, manifest, summary, trial report and
+CPU checkpoint. The wrapper adds `verification.json` with checks, observed/expected
+metrics and runtime provenance. Checks cover input/scientific-config identities
+(excluding paths/lineage), completed updates, checkpoint hash/metadata, splits,
+legal outputs and prediction-preserving reload. The saved checkpoint is remeasured.
+Failure exits nonzero and retains available artifacts; existing runs are preserved.
+
+The baseline is three macOS arm64 CPU runs with PyTorch 2.10.0. All eight training
+labels must match, with final loss below one tenth of initial loss. Loss comparisons
+allow the larger of 0.01 absolute error and 5% relative error. Validation agreement
+allows one position (0.25) away from the baseline 3/4. These are practical allowances:
+cross-platform suitability is assumed, not calibrated. Weights and timings need not
+match across runs. Investigate failures before changing expectations.
+[AB-REPRO-001](../../../records/work-items/items/AB-REPRO-001-reference-experiment.md)
+records calibration and verification evidence.
+
+Reconstruct the fixture into a fresh file without the learning extra or a teacher:
+
+```bash
+uv run --locked python scripts/build_reference_fixture.py --output artifacts/reference-fixture.json
+```
+
+The ordinary tests compare the generator with the frozen dataset. This tiny fixture
+is an explicit exception to the local-only dataset policy; checkpoints and run
+outputs remain ignored.
+
+For a clean distribution check:
+
+```bash
+uv run --locked python scripts/check_reference_package.py --output artifacts/reference-package
+```
+
+This builds an sdist, builds its wheel, installs locked learning dependencies and
+the wheel in a temporary virtual environment, and runs outside the checkout.
+Network access is needed only for dependency/build-tool installation. Checkout
+provenance must be unavailable (`null`); package/runtime metadata remains recorded.
+GitHub Actions runs repository checks and a separate learning/package lane on Linux
+with Python 3.12, hard job timeouts, and failure-artifact retention. The installed
+package lane uses the same Mac-derived tolerances.
+
 ## Run the small experiment
 
 Install the optional learning extra and the [local teacher](../../../docs/teacher.md).
