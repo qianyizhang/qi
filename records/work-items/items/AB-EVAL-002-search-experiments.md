@@ -2,7 +2,7 @@
 description: Track bounded search comparisons and explain their evidence through local reports and optional traces.
 scope: backlog item
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-EVAL-002
 work_status: done
@@ -163,3 +163,47 @@ Run artifacts remain ignored; tracked plans and module contracts are durable.
   unchanged copied JSON. Tooltip screenshots were visually inspected.
 - Regenerated the existing local report. Replay/accounting validation still shows
   380 of 384 planned units complete; no search experiment was rerun.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "search-components-v1",
+  "title": "Bounded search component comparison",
+  "question": "How do alpha-beta and MCTS recipes behave across fixed positions and budgets?",
+  "kind": "search",
+  "topics": [
+    "alpha-beta",
+    "MCTS",
+    "search budget",
+    "incomplete matrix",
+    "tactical probes"
+  ],
+  "execution": "incomplete",
+  "conclusion": "inconclusive",
+  "finding": "The 600-second run saved 360/360 probes and 20/24 complete games plus a 53-ply partial game. All eight alpha-beta recipes solved both immediate-win targets at every budget; both MCTS recipes solved them at 512/2048 but missed at 128 visits.",
+  "conditions": "Fixed corpus, seed and recipe order; budgets 128/512/2048. Ten completed color pairs enter game summaries; incomplete partners do not.",
+  "limitations": "Selected tiny corpus, shared caches, fixed execution order and incomplete highest-budget games; no universal ranking or isolated speedup.",
+  "decision": "Use matched evidence and traces; control order/cache effects before a performance claim.",
+  "revisit": "A separately bounded complete comparison or different corpus/budget.",
+  "evidence": [
+    {
+      "path": "data/experiments/search-components-v1.json",
+      "role": "config",
+      "sha256": "e8f4d3cb09f62727c72623c5083f047ab38afe94932527510718089c80f0dc4d"
+    },
+    {
+      "path": "artifacts/experiments/search-v1/manifest.json",
+      "role": "run",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/experiments/search-v1/report-summary.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [],
+  "novelty": "Retrospective registration of the original study; no new execution or historical priority claim."
+}
+```

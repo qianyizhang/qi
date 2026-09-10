@@ -21,6 +21,74 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/experiment-catalog": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Experiment Catalog */
+    get: operations["experiment_catalog_api_experiment_catalog_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/experiment-catalog/{experiment_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Catalog Detail */
+    get: operations["catalog_detail_api_experiment_catalog__experiment_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/experiment-catalog/{experiment_id}/evidence/{index}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Catalog Evidence */
+    get: operations["catalog_evidence_api_experiment_catalog__experiment_id__evidence__index__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/experiment-catalog/{experiment_id}/owner": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Catalog Owner */
+    get: operations["catalog_owner_api_experiment_catalog__experiment_id__owner_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/experiments": {
     parameters: {
       query?: never;
@@ -323,6 +391,98 @@ export interface components {
       /** Expected State Hash */
       expected_state_hash: string;
     };
+    /** CatalogEntry */
+    CatalogEntry: {
+      /**
+       * Schema Version
+       * @default 1
+       * @constant
+       */
+      schema_version: 1;
+      /** Id */
+      id: string;
+      /** Title */
+      title: string;
+      /** Question */
+      question: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind:
+        | "teacher"
+        | "learning"
+        | "search"
+        | "data"
+        | "performance"
+        | "other";
+      /** Topics */
+      topics: string[];
+      /**
+       * Execution
+       * @enum {string}
+       */
+      execution:
+        | "planned"
+        | "running"
+        | "complete"
+        | "incomplete"
+        | "failed"
+        | "unknown";
+      /**
+       * Conclusion
+       * @enum {string}
+       */
+      conclusion:
+        | "unassessed"
+        | "supported"
+        | "not-supported"
+        | "mixed"
+        | "inconclusive";
+      /**
+       * Finding
+       * @default
+       */
+      finding: string;
+      /** Conditions */
+      conditions: string;
+      /**
+       * Limitations
+       * @default
+       */
+      limitations: string;
+      /**
+       * Decision
+       * @default
+       */
+      decision: string;
+      /**
+       * Revisit
+       * @default
+       */
+      revisit: string;
+      /** Evidence */
+      evidence?: components["schemas"]["EvidenceRef"][];
+      /** Prior Work */
+      prior_work?: components["schemas"]["PriorExperiment"][];
+      /** Novelty */
+      novelty: string;
+      /** Owner */
+      owner: string;
+      /** Owner Sha256 */
+      owner_sha256: string;
+      /** Revision */
+      revision: number;
+      /** Evidence Locations */
+      evidence_locations: components["schemas"]["EvidenceLocation"][];
+    };
+    /** CatalogIssue */
+    CatalogIssue: {
+      /** Owner */
+      owner: string;
+      /** Message */
+      message: string;
+    };
     /** Choice */
     Choice: {
       /** Move */
@@ -477,6 +637,46 @@ export interface components {
       mobility: number;
       /** King Safety */
       king_safety: number;
+    };
+    /** EvidenceLocation */
+    EvidenceLocation: {
+      /** Path */
+      path: string;
+      /**
+       * Role
+       * @enum {string}
+       */
+      role: "report" | "results" | "config" | "data" | "source" | "run";
+      /** Sha256 */
+      sha256?: string | null;
+      /** Available */
+      available: boolean;
+      /** Previewable */
+      previewable: boolean;
+    };
+    /** EvidenceRef */
+    EvidenceRef: {
+      /** Path */
+      path: string;
+      /**
+       * Role
+       * @enum {string}
+       */
+      role: "report" | "results" | "config" | "data" | "source" | "run";
+      /** Sha256 */
+      sha256?: string | null;
+    };
+    /** ExperimentCatalog */
+    ExperimentCatalog: {
+      /** Entries */
+      entries: components["schemas"]["CatalogEntry"][];
+      /** Issues */
+      issues: components["schemas"]["CatalogIssue"][];
+      /**
+       * Scope
+       * @default Experiment entries in records/work-items/items and records/reports; unregistered work is not covered.
+       */
+      scope: string;
     };
     /** Frame */
     Frame: {
@@ -824,6 +1024,18 @@ export interface components {
       /** In Check */
       in_check: boolean;
       outcome: components["schemas"]["Result"] | null;
+    };
+    /** PriorExperiment */
+    PriorExperiment: {
+      /** Id */
+      id: string;
+      /**
+       * Relationship
+       * @enum {string}
+       */
+      relationship: "extends" | "reproduces" | "challenges" | "uses";
+      /** Contribution */
+      contribution: string;
     };
     /** ProbeSummary */
     ProbeSummary: {
@@ -1247,6 +1459,131 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["Glossary"];
+        };
+      };
+    };
+  };
+  experiment_catalog_api_experiment_catalog_get: {
+    parameters: {
+      query?: {
+        q?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentCatalog"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  catalog_detail_api_experiment_catalog__experiment_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogEntry"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  catalog_evidence_api_experiment_catalog__experiment_id__evidence__index__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: string;
+        index: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  catalog_owner_api_experiment_catalog__experiment_id__owner_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

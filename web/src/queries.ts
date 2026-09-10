@@ -5,6 +5,7 @@ import {
   type RunEntry,
   type TraceJob,
   type Glossary,
+  type ExperimentCatalog,
 } from "./api";
 export const playersQuery = queryOptions({
   queryKey: ["players"],
@@ -27,3 +28,14 @@ export const glossaryQuery = queryOptions({
   queryFn: ({ signal }) => read<Glossary>("reference", signal),
   staleTime: Infinity,
 });
+
+export const catalogQuery = (query = "") =>
+  queryOptions({
+    queryKey: ["experiment-catalog", query],
+    queryFn: ({ signal }) =>
+      read<ExperimentCatalog>(
+        `experiment-catalog?q=${encodeURIComponent(query)}`,
+        signal,
+      ),
+    staleTime: 10000,
+  });

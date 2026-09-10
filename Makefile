@@ -7,6 +7,7 @@ lint:
 	uv run ruff check src scripts tests conftest.py
 	uv run ruff format --check src scripts tests conftest.py
 	uv run python scripts/check_docs.py
+	uv run qi experiment check-catalog --summary
 	npm run check --prefix web
 test: web-build
 	uv run pytest

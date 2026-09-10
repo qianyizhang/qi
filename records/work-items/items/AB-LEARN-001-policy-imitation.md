@@ -2,7 +2,7 @@
 description: Train and deploy a small local policy that imitates teacher move choices.
 scope: backlog item
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-LEARN-001
 work_status: done
@@ -112,3 +112,36 @@ All datasets, checkpoints, and match artifacts stay local and ignored.
 - Follow-up: improve the data curriculum and policy representation in a future
   experiment before drawing strength conclusions or adding policy-guided search.
 - Review: not-required.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "policy-smoke-v1",
+  "title": "Initial policy imitation smoke",
+  "question": "Can a small policy fit teacher labels and reload legal inference?",
+  "kind": "learning",
+  "topics": [
+    "policy imitation",
+    "tiny overfit",
+    "memorization",
+    "generalization"
+  ],
+  "execution": "complete",
+  "conclusion": "mixed",
+  "finding": "Tiny overfit matched 8/8 labels; the 96-position training split matched 96/96 while held-out agreement was 0/32. Reloaded inference remained legal.",
+  "conditions": "CPU policy-only legal-masked classification, shallow teacher supervision; original smoke datasets and deadline-limited optimization.",
+  "limitations": "Engineering smoke with tiny data; no cross-entropy in original smoke reports and no playing-strength conclusion.",
+  "decision": "Pipeline demonstrated; investigate held-out generalization.",
+  "revisit": "Larger independent data or a changed training contract.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/smoke-v1.json",
+      "role": "results",
+      "sha256": "52099480f26407745b8440b4b12cc7c401b23e22fb1a5ca1d8c0ac7f7c6ac943"
+    }
+  ],
+  "prior_work": [],
+  "novelty": "Retrospective registration of the original study; no new execution or historical priority claim."
+}
+```

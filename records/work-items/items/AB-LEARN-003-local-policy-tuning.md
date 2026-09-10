@@ -2,7 +2,7 @@
 description: Test bounded local policy improvements and verify selected changes on fresh held-out games.
 scope: backlog item
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-LEARN-003
 work_status: done
@@ -125,3 +125,54 @@ confidence control and learning dynamics before adding more infrastructure.
 - Follow-up: if work resumes, investigate a better teaching curriculum or more
   independent data before another width/step sweep. No further run is scheduled.
 - Review: local evidence/contract review; no separate reviewer agent.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "policy-tuning-v1",
+  "title": "Local policy tuning and fresh-test check",
+  "question": "Do tuning-selected recipes improve fresh held-out teacher agreement?",
+  "kind": "learning",
+  "topics": [
+    "tuning",
+    "negative result",
+    "learning rate",
+    "regularization",
+    "width",
+    "orientation"
+  ],
+  "execution": "complete",
+  "conclusion": "not-supported",
+  "finding": "On 254 fresh-test positions, mean agreement was 14.96% baseline, 14.44% lower learning rate, and 10.89% regularized. The small tuning gain did not reproduce; regularization lowered cross-entropy but reduced top-1 agreement.",
+  "conditions": "Fixed 768 training labels; 12 configurations with three seeds and checkpoints at 50/200/800 updates (108 correlated observations), plus width/orientation sweep and locked fresh test.",
+  "limitations": "Exploratory selection, one small fresh test and shallow teacher; unsuccessful tested options are not universal rejections.",
+  "decision": "Keep current recipe; prioritize independent data or teaching curriculum over another width/step sweep.",
+  "revisit": "Changed data, teacher or representation with an untouched test.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/tuning-v1.json",
+      "role": "results",
+      "sha256": "f4c35ffb8eb7af2afc6e022cedb51a3353fc849f8e0511f36dcda7e60a1c8f97"
+    },
+    {
+      "path": "data/experiments/learning/history/tuning-perspective-v1.json",
+      "role": "results",
+      "sha256": "4f94858320497aaa4463c50a09dc07ca81da3c4cbe3c5bb6b01d2e17125df193"
+    },
+    {
+      "path": "data/experiments/learning/history/tuning-final-test.json",
+      "role": "results",
+      "sha256": "3e18896cd43706f1ecb41702a899eb6d6d9de461b0d2464b1a770c9e42efb49d"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "policy-generalization-v1",
+      "relationship": "extends",
+      "contribution": "Tests optimizer/model variants and checks selected recipes once on fresh games."
+    }
+  ],
+  "novelty": "Tests optimizer/model variants and checks selected recipes once on fresh games."
+}
+```

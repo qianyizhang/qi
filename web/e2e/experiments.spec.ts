@@ -134,3 +134,57 @@ test("reference definitions are accessible by touch and keyboard", async ({
     page.getByRole("heading", { name: /^Player binding/ }),
   ).toBeVisible();
 });
+
+test("catalog recalls teacher history without a manifest and separates missing evidence", async ({
+  page,
+}, info) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/experiments");
+  const search = page.getByLabel("Find prior experiments");
+  for (const phrase of [
+    "teacher quality",
+    "stronger teacher",
+    "1M reference",
+  ]) {
+    await search.fill(phrase);
+    await expect(
+      page.getByRole("heading", { name: "Teacher budget recall fixture" }),
+    ).toBeVisible();
+  }
+  const card = page.locator(".catalog-entry");
+  await expect(card).toContainText(
+    "Execution: complete · Conclusion: inconclusive",
+  );
+  await expect(card).toContainText("24/36 agreement; no student training.");
+  await card
+    .getByText("Conditions, decision and evidence", { exact: true })
+    .click();
+  await expect(card).toContainText(
+    "artifacts/missing.json — unavailable locally",
+  );
+  const response = await page.request.get(
+    (await card
+      .getByRole("link", { name: "data/compact.json" })
+      .getAttribute("href")) as string,
+  );
+  expect(await response.json()).toEqual({ agreement: 24, positions: 36 });
+  const owner = await page.request.get(
+    (await card
+      .getByRole("link", { name: "Read owning record" })
+      .getAttribute("href")) as string,
+  );
+  expect(await owner.text()).toContain("# Historical teacher pilot");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: info.outputPath("experiment-catalog.png"),
+    fullPage: true,
+  });
+  await search.fill("unregistered mystery");
+  await expect(page.getByText(/No registered matches/)).toBeVisible();
+  expect(errors).toEqual([]);
+});

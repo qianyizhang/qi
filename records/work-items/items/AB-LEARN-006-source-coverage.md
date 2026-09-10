@@ -2,7 +2,7 @@
 description: Compare equal label counts from fewer versus more source games under matched move-number coverage.
 scope: backlog item
 status: experimental
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-LEARN-006
 work_status: done
@@ -180,3 +180,81 @@ cross-entropy deltas are negative.
 - Follow-up: materialize the paired datasets under Training Data ownership, profile
   one fit, then execute the fixed exploratory comparison using saved configs.
 - Review: local source/selection audit; scientific result remains unmeasured.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "source-coverage-feasibility",
+  "title": "Source-coverage selection feasibility",
+  "question": "Can fixed-label concentrated and broader selections be made without changing labels?",
+  "kind": "data",
+  "topics": [
+    "source coverage",
+    "feasibility",
+    "fixed labels",
+    "ply matching"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "Three disjoint source blocks support exact 768-label selections and matched ply histograms. No teacher query or training fit was run.",
+  "conditions": "Existing scaling dataset; compare 48 games × 16 labels against 192 games × 4 labels per block.",
+  "limitations": "Data-only feasibility from existing sources; cannot establish model improvement.",
+  "decision": "Proceed to the separately defined fixed-label comparison.",
+  "revisit": "Changed source pool, quotas, exclusions or sampler.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/source-coverage-feasibility.json",
+      "role": "results",
+      "sha256": "8653460c951a2786b652762028149418af3f65ee8a7b3e4252d8b43cf0c8a6a2"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "policy-data-scaling-v1",
+      "relationship": "extends",
+      "contribution": "Separates source coverage from total label count before fitting students."
+    }
+  ],
+  "novelty": "Separates source coverage from total label count before fitting students."
+}
+```
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "source-coverage-v1",
+  "title": "Fixed-label source-coverage comparison",
+  "question": "Does broader source coverage improve imitation at the same label count?",
+  "kind": "learning",
+  "topics": [
+    "source coverage",
+    "fixed labels",
+    "generalization",
+    "broader sampling"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "All 18 fits completed 200 updates; broader coverage improved seed-mean held-out agreement in all three source blocks.",
+  "conditions": "48 games × 16 labels versus 192 × 4, 768 labels per case, three blocks and seeds 7/17/27, fixed model/shallow teacher, matched ply histograms.",
+  "limitations": "Exploratory, previously inspected holdout and one master generation seed. Initialization seeds are not independent data repetitions.",
+  "decision": "Seek fresh-source confirmation before a broader claim.",
+  "revisit": "Fresh source games and an untouched holdout, or changed teacher/phase/model.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/source-coverage-v1.json",
+      "role": "results",
+      "sha256": "dadd0fc257fa38e179d3765e8149e597d97a89872e5df780a753df24e3fcc0a5"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "source-coverage-feasibility",
+      "relationship": "extends",
+      "contribution": "Adds the 18-fit student comparison to the data-only selection audit."
+    }
+  ],
+  "novelty": "Adds the 18-fit student comparison to the data-only selection audit."
+}
+```

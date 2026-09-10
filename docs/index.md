@@ -20,7 +20,7 @@ Generation, frozen mixtures and phase policies: [Training Data](../src/qi/traini
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).
-Search experiment tracking and local reports: [Experiments](../src/qi/experiments/README.md).
+Shared experiment recall, conclusion recording and search reports: [Experiments](../src/qi/experiments/README.md).
 Experiment method and campaigns: [Method](experiments.md), [policy generalization](../records/campaigns/policy-generalization.md),
 [LLM move selection](../records/campaigns/llm-move-selection.md),
 [experiment efficiency](../records/campaigns/experiment-efficiency.md).
@@ -91,6 +91,7 @@ these flows; they are not a menu the user must memorize.
 |:--|:--|:--|
 | **Understand** | See the relevant model or change clearly. | `show-me`; explicit rich artifact: `explain-layman` |
 | **Align** | Resolve fit, vocabulary, and durable decisions. | `show-gap`, `grilling`, `grill-with-docs`, `domain-modeling` |
+| **Experiment** | Recall previous findings, compare a new idea, execute authorized work and record evidence. | `experiment`; decisions: `grilling` |
 | **Change** | Advance a bounded destination through verifiable work; use a Campaign at the threshold in `docs/rules/governance.md`. | `next-slice`, work items, `handoff` |
 | **Maintain** | Preserve documentation and kit/consumer ownership. | `doc-hygiene-audit`, `governance-sync` |
 

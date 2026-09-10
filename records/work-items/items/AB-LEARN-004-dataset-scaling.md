@@ -2,7 +2,7 @@
 description: Measure the effect of substantially more teacher labels with the policy and optimization recipe fixed.
 scope: backlog item
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-LEARN-004
 work_status: done
@@ -124,3 +124,47 @@ semantics. No architecture, curriculum, value target or search change in this st
 - Stop: the requested 16× comparison is complete. Weekly quota at closeout: 8%
   used, below the user's 25% soft stop. No reset credit or remote training used.
 - Review: verified locally against replay contracts and saved checkpoint bytes.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "policy-data-scaling-v1",
+  "title": "Larger fixed-recipe data scaling",
+  "question": "Does scaling labels from 768 to 12288 improve the fixed policy?",
+  "kind": "learning",
+  "topics": [
+    "data scaling",
+    "generalization",
+    "interrupted run",
+    "replay performance"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "Mean held-out agreement rose from 16.74% to 21.27% to 25.70% at 768/3072/12288 labels. The first attempt stopped after five of nine fits; a new cached-replay execution completed all nine, with five comparable checkpoints bit-identical.",
+  "conditions": "Seeds 7/17/27, 200 updates, fixed 4219-position holdout from 264 games, random early-game data and 1000-node/depth-3 teacher.",
+  "limitations": "Nested sizes from one generated dataset; inspected holdout; no playing strength. Initial and completed attempts remain separate evidence.",
+  "decision": "Prioritize controlled data work; retain both interrupted and completed runs.",
+  "revisit": "Changed teacher/curriculum, larger independent scale or profiling that changes total cost.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/data-scaling-interrupted.json",
+      "role": "results",
+      "sha256": "8aa885d35728a5b9471cad6abcaefed2f84e1a759bb4cf6f3f102190d479b38e"
+    },
+    {
+      "path": "data/experiments/learning/history/data-scaling-v1.json",
+      "role": "results",
+      "sha256": "57cf0321392b6c89b321f2b7b172f6c6dd0a194e44df1eda53b558cae3684908"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "policy-tuning-v1",
+      "relationship": "extends",
+      "contribution": "Scales independent source data while retaining the fixed policy after unsuccessful tuning."
+    }
+  ],
+  "novelty": "Scales independent source data while retaining the fixed policy after unsuccessful tuning."
+}
+```

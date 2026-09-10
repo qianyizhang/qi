@@ -36,9 +36,10 @@ always requires Resume; changed or missing resources require explicit selection.
 Export a session to preserve player/configuration history, or export a portable
 game-only snapshot. Import validates full history before replacement.
 
-Experiments discovers saved search runs, displays shared interactive reports,
-and generates bounded traces for compatible recorded decisions. Export offline
-HTML or Markdown; add authored commentary in the run's optional narrative.md.
+Experiments searches registered findings across teacher, learning, search, data
+and performance work. Its recorded search runs also provide interactive reports
+and bounded traces for compatible decisions. Export offline HTML or Markdown;
+add authored commentary in the run's optional narrative.md.
 Reference contains the shared bilingual glossary. See the
 [interface guide](docs/interface.md) for persistence, API and job contracts.
 
@@ -142,7 +143,8 @@ owns generation modes, teacher supervision, pinned inputs and partial-work behav
 To train a local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
 For repeatable comparisons, use `qi learn run --config <recipe.json> --preview`,
 then add `--output <fresh-directory>` to execute. Saved configs can be copied and
-edited; the [experiment index](data/experiments/learning/README.md) links existing recipes and findings.
+edited; the [recipe and evidence guide](data/experiments/learning/README.md) links retained inputs.
+Use the shared [experiment catalog](#experiment-recall) to recall findings.
 It covers a bounded CPU run, checkpoint reload, held-out agreement, and arena
 comparison. Set `QI_POLICY_CHECKPOINT` to expose the trained player in CLI and
 browser play. The walkthrough also covers fixed-split data-size experiments and
@@ -194,6 +196,22 @@ records this slice's verification.
 Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` records
 its baseline. Shared rules and skills remain kit-managed. Use `governance-sync`
 when updating; project bindings and application code belong to qi.
+
+## Experiment recall
+
+The shared browser **Experiments** page searches registered teacher, learning,
+search, data and performance studies, with findings, conditions, decisions and
+evidence availability. The CLI reads the same catalog:
+
+```bash
+uv run qi experiment search "teacher quality"
+uv run qi experiment show teacher-budget-20260909
+```
+
+Use the [method](docs/experiments.md) before proposing a new comparison and the
+[recording commands](src/qi/experiments/README.md#shared-catalog-and-recording) to
+append findings to their owning records. Unregistered work remains outside catalog
+coverage; native search replay and trace viewers are available below the catalog.
 
 ## Search experiments
 

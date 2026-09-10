@@ -29,9 +29,10 @@ import {
   type UnitDetail,
   type TracePage,
 } from "./api";
-import { jobsQuery, playersQuery, runsQuery } from "./queries";
+import { catalogQuery, jobsQuery, playersQuery, runsQuery } from "./queries";
 import { SessionProvider, useSession } from "./session";
 import { PlayPage } from "./play";
+import { ExperimentCatalogView } from "./experiment-catalog";
 import { ReferencePage } from "./reference";
 import type { Filters, ReportSource } from "./report";
 import { Button } from "./components/ui/button";
@@ -118,7 +119,7 @@ function JobStatus() {
 function Home() {
   const game = useSession(),
     players = useQuery(playersQuery),
-    runs = useQuery(runsQuery);
+    catalog = useQuery(catalogQuery());
   return (
     <section>
       <div className="hero">
@@ -183,36 +184,19 @@ function Home() {
           )}
         </article>
         <article className="card">
-          <h2>Recent experiments</h2>
+          <h2>Experiment findings</h2>
           <p className="muted">
-            Saved runs discovered in configured artifact folders.
+            Recall prior teacher, learning and search work before planning the
+            next comparison.
           </p>
-          {runs.error && <p role="alert">{runs.error.message}</p>}
-          {runs.isLoading && <p className="muted">Finding saved runs…</p>}
-          {runs.data?.length === 0 && (
+          {catalog.error && <p role="alert">{catalog.error.message}</p>}
+          {catalog.isLoading && <p>Finding experiments…</p>}
+          {catalog.data && (
             <p>
-              No saved runs found. Create search runs with the CLI, then refresh
-              Experiments.
+              {catalog.data.entries.length} registered experiments ·{" "}
+              {catalog.data.issues.length} catalog issues
             </p>
           )}
-          <ul className="clean-list">
-            {runs.data?.slice(0, 6).map((run) => (
-              <li key={run.id}>
-                {run.error ? (
-                  <span>
-                    {run.name}
-                    <small>{run.error}</small>
-                  </span>
-                ) : (
-                  <Link to="/experiments/$runId" params={{ runId: run.id }}>
-                    {run.name}
-                    <small>{run.location}</small>
-                  </Link>
-                )}
-                <span className="badge">{run.status}</span>
-              </li>
-            ))}
-          </ul>
           <Link to="/experiments">Browse experiments →</Link>
         </article>
       </div>
@@ -232,12 +216,16 @@ function Experiments() {
           <p className="eyebrow">MEASURED WORK</p>
           <h1>Experiments</h1>
           <p className="muted">
-            Inspect saved runs. Generate traces from compatible recorded
-            decisions.
+            Search prior findings, read their limits, and follow the evidence.
           </p>
         </div>
         <Button onClick={() => void runs.refetch()}>Refresh runs</Button>
       </div>
+      <ExperimentCatalogView />
+      <h2>Recorded search runs</h2>
+      <p className="muted">
+        Detailed replay and trace viewers for compatible saved runs.
+      </p>
       <JobStatus />
       {runs.error && <p role="alert">{runs.error.message}</p>}
       {runs.isLoading && <p role="status">Finding saved runs…</p>}

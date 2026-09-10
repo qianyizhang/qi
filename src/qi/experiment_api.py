@@ -6,6 +6,7 @@ from typing import Literal
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse, Response
 
+from qi.experiments.catalog import CatalogEntry, ExperimentCatalog, catalog, evidence_path, get_entry, read_owner
 from qi.experiments.glossary import load_glossary
 from qi.experiments.presentation import (
     Glossary,
@@ -25,6 +26,34 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
     @app.get("/api/reference", response_model=Glossary)
     def reference():
         return load_glossary()
+
+    @app.get("/api/experiment-catalog", response_model=ExperimentCatalog)
+    def experiment_catalog(q: str = ""):
+        return catalog(q)
+
+    @app.get("/api/experiment-catalog/{experiment_id}", response_model=CatalogEntry)
+    def catalog_detail(experiment_id: str):
+        try:
+            return get_entry(experiment_id)
+        except ValueError as exc:
+            raise GameError("unknown_experiment", str(exc)) from exc
+
+    @app.get("/api/experiment-catalog/{experiment_id}/evidence/{index}")
+    def catalog_evidence(experiment_id: str, index: int):
+        try:
+            path = evidence_path(experiment_id, index)
+            body = path.read_text()
+        except (ValueError, OSError) as exc:
+            raise GameError("unavailable_evidence", str(exc)) from exc
+        return Response(body, media_type="text/plain", headers={"X-Content-Type-Options": "nosniff"})
+
+    @app.get("/api/experiment-catalog/{experiment_id}/owner")
+    def catalog_owner(experiment_id: str):
+        try:
+            body = read_owner(get_entry(experiment_id).owner)["text"]
+        except (ValueError, OSError) as exc:
+            raise GameError("unknown_experiment", str(exc)) from exc
+        return Response(body, media_type="text/plain", headers={"X-Content-Type-Options": "nosniff"})
 
     @app.get("/api/experiments", response_model=list[RunEntry])
     def experiments():

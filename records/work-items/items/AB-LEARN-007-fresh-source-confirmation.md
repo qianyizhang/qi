@@ -2,7 +2,7 @@
 description: Confirm fixed-label source coverage on fresh generation blocks and untouched holdouts.
 scope: backlog item
 status: experimental
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-LEARN-007
 work_status: done
@@ -220,3 +220,57 @@ then equally over the three source blocks:
   checkpoint-reload predictions and the original dataset manifest identity.
 - Follow-up: finish and independently verify all eighteen fits before synthesis.
 - Review: not-required; data integrity and complete-config checks before results.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "source-coverage-confirmation-v2",
+  "title": "Fresh source-coverage confirmation",
+  "question": "Does the broader fixed-label sampling gain hold on fresh source blocks and holdouts?",
+  "kind": "learning",
+  "topics": [
+    "source coverage",
+    "confirmation",
+    "fresh holdout",
+    "preparation shortfall"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "All 18 fits completed. Broader coverage improved agreement by 1.67 percentage points averaged equally over three source blocks; each block passed the predeclared positive-delta rule. Original preparation stopped with a shortfall and zero fits; its evidence remains separate.",
+  "conditions": "Three fresh generation seeds and holdouts totaling 6037 positions; 768 labels per case; same shallow teacher/model and 200 updates. Candidate pool amended from 288 to 512 games after data-only infeasibility, before model results.",
+  "limitations": "Three blocks, narrow early-random-play scope, exact eligibility and constrained ply matching; no strength or optimal four-label policy claim. One prior training observation remained; no held-out overlap.",
+  "decision": "Retain broader coverage as the working choice in comparable fixed-label imitation studies.",
+  "revisit": "Changed teacher, phase distribution, label budget or representation.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/source-coverage-confirmation-shortfall.json",
+      "role": "results",
+      "sha256": "4b18eb7a71e385edfb39e74a417db2ffd6c00d078cdf92b8698b69c7b1d04996"
+    },
+    {
+      "path": "data/experiments/learning/history/source-coverage-confirmation-feasibility.json",
+      "role": "results",
+      "sha256": "93289ff178ad57ef1e203e70c767fe659daea3ebf1ab7c348bb16b34fd679670"
+    },
+    {
+      "path": "data/experiments/learning/history/source-coverage-confirmation-v2.json",
+      "role": "results",
+      "sha256": "3b7d8812380b6bce6e3b7a4757b91f5cccb9c323d2d8c84901d0bf8f789e0067"
+    },
+    {
+      "path": "data/experiments/learning/source-coverage-confirmation-v2/protocol.json",
+      "role": "config",
+      "sha256": "ecd7b85fd249a505c2ae480eba5e24af08600fbbb31b79526e890ee69901ec8c"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "source-coverage-v1",
+      "relationship": "extends",
+      "contribution": "Uses fresh independent generation blocks and untouched holdouts under a locked confirmation rule."
+    }
+  ],
+  "novelty": "Uses fresh independent generation blocks and untouched holdouts under a locked confirmation rule."
+}
+```

@@ -2,7 +2,7 @@
 description: Integrate opt-in persistent teacher execution and measure full preparation equivalence and throughput.
 scope: backlog item
 status: experimental
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-DATA-004
 work_status: done
@@ -122,3 +122,42 @@ The run truthfully records an uncommitted checkout and retains its executed sour
 - Follow-up: measure representative larger preparation workloads before generalizing
   or changing defaults; revisit parity when engine/settings change.
 - Review: not-required; predeclared comparison completed without a failed attempt.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "persistent-teacher-v1",
+  "title": "Persistent teacher full-preparation pilot",
+  "question": "Does integrated persistent execution speed preparation while preserving normalized datasets?",
+  "kind": "performance",
+  "topics": [
+    "teacher",
+    "persistent process",
+    "preparation throughput",
+    "dataset equivalence"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "All three paired normalized datasets matched. Median preparation time fell from 4.829 to 0.227 seconds in the small pilot.",
+  "conditions": "Three paired full preparations of the two-mode recipe at 1000 nodes/depth 3, fresh versus persistent teacher process.",
+  "limitations": "Small shallow startup-sensitive workload; no teacher-quality or training gain; does not validate representative stronger-budget throughput.",
+  "decision": "Keep persistent execution opt-in and fresh as default.",
+  "revisit": "Representative distinct-position batches and stronger teacher budgets.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/persistent-teacher-v1.json",
+      "role": "results",
+      "sha256": "9e6629bec56341b06d53ae9a447a9e8e7c76dc24763d31b1ae4b153ce6a6f989"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "teacher-throughput-20260909",
+      "relationship": "extends",
+      "contribution": "Measures complete production preparation and normalized output equivalence, including work omitted by the query prototype."
+    }
+  ],
+  "novelty": "Measures complete production preparation and normalized output equivalence, including work omitted by the query prototype."
+}
+```

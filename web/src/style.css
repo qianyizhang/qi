@@ -694,3 +694,41 @@ select:disabled {
 tr.chosen {
   background: #eaf0e2;
 }
+
+.catalog-search {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.catalog-search label {
+  flex: 1;
+  min-width: 0;
+}
+.catalog-search input {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.catalog-entry {
+  overflow-wrap: anywhere;
+}
+.catalog-entry dt {
+  font-weight: 600;
+  margin-top: 1rem;
+}
+.catalog-entry dd {
+  margin: 0.35rem 0;
+  white-space: pre-line;
+}
+.catalog-entry small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.catalog-entry summary {
+  cursor: pointer;
+}
+.catalog-finding {
+  border-left: 3px solid currentColor;
+  padding-left: 1rem;
+}

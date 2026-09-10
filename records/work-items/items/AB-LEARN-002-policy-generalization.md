@@ -2,7 +2,7 @@
 description: Measure policy generalization across nested data sizes and fixed held-out games using CPU or MPS.
 scope: backlog item
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: work_record
 work_id: AB-LEARN-002
 work_status: done
@@ -102,3 +102,119 @@ strength or add model architectures, value learning, PUCT, or training services.
   controlled comparison; none is needed to complete this pipeline slice.
 - Review: local full-diff/contract review and independent artifact recomputation;
   no separate reviewer agent.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "policy-generalization-v1",
+  "title": "Nested policy data-size curve",
+  "question": "Does more training data improve held-out teacher imitation for the fixed small policy?",
+  "kind": "learning",
+  "topics": [
+    "data scaling",
+    "generalization",
+    "teacher imitation"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "Increasing nested training sizes improved held-out teacher agreement, while substantial overfitting and poor cross-entropy remained.",
+  "conditions": "Nested 96/192/384/768 labels, seeds 7/17/27, fixed 251-position validation set, 200 updates, shallow 1000-node/depth-3 teacher.",
+  "limitations": "One fixed data split and teacher; seed variation is not dataset uncertainty. This validation set later became tuning data.",
+  "decision": "Use controlled data-size evidence; do not claim strength.",
+  "revisit": "Fresh sources, larger scale or changed teacher/representation.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/generalization-v1.json",
+      "role": "results",
+      "sha256": "9f5d39214d716183f3c0e1adb97ad027a42ac74d966266ae435ac057e1fb5b7d"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "policy-smoke-v1",
+      "relationship": "extends",
+      "contribution": "Adds controlled nested data sizes and repeated initialization seeds to the engineering smoke."
+    }
+  ],
+  "novelty": "Adds controlled nested data sizes and repeated initialization seeds to the engineering smoke."
+}
+```
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "device-benchmark",
+  "title": "CPU and Metal policy benchmark",
+  "question": "Does explicit MPS improve repeated local policy optimization time?",
+  "kind": "performance",
+  "topics": [
+    "training performance",
+    "CPU",
+    "MPS",
+    "PyTorch",
+    "MLX"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "All 24 warm trials completed with finite losses and matching training predictions after CPU transfer. MPS was faster for the measured 96/768 batch sizes.",
+  "conditions": "September 8, 2026, Apple M5 Pro; three warm trials per configuration, 200 full-batch Adam updates, shared initial weights and legal-masked float32 policy objective.",
+  "limitations": "Batch 768 repeats the same 96 examples. Warm optimization only; no data preparation, startup, serialization or bitwise cross-device guarantee. Uncontrolled desktop load; no learning-quality or strength claim.",
+  "decision": "Retain pinned PyTorch with explicit MPS for repeated local training and portable CPU tests; ADR-0003 owns the adopted decision.",
+  "revisit": "Substantial change in model size, batch regime or measured total training cost.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/device-benchmark.json",
+      "role": "results",
+      "sha256": "9a3a88cee0b3b96dae5151a0d6798a9ca9a24b91e877f557f07a558dcf1e7fe4"
+    },
+    {
+      "path": "artifacts/learning/device-benchmark/summary.md",
+      "role": "report",
+      "sha256": null
+    }
+  ],
+  "prior_work": [],
+  "novelty": "Retrospective registration of the historical backend comparison supporting ADR-0003; no new benchmark."
+}
+```
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "framework-benchmark",
+  "title": "PyTorch and MLX policy benchmark",
+  "question": "Does switching framework or PyTorch version justify another training and checkpoint path?",
+  "kind": "performance",
+  "topics": [
+    "training performance",
+    "CPU",
+    "MPS",
+    "PyTorch",
+    "MLX"
+  ],
+  "execution": "complete",
+  "conclusion": "not-supported",
+  "finding": "Compiled full-float32 MLX saved 27–95 ms per fit; the PyTorch upgrade offered no material gain for this workload. These savings did not justify a second framework.",
+  "conditions": "September 8, 2026, Apple M5 Pro; three warm trials per configuration, 200 full-batch Adam updates, shared initial weights and legal-masked float32 policy objective.",
+  "limitations": "One small warm workload; PyTorch compilation untested, MLX bias correction and full precision explicitly matched; timings exclude compilation and all preparation. Uncontrolled desktop load; no learning-quality or strength claim.",
+  "decision": "Retain pinned PyTorch with explicit MPS for repeated local training and portable CPU tests; ADR-0003 owns the adopted decision.",
+  "revisit": "Substantial change in model size, batch regime or measured total training cost.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/history/framework-benchmark.json",
+      "role": "results",
+      "sha256": "54f509aff0beff3e4280312536534c9ae3610d7594f42f84ff792dedfd9befde"
+    },
+    {
+      "path": "artifacts/learning/framework-benchmark/summary.md",
+      "role": "report",
+      "sha256": null
+    }
+  ],
+  "prior_work": [],
+  "novelty": "Retrospective registration of the historical backend comparison supporting ADR-0003; no new benchmark."
+}
+```

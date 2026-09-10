@@ -137,3 +137,16 @@ continuations and a two-mode frozen mixture. Learner-driven generation,
 recorded-game ingestion, heterogeneous supervision and dynamic training curricula
 remain later extensions. Package layout, phase thresholds and initial mixture
 percentages are implementation/experiment choices, not additional locked claims.
+
+## Experiment knowledge
+
+An experiment tests a question through one or more concrete executions. Its owning
+work item or report retains the authored finding, conditions, limits and decision;
+run artifacts retain measured evidence and execution provenance. A catalog entry
+links these without acquiring their authority. CLI/API discovery and the shared
+dashboard are projections of the same entries, including missing or unsupported
+local evidence. Execution completion, conclusion and evidence availability are
+independent. Prior-experiment links state what a follow-up extends, reproduces,
+challenges or uses. [ADR-0007](adr/0007-experiment-recall-and-evidence.md) owns this
+boundary; the [method](experiments.md) and [module](../src/qi/experiments/README.md)
+own workflow and executable schema respectively.

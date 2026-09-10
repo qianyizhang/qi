@@ -92,12 +92,12 @@ authorization covered implementation; the completion ledger records its proof.
   and reload/summarize saved evidence with resource configuration removed and
   model execution disabled. `make check` passed 421 Python tests (one opt-in MPS
   skip) and the separate CPU learning lane passed 31 tests.
-- Evidence: the local [paired evaluation](../../../artifacts/ui-002-verification/two-checkpoint-evaluation.json)
+- Evidence: the local paired evaluation (`artifacts/ui-002-verification/two-checkpoint-evaluation.json`)
   used checkpoints size-96-seed-7.pt and size-96-seed-17.pt, with distinct digests
   `7edd6b9e351ae0ee07967904ffc64097f29975439932112d7c0c944954f75a39`
   and `5c716df2c840738e45014324e9004fe2706a1b028fcaa0c262e573dc3b90cd65`.
   Both initial-position color assignments completed, with repetition draws
-  after 52 and 34 plies. [The summary](../../../artifacts/ui-002-verification/two-checkpoint-summary.json)
+  after 52 and 34 plies. The summary (`artifacts/ui-002-verification/two-checkpoint-summary.json`)
   was derived from validated saved evidence. This verifies construction and
   replay; it provides no estimate of general playing strength.
 - Consequence: CLI, HTTP, arena and evaluation share the same binding boundary;

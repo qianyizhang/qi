@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      "npm run build && ../.venv/bin/python e2e/prepare.py && QI_EXPERIMENT_ROOTS=.test-artifacts/runs QI_LAB_STATE=.test-artifacts/jobs ../.venv/bin/uvicorn qi.api:create_app --factory --host 127.0.0.1 --port 18765",
+      "npm run build && ../.venv/bin/python e2e/prepare.py && QI_WORKSPACE=.test-artifacts QI_EXPERIMENT_ROOTS=.test-artifacts/runs QI_LAB_STATE=.test-artifacts/jobs ../.venv/bin/uvicorn qi.api:create_app --factory --host 127.0.0.1 --port 18765",
     url: "http://127.0.0.1:18765",
     reuseExistingServer: false,
   },

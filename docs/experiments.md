@@ -12,6 +12,22 @@ Organize around a question, an experiment that tests it, and concrete executions
 A parameter sweep is one experiment; an interrupted execution and its rerun remain
 separate runs. Configs describe intended work; results describe observed work.
 
+## Before proposing
+
+Use the [`experiment` skill](../.codex/skills/experiment/SKILL.md) for experimental
+ideas, prior-result questions and authorized experiment work. The shared dashboard
+at `/experiments` and `qi experiment search` read the same catalog, including
+teacher pilots without supported search manifests.
+
+Search question terms and aliases, read matching owners and their evidence, then
+state: **prior finding and limits → overlap → new contribution**. Link the prior
+experiment IDs and describe whether the idea extends, reproduces, challenges or
+uses them. Do this before ranking new work or grilling protocol choices. Search
+owner prose with `rg` and the [historical index](../data/experiments/learning/README.md)
+when matches are absent or coverage is uncertain. Empty results do not establish
+novelty. Newly found historical work should be registered retrospectively in its
+owner, preserving unknowns and original evidence.
+
 ## Before running
 
 Record these in the experiment's existing work item:
@@ -33,6 +49,13 @@ evidence links. Separate observation from interpretation, name remaining limits,
 and record the decision plus a concrete revisit trigger. Negative and inconclusive
 results count as findings; successful execution does not imply a successful hypothesis.
 Small exploratory trials can remain rows in the parent experiment's log.
+Update its catalog entry in the same owner using the
+[recording commands](../src/qi/experiments/README.md#shared-catalog-and-recording).
+A final conclusion needs finding, conditions, limitations, decision, revisit
+trigger and evidence paths; keep failed and incomplete attempts in the execution
+history. Append corrections as new revisions identifying affected evidence;
+never erase the earlier finding or infer success from runner completion.
+Run `qi experiment check-catalog` and confirm the updated entry is discoverable.
 
 Use work items for experiment history, a bounded Campaign for current understanding
 across experiments, and module guides/ADRs for adopted behavior and decisions.

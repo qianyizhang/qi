@@ -1,12 +1,16 @@
 ---
 description: Declarative learning recipes and retrospective experiment evidence.
-scope: learning experiment index
+scope: learning recipes and retained evidence
 status: experimental
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: artifact
 ---
 
-# Learning experiment records
+# Learning recipes and retained evidence
+
+Cross-kind discovery: `qi experiment search "<question/topics>"` or the shared
+dashboard at `/experiments`. Findings remain in the linked owning work items and
+reports; this guide retains recipe and historical-format navigation.
 
 Use the [method](../../../docs/experiments.md) and [trainer guide](../../../src/qi/learning/README.md)
 for new experiments. Training recipes here can be previewed with `qi learn run --config`.
@@ -16,8 +20,9 @@ The historical recipes reconstruct settings, not the original implementation.
 Their prepared datasets and weights are local, ignored artifacts; a fresh clone
 alone cannot rerun them. Dataset paths in recipes resolve relative to the config file.
 
-| Experiment | Recipe / retrospective record | Original local evidence |
+| Historical material | Recipe / retrospective record | Original local evidence |
 | --- | --- | --- |
+| Teacher budget, MultiPV/WDL, throughput and root-trace pilots | [Aggregates](history/teacher-generation-pilot-v1.json), [owning advisory](../../../records/reports/2026-09-09-teacher-generation-advisory.md) | `artifacts/pikafish-*-20260909/` |
 | Initial imitation and tiny overfit | [Record](history/smoke-v1.json) | `artifacts/learning/diagnostic-v1-report.json`, `policy-v1-report.json` |
 | Nested data-size curve | [Recipe](generalization-v1.json), [record](history/generalization-v1.json) | `artifacts/learning/generalization-v1/` |
 | Hyperparameter sweep | [Record](history/tuning-v1.json) | `artifacts/learning/tuning-v1/` |
@@ -76,11 +81,8 @@ configuration compatibility.
 ## Persistent teacher preparation
 
 [AB-DATA-004](../../../records/work-items/items/AB-DATA-004-persistent-teacher.md)
-records three paired full preparations using the existing two-mode recipe and
-1000-node/depth-3 teacher. All normalized datasets matched; persistent execution
-reduced median preparation time from 4.829 to 0.227 seconds in this small pilot.
-[Compact results](history/persistent-teacher-v1.json) retain measurements, hashes and
-resolved settings. Raw runs and executed-source copies remain local under
-`artifacts/learning/persistent-teacher-v1/`. Reproduce with
-`scripts/check_persistent_teacher.py`; this is performance evidence, not a training
-or teacher-quality finding. Fresh execution remains the default.
+owns the measured findings, conditions and decision, discoverable as
+`qi experiment show persistent-teacher-v1`. Its [compact evidence](history/persistent-teacher-v1.json)
+retains timings, hashes and resolved settings. Raw runs and executed-source copies
+remain under `artifacts/learning/persistent-teacher-v1/`; the reproduction script
+is `scripts/check_persistent_teacher.py`.

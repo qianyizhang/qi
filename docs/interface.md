@@ -95,8 +95,18 @@ not satisfy the fixed-participant paired evaluation protocol.
 
 ## Experiment readers and trace jobs
 
-`GET /api/experiments` discovers saved runs under `QI_EXPERIMENT_ROOTS` (a
-platform path-separated list; default `artifacts/experiments`). Search runs have
+The Experiments page uses `GET /api/experiment-catalog?q=...` for shared discovery
+of teacher, learning, search, data and performance studies. It reads entries in
+owning work items/reports under `QI_WORKSPACE` (default: checkout root). Detail,
+owner and registered text-evidence routes live below `/api/experiment-catalog/{id}`.
+These routes are read-only; `qi experiment record` appends validated owner revisions.
+The [catalog contract](../src/qi/experiments/README.md#shared-catalog-and-recording)
+owns fields, scope, revision rules and preview limits. Artifact availability is
+separate from execution state and scientific conclusion.
+
+For the Recorded search runs section, `GET /api/experiments` discovers runs under
+`QI_EXPERIMENT_ROOTS` (a platform path-separated list; default
+`artifacts/experiments`). Search runs have
 a native reader; other formats are visibly unsupported. Invalid entries remain
 isolated. Discovery skips source/dependency folders and symlinked directories.
 Selected evidence is validated before derived data is returned. IDs resolve only

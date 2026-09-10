@@ -1,16 +1,18 @@
 ---
-description: Plan, run, verify, compare, and inspect bounded local search experiments.
-scope: search experiment evidence and reports
+description: Recall and record experiments across kinds, and execute or inspect bounded search runs.
+scope: shared experiment catalog and search evidence
 status: experimental
 last_update: 2026-09-10
 document_class: coordination
 ---
 
-# Search experiments
+# Experiments
 
 Experiments configure comparisons and preserve evidence. Players choose moves;
 the referee owns legality and outcomes; reports are derived views. This module
-is provisional, local, synchronous, and search-only.
+provides the [shared catalog and recording](#shared-catalog-and-recording) for
+all registered experiment kinds. Its execution runner is local, synchronous and
+limited to search comparisons.
 
 ## Run and inspect
 
@@ -149,9 +151,10 @@ teacher or learning dependency.
 
 ## Shared app and report projections
 
-The local app's Experiments page discovers search runs under the configured
-roots and provides the same views as the standalone HTML renderer. Discovery
-also shows incomplete, invalid and unsupported entries without loading models.
+The local app's Experiments page uses the shared catalog for finding studies.
+Its Recorded search runs section discovers runs under the configured roots and
+provides the same views as the standalone HTML renderer. Run discovery also shows
+incomplete, invalid and unsupported entries without loading models.
 See [interface configuration](../../../docs/interface.md#experiment-readers-and-trace-jobs)
 for `QI_EXPERIMENT_ROOTS`, job storage and server deadlines.
 
@@ -160,7 +163,7 @@ from verified raw evidence. The HTTP adapter returns overview metadata, selected
 units and paginated trace children separately. `web/src/report.tsx` is the shared
 React renderer; `web/src/offline.tsx` provides its in-memory data source for
 self-contained HTML. Build both app and report assets with `make web-build` before
-using HTML export. The old standalone DOM renderer has been replaced.
+using HTML export.
 
 Narrative is an optional UTF-8 `narrative.md` sidecar (up to 1 MiB), authored in
 an ordinary editor. It supports Markdown/GFM text, tables and links; active HTML
@@ -187,3 +190,61 @@ remain readable even when trace generation is incompatible. Invalid traces are
 reported separately from valid base evidence. Refresh evidence after a job to
 include its new trace in native views and subsequent exports. Benchmark units and
 untraced timings remain unchanged.
+
+## Shared catalog and recording
+
+The dashboard `/experiments`, `GET /api/experiment-catalog?q=...` and the CLI read
+one catalog from JSON fenced blocks labeled `experiment` in Markdown files directly
+under `records/work-items/items/` and `records/reports/`. It covers registered
+studies of any supported catalog kind, independently of raw run manifests. Native
+search run views still use `QI_EXPERIMENT_ROOTS`; the catalog uses `QI_WORKSPACE`
+(default: checkout root). Rebuild the web bundle and restart an older server to
+pick up new routes; Refresh catalog rereads owner files thereafter.
+
+```bash
+uv run qi experiment search "teacher quality"
+uv run qi experiment show teacher-budget-20260909
+uv run qi experiment owner records/work-items/items/AB-LEARN-009-teacher-quality.md
+uv run qi experiment template my-study "Study title" "Question?" > /tmp/my-study.json
+# Fill the scaffold, read the owner, then use its returned owner_sha256:
+uv run qi experiment record --owner records/work-items/items/AB-LEARN-009-teacher-quality.md \
+  --entry /tmp/my-study.json --expected-sha256 <owner_sha256>
+uv run qi experiment check-catalog
+uv run qi experiment check-catalog --verify-evidence
+```
+
+`template` intentionally emits unfinished fields: fill topics, conditions and
+novelty before recording. `show` also returns the current owner hash. To revise,
+copy the entry fields (not projection fields owner/owner_sha256/revision/
+evidence_locations) into the JSON payload. `record` validates and appends a new
+block to the existing owner, requiring its current SHA-256. It preserves prior
+bytes; a stale hash fails without writing. Create a normal work item or report
+first; the command does not invent an owner or run an experiment.
+
+[`catalog.py`](catalog.py) owns schema version 1. Fields:
+
+| Field | Meaning |
+| --- | --- |
+| `id`, `title`, `question`, `kind`, `topics` | Stable study identity and discovery terms, including useful aliases. |
+| `execution` | `planned`, `running`, `complete`, `incomplete`, `failed`, or `unknown`; work-item completion is separate. |
+| `conclusion` | `unassessed`, `supported`, `not-supported`, `mixed`, or `inconclusive`, relative to the stated question and conditions. |
+| `finding`, `conditions`, `limitations` | Authored observation with denominators and scope; do not infer it from metrics. |
+| `decision`, `revisit` | What follows and what evidence would justify reconsideration. |
+| `evidence` | Repository-relative path, role (`report/results/config/data/source/run`), optional SHA-256; raw source manifests retain detailed lineage. |
+| `prior_work`, `novelty` | Prior ID, relationship (`extends/reproduces/challenges/uses`) and specific contribution; explain empty prior work rather than asserting novelty without recall. |
+
+Last valid revision in the same owner supplies the current view; old blocks remain
+readable in the owner. Duplicate IDs across owners, malformed blocks and unresolved
+prior IDs appear as catalog issues and fail `check-catalog`. Register a predecessor
+before recording its follow-up. Missing local evidence remains visible and does not
+fail portable checks. Optional verification checks supplied hashes of available
+files; presence alone is not verification. Evidence paths cannot escape the
+workspace. HTTP only previews registered text files up to 4 MiB and owning records
+up to 2 MiB, as plain text; other paths remain visible for local inspection.
+
+Search matches all whitespace-separated terms, case-insensitively, across identity,
+question, topics, finding, conditions, limits, decision and contribution. It does
+not establish scientific comparability or infer synonyms. Keep important aliases
+in topics and use several searches plus owner/index fallback from the
+[method](../../../docs/experiments.md). The catalog explicitly reports its coverage;
+raw artifacts that have never been registered are outside it.

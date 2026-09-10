@@ -60,6 +60,18 @@ relative symlinks into it, declared in `[tool.doc_governance.symlinks]` and
 created by `scripts/bootstrap_agents.py`. Edit skills only under
 `.codex/skills/`; resolve symlink targets before deleting anything nearby.
 
+## Experiment recall
+
+Before recommending, grilling or executing an experiment, use the local
+[`experiment` skill](.codex/skills/experiment/SKILL.md). Search the shared catalog
+with `qi experiment search "<question/topics>"`, then read the matching owners and
+evidence. State what is already known, what overlaps, and the proposed contribution.
+An empty catalog search is not proof of novelty: check owner prose and the historical
+index. After authorized work, record findings, limits, evidence, decision and revisit
+trigger in the owning record and validate the catalog. The shared dashboard's
+Experiments page reads this same catalog. [ADR-0007](docs/adr/0007-experiment-recall-and-evidence.md)
+fixes ownership; [method](docs/experiments.md) owns the workflow.
+
 ## Commands
 
 ```bash

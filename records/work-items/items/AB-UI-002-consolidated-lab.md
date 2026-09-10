@@ -379,7 +379,7 @@ checkpoint path selection. These require separately scoped work.
 - Evidence: `make check` passed 432 Python tests, with the single opt-in MPS
   skip, and five request-lifecycle tests. The desktop/mobile lane passed 42
   browser cases. OpenAPI still matches the Python contract. The renewed local
-  [matchup smoke](../../../artifacts/ui-002-verification/review/matchup-matrix.json)
+  matchup smoke (`artifacts/ui-002-verification/review/matchup-matrix.json`)
   retains two-ply evidence for all 11 color assignments without modifying the
   earlier integration records or the user's active game.
 - Consequence: settings now apply together per side; pending edits block moves
@@ -412,26 +412,26 @@ checkpoint path selection. These require separately scoped work.
   multiple tabs, paused restore, unavailable players and unknown snapshot history.
   Python tests cover identity/settings validation, pure evidence reading and
   trace idempotency, cancellation, timeout, shutdown and restart interruption.
-- Evidence: the real-resource [matchup matrix](../../../artifacts/ui-002-verification/matchup-matrix.json)
+- Evidence: the real-resource matchup matrix (`artifacts/ui-002-verification/matchup-matrix.json`)
   completed two plies for each of 11 distinct color assignments covering
   Human/Human, Human/alpha-beta, Human/checkpoint, Human/Pikafish,
   checkpoint/Pikafish and two checkpoints. The
-  [mixed-play record](../../../artifacts/ui-002-verification/mixed-play.json)
+  mixed-play record (`artifacts/ui-002-verification/mixed-play.json`)
   preserves four successive trained-A/Pikafish/trained-B/Pikafish decisions.
   Local Pikafish 2026-01-02 used one thread, 16 MiB hash, requested 128 nodes,
   depth two and a ten-second timeout; its first response reported 140 native
   nodes and depth two, retained without clamping or converting to qi visits.
-- Evidence: the [paired checkpoint record](../../../artifacts/ui-002-verification/two-checkpoint-evaluation.json)
+- Evidence: the paired checkpoint record (`artifacts/ui-002-verification/two-checkpoint-evaluation.json`)
   completed both color assignments from the initial position, with repetition
   draws after 52 and 34 plies. Named resources and full digests are recorded in
-  [the catalog](../../../artifacts/ui-002-verification/catalog.json).
+  the catalog (`artifacts/ui-002-verification/catalog.json`).
   Actual browser inspection also stepped trained A, Pikafish and trained B,
   displayed native work/score/resource identities, preserved the game on Home,
   and verified the Home layout. These are functional checks, not strength evidence.
 - Evidence: the existing search-v1 run remained readable at 380/384 completed
   units, with five valid saved traces and no validation warnings. Source/runtime
   mismatch correctly disabled new tracing. The
-  [read observation](../../../artifacts/ui-002-verification/historical-report-read.json)
+  read observation (`artifacts/ui-002-verification/historical-report-read.json`)
   records this bounded compatibility check; raw historical evidence was unchanged.
 - Consequence: all delivery stages and acceptance criteria are satisfied.
   AB-ENGINE-005 supplies the shared binding boundary; the refactor consumes

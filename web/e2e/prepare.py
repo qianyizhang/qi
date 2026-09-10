@@ -29,3 +29,23 @@ for name, value in (("unsupported", {"kind":"learning-v9"}), ("invalid", {})):
     target = root / "runs" / name
     target.mkdir()
     (target / "manifest.json").write_text(json.dumps(value) if name == "unsupported" else "{")
+
+# Catalog fixtures intentionally have no run manifest or raw results.
+from qi.experiments.catalog import ExperimentEntry
+owner = root / "records/reports/catalog-fixture.md"
+owner.parent.mkdir(parents=True)
+fixture = ExperimentEntry(
+    id="teacher-budget-fixture", title="Teacher budget recall fixture",
+    question="Does a stronger teacher agree more with a 1M reference?",
+    kind="teacher", topics=["teacher quality", "stronger teacher", "1M reference"],
+    execution="complete", conclusion="inconclusive",
+    finding="24/36 agreement; no student training.", conditions="36 correlated positions.",
+    limitations="Reference is an estimate, not ground truth.", decision="Keep defaults.",
+    revisit="Independent source games and student outcomes.",
+    evidence=[{"path":"artifacts/missing.json", "role":"results"},
+              {"path":"data/compact.json", "role":"results"}],
+    novelty="Historical registration, not a new run.",
+)
+owner.write_text("# Historical teacher pilot\n\n```experiment\n" + fixture.model_dump_json() + "\n```\n")
+(root / "data").mkdir()
+(root / "data/compact.json").write_text('{"agreement":24,"positions":36}')
