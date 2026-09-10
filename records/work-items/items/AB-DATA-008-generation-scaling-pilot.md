@@ -2,7 +2,7 @@
 description: Settle and measure a full-game generation regime before choosing a larger overnight run.
 scope: backlog item
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: work_record
 work_id: AB-DATA-008
 work_status: ready
@@ -699,3 +699,35 @@ generation or teacher policies; each cell retains its executed source bundle.
   "novelty": "Resource-calibrated generation settings and long-game coverage beyond the earlier correctness and synthetic-I/O pilots."
 }
 ```
+
+
+### 2026-09-11 — closeout and authorization: supervised hour-sized batches
+
+- Evidence: the user asked to clean up and commit this task, then hand off to a
+  next session that repeatedly launches about one hour of batched work until
+  the user wakes and asks it to stop. Bounded quick fixes are authorized; material
+  faults may stop dispatch pending the user's decision.
+- Completed: generation and measured pilot evidence landed as `4ea57b1`, on top
+  of the SQLite infrastructure commit `9ab7e1a`. The full repository gate passed
+  again: 552 Python tests, one MPS skip, five browser tests, lint, docs/catalog and
+  both browser builds. All parallel claims are closed.
+- Consequence: the [session handoff](../../reports/session-handoff-overnight-generation-20260911.md)
+  is the next operator's pickup. Begin with numbered 1,000-game batches, a one-hour
+  generation allowance and the measured 80/10/10 mixture. Preserve scientific
+  settings and source identities; use one SQLite writer. Original 9,000-game/10-hour
+  recipes and their evidence hashes remain historical calibration artifacts.
+- Resource envelope: 150GB cumulative runner OS writes across every invocation,
+  20GB per invocation with at least 21GB session allowance remaining before
+  dispatch, 1,500MB sampled RSS and 30GB free disk reserve. Account resumes and
+  operator verification; do not reset allowances at a batch boundary. These
+  conservative dispatch rules do not assert a hard kernel resource bound.
+- Verification: constructed batches 0, 1 and 9 in temporary directories; all had
+  1,000 games, 80/10/10 policy proportions, 10% validation, disjoint source IDs and
+  valid pinned-asset CLI previews. No generation or collection was created.
+- Left: next-session operation and measured larger-pool results; final data-only
+  split/label audit and immutable export before training. No overnight job or
+  monitor was started by this closeout. Full-game Elo and optimizer migration
+  remain with their existing owners.
+- Review: ratified for the user's operational handoff. Stop on user request,
+  integrity uncertainty, exhausted resource envelope or a material decision;
+  retain partial work and failure evidence.

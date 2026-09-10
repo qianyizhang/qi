@@ -2,7 +2,7 @@
 description: Configurable generation policies, incremental SQLite execution and bounded engineering pilots.
 scope: training data generation module guide
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -139,6 +139,13 @@ AB-DATA-008; successful unit tests and this tiny pilot do not establish scale
 readiness or optimal data-mixture weights.
 
 ## Resource-calibrated overnight profile
+
+The latest [operator handoff](../records/reports/session-handoff-overnight-generation-20260911.md)
+authorizes the next session to run sequential roughly one-hour batches until the
+user stops it or a safety boundary requires a decision. It derives numbered
+1,000-game recipes from the profile below and accounts writes across all batches
+and resumes. The original 9,000-game file remains frozen calibration evidence;
+do not launch it as one monolithic job for that newer request.
 
 The [resource pilot evidence](../data/experiments/learning/history/generation-resource-v1.json)
 covers 512 games in seven fresh SQLite collections, including 300-ply trajectories.
