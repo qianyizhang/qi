@@ -47,6 +47,11 @@ def main():
         "--resume", action="store_true", help="Reuse the exact frozen recipe; preserve prior executions"
     )
     parser.add_argument(
+        "--continue-from-run",
+        type=int,
+        help="Explicitly adopt disposed work from an inactive original run with the identical recipe",
+    )
+    parser.add_argument(
         "--preview", action="store_true", help="Validate config and pinned assets without generation or writes"
     )
     parser.add_argument(
@@ -77,8 +82,19 @@ def main():
     export = SelectionRecipe.model_validate_json(args.export_recipe.read_text()) if args.export_recipe else None
     if export and (not export.selected_only or export.reserved_corpus != config.corpus):
         parser.error("Policy exports require selected_only=true and the same frozen exclusion corpus.")
+    if args.continue_from_run is not None:
+        from qi.training_data.generation_io import CollectionIO
+
+        with Collection((args.collection or args.output / "collection.sqlite").resolve(), readonly=True) as store:
+            inherited = CollectionIO(store).continuation(args.continue_from_run, config.model_dump())
+    else:
+        inherited = {}
     if args.preview:
-        print(json.dumps({"config": config.model_dump(), "resource_limits": limits}, indent=2))
+        print(
+            json.dumps(
+                {"config": config.model_dump(), "resource_limits": limits, "inherited_games": inherited}, indent=2
+            )
+        )
         return
     collection = (args.collection or args.output / "collection.sqlite").resolve()
     frozen = {
@@ -86,6 +102,9 @@ def main():
         "collection": str(collection),
         "export": export.model_dump() if export else None,
     }
+    if args.continue_from_run is not None:
+        frozen["continued_from_run"] = args.continue_from_run
+        frozen["inherited_games"] = inherited
     if limits:
         frozen["resource_limits"] = limits
     if args.resume:
@@ -129,7 +148,7 @@ def main():
             def event(value):
                 events.write(json.dumps(value) + "\n")
                 events.flush()
-                if value["kind"] in {"completed-game", "reused-game"}:
+                if value["kind"] in {"completed-game", "reused-game", "rejected-game", "reused-rejection"}:
                     result = value["result"]
                     pids = [session.engine.process.pid for session in provider.sessions.values() if session.engine]
                     sample = probe.snapshot(pids)
@@ -158,7 +177,9 @@ def main():
                         flush=True,
                     )
 
-            summary = generate_policies(store, config, provider=provider, event=event)
+            summary = generate_policies(
+                store, config, provider=provider, event=event, continue_from_run=args.continue_from_run
+            )
             if export:
                 tick = perf_counter()
                 destination = execution / "snapshot"

@@ -370,3 +370,8 @@ standalone verification. `tests/test_collection_learning.py` checks bounded tens
 parity. `scripts/benchmark_collection.py` owns the narrow synthetic persistence/read
 workload; [AB-DATA-007](../../../records/work-items/items/AB-DATA-007-sqlite-training-data-store.md)
 records its protocol, measurements and limits.
+
+Trajectory split rejections in policy generation remain `failed` games with
+`rejected-trajectory` stop reason. They are terminal dispositions for the run plan,
+never accepted snapshot rows. See [generation continuation](../../../docs/data-generation.md)
+for explicit references across a reviewed implementation repair.

@@ -323,3 +323,108 @@ def test_asset_locations_do_not_change_seeded_moves(tmp_path, setup):
     with Collection(tmp_path / "b.sqlite") as store:
         generate_policies(store, config, provider=provider)
         assert completed(store)[0].snapshot == original
+
+
+def collision_recipe(config):
+    config.sources[0].actor.candidate_count = 1
+    config.sources[0].split = "validation"
+    config.sources += [
+        config.sources[0].model_copy(update={"id": "collision", "split": "train"}),
+        config.sources[0].model_copy(update={"id": "later"}),
+    ]
+    return config
+
+
+def test_rejection_continues_and_resume_never_retries_it(tmp_path, setup):
+    config, provider, calls = setup
+    collision_recipe(config)
+    path = tmp_path / "rejection.sqlite"
+    events = []
+    with Collection(path) as store:
+        result = generate_policies(store, config, provider=provider, event=events.append)
+        assert result["generation_status"] == "complete" and result["status"] == "shortfall"
+        assert result["games"] == 2 and result["rejected_games"] == 1 and result["planned_games"] == 3
+        assert [e["kind"] for e in events] == ["completed-game", "rejected-game", "completed-game"]
+        assert store.db.execute("SELECT status,stop_reason FROM games WHERE id=2").fetchone()[:] == (
+            "failed",
+            "rejected-trajectory",
+        )
+        assert store.game(2).snapshot == store.game(1).snapshot
+        assert store.db.execute("SELECT count(*) FROM position_occurrences WHERE game_id=2").fetchone()[0] > 0
+        accepted = store.db.execute("SELECT DISTINCT split FROM games WHERE status='complete'").fetchall()
+        assert [r[0] for r in accepted] == ["validation"]
+    calls.clear()
+    with Collection(path) as store:
+        result = generate_policies(store, config, provider=provider)
+        assert not calls and result["reused_games"] == 2 and result["reused_rejections"] == 1
+        assert store.counts()["games"] == 3
+
+
+def test_interrupt_after_rejection_resumes_remaining_identity(tmp_path, setup):
+    config, provider, _ = setup
+    collision_recipe(config)
+    path = tmp_path / "interruption.sqlite"
+
+    def stop(event):
+        if event["kind"] == "rejected-game":
+            raise KeyboardInterrupt()
+
+    with Collection(path) as store:
+        with pytest.raises(KeyboardInterrupt):
+            generate_policies(store, config, provider=provider, event=stop)
+    with Collection(path) as store:
+        result = generate_policies(store, config, provider=provider)
+        assert result["games"] == 2 and result["reused_games"] == 1 and result["reused_rejections"] == 1
+        assert store.counts()["games"] == 3
+
+
+def test_explicit_continuation_preserves_legacy_collision_and_provenance(tmp_path, setup, monkeypatch):
+    from qi.training_data.store import TrajectorySplitConflict
+
+    config, provider, calls = setup
+    collision_recipe(config)
+    path = tmp_path / "legacy.sqlite"
+    original_finish = Collection.finish_game
+
+    def legacy_finish(self, *args, **kwargs):
+        try:
+            return original_finish(self, *args, **kwargs)
+        except TrajectorySplitConflict as exc:
+            raise ValueError(str(exc)) from exc
+
+    with Collection(path) as store:
+        with monkeypatch.context() as patch:
+            patch.setattr(Collection, "finish_game", legacy_finish)
+            with pytest.raises(ValueError, match="Exact trajectory crosses splits"):
+                generate_policies(store, config, provider=provider)
+        old_rows = [tuple(r) for r in store.db.execute("SELECT * FROM games ORDER BY id")]
+        old_run = tuple(store.db.execute("SELECT * FROM generation_runs WHERE id=1").fetchone())
+    with Collection(path) as store:
+        bad_config = config.model_copy(update={"seed": 123})
+        with pytest.raises(ValueError, match="identical recipe"):
+            generate_policies(store, bad_config, provider=provider, continue_from_run=1)
+        result = generate_policies(store, config, provider=provider, continue_from_run=1)
+        assert result["run_id"] == 2
+        assert result["games"] == 2 and result["reused_games"] == 1
+        assert result["rejected_games"] == 1 and result["reused_rejections"] == 1
+        assert len(result["inherited_games"]) == 2
+        assert [tuple(r) for r in store.db.execute("SELECT * FROM games WHERE id<=2 ORDER BY id")] == old_rows
+        assert tuple(store.db.execute("SELECT * FROM generation_runs WHERE id=1").fetchone()) == old_run
+        assert store.db.execute("SELECT run_id FROM games WHERE id=3").fetchone()[0] == 2
+        calls.clear()
+        again = generate_policies(store, config, provider=provider, continue_from_run=1)
+        assert not calls and again["reused_games"] == 2 and again["reused_rejections"] == 1
+        assert store.counts()["games"] == 3
+
+
+def test_rejection_requires_opposite_split_evidence(tmp_path, setup):
+    config, _, _ = setup
+    with Collection(tmp_path / "invalid-rejection.sqlite") as store:
+
+        def broken(game, settings):
+            raise KeyboardInterrupt()
+
+        with pytest.raises(KeyboardInterrupt):
+            generate_policies(store, config, provider=broken)
+        with pytest.raises(ValueError, match="requires a completed opposite-split"):
+            store.finish_game(1, "rejected-trajectory")

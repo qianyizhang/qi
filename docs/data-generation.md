@@ -44,6 +44,13 @@ invocation gets a new execution directory. An unfinished game stays as a separat
 failed/interrupted attempt and is regenerated from its frozen start; completed
 games from the same implementation are reused without teacher calls. A changed
 implementation source hash creates a separate logical run in the collection.
+After a reviewed implementation repair, `--continue-from-run ID` with a fresh
+output directory explicitly adopts disposed identities from an inactive original
+run with the identical resolved recipe. Its frozen manifest references original
+completed games and verified trajectory rejections; their rows and provenance
+remain unchanged. The new logical run plans only the remaining identities.
+Pass the same option on subsequent `--resume` invocations. Continuation chains
+are rejected; another repair requires explicit reconciliation.
 This is resume at game boundaries, not
 restoration of a live engine search or partially labeled game's temporary spool.
 Changing the frozen config, export recipe or collection path requires a new output
@@ -108,7 +115,13 @@ specifications, including actor MultiPV and separate single-PV supervision.
 
 One explicit retry is allowed for `teacher_timeout` or `teacher_exit`, with a fresh
 session. A second transient failure stops the run; all identity, legality and
-integrity failures stop immediately. Failed attempts remain queryable. A search
+integrity failures stop immediately. An exact trajectory already completed in the
+opposite split is retained as a failed attempt with stop reason
+`rejected-trajectory`, excluded from snapshots, and skipped on resume. The runner
+continues to the next planned identity without quota refill. Other split/family
+conflicts still stop. Explicit continuation can adopt a legacy split-guard failure
+only after checking its retained generation result and completed opposite-split
+trajectory. Failed attempts remain queryable. A search
 starts only if its full pinned timeout fits the remaining allowance; requested
 nodes/depth/timeout are never reduced to fit. Missing reported nodes contribute
 zero to reported-node totals; these are not requested-node or FLOP measurements.
@@ -116,7 +129,11 @@ The summary separates actual query attempts/successes, reported nodes, measured
 actor/label time, completed/reused games and phase shortfalls.
 
 A successful generation can have `status: shortfall` while every planned game is
-complete. Snapshot quotas are a separate requirement: export fails and preserves
+disposed as completed or explicitly rejected. `games` counts accepted completions;
+`rejected_games` and `reused_rejections` report exclusions separately. Rejections
+force `status: shortfall`; `generation_status: complete` means no planned identity
+remains to attempt. Accepted phase counts exclude rejected games. Snapshot quotas
+are a separate requirement: export fails and preserves
 pending evidence when they are unavailable. Generation export recipes must set
 `selected_only: true` and carry the same frozen reserved corpus; otherwise actor
 audits could be eligible when their analysis settings match the desired label.

@@ -3,7 +3,7 @@
 from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity
 from qi.training_data.contracts import state_fingerprint
-from qi.training_data.store import AnalysisPayload, AnalysisSpec, Collection, OccurrencePayload
+from qi.training_data.store import AnalysisPayload, AnalysisSpec, Collection, OccurrencePayload, RunPayload
 
 
 def analysis_spec(config: TeacherConfig, identity: TeacherIdentity) -> AnalysisSpec:
@@ -36,6 +36,58 @@ class CollectionIO:
 
     def __init__(self, collection: Collection):
         self.store = collection
+
+    def continuation(self, prior_run: int | None, recipe: dict) -> dict[str, int]:
+        """Freeze references to disposed work; never move or relabel prior rows.
+
+        Only an explicit continuation may adopt a legacy split-guard failure.
+        Generic failures and interrupted attempts remain eligible for regeneration.
+        """
+        if prior_run is None:
+            return {}
+        row = self.store.db.execute(
+            "SELECT status,json(payload) FROM generation_runs WHERE id=?", (prior_run,)
+        ).fetchone()
+        if row is None or row[0] == "running":
+            raise ValueError("Continuation requires an existing inactive run.")
+        prior = RunPayload.model_validate_json(row[1])
+        if prior.config.get("recipe") != recipe or prior.config.get("continued_from_run") is not None:
+            raise ValueError("Continuation requires the identical recipe and a direct original run.")
+        inherited = {}
+        for row in self.store.db.execute(
+            "SELECT id,logical_key,status,stop_reason,failure,trajectory,split FROM games WHERE run_id=? ORDER BY id",
+            (prior_run,),
+        ):
+            eligible = row["status"] == "complete"
+            if row["status"] == "failed" and (
+                row["stop_reason"] == "rejected-trajectory"
+                or (row["stop_reason"] == "error" and row["failure"] == "Exact trajectory crosses splits.")
+            ):
+                eligible = bool(
+                    self.store.db.execute(
+                        "SELECT 1 FROM games WHERE trajectory=? AND split!=? AND status='complete'",
+                        (row["trajectory"], row["split"]),
+                    ).fetchone()
+                )
+                if not eligible:
+                    raise ValueError("Retained rejection no longer has its opposite-split evidence.")
+            if eligible:
+                game = self.store.game(row["id"])
+                if "generation_result" not in game.actor or state_fingerprint(game.snapshot) != row["trajectory"]:
+                    raise ValueError("Continuation requires finalized generation evidence.")
+                game.snapshot.game()
+                if row["logical_key"] in inherited:
+                    raise ValueError("Ambiguous disposed identity in continuation.")
+                inherited[row["logical_key"]] = row["id"]
+        return inherited
+
+    def rejected_game(self, run: int, key: str) -> int | None:
+        row = self.store.db.execute(
+            "SELECT id FROM games WHERE run_id=? AND logical_key=? "
+            "AND status='failed' AND stop_reason='rejected-trajectory' ORDER BY id LIMIT 1",
+            (run, key),
+        ).fetchone()
+        return row[0] if row else None
 
     def occurrence(self, game_id: int, snapshot: Snapshot, metadata=None) -> int:
         occurrence = self.store.occurrence(game_id, snapshot)

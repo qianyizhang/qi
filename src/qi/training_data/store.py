@@ -29,6 +29,10 @@ from qi.training_data.contracts import (
 )
 
 
+class TrajectorySplitConflict(ValueError):
+    """A completed trajectory already belongs to the other split."""
+
+
 class RunPayload(Contract):
     version: Literal[1] = 1
     config: dict[str, JsonValue]
@@ -264,7 +268,9 @@ class Collection(AbstractContextManager):
                 self.db.execute("SELECT json(payload) FROM generation_runs WHERE id=?", (run,)).fetchone()[0]
             ).planned_games
             count = self.db.execute(
-                "SELECT count(*) FROM games WHERE run_id=? AND status='complete'", (run,)
+                "SELECT count(DISTINCT logical_key) FROM games WHERE run_id=? "
+                "AND (status='complete' OR (status='failed' AND stop_reason='rejected-trajectory'))",
+                (run,),
             ).fetchone()[0]
             if count != planned:
                 raise ValueError("Completed source count differs from run plan.")
@@ -343,7 +349,7 @@ class Collection(AbstractContextManager):
     def finish_game(self, game_id: int, reason: str, failure: str | None = None):
         payload = self.game(game_id)
         game = payload.snapshot.game()
-        if reason not in {"terminal", "ply-budget", "error", "deadline", "interrupted"}:
+        if reason not in {"terminal", "ply-budget", "error", "deadline", "interrupted", "rejected-trajectory"}:
             raise ValueError("Unknown stop reason.")
         if reason in {"terminal", "ply-budget"}:
             if (reason == "terminal") != bool(game.outcome):
@@ -354,6 +360,14 @@ class Collection(AbstractContextManager):
                 and len(game.moves) - len(payload.initial.moves) != payload.plan.additional_plies
             ):
                 raise ValueError("Ply budget not exhausted.")
+        if (
+            reason == "rejected-trajectory"
+            and not self.db.execute(
+                "SELECT 1 FROM games WHERE trajectory=? AND split!=? AND status='complete'",
+                (state_fingerprint(payload.snapshot), payload.split),
+            ).fetchone()
+        ):
+            raise ValueError("Trajectory rejection requires a completed opposite-split duplicate.")
         status = (
             "complete"
             if reason in {"terminal", "ply-budget"}
@@ -364,11 +378,11 @@ class Collection(AbstractContextManager):
         if (
             status == "complete"
             and self.db.execute(
-                "SELECT 1 FROM games WHERE trajectory=? AND split!=?",
+                "SELECT 1 FROM games WHERE trajectory=? AND split!=? AND status='complete'",
                 (state_fingerprint(payload.snapshot), payload.split),
             ).fetchone()
         ):
-            raise ValueError("Exact trajectory crosses splits.")
+            raise TrajectorySplitConflict("Exact trajectory crosses splits.")
         with self.db:
             result = self.db.execute(
                 "UPDATE games SET status=?,stop_reason=?,outcome=?,failure=?,updated=? WHERE id=? AND status='running'",

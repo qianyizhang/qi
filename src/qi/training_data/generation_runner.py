@@ -27,7 +27,7 @@ from qi.training_data.generation_policies import (
     choose_plausible,
     sample_positions,
 )
-from qi.training_data.store import AnalysisSpec, Collection, GamePayload, RunPayload
+from qi.training_data.store import AnalysisSpec, Collection, GamePayload, RunPayload, TrajectorySplitConflict
 from qi.training_data.v1 import reserved_inputs
 
 
@@ -152,6 +152,7 @@ def generate_policies(
     provider: Callable[[Game, TeacherConfig], TeacherAnalysis] | None = None,
     event: Callable[[dict], None] | None = None,
     clock: Callable[[], float] = monotonic,
+    continue_from_run: int | None = None,
 ) -> dict:
     """Generate complete games incrementally; retain quotas/shortfalls independently.
 
@@ -165,19 +166,25 @@ def generate_policies(
     identities = pin_teachers(config)
     if provider is None:
         with SessionProvider(identities) as live:
-            return _generate(store, config, live, identities, event, clock)
-    return _generate(store, config, provider, identities, event, clock)
+            return _generate(store, config, live, identities, event, clock, continue_from_run)
+    return _generate(store, config, provider, identities, event, clock, continue_from_run)
 
 
-def _generate(store, config, provider, identities, event, clock):
+def _generate(store, config, provider, identities, event, clock, continue_from_run):
     io = CollectionIO(store)
+    inherited = io.continuation(continue_from_run, config.model_dump())
     origin = provenance()
     run = store.run(
         RunPayload(
-            config={"recipe": config.model_dump(), "implementation_sha256": origin["source_sha256"]},
+            config={
+                "recipe": config.model_dump(),
+                "implementation_sha256": origin["source_sha256"],
+                "continued_from_run": continue_from_run,
+                "inherited_games": inherited,
+            },
             provenance=origin,
             seed=config.seed,
-            planned_games=sum(s.games for s in config.sources),
+            planned_games=sum(s.games for s in config.sources) - len(inherited),
         )
     )
     store.run_status(run, "running")
@@ -186,7 +193,8 @@ def _generate(store, config, provider, identities, event, clock):
     excluded = reserved_inputs(config.corpus)
     counters = Counter()
     phases, shortfalls = Counter(), Counter()
-    game_count, reused_games = 0, 0
+    game_count, reused_games, rejected_games, reused_rejections = 0, 0, 0, 0
+    inherited_pending = set(inherited)
     before = Counter()
     querying_actor = False
 
@@ -271,9 +279,32 @@ def _generate(store, config, provider, identities, event, clock):
                     parent_digest=source.parent_trajectory,
                     themes=[*source.start.themes, f"policy:{source.actor.mode}"],
                 )
-                game_id = store.begin_game(run, key, payload)
+                inherited_id = inherited.get(key)
+                if inherited_id is not None:
+                    saved = store.game(inherited_id)
+                    if saved.source_id != key or saved.split != payload.split or saved.family != payload.family:
+                        raise ValueError("Inherited source identity differs from the frozen plan.")
+                    inherited_pending.remove(key)
+                rejected_id = io.rejected_game(run, key)
+                if inherited_id is not None:
+                    status = store.db.execute("SELECT status FROM games WHERE id=?", (inherited_id,)).fetchone()[0]
+                    if status != "complete":
+                        rejected_id = inherited_id
+                if rejected_id is not None:
+                    rejected_games += 1
+                    reused_rejections += 1
+                    if event:
+                        event(
+                            {
+                                "kind": "reused-rejection",
+                                "game_id": rejected_id,
+                                "result": store.game(rejected_id).actor["generation_result"],
+                            }
+                        )
+                    continue
+                game_id = None if inherited_id is not None else store.begin_game(run, key, payload)
                 if game_id is None:
-                    game_id = io.completed_game(run, key)
+                    game_id = inherited_id or io.completed_game(run, key)
                     previous = store.game(game_id).actor["generation_result"]
                     phases.update(previous["sampling"]["actual"])
                     shortfalls.update(previous["sampling"]["shortfall"])
@@ -378,13 +409,30 @@ def _generate(store, config, provider, identities, event, clock):
                         "decisions": [{"ply": ply, **value} for ply, value in decisions.items()],
                     }
                     io.record_game_result(game_id, result)
-                    store.finish_game(game_id, "terminal" if game.outcome else "ply-budget")
+                    try:
+                        store.finish_game(game_id, "terminal" if game.outcome else "ply-budget")
+                    except TrajectorySplitConflict as exc:
+                        store.finish_game(game_id, "rejected-trajectory", str(exc))
+                        active_game = None
+                        rejected_games += 1
+                        if event:
+                            event(
+                                {
+                                    "kind": "rejected-game",
+                                    "game_id": game_id,
+                                    "result": result,
+                                    "reason": "exact-trajectory-crosses-splits",
+                                }
+                            )
+                        continue
                     active_game = None
                     game_count += 1
                     phases.update(selection.actual)
                     shortfalls.update(selection.shortfall)
                     if event:
                         event({"kind": "completed-game", "game_id": game_id, "result": result})
+        if inherited_pending:
+            raise ValueError("Inherited identities are absent from the frozen plan.")
         store.run_status(run, "complete")
     except BaseException as exc:
         if active_game is not None:
@@ -411,11 +459,15 @@ def _generate(store, config, provider, identities, event, clock):
             )
         raise
     return {
-        "status": "shortfall" if any(shortfalls.values()) else "complete",
+        "status": "shortfall" if rejected_games or any(shortfalls.values()) else "complete",
         "generation_status": "complete",
         "run_id": run,
         "games": game_count,
         "reused_games": reused_games,
+        "rejected_games": rejected_games,
+        "reused_rejections": reused_rejections,
+        "planned_games": sum(s.games for s in config.sources),
+        "inherited_games": inherited,
         "selected_by_phase": dict(phases),
         "shortfall_by_phase": dict(shortfalls),
         "seconds": clock() - started,
