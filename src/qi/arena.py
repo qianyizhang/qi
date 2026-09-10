@@ -47,7 +47,7 @@ def play_match(red: PlayerConfig, black: PlayerConfig, opening: Game | None = No
         turns.append(TurnRecord(len(game.moves) + 1, game.turn, choice))
         game = game.apply(choice.move, choice.state_hash)
     return MatchRecord(
-        1,
+        2 if red.binding_sha256 or black.binding_sha256 else 1,
         version("qi"),
         python_version(),
         platform(),

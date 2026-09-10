@@ -24,7 +24,11 @@ There is no registry, base class, or aggregate mixing strength with compute cost
 `paired-games-v1` plays every corpus opening twice, swapping colors. A and B keep
 their configurations across the pair. Opening index i adds 2i to each player's
 base seed; decisions add the absolute ply. Configurations include node budget,
-depth, rollout length, and any pinned checkpoint digest. Full history and the
+depth, rollout length, and any pinned checkpoint/binding digest. Named participants
+use the shared [binding boundary](../src/qi/players/README.md#named-player-bindings);
+version-2 spec/run/match output retains their independent identities. Older valid
+version-1 evidence remains readable without loading resources. Native external
+engine diagnostics remain separate from qi node counters. Full history and the
 ruleset travel in each opening. Different node counts are not equal compute.
 
 `src/qi/scoring.py` owns the pure `score_pairs` function and `game-score-v1`:

@@ -1,0 +1,3078 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Qi local laboratory",
+    "version": "0.2.0"
+  },
+  "paths": {
+    "/api/reference": {
+      "get": {
+        "summary": "Reference",
+        "operationId": "reference_api_reference_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Glossary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments": {
+      "get": {
+        "summary": "Experiments",
+        "operationId": "experiments_api_experiments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RunEntry"
+                  },
+                  "type": "array",
+                  "title": "Response Experiments Api Experiments Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{run_id}": {
+      "get": {
+        "summary": "Detail",
+        "operationId": "detail_api_experiments__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{run_id}/bundle": {
+      "get": {
+        "summary": "Bundle",
+        "operationId": "bundle_api_experiments__run_id__bundle_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportBundle"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{run_id}/units/{unit_id}": {
+      "get": {
+        "summary": "Unit",
+        "operationId": "unit_api_experiments__run_id__units__unit_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnitDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{run_id}/traces/{trace_id}": {
+      "get": {
+        "summary": "Trace",
+        "operationId": "trace_api_experiments__run_id__traces__trace_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trace Id"
+            }
+          },
+          {
+            "name": "parent",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parent"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "all",
+                "mcts-tree"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "View"
+            }
+          },
+          {
+            "name": "show_work",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Show Work"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{run_id}/export": {
+      "get": {
+        "summary": "Export",
+        "operationId": "export_api_experiments__run_id__export_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "html",
+                "md"
+              ],
+              "type": "string",
+              "default": "html",
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{run_id}/evidence/{reference}": {
+      "get": {
+        "summary": "Evidence",
+        "operationId": "evidence_api_experiments__run_id__evidence__reference__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "reference",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Reference"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trace-jobs": {
+      "get": {
+        "summary": "Statuses",
+        "operationId": "statuses_api_trace_jobs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TraceJob"
+                  },
+                  "type": "array",
+                  "title": "Response Statuses Api Trace Jobs Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Start",
+        "operationId": "start_api_trace_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceJob"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trace-jobs/{job_id}/cancel": {
+      "post": {
+        "summary": "Cancel",
+        "operationId": "cancel_api_trace_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceJob"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/players": {
+      "get": {
+        "summary": "Players",
+        "operationId": "players_api_players_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlayerInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Players Api Players Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/new": {
+      "post": {
+        "summary": "New",
+        "operationId": "new_api_new_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Position"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspect": {
+      "post": {
+        "summary": "Position",
+        "operationId": "position_api_inspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InspectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Position"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apply": {
+      "post": {
+        "summary": "Apply",
+        "operationId": "apply_api_apply_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Position"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opponent": {
+      "post": {
+        "summary": "Opponent",
+        "operationId": "opponent_api_opponent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpponentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpponentResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/play/controller/inspect": {
+      "post": {
+        "summary": "Controller",
+        "operationId": "controller_api_play_controller_inspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Controller"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Controller"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/play/choose": {
+      "post": {
+        "summary": "Play",
+        "operationId": "play_api_play_choose_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/play/session/inspect": {
+      "post": {
+        "summary": "Session",
+        "operationId": "session_api_play_session_inspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameSession"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplyRequest": {
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "move": {
+            "type": "string",
+            "maxLength": 4,
+            "minLength": 4,
+            "title": "Move"
+          },
+          "expected_state_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Expected State Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot",
+          "move",
+          "expected_state_hash"
+        ],
+        "title": "ApplyRequest"
+      },
+      "Choice": {
+        "properties": {
+          "move": {
+            "type": "string",
+            "title": "Move"
+          },
+          "state_hash": {
+            "type": "string",
+            "title": "State Hash"
+          },
+          "player_version": {
+            "type": "string",
+            "title": "Player Version"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "completed_depth": {
+            "type": "integer",
+            "title": "Completed Depth"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "elapsed_ms": {
+            "type": "number",
+            "title": "Elapsed Ms"
+          },
+          "qnodes": {
+            "type": "integer",
+            "title": "Qnodes",
+            "default": 0
+          },
+          "max_qply": {
+            "type": "integer",
+            "title": "Max Qply",
+            "default": 0
+          },
+          "checkpoint_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkpoint Sha256"
+          },
+          "model_calls": {
+            "type": "integer",
+            "title": "Model Calls",
+            "default": 0
+          },
+          "mcts": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MctsStats"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "search_stats": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SearchStats"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationBreakdown"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "engine": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EngineWork"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "binding_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Sha256"
+          }
+        },
+        "type": "object",
+        "required": [
+          "move",
+          "state_hash",
+          "player_version",
+          "seed",
+          "nodes",
+          "completed_depth",
+          "score",
+          "elapsed_ms"
+        ],
+        "title": "Choice"
+      },
+      "ConfigurationChange": {
+        "properties": {
+          "ply": {
+            "type": "integer",
+            "maximum": 300.0,
+            "minimum": 0.0,
+            "title": "Ply"
+          },
+          "controllers": {
+            "$ref": "#/components/schemas/Controllers"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ply",
+          "controllers"
+        ],
+        "title": "ConfigurationChange"
+      },
+      "Controller": {
+        "properties": {
+          "player": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Player",
+            "default": "human"
+          },
+          "settings": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "maxProperties": 8,
+            "title": "Settings"
+          },
+          "binding_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Sha256"
+          },
+          "checkpoint_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkpoint Sha256"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Controller",
+        "description": "A UI selection stores identity, never a resource path."
+      },
+      "Controllers": {
+        "properties": {
+          "red": {
+            "$ref": "#/components/schemas/Controller"
+          },
+          "black": {
+            "$ref": "#/components/schemas/Controller"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Controllers"
+      },
+      "Corpus": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id"
+          },
+          "purpose": {
+            "type": "string",
+            "const": "evaluation",
+            "title": "Purpose",
+            "default": "evaluation"
+          },
+          "provenance": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Provenance"
+          },
+          "openings": {
+            "items": {
+              "$ref": "#/components/schemas/Opening"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Openings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "provenance",
+          "openings"
+        ],
+        "title": "Corpus"
+      },
+      "EngineScore": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "cp",
+              "mate"
+            ],
+            "title": "Kind"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "bound": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "lowerbound",
+              "upperbound"
+            ],
+            "title": "Bound"
+          },
+          "perspective": {
+            "type": "string",
+            "const": "side_to_move",
+            "title": "Perspective",
+            "default": "side_to_move"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "value",
+          "bound"
+        ],
+        "title": "EngineScore"
+      },
+      "EngineWork": {
+        "properties": {
+          "engine_name": {
+            "type": "string",
+            "title": "Engine Name"
+          },
+          "engine_sha256": {
+            "type": "string",
+            "title": "Engine Sha256"
+          },
+          "network_sha256": {
+            "type": "string",
+            "title": "Network Sha256"
+          },
+          "requested_nodes": {
+            "type": "integer",
+            "title": "Requested Nodes"
+          },
+          "requested_depth": {
+            "type": "integer",
+            "title": "Requested Depth"
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "title": "Timeout Seconds"
+          },
+          "reported_nodes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Nodes"
+          },
+          "reported_depth": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Depth"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EngineScore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "threads": {
+            "type": "integer",
+            "title": "Threads"
+          },
+          "hash_mb": {
+            "type": "integer",
+            "title": "Hash Mb"
+          },
+          "semantics": {
+            "type": "string",
+            "const": "engine_native",
+            "title": "Semantics",
+            "default": "engine_native"
+          }
+        },
+        "type": "object",
+        "required": [
+          "engine_name",
+          "engine_sha256",
+          "network_sha256",
+          "requested_nodes",
+          "requested_depth",
+          "timeout_seconds",
+          "reported_nodes",
+          "reported_depth",
+          "score",
+          "threads",
+          "hash_mb"
+        ],
+        "title": "EngineWork"
+      },
+      "EvaluationBreakdown": {
+        "properties": {
+          "material": {
+            "type": "integer",
+            "title": "Material"
+          },
+          "placement": {
+            "type": "integer",
+            "title": "Placement"
+          },
+          "mobility": {
+            "type": "integer",
+            "title": "Mobility"
+          },
+          "king_safety": {
+            "type": "integer",
+            "title": "King Safety"
+          }
+        },
+        "type": "object",
+        "required": [
+          "material",
+          "placement",
+          "mobility",
+          "king_safety"
+        ],
+        "title": "EvaluationBreakdown"
+      },
+      "Frame": {
+        "properties": {
+          "board": {
+            "type": "string",
+            "title": "Board"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "red",
+              "black"
+            ],
+            "title": "Side"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board",
+          "side"
+        ],
+        "title": "Frame"
+      },
+      "GameSession": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "const": "qi-game-session",
+            "title": "Format",
+            "default": "qi-game-session"
+          },
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "controllers": {
+            "$ref": "#/components/schemas/Controllers"
+          },
+          "unknown_prefix": {
+            "type": "integer",
+            "maximum": 300.0,
+            "minimum": 0.0,
+            "title": "Unknown Prefix",
+            "default": 0
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/ConfigurationChange"
+            },
+            "type": "array",
+            "maxItems": 2000,
+            "minItems": 1,
+            "title": "Changes"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/SessionMove"
+            },
+            "type": "array",
+            "maxItems": 300,
+            "title": "History"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot",
+          "controllers",
+          "changes"
+        ],
+        "title": "GameSession",
+        "description": "Exploratory session evidence; validation does not resolve live resources."
+      },
+      "Glossary": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "glossary_sha256": {
+            "type": "string",
+            "title": "Glossary Sha256"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/GlossaryEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "glossary_sha256",
+          "entries"
+        ],
+        "title": "Glossary"
+      },
+      "GlossaryEntry": {
+        "properties": {
+          "term": {
+            "type": "string",
+            "title": "Term"
+          },
+          "chinese": {
+            "type": "string",
+            "title": "Chinese"
+          },
+          "meaning": {
+            "type": "string",
+            "title": "Meaning"
+          },
+          "avoid": {
+            "type": "string",
+            "title": "Avoid"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "term",
+          "chinese",
+          "meaning",
+          "avoid",
+          "category",
+          "aliases"
+        ],
+        "title": "GlossaryEntry"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InspectRequest": {
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot"
+        ],
+        "title": "InspectRequest"
+      },
+      "MatchSummary": {
+        "properties": {
+          "scorer": {
+            "type": "string",
+            "const": "game-score-v1",
+            "title": "Scorer",
+            "default": "game-score-v1"
+          },
+          "planned_pairs": {
+            "type": "integer",
+            "title": "Planned Pairs"
+          },
+          "completed_pairs": {
+            "type": "integer",
+            "title": "Completed Pairs"
+          },
+          "completed_games": {
+            "type": "integer",
+            "title": "Completed Games"
+          },
+          "failed_games": {
+            "type": "integer",
+            "title": "Failed Games"
+          },
+          "incomplete_games": {
+            "type": "integer",
+            "title": "Incomplete Games"
+          },
+          "unpaired_completed_games": {
+            "type": "integer",
+            "title": "Unpaired Completed Games"
+          },
+          "wins": {
+            "type": "integer",
+            "title": "Wins"
+          },
+          "draws": {
+            "type": "integer",
+            "title": "Draws"
+          },
+          "losses": {
+            "type": "integer",
+            "title": "Losses"
+          },
+          "score_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Rate"
+          },
+          "decisions": {
+            "type": "integer",
+            "title": "Decisions"
+          },
+          "mean_elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Elapsed Ms"
+          },
+          "a": {
+            "type": "string",
+            "title": "A"
+          },
+          "b": {
+            "type": "string",
+            "title": "B"
+          },
+          "budget": {
+            "type": "integer",
+            "title": "Budget"
+          },
+          "pairs": {
+            "type": "integer",
+            "title": "Pairs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "planned_pairs",
+          "completed_pairs",
+          "completed_games",
+          "failed_games",
+          "incomplete_games",
+          "unpaired_completed_games",
+          "wins",
+          "draws",
+          "losses",
+          "score_rate",
+          "decisions",
+          "mean_elapsed_ms",
+          "a",
+          "b",
+          "budget",
+          "pairs"
+        ],
+        "title": "MatchSummary"
+      },
+      "MctsStats": {
+        "properties": {
+          "simulations": {
+            "type": "integer",
+            "title": "Simulations"
+          },
+          "tree_visits": {
+            "type": "integer",
+            "title": "Tree Visits"
+          },
+          "rollout_steps": {
+            "type": "integer",
+            "title": "Rollout Steps"
+          },
+          "terminal_simulations": {
+            "type": "integer",
+            "title": "Terminal Simulations"
+          },
+          "rollout_cutoffs": {
+            "type": "integer",
+            "title": "Rollout Cutoffs"
+          },
+          "budget_cutoffs": {
+            "type": "integer",
+            "title": "Budget Cutoffs"
+          },
+          "unfinished_simulations": {
+            "type": "integer",
+            "title": "Unfinished Simulations"
+          },
+          "max_tree_depth": {
+            "type": "integer",
+            "title": "Max Tree Depth"
+          },
+          "root_moves": {
+            "items": {
+              "$ref": "#/components/schemas/RootMove"
+            },
+            "type": "array",
+            "title": "Root Moves"
+          },
+          "leaf_nodes": {
+            "type": "integer",
+            "title": "Leaf Nodes",
+            "default": 0
+          },
+          "leaf_aborts": {
+            "type": "integer",
+            "title": "Leaf Aborts",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulations",
+          "tree_visits",
+          "rollout_steps",
+          "terminal_simulations",
+          "rollout_cutoffs",
+          "budget_cutoffs",
+          "unfinished_simulations",
+          "max_tree_depth",
+          "root_moves"
+        ],
+        "title": "MctsStats"
+      },
+      "Opening": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Id"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "snapshot"
+        ],
+        "title": "Opening"
+      },
+      "OpponentRequest": {
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "expected_state_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Expected State Hash"
+          },
+          "player": {
+            "type": "string",
+            "title": "Player",
+            "default": "alphabeta"
+          },
+          "seed": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "default": 0
+          },
+          "depth": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Depth",
+            "default": 2
+          },
+          "nodes": {
+            "type": "integer",
+            "maximum": 512.0,
+            "minimum": 1.0,
+            "title": "Nodes",
+            "default": 128
+          },
+          "rollout_plies": {
+            "type": "integer",
+            "maximum": 64.0,
+            "minimum": 0.0,
+            "title": "Rollout Plies",
+            "default": 8
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot",
+          "expected_state_hash"
+        ],
+        "title": "OpponentRequest"
+      },
+      "OpponentResult": {
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/Position"
+          },
+          "choice": {
+            "$ref": "#/components/schemas/Choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "choice"
+        ],
+        "title": "OpponentResult"
+      },
+      "Plan": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "question": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "corpus": {
+            "$ref": "#/components/schemas/Corpus"
+          },
+          "players": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "minItems": 1,
+            "title": "Players"
+          },
+          "budgets": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Budgets"
+          },
+          "seeds": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Seeds"
+          },
+          "depth": {
+            "type": "integer",
+            "maximum": 8.0,
+            "minimum": 1.0,
+            "title": "Depth",
+            "default": 3
+          },
+          "rollout_plies": {
+            "type": "integer",
+            "maximum": 64.0,
+            "minimum": 0.0,
+            "title": "Rollout Plies",
+            "default": 8
+          },
+          "pairs": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Pairs"
+          },
+          "game_openings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 32,
+            "title": "Game Openings"
+          },
+          "winning_moves": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Winning Moves"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "question",
+          "corpus",
+          "players",
+          "budgets"
+        ],
+        "title": "Plan"
+      },
+      "PlayRequest": {
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "expected_state_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected State Hash"
+          },
+          "controller": {
+            "$ref": "#/components/schemas/Controller"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot",
+          "expected_state_hash",
+          "controller"
+        ],
+        "title": "PlayRequest"
+      },
+      "PlayResult": {
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/Position"
+          },
+          "choice": {
+            "$ref": "#/components/schemas/Choice"
+          },
+          "config": {
+            "$ref": "#/components/schemas/PlayerConfig"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "choice",
+          "config"
+        ],
+        "title": "PlayResult"
+      },
+      "PlayerConfig": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "alphabeta"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed",
+            "default": 0
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth",
+            "default": 2
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes",
+            "default": 128
+          },
+          "checkpoint_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkpoint Sha256"
+          },
+          "rollout_plies": {
+            "type": "integer",
+            "title": "Rollout Plies",
+            "default": 8
+          },
+          "binding_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Sha256"
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "title": "Timeout Seconds",
+            "default": 10.0
+          },
+          "work_semantics": {
+            "type": "string",
+            "enum": [
+              "qi",
+              "engine_native"
+            ],
+            "title": "Work Semantics",
+            "default": "qi"
+          }
+        },
+        "type": "object",
+        "title": "PlayerConfig"
+      },
+      "PlayerInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "uses_search": {
+            "type": "boolean",
+            "title": "Uses Search"
+          },
+          "default_nodes": {
+            "type": "integer",
+            "title": "Default Nodes",
+            "default": 128
+          },
+          "default_depth": {
+            "type": "integer",
+            "title": "Default Depth",
+            "default": 2
+          },
+          "checkpoint_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkpoint Sha256"
+          },
+          "default_rollout_plies": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Rollout Plies"
+          },
+          "implementation_id": {
+            "type": "string",
+            "title": "Implementation Id",
+            "default": ""
+          },
+          "binding_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Sha256"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": true
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          },
+          "settings": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Setting"
+            },
+            "type": "object",
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "label",
+          "description",
+          "uses_search"
+        ],
+        "title": "PlayerInfo"
+      },
+      "Position": {
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "board": {
+            "type": "string",
+            "title": "Board"
+          },
+          "turn": {
+            "type": "string",
+            "enum": [
+              "red",
+              "black"
+            ],
+            "title": "Turn"
+          },
+          "ply": {
+            "type": "integer",
+            "title": "Ply"
+          },
+          "state_hash": {
+            "type": "string",
+            "title": "State Hash"
+          },
+          "legal_moves": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Legal Moves"
+          },
+          "in_check": {
+            "type": "boolean",
+            "title": "In Check"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Result"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "snapshot",
+          "board",
+          "turn",
+          "ply",
+          "state_hash",
+          "legal_moves",
+          "in_check",
+          "outcome"
+        ],
+        "title": "Position"
+      },
+      "ProbeSummary": {
+        "properties": {
+          "player": {
+            "type": "string",
+            "title": "Player"
+          },
+          "budget": {
+            "type": "integer",
+            "title": "Budget"
+          },
+          "samples": {
+            "type": "integer",
+            "title": "Samples"
+          },
+          "expected": {
+            "type": "integer",
+            "title": "Expected"
+          },
+          "mean_ms": {
+            "type": "number",
+            "title": "Mean Ms"
+          },
+          "mean_nodes": {
+            "type": "number",
+            "title": "Mean Nodes"
+          },
+          "mean_depth": {
+            "type": "number",
+            "title": "Mean Depth"
+          },
+          "tactical_solved": {
+            "type": "integer",
+            "title": "Tactical Solved"
+          },
+          "tactical_tested": {
+            "type": "integer",
+            "title": "Tactical Tested"
+          },
+          "mean_qnodes": {
+            "type": "number",
+            "title": "Mean Qnodes"
+          },
+          "mean_see_nodes": {
+            "type": "number",
+            "title": "Mean See Nodes"
+          },
+          "tt_hits": {
+            "type": "integer",
+            "title": "Tt Hits"
+          },
+          "tt_cutoffs": {
+            "type": "integer",
+            "title": "Tt Cutoffs"
+          },
+          "leaf_aborts": {
+            "type": "integer",
+            "title": "Leaf Aborts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "player",
+          "budget",
+          "samples",
+          "expected",
+          "mean_ms",
+          "mean_nodes",
+          "mean_depth",
+          "tactical_solved",
+          "tactical_tested",
+          "mean_qnodes",
+          "mean_see_nodes",
+          "tt_hits",
+          "tt_cutoffs",
+          "leaf_aborts"
+        ],
+        "title": "ProbeSummary"
+      },
+      "RecordedTurn": {
+        "properties": {
+          "ply": {
+            "type": "integer",
+            "title": "Ply"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "red",
+              "black"
+            ],
+            "title": "Side"
+          },
+          "choice": {
+            "$ref": "#/components/schemas/Choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ply",
+          "side",
+          "choice"
+        ],
+        "title": "RecordedTurn"
+      },
+      "ReportBundle": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ReportData"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/UnitDetail"
+            },
+            "type": "array",
+            "title": "Units"
+          },
+          "traces": {
+            "items": {
+              "$ref": "#/components/schemas/TraceBundle"
+            },
+            "type": "array",
+            "title": "Traces"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "units",
+          "traces"
+        ],
+        "title": "ReportBundle"
+      },
+      "ReportData": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "kind": {
+            "type": "string",
+            "const": "search",
+            "title": "Kind",
+            "default": "search"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/Plan"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provenance"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "completed": {
+            "type": "integer",
+            "title": "Completed"
+          },
+          "planned": {
+            "type": "integer",
+            "title": "Planned"
+          },
+          "validation": {
+            "type": "string",
+            "title": "Validation"
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "title": "Evidence Sha256"
+          },
+          "presentation_sha256": {
+            "type": "string",
+            "title": "Presentation Sha256"
+          },
+          "glossary": {
+            "$ref": "#/components/schemas/Glossary"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/Summary"
+          },
+          "by_position": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Summary"
+            },
+            "type": "object",
+            "title": "By Position"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/UnitSummary"
+            },
+            "type": "array",
+            "title": "Units"
+          },
+          "traces": {
+            "items": {
+              "$ref": "#/components/schemas/TraceSummary"
+            },
+            "type": "array",
+            "title": "Traces"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "narrative": {
+            "type": "string",
+            "title": "Narrative"
+          },
+          "narrative_sha256": {
+            "type": "string",
+            "title": "Narrative Sha256"
+          },
+          "trace_unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Unavailable Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan",
+          "provenance",
+          "status",
+          "completed",
+          "planned",
+          "validation",
+          "evidence_sha256",
+          "presentation_sha256",
+          "glossary",
+          "summary",
+          "by_position",
+          "units",
+          "traces",
+          "warnings",
+          "narrative",
+          "narrative_sha256",
+          "trace_unavailable_reason"
+        ],
+        "title": "ReportData"
+      },
+      "Result": {
+        "properties": {
+          "winner": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "red",
+                  "black"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Winner"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "winner",
+          "reason"
+        ],
+        "title": "Result"
+      },
+      "RootMove": {
+        "properties": {
+          "move": {
+            "type": "string",
+            "title": "Move"
+          },
+          "visits": {
+            "type": "integer",
+            "title": "Visits"
+          },
+          "mean_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "move",
+          "visits",
+          "mean_value"
+        ],
+        "title": "RootMove"
+      },
+      "RunEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "location",
+          "kind",
+          "status"
+        ],
+        "title": "RunEntry"
+      },
+      "SearchStats": {
+        "properties": {
+          "cutoffs": {
+            "type": "integer",
+            "title": "Cutoffs",
+            "default": 0
+          },
+          "see_nodes": {
+            "type": "integer",
+            "title": "See Nodes",
+            "default": 0
+          },
+          "extensions": {
+            "type": "integer",
+            "title": "Extensions",
+            "default": 0
+          },
+          "max_extensions": {
+            "type": "integer",
+            "title": "Max Extensions",
+            "default": 0
+          },
+          "tt_hits": {
+            "type": "integer",
+            "title": "Tt Hits",
+            "default": 0
+          },
+          "tt_cutoffs": {
+            "type": "integer",
+            "title": "Tt Cutoffs",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "SearchStats"
+      },
+      "SessionMove": {
+        "properties": {
+          "ply": {
+            "type": "integer",
+            "maximum": 300.0,
+            "minimum": 1.0,
+            "title": "Ply"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "red",
+              "black"
+            ],
+            "title": "Side"
+          },
+          "controller": {
+            "$ref": "#/components/schemas/Controller"
+          },
+          "config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "choice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Choice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ply",
+          "side",
+          "controller"
+        ],
+        "title": "SessionMove"
+      },
+      "SessionResult": {
+        "properties": {
+          "session": {
+            "$ref": "#/components/schemas/GameSession"
+          },
+          "position": {
+            "$ref": "#/components/schemas/Position"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session",
+          "position"
+        ],
+        "title": "SessionResult"
+      },
+      "Setting": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "default": {
+            "type": "number",
+            "title": "Default"
+          },
+          "minimum": {
+            "type": "number",
+            "title": "Minimum"
+          },
+          "maximum": {
+            "type": "number",
+            "title": "Maximum"
+          },
+          "step": {
+            "type": "number",
+            "title": "Step",
+            "default": 1
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "default",
+          "minimum",
+          "maximum"
+        ],
+        "title": "Setting"
+      },
+      "Snapshot": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "ruleset": {
+            "type": "string",
+            "const": "xiangqi-training-v1",
+            "title": "Ruleset",
+            "default": "xiangqi-training-v1"
+          },
+          "initial_fen": {
+            "type": "string",
+            "const": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+            "title": "Initial Fen",
+            "default": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w"
+          },
+          "moves": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 300,
+            "title": "Moves"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Snapshot"
+      },
+      "Summary": {
+        "properties": {
+          "probes": {
+            "items": {
+              "$ref": "#/components/schemas/ProbeSummary"
+            },
+            "type": "array",
+            "title": "Probes"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/MatchSummary"
+            },
+            "type": "array",
+            "title": "Matches"
+          },
+          "unpaired_completed_games": {
+            "type": "integer",
+            "title": "Unpaired Completed Games"
+          }
+        },
+        "type": "object",
+        "required": [
+          "probes",
+          "matches",
+          "unpaired_completed_games"
+        ],
+        "title": "Summary"
+      },
+      "TraceBundle": {
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/TraceSummary"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/TraceEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "events"
+        ],
+        "title": "TraceBundle"
+      },
+      "TraceEvent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "board": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Board"
+          },
+          "side": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "red",
+                  "black"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Side"
+          },
+          "move": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Move"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "value_perspective": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Perspective"
+          },
+          "bound": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "id",
+          "parent",
+          "kind"
+        ],
+        "title": "TraceEvent"
+      },
+      "TraceJob": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "request": {
+            "$ref": "#/components/schemas/TraceRequest"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled",
+              "timed-out",
+              "interrupted"
+            ],
+            "title": "Status"
+          },
+          "started": {
+            "type": "number",
+            "title": "Started"
+          },
+          "finished": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Id"
+          },
+          "events": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Events"
+          },
+          "recording_complete": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recording Complete"
+          },
+          "deadline_seconds": {
+            "type": "number",
+            "title": "Deadline Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "request",
+          "status",
+          "started",
+          "message",
+          "deadline_seconds"
+        ],
+        "title": "TraceJob"
+      },
+      "TracePage": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/TraceEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "events",
+          "total",
+          "offset"
+        ],
+        "title": "TracePage"
+      },
+      "TraceRequest": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{24}$",
+            "title": "Run Id"
+          },
+          "unit_id": {
+            "type": "string",
+            "pattern": "^unit-[0-9]{5}$",
+            "title": "Unit Id"
+          },
+          "unit_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Unit Sha256"
+          },
+          "turn_index": {
+            "type": "integer",
+            "maximum": 299.0,
+            "minimum": 0.0,
+            "title": "Turn Index"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 100000
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+            "title": "Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "unit_id",
+          "unit_sha256",
+          "turn_index",
+          "request_id"
+        ],
+        "title": "TraceRequest"
+      },
+      "TraceSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "unit_id": {
+            "type": "string",
+            "title": "Unit Id"
+          },
+          "turn_index": {
+            "type": "integer",
+            "title": "Turn Index"
+          },
+          "complete": {
+            "type": "boolean",
+            "title": "Complete"
+          },
+          "events": {
+            "type": "integer",
+            "title": "Events"
+          },
+          "dropped_events": {
+            "type": "integer",
+            "title": "Dropped Events"
+          },
+          "event_limit": {
+            "type": "integer",
+            "title": "Event Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "unit_id",
+          "turn_index",
+          "complete",
+          "events",
+          "dropped_events",
+          "event_limit"
+        ],
+        "title": "TraceSummary"
+      },
+      "UnitDetail": {
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/UnitJob"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "decisions": {
+            "type": "integer",
+            "title": "Decisions"
+          },
+          "frames": {
+            "items": {
+              "$ref": "#/components/schemas/Frame"
+            },
+            "type": "array",
+            "title": "Frames"
+          },
+          "turns": {
+            "items": {
+              "$ref": "#/components/schemas/RecordedTurn"
+            },
+            "type": "array",
+            "title": "Turns"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "job",
+          "status",
+          "sha256",
+          "decisions",
+          "frames",
+          "turns",
+          "snapshot"
+        ],
+        "title": "UnitDetail"
+      },
+      "UnitJob": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "probe",
+              "game"
+            ],
+            "title": "Kind"
+          },
+          "opening": {
+            "type": "string",
+            "title": "Opening"
+          },
+          "a": {
+            "$ref": "#/components/schemas/PlayerConfig"
+          },
+          "b": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "a_side": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "red",
+                  "black"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "A Side"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "opening",
+          "a"
+        ],
+        "title": "UnitJob"
+      },
+      "UnitSummary": {
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/UnitJob"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "decisions": {
+            "type": "integer",
+            "title": "Decisions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job",
+          "status",
+          "sha256",
+          "decisions"
+        ],
+        "title": "UnitSummary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

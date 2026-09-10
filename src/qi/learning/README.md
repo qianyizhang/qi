@@ -303,3 +303,10 @@ ordinary pytest suite. Neither test lane needs an installed teacher.
 
 `make test-learning-mps` explicitly requires Metal access and checks a real GPU
 fit plus CPU deployment/reload. Ordinary tests skip that lane.
+
+
+For two independently selectable checkpoints in Play or paired evaluation, use
+[named player bindings](../players/README.md#named-player-bindings). Each binding
+pins its own verified model bytes; it does not replace the process-wide
+QI_POLICY_CHECKPOINT convenience entry or activate checkpoints discovered among
+experiment artifacts.

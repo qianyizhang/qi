@@ -2,14 +2,14 @@
 description: Setup and usage for the local qi Xiangqi game.
 scope: project setup
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
 # qi
 
-A local Xiangqi board for pass-and-play or games against pluggable local
-opponents, with a Python referee, structured CLI, and portable save/replay.
+A local Xiangqi learning lab for play, experiment reports and shared reference,
+with a Python referee, structured CLI, and portable saved sessions and replay.
 Fixed evaluation batches, local Pikafish supervision and optional policy training
 support bounded learning experiments.
 
@@ -23,16 +23,24 @@ make check
 make play
 ```
 
-Open http://127.0.0.1:8000 in your browser. Share the board in pass-and-play, or
-select a computer opponent and your color. The computer moves automatically on
-its turn; failed requests expose a Retry opponent button.
-Select a piece, then a highlighted destination. Keyboard users can focus a
-square and press Enter or Space. Flip the board as desired.
+Open http://127.0.0.1:8000. Home connects **Play**, **Experiments**, and **Reference**.
+In Play, select Red and Black independently: Human, a search player, a trained
+checkpoint, or configured Pikafish. Set each player's applicable limits, then
+use Resume for automatic turns or Step for one computer move. Pause to change
+future settings, then choose Apply settings. Select a piece and highlighted destination; keyboard users can
+press Enter or Space. Flip the board as desired.
 
-Export a game to keep it; import validates the full history before replacing the
-board. The browser does not autosave: refreshing starts a new game. Move-history
-buttons inspect past positions without changing the live game; return to the
-latest move to continue. New game offers an export opportunity before reset.
+The active session saves locally after accepted moves and settings changes.
+Refresh, navigation away from Play, and replay pause automatic play. Restore
+always requires Resume; changed or missing resources require explicit selection.
+Export a session to preserve player/configuration history, or export a portable
+game-only snapshot. Import validates full history before replacement.
+
+Experiments discovers saved search runs, displays shared interactive reports,
+and generates bounded traces for compatible recorded decisions. Export offline
+HTML or Markdown; add authored commentary in the run's optional narrative.md.
+Reference contains the shared bilingual glossary. See the
+[interface guide](docs/interface.md) for persistence, API and job contracts.
 
 `uv run qi play --port 8001` uses another local port after `make web-build`.
 The server binds to localhost. Remote multiplayer is outside this slice.
@@ -73,9 +81,10 @@ history-aware caching, with selectable single-feature and combined recipes.
 [Baseline contracts](docs/baselines.md) explain search budgets, deterministic
 seeds, opening snapshots, and match records. Matches run through the existing
 referee. Extract a match record's nested `snapshot` to import it into the browser.
-The browser discovers the player catalog and uses its suggested budgets with a
-fixed seed. Original alpha-beta uses 128 nodes; quiescence uses 512. Switching opponents
-keeps the current game; replay pauses computer moves until you return to live play.
+The browser discovers capability-specific controls from the player catalog.
+[Named bindings](src/qi/players/README.md#named-player-bindings) let each side use
+its own checkpoint or engine. Settings changes preserve earlier move evidence;
+returning from replay waits for explicit Resume.
 
 Evaluate the fixed opening corpus (both player colors, with replayable games):
 
@@ -89,7 +98,7 @@ budget interpretation, and the limits of this small evaluation corpus.
 For a versioned spec, saved evidence, and scores that can be recomputed later,
 see the [performance evaluation protocol](docs/evaluation.md).
 
-Try **MCTS · UCT** in the browser opponent menu, then expand **Last computer move**
+Try **MCTS · UCT** in the Red or Black player selector, then expand **Last computer move**
 to inspect root visits and estimated returns. The [MCTS guide](src/qi/players/mcts/README.md)
 explains the algorithm and its replaceable leaf evaluator. For CLI experiments:
 
@@ -97,7 +106,7 @@ explains the algorithm and its replaceable leaf evaluator. For CLI experiments:
 uv run qi choose --state game.json --player mcts --nodes 512 --rollout-plies 8 --seed 7
 ```
 
-Try **Alpha-beta · combined** or **MCTS · quiescence leaves** in the same menu.
+Try **Alpha-beta · combined** or **MCTS · quiescence leaves** in the same selector.
 Expand **Last computer move** for search work and positional score terms. To
 combine ingredients yourself, start with the [composition example](src/qi/players/components/README.md).
 

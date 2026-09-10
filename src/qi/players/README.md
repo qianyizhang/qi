@@ -33,12 +33,12 @@ An implementation exports a `Player` descriptor with `PlayerInfo` and a
 `select(game, config) -> Decision` callable. `core.py` defines the interface;
 `catalog.py` explicitly registers implementations (`PLAYER`, or `PLAYERS` for recipes). There is no filesystem scan,
 SDK dependency, class hierarchy requirement, or arbitrary executable loading.
-The local teacher stays outside this catalog so evaluated players do not gain
-teacher access implicitly.
+The training teacher remains a separate role. The explicit Pikafish player
+reuses its bounded UCI transport; selecting other players never adds teacher access.
 
-Checkpoint-backed players can additionally expose a checkpoint-digest callable
-and an availability predicate. The shared boundary pins the digest, and the
-catalog uses these hooks to expose configured players without adapter allowlists.
+Descriptors can expose an availability predicate and legacy checkpoint hook.
+Named bindings resolve resources separately from algorithm registration. Catalog
+metadata hashes configured bytes without loading models or starting engines.
 
 ```python
 from qi.game import Game, legal_moves
@@ -97,3 +97,43 @@ provenance. Learned-policy encoding and inference budgets are documented in its
 module; training stays in the [trainer](../learning/README.md).
 See [runtime contracts](../../../docs/baselines.md)
 for serialization, seeding, and evaluation limits.
+
+
+## Named player bindings
+
+Set `QI_PLAYERS_CONFIG` to a local JSON file. Relative resource paths resolve
+against that file. IDs must be unique and differ from algorithm IDs and `human`.
+For example (replace paths with your local resources):
+
+```json
+{
+  "schema_version": 1,
+  "players": [
+    {"id": "trained-a", "label": "Trained A", "implementation": "policy", "checkpoint": "models/a.pt"},
+    {"id": "trained-b", "label": "Trained B", "implementation": "policy", "checkpoint": "models/b.pt"},
+    {"id": "pikafish-local", "label": "Pikafish", "implementation": "pikafish", "engine": "pikafish", "network": "pikafish.nnue", "threads": 1, "hash_mb": 16}
+  ]
+}
+```
+
+The catalog exposes each binding's implementation/version, label, resource
+fingerprints and settings. A checkpoint selector is a named entry, not a browser
+file picker. `bindings.py` hashes and pins resource bytes before each execution;
+changed or missing resources fail explicitly. `policy/runtime.py` caches named
+models by path and verified digest. The `QI_POLICY_CHECKPOINT` convenience entry
+retains its existing process-pinned default behavior.
+
+CLI `--player`, arena participant IDs, evaluation PlayerConfig kinds and HTTP
+all use the same binding boundary. Two policy IDs may therefore use different
+checkpoints in a paired evaluation. Match/evaluation output uses schema version
+2 when participants have bindings; valid older version-1 evidence remains
+readable. `config_data()` omits newly introduced default fields from legacy
+identity payloads so older experiment job IDs and evaluation digests stay valid.
+Saved evidence validation never resolves the current bindings or loads models.
+
+The [Pikafish adapter](pikafish/README.md) requires an explicit named binding.
+Its `engine` diagnostics preserve native reported nodes/depth (including
+overshoot), score kind/bound/perspective and fixed threads/hash. qi counters stay
+zero; native work is never treated as qi charged visits. Browser controls expose
+native nodes/depth/timeout, while executable/network paths and threads/hash remain
+in the server file. Optional resources are not installed automatically.

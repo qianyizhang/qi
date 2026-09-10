@@ -1,6 +1,5 @@
 """Explicit, bounded search matrices and code identity."""
 
-from dataclasses import asdict
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -9,7 +8,8 @@ from qi.artifacts import ROOT, digest, provenance
 from qi.evaluation import Corpus
 from qi.game import legal_moves
 from qi.players import PlayerConfig
-from qi.players.catalog import get_player
+from qi.players.catalog import PLAYERS
+from qi.players.core import config_data
 
 __all__ = ["ROOT", "Plan", "digest", "provenance"]
 
@@ -39,7 +39,7 @@ class Plan(BaseModel):
         if not all(0 <= value <= 2_147_483_000 for value in self.seeds):
             raise ValueError("Seeds must be nonnegative bounded integers.")
         for player in self.players:
-            if not get_player(player).info.uses_search:
+            if player not in PLAYERS or not PLAYERS[player].info.uses_search or player == "pikafish":
                 raise ValueError("This experiment format supports search players only.")
         if any(a not in self.players or b not in self.players or a == b for a, b in self.pairs):
             raise ValueError("Pairs must name two distinct matrix players.")
@@ -65,7 +65,7 @@ class Plan(BaseModel):
         jobs = []
 
         def config(player, seed, nodes):
-            return asdict(PlayerConfig(player, seed, self.depth, nodes, rollout_plies=self.rollout_plies))
+            return config_data(PlayerConfig(player, seed, self.depth, nodes, rollout_plies=self.rollout_plies))
 
         for nodes in self.budgets:
             for opening in self.corpus.openings:

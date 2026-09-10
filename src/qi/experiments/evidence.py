@@ -97,4 +97,8 @@ def load_run(directory: Path) -> dict:
 
 
 def comparable_choice(choice: dict) -> dict:
-    return {key: value for key, value in choice.items() if key != "elapsed_ms"}
+    return {
+        key: value
+        for key, value in choice.items()
+        if key != "elapsed_ms" and not (key in ("engine", "binding_sha256") and value is None)
+    }

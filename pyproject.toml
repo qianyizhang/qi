@@ -30,7 +30,7 @@ exclude_dirs = [
     ".git", ".venv", "venv", ".cache", ".state", ".workspaces",
     "node_modules", "__pycache__",
     ".import_linter_cache", ".pytest_cache", ".ruff_cache",
-    "scratch", "artifacts", "audit_logs", "resources", "dist", "build",
+    "scratch", "artifacts", ".test-artifacts", "test-results", "playwright-report", "audit_logs", "resources", "dist", "build",
 ]
 exclude_path_contains = ["/prompts"]
 # top-level dirs whose backticked paths in authority docs must resolve
@@ -58,6 +58,7 @@ allowed_paths = [
     "src/qi/players/README.md", "src/qi/players/random/README.md",
     "src/qi/players/alphabeta/README.md", "src/qi/players/quiescence/README.md",
     "src/qi/players/policy/README.md", "src/qi/learning/README.md",
+    "src/qi/players/pikafish/README.md",
     "src/qi/training_data/README.md",
     "src/qi/players/mcts/README.md",
     "src/qi/players/components/README.md",

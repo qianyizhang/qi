@@ -31,7 +31,9 @@ export const color = (piece: string) =>
   piece === piece.toUpperCase() ? "red" : "black";
 
 type BoardProps = {
-  view: Position;
+  view: Pick<Position, "board" | "legal_moves"> & {
+    snapshot: { moves?: string[] };
+  };
   flipped: boolean;
   selected: string | null;
   keyboardDisabled: boolean;
@@ -109,7 +111,7 @@ export function Board({
           active = selected === sq;
         const destination =
           selected && view.legal_moves.includes(selected + sq);
-        const last = view.snapshot.moves.at(-1);
+        const last = view.snapshot.moves?.at(-1);
         const recent = last?.slice(0, 2) === sq || last?.slice(2) === sq;
         const label = `${sq}${piece === "." ? " empty" : ` ${color(piece)} ${names[piece.toUpperCase()]}`}${destination ? ", legal destination" : ""}`;
         return (
@@ -117,7 +119,7 @@ export function Board({
             key={i}
             transform={`translate(${x},${y})`}
             role="button"
-            tabIndex={keyboardDisabled ? -1 : 0}
+            tabIndex={keyboardDisabled || disabled ? -1 : 0}
             aria-disabled={disabled}
             aria-label={label}
             aria-pressed={active}

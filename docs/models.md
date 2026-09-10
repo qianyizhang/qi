@@ -2,7 +2,7 @@
 description: Accepted ownership and identity model for game learning and training data.
 scope: core domain model
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -44,6 +44,27 @@ move choosers; recorded games supply a replay source. Who plays an action and
 who supplies its target are independent. Teacher analysis may be reused only
 when its state and supervision specification match the requested label.
 Generation-time teacher access does not grant evaluated players tool access.
+
+## Player configuration and identity
+
+The player model includes a named **Player binding**: a local
+configuration selecting one implementation and any checkpoint or external-engine
+resources. Each participant resolves its binding independently and pins the
+content identities used by its decisions. Two bindings may select the same
+implementation with different weights; a display name or binding ID is not a
+content fingerprint. [ADR-0006](adr/0006-independent-player-bindings.md) owns the
+trade-off, and [AB-ENGINE-005](../records/work-items/items/AB-ENGINE-005-independent-checkpoints.md)
+owns shared checkpoint binding implementation.
+
+Independent participant configuration is implemented alongside the convenience
+process-configured policy checkpoint. The [player guide](../src/qi/players/README.md)
+owns the executable configuration contract.
+Pikafish may explicitly occupy a participant's role through an adapter, while
+teacher access is not granted to other players. The referee retains legality
+and outcome authority; engine-native work and scores keep their own semantics.
+Saved decisions retain resolved configuration and identity, so later binding
+changes cannot rewrite their meaning. Pure evidence validation does not load
+models or execute engines.
 
 ## Addressable situations
 

@@ -76,7 +76,8 @@ uv run qi match --opening game.json --red random --black random > opening-match.
 visited nodes, completed depth, score, and measured milliseconds. Its state hash
 can be passed to `qi apply` with the same snapshot.
 
-`match` emits one JSON object with schema version 1, qi/Python versions, platform,
+`match` emits one JSON object with schema version 1 (or version 2 for named
+resource bindings), qi/Python versions, platform,
 player configurations, opening, final snapshot, outcome, and per-turn diagnostics.
 Extract the nested `snapshot` object to a JSON file for browser import or CLI replay.
 The match record itself is not a snapshot.

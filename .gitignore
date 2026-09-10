@@ -16,3 +16,5 @@ src/qi/static/
 web/.test-build/
 web/test-results/
 web/playwright-report/
+src/qi/static-report/
+web/.test-artifacts/

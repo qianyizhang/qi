@@ -23,3 +23,19 @@ export class RequestGate {
     return true;
   }
 }
+
+/** Release client ownership promptly even when a transport ignores abort. */
+export function abortable<T>(
+  operation: Promise<T>,
+  signal: AbortSignal,
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const cancelled = () =>
+      reject(new DOMException("Request cancelled", "AbortError"));
+    operation
+      .then(resolve, reject)
+      .finally(() => signal.removeEventListener("abort", cancelled));
+    if (signal.aborted) cancelled();
+    else signal.addEventListener("abort", cancelled, { once: true });
+  });
+}

@@ -2,6 +2,7 @@
 
 from math import isfinite
 
+from qi.artifacts import digest
 from qi.game import Game, legal_moves
 from qi.players.core import Choice, Decision, PlayerConfig
 
@@ -23,6 +24,45 @@ def validate_decision(decision: Decision | Choice, config: PlayerConfig, game: G
         raise ValueError("Quiescence depth must be between zero and qnodes.")
     if decision.model_calls not in (0, 1):
         raise ValueError("Model calls must be zero or one.")
+
+    if (decision.engine is not None) != (config.work_semantics == "engine_native"):
+        raise ValueError("Decision work semantics differ from its configuration.")
+    if (engine := decision.engine) is not None:
+        if any(
+            (decision.nodes, decision.completed_depth, decision.qnodes, decision.max_qply, decision.model_calls)
+        ) or any(
+            value is not None
+            for value in (
+                decision.score,
+                decision.checkpoint_sha256,
+                decision.mcts,
+                decision.search_stats,
+                decision.evaluation,
+            )
+        ):
+            raise ValueError("Engine-native diagnostics cannot claim qi search or model work.")
+        if (engine.requested_nodes, engine.requested_depth, engine.timeout_seconds) != (
+            config.nodes,
+            config.depth,
+            config.timeout_seconds,
+        ):
+            raise ValueError("Engine requested limits differ from the configuration.")
+        if any(value is not None and value < 0 for value in (engine.reported_nodes, engine.reported_depth)):
+            raise ValueError("Engine reported work must be nonnegative or unknown.")
+        if not 1 <= engine.threads <= 16 or not 1 <= engine.hash_mb <= 1024 or not engine.engine_name:
+            raise ValueError("Invalid engine identity or fixed settings.")
+        expected = digest(
+            {
+                "implementation": "pikafish",
+                "checkpoint": None,
+                "engine": engine.engine_sha256,
+                "network": engine.network_sha256,
+                "threads": engine.threads,
+                "hash_mb": engine.hash_mb,
+            }
+        )
+        if config.binding_sha256 != expected:
+            raise ValueError("Engine resources differ from the pinned binding.")
 
     if (stats := decision.mcts) is not None:
         for field in (

@@ -13,7 +13,12 @@ __all__ = ["Choice", "Decision", "Player", "PlayerConfig", "PlayerInfo", "bind_c
 
 def bind_config(config: PlayerConfig) -> PlayerConfig:
     """Pin the configured checkpoint before an arena batch starts."""
+    from qi.players.bindings import binding_for, pin
+
+    config = pin(config)
     player = get_player(config.kind)
+    if binding_for(config.kind) is not None:
+        return config
     if player.checkpoint is not None:
         digest = player.checkpoint()
         if config.checkpoint_sha256 is not None and config.checkpoint_sha256 != digest:
@@ -53,4 +58,6 @@ def choose(game: Game, config: PlayerConfig) -> Choice:
         decision.mcts,
         decision.search_stats,
         decision.evaluation,
+        decision.engine,
+        config.binding_sha256,
     )

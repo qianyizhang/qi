@@ -2,7 +2,7 @@
 description: How the first checkpoint-backed move policy encodes positions and chooses legal actions.
 scope: learned policy player
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -41,17 +41,23 @@ uv run --extra learning qi match --red policy --black random
 uv run --extra learning qi play
 ```
 
-The catalog exposes this player only when the process has a configured checkpoint.
-The browser then offers “Learned policy.” It never submits a filesystem path.
+The convenience environment setting exposes “Learned policy.” For independent
+checkpoints, configure [named player entries](../README.md#named-player-bindings);
+each entry appears separately in Play and resolves its own checkpoint. The browser
+submits IDs and pinned digests, never filesystem paths.
 A missing, malformed, incompatible, or nonfinite checkpoint is an explicit error;
 there is no fallback to random weights. Checkpoints are local experiment artifacts.
 
-Each resolved file is loaded once and retained in memory for the process lifetime.
-Restart the process to adopt replacement weights. Arena configurations pin the
+Named entries cache each verified path and content digest. Replacing bytes rejects
+an existing selection; explicitly selecting the new identity loads the new model.
+The convenience environment default stays pinned for the process lifetime;
+restart the process to adopt replacement weights for that default. Arena configurations pin the
 SHA-256 before play; every choice reports it with `model_calls: 1`. Search nodes
 and depth are zero; search budgets and seed do not change this greedy policy.
-Choice latency measures warm selection; initial dependency/model loading happens
-before that timer. Training reports also measure warm inference with legal masking.
+For named entries, the first choice can include dependency/model loading in its
+latency; subsequent choices reuse the model. The convenience default loads while
+binding, before the choice timer. Training reports separately measure warm
+inference with legal masking; do not compare cold and warm timings as equivalent.
 
 Checkpoints contain versioned metadata and this architecture's state dictionary.
 Loading uses explicit CPU placement and `weights_only=True`, following

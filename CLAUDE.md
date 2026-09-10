@@ -17,7 +17,8 @@ identity, invariants, authority, and commands here. Portable doctrine lives in
 A personal game-learning laboratory for Xiangqi, neural search, and LLM post-training.
 
 The learning destination and staged stack live in `docs/project.md`. Current
-implementation supports local browser pass-and-play and baseline opponents, structured CLI operations,
+implementation supports a shared local frontend with configurable players,
+experiment reports and trace jobs, structured CLI operations,
 and deterministic replay under `docs/xiangqi-training-v1.md`.
 
 ## Core model and governing invariant
@@ -74,6 +75,10 @@ contracts arrive with behavior; avoid speculative packages. Vocabulary authority
 `docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a
 README and tests. Register implementations once in its catalog; adapters discover
 metadata and dispatch through the shared `choose` boundary.
+Implemented architecture: [shared frontend](docs/adr/0005-shared-local-frontend.md)
+and [independent player bindings](docs/adr/0006-independent-player-bindings.md).
+The [frontend work item](records/work-items/items/AB-UI-002-consolidated-lab.md)
+owns implementation stages and verification evidence.
 Training data generation and frozen mixtures live in `src/qi/training_data/`; its
 README owns formats, phase policies, quotas and compatibility. The optional
 trainer lives in `src/qi/learning/`; checkpoint-backed inference

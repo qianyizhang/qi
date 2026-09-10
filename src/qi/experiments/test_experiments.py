@@ -153,7 +153,7 @@ def test_html_embeds_untrusted_text_as_inert_data(tmp_path):
     assert "</script><script>alert" not in html
     assert "\\u003c/script>" in html
     payload = html.split('<script type="application/json" id="data">')[1].split("</script>")[0]
-    assert json.loads(payload)["glossary"] == load_glossary()
+    assert json.loads(payload)["data"]["glossary"] == load_glossary()
 
 
 def test_matrix_rejects_false_tactical_targets_and_duplicate_pairs():

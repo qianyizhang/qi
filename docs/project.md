@@ -2,7 +2,7 @@
 description: Project scope, architecture direction, and learning milestones.
 scope: project direction
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -24,9 +24,12 @@ freshly verified third-party capabilities.
 [ADR-0001](adr/0001-own-referee-and-search-use-external-teachers.md) records the
 accepted ownership and teacher-bootstrapping boundary.
 
-The first playable milestone includes a minimal browser board for two humans
-and structured CLI access to the same Python operations. Both humans can share one
-browser in local pass-and-play; baseline computer opponents are also implemented.
+The local frontend now brings Home, Play, Experiments and Reference together.
+Both humans can share one browser in pass-and-play, or either side can select a
+built-in player, a configured checkpoint or Pikafish. The same Python operations
+remain available through the CLI. [ADR-0005](adr/0005-shared-local-frontend.md)
+records the shared frontend architecture; [the interface guide](interface.md)
+owns player settings, saved sessions, reports and bounded trace jobs.
 Remote multiplayer is outside the current scope.
 Keep the referee independent of browser sessions and transport so a future
 adapter can reuse it; do not add accounts, rooms, or synchronization machinery.

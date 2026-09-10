@@ -269,3 +269,54 @@ def test_experiment_deadline_cli_exits_nonzero_and_retains_status(tiny_dataset, 
     assert json.loads(result.stdout)["status"] == "deadline"
     assert json.loads(result.stderr)["error"]["code"] == "experiment_incomplete"
     assert json.loads((output / "summary.json").read_text())["trials"] == []
+
+
+def test_independent_checkpoint_bindings_paired_evaluation_and_pure_reload(fitted, monkeypatch, tmp_path):
+    from qi.evaluation import Corpus, EvalRun, EvalSpec, Opening, run_evaluation
+    from qi.players import bind_config, list_players
+
+    first, _report = fitted
+    payload = torch.load(first, weights_only=True)
+    payload["state_dict"]["2.bias"][0] += 0.01
+    second = tmp_path / "second.pt"
+    torch.save(payload, second)
+    configuration = tmp_path / "players.json"
+    configuration.write_text(
+        json.dumps(
+            {
+                "players": [
+                    {"id": name, "label": name, "implementation": "policy", "checkpoint": str(path)}
+                    for name, path in (("model-a", first), ("model-b", second))
+                ]
+            }
+        )
+    )
+    monkeypatch.setenv("QI_PLAYERS_CONFIG", str(configuration))
+    a, b = bind_config(PlayerConfig("model-a")), bind_config(PlayerConfig("model-b"))
+    assert a.checkpoint_sha256 != b.checkpoint_sha256
+    assert a.binding_sha256 != b.binding_sha256
+    assert {entry.id for entry in list_players()} >= {"model-a", "model-b"}
+    spec = EvalSpec(
+        corpus=Corpus(
+            id="binding-proof",
+            provenance="Two distinct hermetic checkpoints",
+            openings=[Opening(id="initial", description="Initial position", snapshot=Snapshot())],
+        ),
+        player_a=a,
+        player_b=b,
+    )
+    result = run_evaluation(spec)
+    assert result.schema_version == result.spec.schema_version == 2
+    assert all(entry.status == "complete" and entry.match.schema_version == 2 for entry in result.games)
+    for entry in result.games:
+        for turn in entry.match.turns:
+            config = entry.match.red if turn.side == "red" else entry.match.black
+            assert turn.choice.checkpoint_sha256 == config.checkpoint_sha256
+            assert turn.choice.binding_sha256 == config.binding_sha256
+    raw = result.model_dump_json()
+    monkeypatch.delenv("QI_PLAYERS_CONFIG")
+    monkeypatch.setattr(
+        "qi.players.policy.runtime.load_checkpoint", lambda *_: pytest.fail("Model loaded during validation")
+    )
+    monkeypatch.setattr("qi.players.choose", lambda *_: pytest.fail("Player executed during validation"))
+    assert EvalRun.model_validate_json(raw) == result

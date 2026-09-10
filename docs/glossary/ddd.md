@@ -2,7 +2,7 @@
 description: Canonical domain and technical vocabulary, including beginner explanations used by the experiment report.
 scope: domain vocabulary
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -21,6 +21,7 @@ to a canonical term; they do not introduce different meanings.
 | Chinese checkers | 跳棋 | The proposed later star-shaped board game. Its rules differ from Xiangqi. | Calling it Xiangqi | — |
 | Referee | 裁判 | The code that decides which moves are legal, applies them, and determines when a game ends. Players ask it for moves; they cannot override its rulings. | Player or evaluator as rules authority | — |
 | Player | 行棋方 | A human or program that chooses a legal move. A program may choose randomly, search ahead, or use learned weights. | Using Policy as the name for every player | players |
+| Player binding | 行棋方配置绑定 | A named local configuration selecting a player implementation and any checkpoint or external-engine resources. Each participant resolves its own binding to pinned content identities. | An algorithm version or a content fingerprint | player_binding |
 | Ruleset | 规则集 | The named rules used to judge a game. qi uses xiangqi-training-v1, including simplified repetition handling and a 300-ply ceiling. | Tournament-correctness claims | xiangqi-training-v1 |
 | Board | 棋盘 | The 90 squares and their pieces. In raw records, a dot means an empty square; uppercase pieces are Red and lowercase pieces are Black. | Treating the board alone as full state | leaf_board |
 | General | 将／帅 | The king piece, shown as 帥 or 將 and encoded K/k. It normally moves one point orthogonally inside its palace; opposing generals cannot face along an unobstructed file. | A piece that can be left in check | king |
@@ -47,6 +48,7 @@ to a canonical term; they do not introduce different meanings.
 | Draw | 和棋 | A game that the referee ends without a winner, for example through the repetition or ply-limit rule. An unfinished game is not a draw. | Incomplete games | draws; ply-limit |
 | Trajectory | 对局轨迹 | The ordered sequence of states and actions in a game, with outcomes attributed to the appropriate player. | A single position | trajectories |
 | Snapshot | 对局快照 | A saved starting position, ruleset, and move list that can reconstruct a game exactly. | An image of the board | snapshot |
+| Game session | 对局会话 | The saved Play record containing a referee snapshot, current participant settings, and the known configuration history of recorded moves. Imported game-only history may have unknown player attribution. | A fixed-player evaluation run or a snapshot alone | game_session |
 | Replay | 重放 | Rebuilding a game by applying its recorded moves through the referee. This checks states and outcomes, not playing strength or original wall-clock timing. | Re-running the player's search | replays |
 | FEN | 局面记法 | Forsyth–Edwards Notation: a compact text description of a board and side to move. qi snapshots support the fixed standard starting FEN plus moves. | Complete history-dependent state | initial_fen |
 | State hash | 状态哈希 | A fingerprint of the ruleset and full saved move history. Applying a move with this guard checks that it refers to the expected game state. | A board-only hash | state_hash; expected_state_hash |
@@ -119,6 +121,11 @@ to a canonical term; they do not introduce different meanings.
 | Move hint | 着法提示 | A previously promising or cached move used to guide ordering. A cache hit can provide only a hint without allowing a score cutoff. | A proved best move | hint |
 | Exchange gain | 交换子力收益 | The material gained by a step in SEE's same-square capture sequence, on the piece-value scale. | A full position evaluation | gain |
 
+| Engine diagnostics | 引擎原生诊断 | An explicit external engine's reported work and cp/mate assessment, with its own score perspective and bounds. These counters do not use qi charged-visit semantics. | qi search accounting or teacher access granted to other players | engine |
+| Binding identity | 配置绑定内容标识 | The content fingerprint of an implementation, checkpoint or engine/network resources and fixed engine settings. A saved participant rejects changed resource bytes. | A label or file path | binding_sha256 |
+| Work semantics | 工作量计数语义 | Identifies whether a configuration uses qi charged visits or external engine-native accounting. Native reported work can exceed requested UCI limits and can be unknown. | Equating visits across different engines | work_semantics |
+| Move timeout | 单步超时 | The finite wall-time allowance for one external engine decision, including its protocol exchange. Timeout fails the request without applying a move. | Search depth or a prediction of actual latency | timeout_seconds |
+
 ## Budgets, counters, and timing
 
 | Term | 中文 | Meaning | _Avoid_ | Aliases |
@@ -180,7 +187,7 @@ to a canonical term; they do not introduce different meanings.
 | W/D/L | 胜／和／负 | Wins, draws, and losses from the named player's viewpoint. The matchup table reports Player A's results. | Red's results regardless of Player A's color | wins; losses; A wins / draws / losses |
 | Sample | 样本 | A measured probe or game. The denominator matters: a few selected samples cannot support a general strength claim. | The whole population | samples; sample counts; Samples / planned; expected |
 | Seed | 随机种子 | An integer controlling reproducible pseudo-random choices. The same algorithm, state, settings, and seed should reproduce deterministic decisions, not elapsed timing. | A source of extra playing strength | seeds |
-| Configuration | 配置 | The exact player recipe, seed, visit budget, depth, rollout length, and any checkpoint identity used for a decision. | Informal player labels alone | config; settings |
+| Configuration | 配置 | The exact player recipe, applicable seed and search settings, and any checkpoint identity used for a decision. A player binding also pins external-engine resources when that player is selected. | Informal player labels alone | config; settings |
 | Immediate win | 一步获胜 | A move whose successor is a winning referee outcome immediately. These targets are exhaustively checked over legal moves; they are not teacher guesses. | Any promising tactic | Immediate wins; winning_moves; tactical_solved; tactical_tested |
 | Ground truth | 判定依据 | A result established by the declared authority for a specific question. Here only the immediate-win targets have referee-proven best-move sets; other probes do not. | Treating every engine preference as truth | — |
 | Held-out evaluation | 留出评估 | Testing on positions excluded from training. Board/turn inputs and relevant history prefixes must be reserved to prevent leakage. | Training examples presented as unseen tests | held-out |

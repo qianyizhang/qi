@@ -60,13 +60,15 @@ class LoadedPolicy:
 
 
 @cache
-def load_checkpoint(path: str) -> LoadedPolicy:
-    """Pin loaded bytes for this process; replacing a file requires a process restart."""
+def load_checkpoint(path: str, expected_sha256: str | None = None) -> LoadedPolicy:
+    """Cache verified model bytes; one-argument legacy loads stay process-pinned."""
     try:
         checkpoint_path = Path(path)
         if checkpoint_path.stat().st_size > 16 * 1024 * 1024:
             raise ValueError("Checkpoint exceeds the 16 MiB limit.")
         raw = checkpoint_path.read_bytes()
+        if expected_sha256 is not None and sha256(raw).hexdigest() != expected_sha256:
+            raise ValueError("Checkpoint differs from the pinned content identity.")
         payload = torch.load(io.BytesIO(raw), map_location="cpu", weights_only=True)
         if not isinstance(payload, dict) or set(payload) != {"metadata", "state_dict"}:
             raise ValueError("Expected metadata and state_dict.")

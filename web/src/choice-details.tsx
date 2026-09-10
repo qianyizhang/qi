@@ -7,12 +7,15 @@ export function ChoiceDetails({ choice }: { choice: Choice }) {
       <p>
         {choice.move} · {choice.player_version}
         <br />
-        {choice.model_calls > 0
-          ? `${choice.model_calls} model pass`
-          : choice.mcts
-            ? `${choice.mcts.simulations} simulations · ${choice.nodes} visits`
-            : `${choice.nodes} nodes · depth ${choice.completed_depth}`}{" "}
-        · {choice.elapsed_ms.toFixed(0)} ms · seed {choice.seed}
+        {choice.engine
+          ? `Pikafish · ${choice.engine.reported_nodes ?? "unknown"} native nodes · depth ${choice.engine.reported_depth ?? "unknown"}`
+          : choice.model_calls > 0
+            ? `${choice.model_calls} model pass`
+            : choice.mcts
+              ? `${choice.mcts.simulations} simulations · ${choice.nodes} visits`
+              : `${choice.nodes} nodes · depth ${choice.completed_depth}`}{" "}
+        · {choice.elapsed_ms.toFixed(0)} ms
+        {!choice.engine && choice.model_calls === 0 && ` · seed ${choice.seed}`}
         {choice.checkpoint_sha256 && (
           <>
             <br />
@@ -27,6 +30,24 @@ export function ChoiceDetails({ choice }: { choice: Choice }) {
           </>
         )}
       </p>
+      {choice.engine && (
+        <p>
+          Requested {choice.engine.requested_nodes} native nodes · depth{" "}
+          {choice.engine.requested_depth} · deadline{" "}
+          {choice.engine.timeout_seconds}s.
+          <br />
+          Native score:{" "}
+          {choice.engine.score
+            ? `${choice.engine.score.value} ${choice.engine.score.kind} · ${choice.engine.score.bound} · side to move`
+            : "unknown"}
+          .<br />
+          {choice.engine.threads} threads · {choice.engine.hash_mb} MiB hash.
+          Native counters may overshoot requested limits.
+          <br />
+          Engine {choice.engine.engine_sha256.slice(0, 12)} · network{" "}
+          {choice.engine.network_sha256.slice(0, 12)}
+        </p>
+      )}
       {choice.search_stats && (
         <p>
           {choice.search_stats.cutoffs} alpha-beta cutoffs ·{" "}

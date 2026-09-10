@@ -1,8 +1,8 @@
 ---
-description: Shared coordinates and replay operations for local Xiangqi play.
-scope: game interface
+description: Local app, player selection, replay, saved sessions and experiment interfaces.
+scope: local lab interfaces
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -22,40 +22,105 @@ Python owns referee operations. JSON CLI and HTTP are adapters. HTTP exposes
 `POST /api/new`, `/api/inspect`, and `/api/apply`; API schemas are available at
 `/docs`. Apply requires `expected_state_hash`, snapshot, and move. The hash covers
 ruleset and full history, not just the board. Invalid actions return structured
-errors and cannot change the input snapshot. HTTP operations are stateless;
-remote multiplayer/session coordination is not implemented.
+errors and cannot change the input snapshot. Referee move operations are stateless.
+Trace jobs have a separate server-owned
+lifecycle; remote multiplayer is not implemented.
 
 CLI stdout contains one JSON object; errors use a structured stderr object and
 nonzero exit status. Save stdout to a different file from the input snapshot.
 Browser exports use the same snapshot and import validates it before replacement.
 Replay navigation is read-only; return to the last move to continue playing.
 
-## Browser opponents
+## Unified local app
 
-`GET /api/players` lists registered in-process player IDs, versions, labels,
-descriptions, and browser budget defaults. The browser discovers its options here.
-`POST /api/opponent` accepts snapshot, expected-state hash, registered player ID,
-seed, depth, and nodes. It checks the full-history hash before search,
-selects one move through the shared Python player, and returns `position` plus
-`choice` diagnostics after guarded application. The operation is stateless and
-cannot mutate the supplied snapshot. Terminal positions return `game_over`.
+Routes `/`, `/play`, `/experiments`, `/experiments/:runId`, and `/reference`
+share a React/TypeScript/Vite frontend and FastAPI server. TanStack Router owns
+navigation and report URL filters; TanStack Query owns server reads. Source-owned
+shadcn/ui controls and Tailwind styles are shared with the offline report build.
+`web/src/session.tsx` owns the active game through a reducer/context. The board
+renders legal moves supplied by Python; it does not implement rules.
 
-The browser request budget is bounded to depth 1–4 and 1–512 nodes; the UI uses
-base seed zero and the selected catalog entry’s defaults (depth 2; 128 nodes for
-original alpha-beta, 512 for quiescence). The actual seed is base plus absolute ply,
-matching arena decision seeding. No executable path or external teacher is
-accepted by this endpoint. Defaults are deterministic, not latency guarantees.
+`web/openapi.json` and `web/src/generated-api.ts` derive from Python HTTP models.
+Run `npm run generate:api --prefix web` after changing an API contract, then build.
+The legacy `POST /api/opponent` remains available with depth 1–4 and nodes 1–512.
+The new app uses `POST /api/play/choose` with an explicit controller selection.
 
-The UI defaults to pass-and-play and allows any catalog player, including random, alpha-beta, and quiescence,
-with the human playing either color. Mode/side changes keep the live game;
-if the selected computer owns the current turn it moves automatically. Human
-moves are disabled on computer turns. Failure leaves the current position intact
-and exposes an explicit retry; there is no automatic retry loop.
+## Players and settings
 
-Replay pauses opponent work. Returning to the latest move resumes an opponent
-turn. Starting a new game, importing, changing player controls, or navigating
-history invalidates earlier requests. The browser aborts fetches and also rejects
-stale results by request generation, even if a response arrives after cancellation.
-Server computation may finish within its bounded node budget after browser abort.
-Exports remain game-only replay snapshots; player controls and diagnostics are
-not persisted. Reload defaults to a new pass-and-play game.
+`GET /api/players` exposes implementation/version, binding ID/label, content
+identity, availability, and capability-specific defaults, units and ceilings.
+Each Red/Black controller is Human or a selected player. Named bindings permit
+two independent trained checkpoints and explicit Pikafish participation.
+[Player configuration](../src/qi/players/README.md#named-player-bindings) owns
+server resource setup; HTTP accepts IDs and expected identities, never paths.
+
+The server rejects unsupported settings and budgets outside the advertised
+bounds. Random/MCTS seeds are base seeds; each decision adds its absolute ply.
+Search uses qi visit budgets, while Pikafish reports native nodes/depth and
+cp/mate scores separately, retaining unknown counters, bounds and perspective.
+Pikafish has a finite per-move timeout; threads/hash/paths are server settings.
+A policy checkpoint exposes no ineffective search controls.
+
+## Play lifecycle and saved sessions
+
+Numeric settings are edited together per side. Apply settings validates and saves
+them as one configuration change; Discard restores the saved values. Step and
+Resume wait while either side has unapplied settings.
+
+Damaged local saves expose a recovery action that preserves the original bytes
+in a separate local backup before starting a new session.
+
+Resume enables automatic computer turns. Step makes one computer move. Pause,
+leaving Play, hiding the browser tab, replay, restore, import, new game, settings
+changes and errors invalidate pending results. Returning to live play requires
+explicit Resume. An aborted request may finish on the server within its budget;
+request generation and full-state hashes prevent its result from replacing a
+newer session. Query retries/refocus never choose a move.
+
+Players and settings can change while paused and affect only future moves.
+One active session is saved in local storage under `qi.active-session.v1` after
+accepted changes. Web Locks serialize writes across tabs, and saved revisions
+reject stale tabs. A tab that observes another writer pauses and offers Load
+saved session. Restore validates evidence through Python and always pauses;
+unavailable or changed resources require explicit player reselection.
+
+The `qi-game-session` version-1 format contains the referee snapshot, current
+controllers, ordered configuration changes at ply boundaries, and contiguous
+known move attribution. Each computer move retains its actual pinned config and
+Choice; human moves are explicitly attributed. Snapshot-only imports record an
+unknown prefix. `POST /api/play/session/inspect` validates complete replay and
+history without resolving or loading live models. Session export/import and
+snapshot export/import remain separate options. These exploratory sessions do
+not satisfy the fixed-participant paired evaluation protocol.
+
+## Experiment readers and trace jobs
+
+`GET /api/experiments` discovers saved runs under `QI_EXPERIMENT_ROOTS` (a
+platform path-separated list; default `artifacts/experiments`). Search runs have
+a native reader; other formats are visibly unsupported. Invalid entries remain
+isolated. Discovery skips source/dependency folders and symlinked directories.
+Selected evidence is validated before derived data is returned. IDs resolve only
+inside configured roots; referenced artifacts must stay inside their run.
+
+Report overview responses omit large unit histories and trace events. Separate
+unit and paginated trace endpoints load those on demand. Native and standalone
+HTML use the same React renderer and Python presentation contract. Optional
+`narrative.md` is authored in an ordinary editor; rendering supports Markdown/GFM
+without active HTML/MDX. JSON/Markdown evidence references stay inside the run.
+The [experiment guide](../src/qi/experiments/README.md) owns exports and identities.
+
+`POST /api/trace-jobs` accepts a selected run/unit digest/turn, event cap and
+idempotency key. One child process runs at a time; its original decision config
+and full history are fixed. Exact source/Python/package compatibility is checked
+before launch and in the worker. `GET /api/trace-jobs` reports status; the cancel
+endpoint terminates the owned worker. Browser navigation/closure does not cancel
+an explicit trace job. Server shutdown terminates it; restart marks unfinished
+metadata interrupted without resuming work.
+
+`QI_TRACE_SECONDS` sets the finite server deadline (default 120, maximum 3600).
+Recording defaults to 100000 events and accepts at most 1000000. Successful
+parity-validated traces publish atomically under the run's traces directory.
+Capacity-limited recordings retain their incomplete flag; killed or failed
+computations publish nothing. Job metadata is bounded to 32 recent entries in
+`QI_LAB_STATE` (default `artifacts/lab`) and kept separate from evidence. No queue,
+experiment launcher, training launcher or background game execution is included.

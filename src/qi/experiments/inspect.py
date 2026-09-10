@@ -8,6 +8,7 @@ from qi.experiments.evidence import check_choice, comparable_choice, load_run, r
 from qi.experiments.model import digest, provenance
 from qi.experiments.runner import write_json
 from qi.players import PlayerConfig, choose
+from qi.players.core import config_data
 from qi.players.trace import Recorder, recording
 from qi.protocol import Snapshot
 
@@ -43,7 +44,7 @@ def inspect_decision(directory: Path, unit_id: str, turn_index: int, output: Pat
         "unit_sha256": unit["sha256"],
         "source_sha256": current["source_sha256"],
         "snapshot": Snapshot(moves=list(game.moves)).model_dump(),
-        "config": asdict(config),
+        "config": config_data(config),
         "choice": choice,
         "decision_equal": equal,
         "recording": recorder.export(),

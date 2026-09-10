@@ -128,8 +128,9 @@ An installed package without checkout sources and the dependency lockfile record
 
 The offline report includes a reading guide, dotted-underlined term explanations
 (hover, keyboard focus, or tap), and a searchable English/Chinese glossary.
-Escape or a click outside dismisses help. JSON field annotations preserve copied
-text; visits in MCTS node records are distinguished from charged-work visits.
+Escape or a click outside dismisses help. Raw JSON stays copyable; look up its
+field names in Reference. Visits in MCTS node records remain distinct from
+charged-work visits.
 
 Definitions and field aliases come from `docs/glossary/ddd.md`, the vocabulary
 authority, read from this checkout when generating the report. Add new report
@@ -144,3 +145,45 @@ corpus/plan boundaries, HTML escaping, and existing player/adaptor behavior.
 `npm run test:e2e --prefix web` also checks report controls, board/tree inspection,
 and mobile layout using temporary hermetic runs. Those report cases need no
 teacher or learning dependency.
+
+
+## Shared app and report projections
+
+The local app's Experiments page discovers search runs under the configured
+roots and provides the same views as the standalone HTML renderer. Discovery
+also shows incomplete, invalid and unsupported entries without loading models.
+See [interface configuration](../../../docs/interface.md#experiment-readers-and-trace-jobs)
+for `QI_EXPERIMENT_ROOTS`, job storage and server deadlines.
+
+`presentation.py` owns version-1 ReportData/ReportBundle DTOs and recomputes them
+from verified raw evidence. The HTTP adapter returns overview metadata, selected
+units and paginated trace children separately. `web/src/report.tsx` is the shared
+React renderer; `web/src/offline.tsx` provides its in-memory data source for
+self-contained HTML. Build both app and report assets with `make web-build` before
+using HTML export. The old standalone DOM renderer has been replaced.
+
+Narrative is an optional UTF-8 `narrative.md` sidecar (up to 1 MiB), authored in
+an ordinary editor. It supports Markdown/GFM text, tables and links; active HTML
+and executable MDX are excluded from rendered views. Local references must name
+JSON or Markdown evidence files inside the same run; unsupported references are
+reported explicitly. Images are represented as references, not fetched content.
+Narrative/glossary/presentation identity is separate from raw evidence identity.
+Presentation identity also includes validated traces, so refreshing changed
+recordings invalidates cached event views without changing benchmark identity.
+Editing commentary cannot change raw unit hashes or recomputed statistics.
+
+The existing report command accepts either `.html` or `.md` output. Markdown
+contains authored narrative, static comparison tables, counts, provenance and
+links to unit evidence; it references interactive-only sections. Keep Markdown
+beside its run to preserve relative evidence links. Exports cannot overwrite raw
+JSON, narrative, source, units or traces. Native and HTML filters preserve nulls,
+partial counts, paired denominators and the original untraced timing.
+
+Explicit UI trace jobs reproduce one saved decision under the original source,
+Python and package identity. They survive browser navigation and closure, but
+never server restart. Cancel, failure and timeout publish no trace; capacity
+limits may produce a parity-validated recording marked incomplete. Valid traces
+remain readable even when trace generation is incompatible. Invalid traces are
+reported separately from valid base evidence. Refresh evidence after a job to
+include its new trace in native views and subsequent exports. Benchmark units and
+untraced timings remain unchanged.

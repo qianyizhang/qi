@@ -14,6 +14,7 @@ from qi.artifacts import Provenance, digest, provenance
 from qi.game import GameError, Side
 from qi.players import PlayerConfig, bind_config
 from qi.players.catalog import get_player
+from qi.players.core import config_data
 from qi.players.validation import validate_decision
 from qi.protocol import Snapshot
 from qi.scoring import GameScore, PairedScore, score_pairs
@@ -60,7 +61,7 @@ class EvaluationGame(BaseModel):
 
 class EvalSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     protocol: Literal["paired-games-v1"] = "paired-games-v1"
     corpus: Corpus
     player_a: PlayerConfig
@@ -68,7 +69,13 @@ class EvalSpec(BaseModel):
 
     @property
     def digest(self) -> str:
-        return digest(self.model_dump(mode="json"))
+        return digest(
+            {
+                **self.model_dump(mode="json"),
+                "player_a": config_data(self.player_a),
+                "player_b": config_data(self.player_b),
+            }
+        )
 
     def configurations(self, index: int, side: Side) -> tuple[PlayerConfig, PlayerConfig]:
         a = replace(self.player_a, seed=self.player_a.seed + 2 * index)
@@ -95,7 +102,7 @@ class EvalGame(BaseModel):
 
 class EvalRun(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     spec: EvalSpec
     spec_sha256: str
     provenance: Provenance
@@ -104,6 +111,9 @@ class EvalRun(BaseModel):
 
     @model_validator(mode="after")
     def validate_evidence(self) -> Self:
+        expected_schema = 2 if self.spec.player_a.binding_sha256 or self.spec.player_b.binding_sha256 else 1
+        if self.schema_version != self.spec.schema_version or self.schema_version != expected_schema:
+            raise ValueError("Evaluation schema does not match participant binding semantics.")
         if self.spec_sha256 != self.spec.digest or set(self.player_versions) != {"a", "b"}:
             raise ValueError("Evaluation identity mismatch.")
         expected = [(opening.id, side) for opening in self.spec.corpus.openings for side in ("red", "black")]
@@ -118,7 +128,11 @@ class EvalRun(BaseModel):
         match = entry.match
         opening = self.spec.corpus.openings[index].snapshot
         red, black = self.spec.configurations(index, entry.a_side)
-        if match.schema_version != 1 or (match.red, match.black, match.opening) != (red, black, opening):
+        if match.schema_version != (2 if red.binding_sha256 or black.binding_sha256 else 1) or (
+            match.red,
+            match.black,
+            match.opening,
+        ) != (red, black, opening):
             raise ValueError("Match configuration or opening differs from spec.")
         game = opening.game()
         for turn in match.turns:
@@ -133,6 +147,7 @@ class EvalRun(BaseModel):
                 or choice.seed != config.seed + len(game.moves)
                 or choice.player_version != self.player_versions[who]
                 or choice.checkpoint_sha256 != config.checkpoint_sha256
+                or choice.binding_sha256 != config.binding_sha256
             ):
                 raise ValueError("Match turn differs from replay or participant identity.")
             if not isfinite(choice.elapsed_ms) or choice.elapsed_ms < 0:
@@ -267,7 +282,10 @@ def run_evaluation(spec: EvalSpec, *, save: Callable[[EvalRun], None] | None = N
     """Execute once, optionally saving before and after each game; stop on failure."""
     spec = EvalSpec.model_validate(spec.model_dump())
     spec = spec.model_copy(update={"player_a": bind_config(spec.player_a), "player_b": bind_config(spec.player_b)})
+    if spec.player_a.binding_sha256 or spec.player_b.binding_sha256:
+        spec = spec.model_copy(update={"schema_version": 2})
     run = EvalRun(
+        schema_version=spec.schema_version,
         spec=spec,
         spec_sha256=spec.digest,
         provenance=provenance(),

@@ -5,20 +5,35 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && vite build --mode report",
     "check": "tsc --noEmit && prettier --check src tests e2e index.html vite.config.ts playwright.config.ts",
     "format": "prettier --write src tests e2e index.html vite.config.ts playwright.config.ts",
     "test": "tsc src/request-gate.ts --target ES2022 --module ESNext --skipLibCheck --outDir .test-build && node --test tests/request-gate.test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "generate:api": "../.venv/bin/python ../scripts/export_openapi.py && openapi-typescript openapi.json -o src/generated-api.ts"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-router": "^1.170.34",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.43.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.6.2",
     "typescript": "^5.8.0",
     "vite": "^7.0.0"

@@ -1,17 +1,22 @@
 import { test, expect, type Page } from "@playwright/test";
-
 async function start(page: Page) {
-  await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: "Red to move" }),
-  ).toBeVisible();
+  await page.goto("/play");
+  await expect(page.locator(".board-status")).toContainText(
+    "Red to move · Ply 0",
+  );
 }
-
 async function humanMove(page: Page) {
   await page.getByRole("button", { name: /^b2 red cannon/ }).click();
   await page.getByRole("button", { name: /^e2 empty/ }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
 }
-
+async function stored(page: Page) {
+  return page.evaluate(
+    () =>
+      JSON.parse(localStorage.getItem("qi.active-session.v1") ?? "null")
+        ?.session,
+  );
+}
 function deferred() {
   let resolve!: () => void;
   const promise = new Promise<void>((done) => {
@@ -19,9 +24,7 @@ function deferred() {
   });
   return { promise, resolve };
 }
-
-async function delayFirstOpponent(page: Page) {
-  // Deliberately ignore AbortSignal to prove late results cannot overwrite newer state.
+async function delayed(page: Page) {
   await page.addInitScript(() => {
     const fetch = window.fetch.bind(window);
     window.fetch = (input, init) =>
@@ -30,12 +33,13 @@ async function delayFirstOpponent(page: Page) {
   const entered = deferred(),
     released = deferred();
   let calls = 0;
-  await page.route("**/api/opponent", async (route) => {
-    calls += 1;
-    if (calls > 1) return route.continue();
+  await page.route("**/api/play/choose", async (route) => {
+    calls++;
     const response = await route.fetch();
-    entered.resolve();
-    await released.promise;
+    if (calls === 1) {
+      entered.resolve();
+      await released.promise;
+    }
     await route.fulfill({ response });
   });
   return {
@@ -44,160 +48,262 @@ async function delayFirstOpponent(page: Page) {
     calls: () => calls,
   };
 }
-
-async function settleResponse(page: Page, release: () => void) {
-  const response = page.waitForResponse("**/api/opponent");
-  release();
-  await (await response).finished();
-  await page.evaluate(
-    () =>
-      new Promise((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(resolve)),
-      ),
-  );
+async function choose(page: Page, side: string, player: string) {
+  await page.getByLabel(`${side} player`, { exact: true }).selectOption(player);
+  await expect
+    .poll(async () => (await stored(page))?.controllers[side].player)
+    .toBe(player);
 }
 
-test("human Red plays alpha-beta, exports and replays the resulting game", async ({
+test("human vs alpha-beta, session export, replay and paused restore", async ({
   page,
 }) => {
   await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("alphabeta");
+  await choose(page, "black", "alphabeta");
+  await page.getByRole("button", { name: "Resume", exact: true }).click();
   await humanMove(page);
-  await expect(page.locator(".moves li")).toHaveCount(2);
-  await expect(
-    page.getByRole("heading", { name: "Red to move" }),
-  ).toBeVisible();
+  await expect(page.locator(".board-status")).toContainText(
+    "Red to move · Ply 2",
+  );
   await page.getByText("Last computer move", { exact: true }).click();
   await expect(page.getByText(/alphabeta-material-v1/)).toBeVisible();
-  await page.getByRole("button", { name: "Replay start", exact: true }).click();
-  await expect(
-    page.getByText("Viewing history.", { exact: false }),
-  ).toBeVisible();
-  await expect(page.locator(".moves li")).toHaveCount(2);
-  await page.getByRole("button", { name: "Latest move", exact: true }).click();
-  const downloadPromise = page.waitForEvent("download");
+  const saved = await stored(page);
+  expect(saved.history).toHaveLength(2);
+  expect(saved.history[1].config.kind).toBe("alphabeta");
+  const download = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Export game ↓", exact: true })
+    .getByRole("button", { name: "Export session", exact: true })
     .click();
-  const download = await downloadPromise;
-  const stream = await download.createReadStream();
-  const chunks = [];
-  for await (const chunk of stream!) chunks.push(chunk);
-  const snapshot = JSON.parse(Buffer.concat(chunks).toString());
-  expect(snapshot.moves).toHaveLength(2);
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "saved.json",
-    mimeType: "application/json",
-    buffer: Buffer.from(JSON.stringify(snapshot)),
-  });
-  await expect(page.locator(".moves li")).toHaveCount(2);
-  await page.screenshot({
-    path: test.info().outputPath("opponent-board.png"),
-    fullPage: true,
-  });
+  expect((await download).suggestedFilename()).toBe("qi-session.json");
+  await page
+    .getByRole("button", { name: "Previous position", exact: true })
+    .click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
+  await page
+    .getByRole("button", { name: "Live position", exact: true })
+    .click();
+  await page.reload();
+  await expect(page.locator(".board-status")).toContainText("Ply 2");
+  await expect(
+    page.getByRole("button", { name: "Resume", exact: true }),
+  ).toBeVisible();
 });
 
-test("human Black waits for random Red; switching to pass-and-play permits human moves", async ({
+test("independent computer sides step, change settings and pause on navigation", async ({
   page,
 }) => {
   await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("random");
-  await page.getByLabel("You play", { exact: true }).selectOption("black");
-  await expect(page.locator(".moves li")).toHaveCount(1);
+  await choose(page, "red", "mcts");
+  await choose(page, "black", "alphabeta");
+  await page.getByLabel("red Visit budget", { exact: true }).fill("32");
+  await page.getByRole("button", { name: "Apply red settings" }).click();
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
+  await page.getByLabel("black Visit budget", { exact: true }).fill("16");
+  await page.getByRole("button", { name: "Apply black settings" }).click();
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 2");
+  const data = await stored(page);
+  expect(data.history[0].config.nodes).toBe(32);
+  expect(data.history[1].config.nodes).toBe(16);
+  await page.getByRole("button", { name: "Resume", exact: true }).click();
+  await expect
+    .poll(async () => (await stored(page)).history.length)
+    .toBeGreaterThan(2);
+  await page.getByRole("link", { name: "Experiments", exact: true }).click();
+  const moves = (await stored(page)).history.length;
+  await page.getByRole("link", { name: "Play", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Black to move" }),
+    page.getByRole("button", { name: "Resume", exact: true }),
   ).toBeVisible();
-  await page.getByLabel("Opponent", { exact: true }).selectOption("human");
-  await page.getByRole("button", { name: /^b9 black horse/ }).click();
-  await page.getByRole("button", { name: /^c7 empty/ }).click();
-  await expect(page.locator(".moves li")).toHaveCount(2);
+  expect((await stored(page)).history.length).toBe(moves);
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  expect((await stored(page)).history.length).toBe(moves);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/experiments$/);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/play$/);
+  await expect(
+    page.getByRole("button", { name: "Resume", exact: true }),
+  ).toBeVisible();
+  expect((await stored(page)).history.length).toBe(moves);
 });
 
-test("opponent failure preserves the game and only retries on request", async ({
+for (const action of [
+  "new",
+  "settings",
+  "navigate",
+  "replay",
+  "import",
+] as const) {
+  test(`late response cannot overwrite ${action}`, async ({ page }) => {
+    const delay = await delayed(page);
+    await start(page);
+    await humanMove(page);
+    await choose(page, "black", "random");
+    await page.getByRole("button", { name: "Step", exact: true }).click();
+    await delay.entered;
+    if (action === "new")
+      await page.getByRole("button", { name: "New game", exact: true }).click();
+    if (action === "settings") {
+      await page.getByRole("button", { name: "Cancel move" }).click();
+      await choose(page, "black", "alphabeta");
+    }
+    if (action === "navigate")
+      await page.getByRole("link", { name: "Home", exact: true }).click();
+    if (action === "replay")
+      await page
+        .getByRole("button", { name: "Previous position", exact: true })
+        .click();
+    if (action === "import") {
+      const snapshot = (await page.request.post("/api/new")).json();
+      await page.getByRole("button", { name: "Import", exact: true }).click();
+      await page
+        .getByLabel("Imported JSON")
+        .fill(JSON.stringify((await snapshot).snapshot));
+      await page.getByRole("button", { name: "Load JSON" }).click();
+    }
+    if (action === "new" || action === "import")
+      await expect
+        .poll(async () => (await stored(page)).snapshot.moves.length)
+        .toBe(0);
+    delay.release();
+    await page.getByRole("link", { name: "Play", exact: true }).click();
+    await expect(page.locator(".board-status")).toContainText(
+      `Ply ${action === "new" || action === "import" || action === "replay" ? 0 : 1}`,
+    );
+    expect((await stored(page)).snapshot.moves.length).toBe(
+      action === "new" || action === "import" ? 0 : 1,
+    );
+    expect(delay.calls()).toBe(1);
+  });
+}
+
+test("failure preserves position and retries only on explicit Step", async ({
   page,
 }) => {
   let calls = 0;
-  await page.route("**/api/opponent", async (route) => {
-    calls += 1;
+  await page.route("**/api/play/choose", async (route) => {
+    calls++;
     if (calls === 1)
-      return route.fulfill({
-        status: 503,
-        json: { error: { message: "Opponent unavailable" } },
+      await route.fulfill({
+        status: 409,
+        json: { error: { message: "Engine unavailable" } },
       });
-    return route.continue();
+    else await route.continue();
   });
   await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("random");
-  await humanMove(page);
-  await expect(page.getByRole("alert")).toHaveText("Opponent unavailable");
-  await expect(page.locator(".moves li")).toHaveCount(1);
-  await expect(
-    page.getByRole("button", { name: "Retry opponent" }),
-  ).toBeVisible();
+  await choose(page, "red", "random");
+  await page.getByRole("button", { name: "Resume", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("Engine unavailable");
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   expect(calls).toBe(1);
-  await page.getByRole("button", { name: "Retry opponent" }).click();
-  await expect(page.locator(".moves li")).toHaveCount(2);
+  await expect(page.locator(".board-status")).toContainText("Ply 0");
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
   expect(calls).toBe(2);
 });
 
-test("new game rejects an old opponent response even when abort is ignored", async ({
+test("multiple tabs cannot overwrite a newer session", async ({
   page,
+  context,
 }) => {
-  const delayed = await delayFirstOpponent(page);
   await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("random");
-  await humanMove(page);
-  await delayed.entered;
+  await choose(page, "red", "random");
+  const other = await context.newPage();
+  await other.goto("/play");
+  await expect(other.locator(".board-status")).toContainText("Ply 0");
+  await page.bringToFront();
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
   await expect(
-    page.getByRole("heading", { name: "Computer is thinking…" }),
+    other.getByRole("button", { name: "Load saved session", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /^b9 black horse/ }),
-  ).toHaveAttribute("aria-disabled", "true");
-  await page.getByRole("button", { name: "New game ↗", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Start new game", exact: true })
+  await other
+    .getByRole("button", { name: "Load saved session", exact: true })
     .click();
-  await expect(page.locator(".moves li")).toHaveCount(0);
-  await settleResponse(page, delayed.release);
-  await expect(page.locator(".moves li")).toHaveCount(0);
+  await expect(other.locator(".board-status")).toContainText("Ply 1");
   await expect(
-    page.getByRole("heading", { name: "Red to move" }),
+    other.getByRole("button", { name: "Resume", exact: true }),
   ).toBeVisible();
 });
 
-test("replay cancels thinking; latest resumes from the preserved live game", async ({
+test("restored missing resources stay paused and snapshot import has unknown history", async ({
   page,
 }) => {
-  const delayed = await delayFirstOpponent(page);
   await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("random");
   await humanMove(page);
-  await delayed.entered;
-  await page.getByRole("button", { name: "Replay start", exact: true }).click();
+  const data = await stored(page);
+  data.controllers.black = {
+    player: "missing-trained",
+    settings: {},
+    binding_sha256: "a".repeat(64),
+    checkpoint_sha256: "b".repeat(64),
+  };
+  data.changes.push({ ply: 1, controllers: data.controllers });
+  await page.evaluate(
+    (session) =>
+      localStorage.setItem(
+        "qi.active-session.v1",
+        JSON.stringify({ revision: "restore", session }),
+      ),
+    data,
+  );
+  await page.reload();
   await expect(
-    page.getByText("Viewing history.", { exact: false }),
+    page.getByText(/black: saved player is unavailable/),
   ).toBeVisible();
-  await settleResponse(page, delayed.release);
-  await expect(page.locator(".moves li")).toHaveCount(1);
   await expect(
-    page.getByText("Viewing history.", { exact: false }),
+    page.getByRole("button", { name: "Resume", exact: true }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await page.getByLabel("Imported JSON").fill(JSON.stringify(data.snapshot));
+  await page.getByRole("button", { name: "Load JSON" }).click();
+  await expect(
+    page.getByText("Player attribution unknown for imported history."),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Latest move", exact: true }).click();
-  await expect(page.locator(".moves li")).toHaveCount(2);
-  expect(delayed.calls()).toBe(2);
+  expect((await stored(page)).unknown_prefix).toBe(1);
 });
 
-test("terminal imports never request an opponent move", async ({
+test("catalog extension and search diagnostics work without a UI allowlist", async ({
   page,
-  request,
 }) => {
-  let calls = 0;
-  page.on("request", (req) => {
-    if (req.url().endsWith("/api/opponent")) calls += 1;
+  await page.route("**/api/players", async (route) => {
+    const response = await route.fetch();
+    const players = await response.json();
+    players.push({
+      ...players.find((p: { id: string }) => p.id === "alphabeta"),
+      id: "future-player",
+      label: "Future player",
+    });
+    await route.fulfill({ json: players });
   });
   await start(page);
-  const snapshot = (await (await request.post("/api/new")).json()).snapshot;
+  await expect(
+    page
+      .getByLabel("red player", { exact: true })
+      .locator("option[value=future-player]"),
+  ).toHaveCount(1);
+  await choose(page, "red", "mcts");
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
+  await page.getByText("Last computer move", { exact: true }).click();
+  await expect(
+    page.getByRole("region", { name: "MCTS root move statistics" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("terminal imports do not trigger moves and invalid settings never corrupt restoration", async ({
+  page,
+}) => {
+  await start(page);
+  const snapshot = (await (await page.request.post("/api/new")).json())
+    .snapshot;
   snapshot.moves = [
     "b0c2",
     "b9c7",
@@ -208,249 +314,181 @@ test("terminal imports never request an opponent move", async ({
     "c2b0",
     "c7b9",
   ];
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "draw.json",
-    mimeType: "application/json",
-    buffer: Buffer.from(JSON.stringify(snapshot)),
-  });
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await page.getByLabel("Imported JSON").fill(JSON.stringify(snapshot));
+  await page.getByRole("button", { name: "Load JSON" }).click();
+  await expect(page.locator(".board-status")).toContainText("repetition");
   await expect(
-    page.getByRole("heading", { name: "Draw", exact: true }),
-  ).toBeVisible();
-  await page.getByLabel("Opponent", { exact: true }).selectOption("alphabeta");
-  await expect(
-    page.getByRole("heading", { name: "Draw", exact: true }),
-  ).toBeVisible();
-  expect(calls).toBe(0);
+    page.getByRole("button", { name: "Step", exact: true }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "New game", exact: true }).click();
+  await choose(page, "red", "alphabeta");
+  await page.getByLabel("red Visit budget", { exact: true }).fill("");
+  await page.getByRole("heading", { name: "Play & explore" }).click();
+  await page.reload();
+  await expect(page.locator(".board-status")).toContainText("Ply 0");
+  expect((await stored(page)).controllers.red.settings.nodes).toBe(128);
 });
 
-test("switching opponents cancels an outstanding computer turn", async ({
+test("catalog failure keeps human play available and can be retried", async ({
   page,
 }) => {
-  const delayed = await delayFirstOpponent(page);
-  await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("random");
-  await humanMove(page);
-  await delayed.entered;
-  await page.getByLabel("Opponent", { exact: true }).selectOption("human");
-  await settleResponse(page, delayed.release);
-  await expect(page.locator(".moves li")).toHaveCount(1);
-  await expect(
-    page.getByRole("heading", { name: "Black to move" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: /^b9 black horse/ }).click();
-  await page.getByRole("button", { name: /^c7 empty/ }).click();
-  await expect(page.locator(".moves li")).toHaveCount(2);
-});
-
-test("import during search survives an old opponent response", async ({
-  page,
-  request,
-}) => {
-  const delayed = await delayFirstOpponent(page);
-  await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("random");
-  await humanMove(page);
-  await delayed.entered;
-  const snapshot = (await (await request.post("/api/new")).json()).snapshot;
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "fresh.json",
-    mimeType: "application/json",
-    buffer: Buffer.from(JSON.stringify(snapshot)),
-  });
-  await expect(page.locator(".moves li")).toHaveCount(0);
-  await settleResponse(page, delayed.release);
-  await expect(page.locator(".moves li")).toHaveCount(0);
-  await expect(
-    page.getByRole("heading", { name: "Red to move" }),
-  ).toBeVisible();
-});
-
-test("quiescence is discovered and shows its extra tactical work", async ({
-  page,
-}) => {
-  await start(page);
-  await expect(
-    page.getByRole("option", {
-      name: "Computer · alpha-beta + quiescence",
-      exact: true,
-    }),
-  ).toHaveCount(1);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("quiescence");
-  await page.getByLabel("You play", { exact: true }).selectOption("black");
-  await expect(page.locator(".moves li")).toHaveCount(1);
-  await expect(
-    page.getByRole("heading", { name: "Black to move" }),
-  ).toBeVisible();
-  await page.getByText("Last computer move", { exact: true }).click();
-  await expect(page.getByText(/alphabeta-quiescence-v1/)).toBeVisible();
-  await expect(page.getByText(/quiescence nodes/)).toBeVisible();
-  await page.screenshot({
-    path: test.info().outputPath("quiescence-board.png"),
-    fullPage: true,
-  });
-});
-
-test("catalog additions appear without a frontend player allowlist", async ({
-  page,
-}) => {
+  let failed = true;
   await page.route("**/api/players", async (route) => {
-    const catalog = await (await route.fetch()).json();
-    await route.fulfill({
-      json: [
-        ...catalog,
-        {
-          id: "catalog-probe",
-          version: "probe-v1",
-          label: "Catalog probe",
-          description: "Test catalog extension.",
-          uses_search: false,
-          default_nodes: 64,
-          default_depth: 1,
-        },
-      ],
-    });
-  });
-  let submitted = "";
-  await page.route("**/api/opponent", async (route) => {
-    const body = route.request().postDataJSON();
-    submitted = body.player;
-    const response = await route.fetch({
-      postData: JSON.stringify({ ...body, player: "random" }),
-    });
-    await route.fulfill({ response });
-  });
-  await start(page);
-  await page
-    .getByLabel("Opponent", { exact: true })
-    .selectOption("catalog-probe");
-  await humanMove(page);
-  await expect(page.locator(".moves li")).toHaveCount(2);
-  expect(submitted).toBe("catalog-probe");
-});
-
-test("catalog failure preserves human play and permits explicit retry", async ({
-  page,
-}) => {
-  let calls = 0;
-  await page.route("**/api/players", async (route) => {
-    calls += 1;
-    if (calls === 1)
-      return route.fulfill({
+    if (failed)
+      await route.fulfill({
         status: 503,
-        json: { error: { message: "Unavailable" } },
+        json: { error: { message: "Catalog unavailable" } },
       });
-    return route.continue();
+    else await route.continue();
   });
   await start(page);
-  await expect(
-    page.getByText("Unable to load computer players.", { exact: false }),
-  ).toBeVisible();
   await humanMove(page);
-  await expect(page.locator(".moves li")).toHaveCount(1);
-  await page.getByRole("button", { name: "Retry player list" }).click();
+  await expect(page.getByRole("alert")).toContainText("Catalog unavailable");
+  failed = false;
+  await page
+    .getByRole("button", { name: "Refresh players", exact: true })
+    .click();
   await expect(
-    page.getByRole("option", {
-      name: "Computer · alpha-beta + quiescence",
-      exact: true,
-    }),
+    page
+      .getByLabel("black player", { exact: true })
+      .locator('option[value="alphabeta"]'),
   ).toHaveCount(1);
-  expect(calls).toBe(2);
 });
 
-test("configured learned policy plays and identifies its checkpoint", async ({
+test("settings can be typed without interrupted focus and apply together", async ({
   page,
 }) => {
-  test.skip(
-    !process.env.QI_POLICY_CHECKPOINT,
-    "Requires an explicit local policy checkpoint",
-  );
   await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("policy");
-  await page.getByLabel("You play", { exact: true }).selectOption("black");
-  await expect(page.locator(".moves li")).toHaveCount(1);
-  await page.getByText("Last computer move", { exact: true }).click();
-  await expect(page.getByText(/policy-mlp-v1/)).toBeVisible();
-  await expect(page.getByText(/1 model pass/)).toBeVisible();
-  await expect(page.getByText(/Checkpoint [a-f0-9]{12}/)).toBeVisible();
-  await page.screenshot({
-    path: test.info().outputPath("learned-policy.png"),
-    fullPage: true,
-  });
+  await choose(page, "red", "alphabeta");
+  const changes = (await stored(page)).changes.length;
+  const budget = page.getByLabel("red Visit budget", { exact: true });
+  await budget.fill("");
+  await budget.pressSequentially("256", { delay: 40 });
+  await expect(budget).toBeFocused();
+  await expect(budget).toHaveValue("256");
+  await page.getByLabel("red Depth limit", { exact: true }).fill("3");
+  expect((await stored(page)).controllers.red.settings.nodes).toBe(128);
+  await expect(
+    page.getByRole("button", { name: "Step", exact: true }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Apply red settings" }).click();
+  await expect
+    .poll(async () => (await stored(page)).controllers.red.settings.nodes)
+    .toBe(256);
+  const saved = await stored(page);
+  expect(saved.controllers.red.settings.depth).toBe(3);
+  expect(saved.changes).toHaveLength(changes + 1);
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
+  expect((await stored(page)).history[0].config.nodes).toBe(256);
 });
 
-test("MCTS exposes simulations and root move estimates", async ({ page }) => {
-  await start(page);
-  await page.getByLabel("Opponent", { exact: true }).selectOption("mcts");
-  await page.getByLabel("You play", { exact: true }).selectOption("black");
-  await expect(page.locator(".moves li")).toHaveCount(1);
-  await page.getByText("Last computer move", { exact: true }).click();
-  await expect(page.getByText(/mcts-uct-v1/)).toBeVisible();
-  await expect(page.getByText(/simulations · 512 visits/)).toBeVisible();
-  const statistics = page.getByRole("region", {
-    name: "MCTS root move statistics",
-  });
-  await expect(statistics).toBeVisible();
-  await expect(statistics.locator("tbody tr")).toHaveCount(44);
-  await expect(statistics.locator("tr.chosen")).toHaveCount(1);
-  await expect(page.getByText(/not win probabilities/)).toBeVisible();
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true);
-  await page.screenshot({
-    path: test.info().outputPath("mcts-root-statistics.png"),
-    fullPage: true,
-  });
-});
-
-for (const player of [
-  "alphabeta-ordered",
-  "alphabeta-positional",
-  "alphabeta-see",
-  "alphabeta-checks",
-  "alphabeta-tt",
-  "alphabeta-enhanced",
-  "mcts-quiescence",
-]) {
-  test(`${player} plays and exposes component diagnostics`, async ({
-    page,
-  }) => {
-    await start(page);
-    await page.getByLabel("Opponent", { exact: true }).selectOption(player);
-    await page.getByLabel("You play", { exact: true }).selectOption("black");
-    await expect(page.locator(".moves li")).toHaveCount(1);
-    await page.getByText("Last computer move", { exact: true }).click();
-    await expect(page.getByText(new RegExp(`${player}-v1`))).toBeVisible();
-    if (player === "mcts-quiescence") {
-      await expect(page.getByText(/tactical leaf visits/)).toBeVisible();
-      await expect(
-        page.getByRole("region", { name: "MCTS root move statistics" }),
-      ).toBeVisible();
-    } else {
-      await expect(page.getByText(/exchange-analysis visits/)).toBeVisible();
-      await expect(page.getByText(/cached cutoffs/)).toBeVisible();
-    }
-    if (player === "alphabeta-positional" || player === "alphabeta-enhanced") {
-      await expect(
-        page.getByText(/Before-move static assessment/),
-      ).toBeVisible();
-      await expect(page.locator(".evaluation-terms dd")).toHaveText([
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-      ]);
-    }
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= window.innerWidth,
-      ),
-    ).toBe(true);
-    await page.screenshot({
-      path: test.info().outputPath(`${player}.png`),
-      fullPage: true,
+for (const action of ["new", "import"] as const) {
+  test(`late replay cannot replace a ${action} session`, async ({ page }) => {
+    await page.addInitScript(() => {
+      const fetch = window.fetch.bind(window);
+      window.fetch = (input, init) =>
+        fetch(input, { ...init, signal: undefined });
     });
+    await start(page);
+    await humanMove(page);
+    await page.getByRole("button", { name: /^b7 black cannon/ }).click();
+    await page.getByRole("button", { name: /^e7 empty/ }).click();
+    await expect(page.locator(".board-status")).toContainText("Ply 2");
+    const entered = deferred(),
+      released = deferred();
+    await page.route("**/api/inspect", async (route) => {
+      const response = await route.fetch();
+      if (route.request().postDataJSON().snapshot.moves.length === 1) {
+        entered.resolve();
+        await released.promise;
+      }
+      await route.fulfill({ response });
+    });
+    await page.getByRole("button", { name: "Previous position" }).click();
+    await entered.promise;
+    if (action === "new")
+      await page.getByRole("button", { name: "New game", exact: true }).click();
+    else {
+      const initial = await (await page.request.post("/api/new")).json();
+      await page.getByRole("button", { name: "Import", exact: true }).click();
+      await page
+        .getByLabel("Imported JSON")
+        .fill(JSON.stringify(initial.snapshot));
+      await page.getByRole("button", { name: "Load JSON" }).click();
+    }
+    await expect(page.locator(".board-status")).toContainText("Ply 0");
+    released.resolve();
+    await page.getByRole("button", { name: "Flip board" }).click();
+    await expect(page.locator(".board-status")).toContainText("Ply 0");
+    await expect(page.locator(".board-status")).not.toContainText("Replay");
+    expect((await stored(page)).snapshot.moves).toHaveLength(0);
   });
 }
+
+test("damaged saved data can be backed up before starting a new session", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    localStorage.setItem("qi.active-session.v1", "{damaged"),
+  );
+  await page.goto("/play");
+  await page
+    .getByRole("button", { name: "Back up saved data and start new" })
+    .click();
+  await expect(page.locator(".board-status")).toContainText("Ply 0");
+  expect(
+    await page.evaluate(() =>
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith("qi.active-session.v1.backup."))
+        .map((key) => localStorage.getItem(key)),
+    ),
+  ).toEqual(["{damaged"]);
+  await humanMove(page);
+});
+
+test("cancelling a stalled response body releases the session lock", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const fetch = window.fetch.bind(window);
+    const control = window as unknown as {
+      bodyWaiting: boolean;
+      releaseBody: () => void;
+    };
+    window.fetch = async (input, init) => {
+      const response = await fetch(input, { ...init, signal: undefined });
+      if (String(input).endsWith("/play/choose")) {
+        const data = await response.json();
+        Object.defineProperty(response, "json", {
+          value: () =>
+            new Promise((resolve) => {
+              control.bodyWaiting = true;
+              control.releaseBody = () => resolve(data);
+            }),
+        });
+      }
+      return response;
+    };
+  });
+  await start(page);
+  await choose(page, "red", "random");
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as unknown as { bodyWaiting: boolean }).bodyWaiting,
+      ),
+    )
+    .toBe(true);
+  await page.getByRole("button", { name: "New game", exact: true }).click();
+  await expect
+    .poll(async () => (await stored(page)).controllers.red.player)
+    .toBe("human");
+  await page.evaluate(() =>
+    (window as unknown as { releaseBody: () => void }).releaseBody(),
+  );
+  await humanMove(page);
+  expect((await stored(page)).history[0].controller.player).toBe("human");
+});

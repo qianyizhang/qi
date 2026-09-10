@@ -27,6 +27,7 @@ Experiment method and campaigns: [Method](experiments.md), [policy generalizatio
 Local external analysis: [Teacher](teacher.md).
 Local supervised policy training: [Trainer](../src/qi/learning/README.md).
 Coordinates and replay operations: [Interface](interface.md).
+Accepted frontend design and delivery: [Consolidated lab specification](../records/work-items/items/AB-UI-002-consolidated-lab.md).
 Training adjudication: [xiangqi-training-v1](xiangqi-training-v1.md).
 
 ## Authority by concern

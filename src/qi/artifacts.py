@@ -41,7 +41,7 @@ def source_provenance(*, include_assets: bool = True, paths: tuple[str, ...] = (
     files = sorted(
         path
         for path in source_root.rglob("*")
-        if path.suffix in suffixes and (not include_assets or "static" not in path.parts)
+        if path.suffix in suffixes and (not include_assets or not {"static", "static-report"}.intersection(path.parts))
     )
     files += dependencies
     source = hashlib.sha256()
