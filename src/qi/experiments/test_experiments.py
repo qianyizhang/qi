@@ -193,3 +193,29 @@ def test_only_complete_color_pairs_contribute_outcomes():
     assert result["score_rate"] == 0.75
     assert result["scorer"] == "game-score-v1"
     assert result["completed_pairs"] == result["planned_pairs"] == 1
+
+
+def test_mcts_and_search_round_trip_without_player_execution(tmp_path, monkeypatch):
+    from qi import players
+
+    directory = tmp_path / "diagnostics"
+    specification = plan().model_copy(update={"players": ["mcts", "mcts-quiescence", "alphabeta-enhanced"]})
+    assert runner.run(specification, directory)["status"] == "complete"
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Saved evidence validation must not execute players or bind checkpoints.")
+
+    monkeypatch.setattr(runner, "choose", forbidden)
+    monkeypatch.setattr(players, "get_player", forbidden)
+    monkeypatch.setattr(players, "bind_config", forbidden)
+    checked = load_run(directory)
+    assert checked["completed"] == checked["planned"] == 3
+    assert checked["units"][0]["turns"][0]["choice"]["mcts"] is not None
+    assert checked["units"][1]["turns"][0]["choice"]["mcts"] is not None
+    assert checked["units"][2]["turns"][0]["choice"]["search_stats"] is not None
+    path = directory / "units/unit-00000.json"
+    unit = json.loads(path.read_text())
+    unit["turns"][0]["choice"]["mcts"]["simulations"] += 1
+    path.write_text(json.dumps(unit))
+    with pytest.raises(ValueError, match="MCTS simulation totals disagree"):
+        load_run(directory)

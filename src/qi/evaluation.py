@@ -14,6 +14,7 @@ from qi.artifacts import Provenance, digest, provenance
 from qi.game import GameError, Side
 from qi.players import PlayerConfig, bind_config
 from qi.players.catalog import get_player
+from qi.players.validation import validate_decision
 from qi.protocol import Snapshot
 from qi.scoring import GameScore, PairedScore, score_pairs
 
@@ -134,16 +135,12 @@ class EvalRun(BaseModel):
                 or choice.checkpoint_sha256 != config.checkpoint_sha256
             ):
                 raise ValueError("Match turn differs from replay or participant identity.")
-            if not (
-                isfinite(choice.elapsed_ms)
-                and choice.elapsed_ms >= 0
-                and 0 <= choice.qnodes <= choice.nodes <= config.nodes
-                and 0 <= choice.completed_depth <= config.depth
-                and 0 <= choice.max_qply <= choice.qnodes
-                and choice.model_calls in (0, 1)
-            ):
-                raise ValueError("Invalid timing or budget diagnostics.")
-            game = game.apply(choice.move, choice.state_hash)
+            if not isfinite(choice.elapsed_ms) or choice.elapsed_ms < 0:
+                raise ValueError("Invalid measured latency.")
+            # Replay owns transition errors (including invalid_move/illegal_move).
+            next_game = game.apply(choice.move, choice.state_hash)
+            validate_decision(choice, config, game)
+            game = next_game
         if (
             Snapshot(moves=list(game.moves)) != match.snapshot
             or game.outcome is None

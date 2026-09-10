@@ -2,7 +2,7 @@
 description: Versioned paired-game evaluation specs, durable evidence, and replaceable scoring.
 scope: performance evaluation contract
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -62,7 +62,10 @@ slot. Unfinished games have no move-by-move persistence in this protocol; search
 experiments retain that richer recording. There is no resume or time control.
 
 Summarization validates spec identity, planned slots, configurations, turn history,
-player/checkpoint identities, basic budget/timing fields, and referee outcomes.
+player/checkpoint identities, timing fields, and referee outcomes. Move legality,
+common budgets, optional MCTS simulation/root-visit accounting and search counters
+use the same pure [player validator](../src/qi/players/validation.py) as live play
+and search experiments. Inconsistent diagnostics are rejected without repair.
 It needs no player execution or checkpoint loading. It does not reproduce timing,
 prove heuristic diagnostics, or authenticate artifact authorship. Semantic protocol
 changes require a new protocol ID; scoring changes require a new scorer ID.

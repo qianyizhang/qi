@@ -72,7 +72,10 @@ may leave `running` status; the report still shows partial evidence. Incomplete
 games never receive an inferred draw. Temporary unfinished writes are ignored.
 
 `evidence.py` replays every turn and checks state, side, seed, version, budgets,
-diagnostics, snapshots, and outcomes. `report.py` recomputes comparisons from raw
+diagnostics, snapshots, and outcomes. It calls the shared
+[player validator](../players/validation.py) for legality, common budgets and
+optional MCTS/search accounting; search-only inference restrictions stay here.
+`report.py` recomputes comparisons from raw
 units. Code identity hashes Python/report assets under `src/qi`, plus project and
 lock files; Git state is additional context. Hashes identify content, not
 authorship or tamper-proof signatures. Replay cannot reproduce measured timing.

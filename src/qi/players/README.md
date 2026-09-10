@@ -2,7 +2,7 @@
 description: The pluggable player contract and a reading guide to the engine modules.
 scope: player architecture and extension
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -70,7 +70,16 @@ not when constructing the transport-neutral `PlayerConfig` record.
 
 `choose()` is the public boundary: it rejects terminal games, dispatches the
 player, validates move legality and budget diagnostics, then attaches full-state
-hash, player version, seed, and measured elapsed time. The referee still owns
+hash, player version, seed, and measured elapsed time.
+[`validation.py`](validation.py) owns pure legality, common budget, MCTS accounting,
+root-visit/value, and search-counter checks for both `Decision` and `Choice`.
+Live selection, arena evaluation and search evidence call it directly. It raises
+`ValueError` at the first failed invariant with a specific reason; live selection
+translates that to `GameError("invalid_player_result", ...)`. Callers retain
+identity, timing, protocol and replay checks, including referee transition errors.
+Optional statistics are checked only when present. Validation does not execute
+players, load checkpoints, prove that recorded work occurred, or repair evidence.
+The referee still owns
 outcomes and transitions. Callers apply the result with the returned state hash.
 
 ## Shared mechanics without a framework

@@ -88,8 +88,17 @@ def test_paired_arena_records_replay_and_summarize_mcts_work():
     assert restored.player_a.rollout_plies == 2
 
 
-@pytest.mark.parametrize("fault", ["visits", "steps", "nan", "illegal", "duplicate"])
-def test_shared_boundary_rejects_inconsistent_mcts_diagnostics(monkeypatch, fault):
+@pytest.mark.parametrize(
+    "fault,reason",
+    [
+        ("visits", "MCTS simulation totals disagree"),
+        ("steps", "MCTS work does not partition total nodes"),
+        ("nan", "finite mean value"),
+        ("illegal", "root actions differ from referee"),
+        ("duplicate", "root actions contain duplicates"),
+    ],
+)
+def test_shared_boundary_rejects_inconsistent_mcts_diagnostics(monkeypatch, fault, reason):
     decision = search(Game(), PlayerConfig("mcts", nodes=10))
     stats = decision.mcts
     if fault == "visits":
@@ -110,5 +119,6 @@ def test_shared_boundary_rejects_inconsistent_mcts_diagnostics(monkeypatch, faul
         PlayerInfo("bad-mcts", "test-v1", "Test", "Test", True), lambda game, config: replace(decision, mcts=stats)
     )
     monkeypatch.setattr(catalog, "PLAYERS", MappingProxyType({**catalog.PLAYERS, "bad-mcts": fake}))
-    with pytest.raises(GameError, match="MCTS diagnostics"):
+    with pytest.raises(GameError, match=reason) as error:
         choose(Game(), PlayerConfig("bad-mcts"))
+    assert error.value.code == "invalid_player_result"

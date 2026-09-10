@@ -3,15 +3,18 @@
 import json
 import subprocess
 import sys
-from dataclasses import replace
+from dataclasses import asdict, fields, replace
 
 import pytest
 from typer.testing import CliRunner
 
-from qi import evaluation
+from qi import evaluation, players
 from qi.cli import app
 from qi.evaluation import EvalRun, EvalSpec, run_evaluation, summarize_evaluation
-from qi.players import PlayerConfig
+from qi.experiments.evidence import check_choice
+from qi.game import GameError, legal_moves
+from qi.players import Decision, PlayerConfig
+from qi.players.core import MctsStats, RootMove, SearchStats
 from qi.protocol import Snapshot
 
 
@@ -161,3 +164,122 @@ main()
     assert json.loads(result.stderr)["error"]["code"] == "evaluation_failed"
     assert json.loads(result.stdout)["status"] == "failed"
     assert EvalRun.model_validate_json((output / "run.json").read_text()).games[0].status == "failed"
+
+
+@pytest.mark.parametrize(
+    "corruption,reason",
+    [
+        (None, None),
+        ("simulations", "MCTS simulation totals disagree"),
+        ("root-visits", "Root visits disagree with simulations"),
+        ("partition", "MCTS work does not partition total nodes"),
+        ("root-actions", "root actions contain duplicates"),
+        ("root-value", "finite mean value"),
+        ("exchange", "exchange nodes overlap"),
+        ("cache", "Search cache accounting"),
+        ("cutoffs", "Search cutoffs"),
+        ("extensions", "Search extensions"),
+        ("max-extensions", "Search maximum extensions"),
+        ("multiple", "MCTS simulation totals disagree"),
+    ],
+)
+def test_diagnostics_have_same_meaning_at_all_boundaries(evidence, monkeypatch, corruption, reason):
+    # Hand-counted evidence: two simulations charge two tree visits each.
+    # Optional diagnostics have the same meaning regardless of player ID.
+    entry = evidence.games[0]
+    game = entry.match.opening.game()
+    original = entry.match.turns[0].choice
+    roots = tuple(
+        RootMove(move, 2 if move == original.move else 0, 0.5 if move == original.move else None)
+        for move in legal_moves(game.board, game.turn)
+    )
+    mcts = MctsStats(2, 4, 0, 0, 2, 0, 0, 1, roots)
+    choice = replace(original, nodes=4, mcts=mcts, search_stats=SearchStats(cutoffs=1, tt_hits=2, tt_cutoffs=1))
+    if corruption in ("simulations", "multiple"):
+        choice = replace(choice, mcts=replace(mcts, simulations=3))
+    elif corruption == "root-visits":
+        choice = replace(
+            choice, mcts=replace(mcts, root_moves=tuple(replace(row, visits=3) if row.visits else row for row in roots))
+        )
+    elif corruption == "partition":
+        choice = replace(choice, mcts=replace(mcts, leaf_nodes=1))
+    elif corruption == "root-actions":
+        unvisited = next(row for row in roots if not row.visits)
+        choice = replace(choice, mcts=replace(mcts, root_moves=(*roots, unvisited)))
+    elif corruption == "root-value":
+        choice = replace(
+            choice,
+            mcts=replace(
+                mcts, root_moves=tuple(replace(row, mean_value=float("nan")) if row.visits else row for row in roots)
+            ),
+        )
+    elif corruption == "exchange":
+        choice = replace(choice, qnodes=1, search_stats=SearchStats(see_nodes=4))
+    elif corruption == "cache":
+        choice = replace(choice, search_stats=SearchStats(tt_hits=1, tt_cutoffs=2))
+    elif corruption == "cutoffs":
+        choice = replace(choice, search_stats=SearchStats(cutoffs=5))
+    elif corruption == "extensions":
+        choice = replace(choice, search_stats=SearchStats(extensions=-1))
+    elif corruption == "max-extensions":
+        choice = replace(choice, search_stats=SearchStats(max_extensions=5))
+    if corruption == "multiple":
+        choice = replace(choice, search_stats=SearchStats(cutoffs=-1))
+
+    # All saved validation must remain usable with execution/catalog access disabled.
+    def forbidden(*args, **kwargs):
+        pytest.fail("Saved validation must not dispatch players or bind checkpoints.")
+
+    monkeypatch.setattr(evaluation, "play_match", forbidden)
+    monkeypatch.setattr(evaluation, "bind_config", forbidden)
+    monkeypatch.setattr(evaluation, "get_player", forbidden)
+    monkeypatch.setattr(players, "get_player", forbidden)
+    config = entry.match.red
+    raw = evidence.model_dump(mode="json")
+    raw["games"][0]["match"]["turns"][0]["choice"] = asdict(choice)
+    modified_match = replace(entry.match, turns=(replace(entry.match.turns[0], choice=choice), *entry.match.turns[1:]))
+    modified = evidence.model_copy(
+        update={"games": [entry.model_copy(update={"match": modified_match}), *evidence.games[1:]]}
+    )
+
+    def restore_arena():
+        return EvalRun.model_validate(raw)
+
+    def summarize_arena():
+        return summarize_evaluation(modified)
+
+    def restore_search():
+        return check_choice(asdict(choice), asdict(config), game, original.player_version, match=True)
+
+    for validate in (restore_arena, summarize_arena, restore_search):
+        if reason:
+            with pytest.raises(ValueError, match=reason):
+                validate()
+        else:
+            validate()
+    if reason is None:
+        assert EvalRun.model_validate_json(restore_arena().model_dump_json()) == modified
+
+    decision = Decision(**{field.name: getattr(choice, field.name) for field in fields(Decision)})
+    player = players.Player(
+        players.PlayerInfo(config.kind, original.player_version, "Fixture", "Fixture", False), lambda *_: decision
+    )
+    monkeypatch.setattr(players, "get_player", lambda *_: player)
+    if reason:
+        with pytest.raises(GameError, match=reason) as error:
+            players.choose(game, config)
+        assert error.value.code == "invalid_player_result"
+    else:
+        assert replace(players.choose(game, config), elapsed_ms=choice.elapsed_ms) == choice
+
+
+@pytest.mark.parametrize("move,code", [("a0a9", "illegal_move"), ("bad", "invalid_move")])
+def test_arena_retains_referee_transition_errors(evidence, move, code):
+    entry = evidence.games[0]
+    first = entry.match.turns[0]
+    match = replace(
+        entry.match, turns=(replace(first, choice=replace(first.choice, move=move)), *entry.match.turns[1:])
+    )
+    with pytest.raises(GameError) as error:
+        evidence.validate_match(0, entry.model_copy(update={"match": match}))
+    assert error.value.code == code
