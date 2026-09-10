@@ -1,0 +1,523 @@
+{
+  "version": "generation-policy-engineering-evidence-v1",
+  "execution_history": [
+    {
+      "stage": "original-export-failure",
+      "summary_path": "artifacts/learning/generation-policy-engineering-v1/executions/e8f3bcfc6a244ac79d25d7926e701e3a/summary.json",
+      "summary": {
+        "status": "failed",
+        "generation_status": "complete",
+        "run_id": 1,
+        "games": 5,
+        "reused_games": 0,
+        "selected_by_phase": {
+          "endgame": 1,
+          "middlegame": 10,
+          "opening": 4
+        },
+        "shortfall_by_phase": {
+          "endgame": 4,
+          "middlegame": 0,
+          "opening": 6
+        },
+        "seconds": 3.6243757079937495,
+        "execution_counters": {
+          "actor_attempts": 224,
+          "actor_reported_nodes": 2241319,
+          "actor_successes": 224,
+          "actor_seconds": 2.101300911010185,
+          "label_attempts": 28,
+          "label_reported_nodes": 1630966,
+          "label_successes": 28,
+          "label_seconds": 1.253319831994304
+        },
+        "collection": {
+          "generation_runs": 1,
+          "games": 5,
+          "position_occurrences": 27,
+          "analysis_specs": 3,
+          "analyses": 52,
+          "distinct_boards": 23,
+          "distinct_trajectories": 5
+        },
+        "error": "ValueError: Cross-split observation lineage leakage.",
+        "generation_export_seconds": 3.7279430409980705,
+        "preflight_archive_seconds": 0.12951704199804226,
+        "end_to_end_seconds": 3.857460749997699,
+        "peak_rss_bytes": 72646656,
+        "collection_disk_bytes": 659456,
+        "execution_disk_bytes": 831450,
+        "source_sha256": "032226e345fd79df014369a1b15d7ba5abe0cbfe8488da4498df6710d360a31f",
+        "source_changed_during_run": false
+      }
+    },
+    {
+      "stage": "verified-initial-and-resume",
+      "summary_path": "artifacts/learning/generation-policy-engineering-verified-v1/executions/0c8e13d014904ec1b7d1169c206dc9e3/summary.json",
+      "summary": {
+        "status": "shortfall",
+        "generation_status": "complete",
+        "run_id": 1,
+        "games": 5,
+        "reused_games": 0,
+        "selected_by_phase": {
+          "endgame": 1,
+          "middlegame": 10,
+          "opening": 3
+        },
+        "shortfall_by_phase": {
+          "endgame": 4,
+          "middlegame": 0,
+          "opening": 7
+        },
+        "seconds": 3.1596601249984815,
+        "execution_counters": {
+          "actor_attempts": 224,
+          "actor_reported_nodes": 2241252,
+          "actor_successes": 224,
+          "actor_seconds": 1.8859441210588557,
+          "label_attempts": 26,
+          "label_reported_nodes": 1521230,
+          "label_successes": 26,
+          "label_seconds": 1.0538070009788498
+        },
+        "collection": {
+          "generation_runs": 1,
+          "games": 5,
+          "position_occurrences": 28,
+          "analysis_specs": 3,
+          "analyses": 52,
+          "distinct_boards": 24,
+          "distinct_trajectories": 5
+        },
+        "generation_export_seconds": 3.2116483749996405,
+        "preflight_archive_seconds": 0.10666625000158092,
+        "end_to_end_seconds": 3.3183164169968222,
+        "peak_rss_bytes": 46366720,
+        "collection_disk_bytes": 663552,
+        "execution_disk_bytes": 828126,
+        "source_sha256": "334513481bda006b24f87156bd46393e13a8c2696da83fcf6de68d0b91ccf049",
+        "source_changed_during_run": false
+      }
+    },
+    {
+      "stage": "verified-initial-and-resume",
+      "summary_path": "artifacts/learning/generation-policy-engineering-verified-v1/executions/673899dbd6d84dd3ad5976340d2017e7/summary.json",
+      "summary": {
+        "status": "shortfall",
+        "generation_status": "complete",
+        "run_id": 1,
+        "games": 5,
+        "reused_games": 5,
+        "selected_by_phase": {
+          "endgame": 1,
+          "middlegame": 10,
+          "opening": 3
+        },
+        "shortfall_by_phase": {
+          "endgame": 4,
+          "middlegame": 0,
+          "opening": 7
+        },
+        "seconds": 0.0012310829988564365,
+        "execution_counters": {},
+        "collection": {
+          "generation_runs": 1,
+          "games": 5,
+          "position_occurrences": 28,
+          "analysis_specs": 3,
+          "analyses": 52,
+          "distinct_boards": 24,
+          "distinct_trajectories": 5
+        },
+        "generation_export_seconds": 0.05415829199773725,
+        "preflight_archive_seconds": 0.11686125000414904,
+        "end_to_end_seconds": 0.17102075000002515,
+        "peak_rss_bytes": 43958272,
+        "collection_disk_bytes": 663552,
+        "execution_disk_bytes": 828268,
+        "source_sha256": "334513481bda006b24f87156bd46393e13a8c2696da83fcf6de68d0b91ccf049",
+        "source_changed_during_run": false
+      }
+    },
+    {
+      "stage": "verified-child-and-export",
+      "summary_path": "artifacts/learning/generation-policy-engineering-child-v1/executions/b64d9ffda4144fc395274ad1ed6df1af/summary.json",
+      "summary": {
+        "status": "shortfall",
+        "generation_status": "complete",
+        "run_id": 2,
+        "games": 1,
+        "reused_games": 0,
+        "selected_by_phase": {
+          "endgame": 0,
+          "middlegame": 2,
+          "opening": 0
+        },
+        "shortfall_by_phase": {
+          "endgame": 1,
+          "middlegame": 0,
+          "opening": 2
+        },
+        "seconds": 0.5298283750016708,
+        "execution_counters": {
+          "actor_attempts": 32,
+          "actor_reported_nodes": 320192,
+          "actor_successes": 32,
+          "actor_seconds": 0.35679383499518735,
+          "label_attempts": 4,
+          "label_reported_nodes": 220133,
+          "label_successes": 4,
+          "label_seconds": 0.1416783749955357
+        },
+        "collection": {
+          "generation_runs": 2,
+          "games": 6,
+          "position_occurrences": 32,
+          "analysis_specs": 3,
+          "analyses": 60,
+          "distinct_boards": 27,
+          "distinct_trajectories": 6
+        },
+        "export_seconds": 0.07851258300070185,
+        "snapshot": {
+          "path": "artifacts/learning/generation-policy-engineering-child-v1/executions/b64d9ffda4144fc395274ad1ed6df1af/snapshot",
+          "rows": 2,
+          "read_rows": 2,
+          "verify_read_seconds": 0.0022046670055715367
+        },
+        "generation_export_seconds": 0.6657891249997192,
+        "preflight_archive_seconds": 0.11388420900038909,
+        "end_to_end_seconds": 0.7796737500029849,
+        "peak_rss_bytes": 79134720,
+        "collection_disk_bytes": 778240,
+        "execution_disk_bytes": 977975,
+        "source_sha256": "334513481bda006b24f87156bd46393e13a8c2696da83fcf6de68d0b91ccf049",
+        "source_changed_during_run": false
+      }
+    }
+  ],
+  "sources": [
+    {
+      "game_id": 1,
+      "family": "af94e72fd0061908e043e83a009499643ca12388f224572c881aeb7583c080f9",
+      "parent_trajectory": null,
+      "split": "train",
+      "actor_queries": 32,
+      "actor_nodes": 320155,
+      "actor_ms": 371.05241398967337,
+      "source": "plausible-32-train",
+      "policy": "plausible",
+      "start_ply": 0,
+      "final_ply": 32,
+      "sampling": {
+        "selected": [
+          4,
+          8,
+          29
+        ],
+        "requested": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 2
+        },
+        "actual": {
+          "endgame": 0,
+          "middlegame": 2,
+          "opening": 1
+        },
+        "available": {
+          "endgame": 0,
+          "middlegame": 22,
+          "opening": 3
+        },
+        "shortfall": {
+          "endgame": 1,
+          "middlegame": 0,
+          "opening": 1
+        },
+        "excluded": 0,
+        "duplicates": 3
+      },
+      "decision_reasons": {
+        "complete-best-mismatch": 5,
+        "incompatible-scores": 10,
+        "later-best-changed": 3,
+        "uniform-eligible": 14
+      },
+      "intervention_applied": false
+    },
+    {
+      "game_id": 2,
+      "family": "c44da07de7ab9edc30d471c41988a99963b1d4f5e11c70f12bb2b7789824b426",
+      "parent_trajectory": null,
+      "split": "train",
+      "actor_queries": 96,
+      "actor_nodes": 960523,
+      "actor_ms": 734.59803500009,
+      "source": "plausible-96-train",
+      "policy": "plausible",
+      "start_ply": 0,
+      "final_ply": 96,
+      "sampling": {
+        "selected": [
+          6,
+          23,
+          49,
+          93
+        ],
+        "requested": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 2
+        },
+        "actual": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 1
+        },
+        "available": {
+          "endgame": 41,
+          "middlegame": 47,
+          "opening": 3
+        },
+        "shortfall": {
+          "endgame": 0,
+          "middlegame": 0,
+          "opening": 1
+        },
+        "excluded": 0,
+        "duplicates": 1
+      },
+      "decision_reasons": {
+        "complete-best-mismatch": 31,
+        "incompatible-scores": 23,
+        "later-best-changed": 7,
+        "uniform-eligible": 35
+      },
+      "intervention_applied": false
+    },
+    {
+      "game_id": 3,
+      "family": "c9cbbf6606a16a9a107ef5f9a745fbd5a1ea8839e283ab0f32aa5eece2e47eb7",
+      "parent_trajectory": null,
+      "split": "train",
+      "actor_queries": 48,
+      "actor_nodes": 480321,
+      "actor_ms": 412.7712530462304,
+      "source": "intervention-48-train",
+      "policy": "intervention",
+      "start_ply": 0,
+      "final_ply": 48,
+      "sampling": {
+        "selected": [
+          14,
+          40
+        ],
+        "requested": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 2
+        },
+        "actual": {
+          "endgame": 0,
+          "middlegame": 2,
+          "opening": 0
+        },
+        "available": {
+          "endgame": 0,
+          "middlegame": 44,
+          "opening": 0
+        },
+        "shortfall": {
+          "endgame": 1,
+          "middlegame": 0,
+          "opening": 2
+        },
+        "excluded": 0,
+        "duplicates": 0
+      },
+      "decision_reasons": {
+        "teacher-best": 47,
+        "marked-intervention": 1
+      },
+      "intervention_applied": true
+    },
+    {
+      "game_id": 4,
+      "family": "6690f83e1142bfadcb04fc9e4cc24c044202a1e69fe0981e4417b62e1df610d7",
+      "parent_trajectory": null,
+      "split": "train",
+      "actor_queries": 0,
+      "actor_nodes": 0,
+      "actor_ms": 0.0,
+      "source": "random-48-train",
+      "policy": "random",
+      "start_ply": 0,
+      "final_ply": 48,
+      "sampling": {
+        "selected": [
+          17,
+          21
+        ],
+        "requested": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 2
+        },
+        "actual": {
+          "endgame": 0,
+          "middlegame": 2,
+          "opening": 0
+        },
+        "available": {
+          "endgame": 0,
+          "middlegame": 44,
+          "opening": 0
+        },
+        "shortfall": {
+          "endgame": 1,
+          "middlegame": 0,
+          "opening": 2
+        },
+        "excluded": 0,
+        "duplicates": 0
+      },
+      "decision_reasons": {
+        "uniform-legal": 48
+      },
+      "intervention_applied": false
+    },
+    {
+      "game_id": 5,
+      "family": "0e07664e161e3ffdffe1b55c12998b278c41d8875a4eb2af47193c8d35323a6d",
+      "parent_trajectory": null,
+      "split": "validation",
+      "actor_queries": 48,
+      "actor_nodes": 480253,
+      "actor_ms": 367.52241902286187,
+      "source": "plausible-48-validation",
+      "policy": "plausible",
+      "start_ply": 0,
+      "final_ply": 48,
+      "sampling": {
+        "selected": [
+          4,
+          29,
+          35
+        ],
+        "requested": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 2
+        },
+        "actual": {
+          "endgame": 0,
+          "middlegame": 2,
+          "opening": 1
+        },
+        "available": {
+          "endgame": 0,
+          "middlegame": 41,
+          "opening": 3
+        },
+        "shortfall": {
+          "endgame": 1,
+          "middlegame": 0,
+          "opening": 1
+        },
+        "excluded": 0,
+        "duplicates": 0
+      },
+      "decision_reasons": {
+        "complete-best-mismatch": 13,
+        "incompatible-scores": 9,
+        "later-best-changed": 5,
+        "uniform-eligible": 21
+      },
+      "intervention_applied": false
+    },
+    {
+      "game_id": 6,
+      "family": "af94e72fd0061908e043e83a009499643ca12388f224572c881aeb7583c080f9",
+      "parent_trajectory": "73c62f5ed33beac5b1db084a60abf0bfac21e4df664041a66f431fa02e32d0ef",
+      "split": "train",
+      "actor_queries": 32,
+      "actor_nodes": 320192,
+      "actor_ms": 356.79383499518735,
+      "source": "generated-child-16",
+      "policy": "plausible",
+      "start_ply": 16,
+      "final_ply": 48,
+      "sampling": {
+        "selected": [
+          18,
+          45
+        ],
+        "requested": {
+          "endgame": 1,
+          "middlegame": 2,
+          "opening": 2
+        },
+        "actual": {
+          "endgame": 0,
+          "middlegame": 2,
+          "opening": 0
+        },
+        "available": {
+          "endgame": 0,
+          "middlegame": 32,
+          "opening": 0
+        },
+        "shortfall": {
+          "endgame": 1,
+          "middlegame": 0,
+          "opening": 2
+        },
+        "excluded": 0,
+        "duplicates": 0
+      },
+      "decision_reasons": {
+        "complete-best-mismatch": 6,
+        "uniform-eligible": 17,
+        "incompatible-scores": 8,
+        "later-best-changed": 1
+      },
+      "intervention_applied": false
+    }
+  ],
+  "collection": {
+    "generation_runs": 2,
+    "games": 6,
+    "position_occurrences": 32,
+    "analysis_specs": 3,
+    "analyses": 60,
+    "distinct_boards": 27,
+    "distinct_trajectories": 6,
+    "selected_occurrences": 16,
+    "distinct_selected_inputs": 15,
+    "analysis_statuses": {
+      "success": 60
+    }
+  },
+  "split_audit": {
+    "rule": "exclude every shared non-reserved input plus replay prefixes; no label-quality inspection",
+    "shared": [
+      {
+        "input_hash": "de513e5ac3ef54358d6ec964ffd47aa6610e6f03e947b6a067f3e4d332c90382",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "c3c4",
+            "g6g5",
+            "b2d2",
+            "a9a8"
+          ]
+        }
+      }
+    ]
+  },
+  "limits": "One game per source; provisional settings, one observed shared-input exclusion, 2-row snapshot only. Generation phase shortfalls are retained. No 1M/10M extrapolation, worker-count selection, playing-strength claim or overnight run. PyArrow optional CPU-cache sysctls were restricted by the sandbox; export/read verification passed."
+}

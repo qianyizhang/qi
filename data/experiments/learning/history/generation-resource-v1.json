@@ -1,0 +1,645 @@
+{
+  "version": "generation-resource-evidence-v1",
+  "cells": [
+    {
+      "cell": "intervention-p300-n10000-g32",
+      "raw_results": "artifacts/learning/generation-resource-v1/intervention-p300-n10000-g32/results.json",
+      "raw_sha256": "7c23a170026cdb28382f0682a172fff08e01797824e4e1959b3a511eaa3bab11",
+      "verification": {
+        "games": 32,
+        "successful_analyses": 756,
+        "selected": 336,
+        "unique_selected": 200,
+        "continuation_plies": 2339,
+        "stop_reasons": {
+          "terminal": 32
+        },
+        "referee_outcomes": {
+          "checkmate": 30,
+          "stalemate": 2
+        },
+        "decision_reasons": {
+          "teacher-best": 2307,
+          "marked-intervention": 32
+        },
+        "phases": {
+          "endgame": 54,
+          "middlegame": 251,
+          "opening": 31
+        },
+        "interventions": 32,
+        "intervention_games": 32,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        }
+      },
+      "generation_seconds": 42.935531417002494,
+      "verification_seconds": 0.10444570799882058,
+      "execution_counters": {
+        "actor_attempts": 2339,
+        "actor_reported_nodes": 23091453,
+        "actor_successes": 2339,
+        "actor_seconds": 19.95869989815401,
+        "label_attempts": 336,
+        "label_reported_nodes": 31534073,
+        "label_successes": 336,
+        "label_seconds": 21.1181351380219
+      },
+      "os_written_bytes": 189153280,
+      "database_bytes": 11128832,
+      "peak_combined_rss_bytes": 591986688,
+      "peak_wal_bytes": 4152992,
+      "sql_callbacks": {
+        "SELECT": 21603,
+        "BEGIN": 7325,
+        "INSERT": 3739,
+        "COMMIT": 7325,
+        "UPDATE": 4342
+      },
+      "sql_callback_bytes": {
+        "SELECT": 1312500,
+        "BEGIN": 43950,
+        "INSERT": 2198596,
+        "COMMIT": 43950,
+        "UPDATE": 25868350
+      },
+      "write_amplification": 16.996687523003313,
+      "last_checkpoint_write_per_game_growth": 0.8203102659422362,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 87,
+          "seconds": 14.118377166996652,
+          "os_written_bytes": 57294848
+        },
+        {
+          "games": 32,
+          "unique_selected": 200,
+          "seconds": 42.95473566700093,
+          "os_written_bytes": 187998208
+        }
+      ],
+      "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+      "source_changed": false
+    },
+    {
+      "cell": "intervention-p96-n10000-g128",
+      "raw_results": "artifacts/learning/generation-resource-v1/intervention-p96-n10000-g128/results.json",
+      "raw_sha256": "23678e8e0fb29261cf6f8a6ef80ff71a12857999d805542649ff0b8c1429a368",
+      "verification": {
+        "games": 128,
+        "successful_analyses": 2886,
+        "selected": 1297,
+        "unique_selected": 659,
+        "continuation_plies": 8552,
+        "stop_reasons": {
+          "terminal": 97,
+          "ply-budget": 31
+        },
+        "referee_outcomes": {
+          "checkmate": 96,
+          "unfinished": 31,
+          "stalemate": 1
+        },
+        "decision_reasons": {
+          "teacher-best": 8433,
+          "marked-intervention": 119
+        },
+        "phases": {
+          "endgame": 194,
+          "middlegame": 989,
+          "opening": 114
+        },
+        "interventions": 119,
+        "intervention_games": 128,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        }
+      },
+      "generation_seconds": 181.09606670799985,
+      "verification_seconds": 0.5090382920025149,
+      "execution_counters": {
+        "actor_attempts": 8552,
+        "actor_reported_nodes": 84749044,
+        "actor_successes": 8552,
+        "actor_seconds": 80.79345571530575,
+        "label_attempts": 1297,
+        "label_reported_nodes": 123122683,
+        "label_successes": 1297,
+        "label_seconds": 92.49358643921005
+      },
+      "os_written_bytes": 776765440,
+      "database_bytes": 38924288,
+      "peak_combined_rss_bytes": 597344256,
+      "peak_wal_bytes": 4194192,
+      "sql_callbacks": {
+        "SELECT": 81867,
+        "BEGIN": 27615,
+        "INSERT": 14309,
+        "COMMIT": 27615,
+        "UPDATE": 16192
+      },
+      "sql_callback_bytes": {
+        "SELECT": 5018694,
+        "BEGIN": 165690,
+        "INSERT": 8408866,
+        "COMMIT": 165690,
+        "UPDATE": 90455093
+      },
+      "write_amplification": 19.95580343049563,
+      "last_checkpoint_write_per_game_growth": 1.1211395795311796,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 73,
+          "seconds": 13.56556462500157,
+          "os_written_bytes": 45199360
+        },
+        {
+          "games": 32,
+          "unique_selected": 186,
+          "seconds": 45.402886040996236,
+          "os_written_bytes": 172814336
+        },
+        {
+          "games": 128,
+          "unique_selected": 659,
+          "seconds": 181.09326695799973,
+          "os_written_bytes": 774995968
+        }
+      ],
+      "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+      "source_changed": false
+    },
+    {
+      "cell": "plausible-p300-n10000-g32",
+      "raw_results": "artifacts/learning/generation-resource-v1/plausible-p300-n10000-g32/results.json",
+      "raw_sha256": "009752b960142eb3a3470603e11dba048c62219cca67478cf599e2b3125af60f",
+      "verification": {
+        "games": 32,
+        "successful_analyses": 1623,
+        "selected": 475,
+        "unique_selected": 441,
+        "continuation_plies": 6196,
+        "stop_reasons": {
+          "terminal": 32
+        },
+        "referee_outcomes": {
+          "checkmate": 17,
+          "stalemate": 4,
+          "ply_limit": 11
+        },
+        "decision_reasons": {
+          "complete-best-mismatch": 1376,
+          "incompatible-scores": 1167,
+          "later-best-changed": 245,
+          "uniform-eligible": 3142,
+          "mate-score": 262,
+          "inconsistent-ranks": 4
+        },
+        "phases": {
+          "endgame": 190,
+          "middlegame": 253,
+          "opening": 32
+        },
+        "interventions": 0,
+        "intervention_games": 0,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        }
+      },
+      "generation_seconds": 84.79549308299465,
+      "verification_seconds": 3.6180996670009336,
+      "execution_counters": {
+        "actor_attempts": 6196,
+        "actor_reported_nodes": 61712423,
+        "actor_successes": 6196,
+        "actor_seconds": 46.13858555497427,
+        "label_attempts": 950,
+        "label_reported_nodes": 50982274,
+        "label_successes": 950,
+        "label_seconds": 33.37583346703468
+      },
+      "os_written_bytes": 448458752,
+      "database_bytes": 22466560,
+      "peak_combined_rss_bytes": 597114880,
+      "peak_wal_bytes": 4173592,
+      "sql_callbacks": {
+        "SELECT": 41026,
+        "BEGIN": 15119,
+        "INSERT": 6549,
+        "COMMIT": 15119,
+        "UPDATE": 10193
+      },
+      "sql_callback_bytes": {
+        "SELECT": 2428290,
+        "BEGIN": 90714,
+        "INSERT": 3712071,
+        "COMMIT": 90714,
+        "UPDATE": 58651535
+      },
+      "write_amplification": 19.961166818596173,
+      "last_checkpoint_write_per_game_growth": 1.0186070841428785,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 120,
+          "seconds": 22.420574374998978,
+          "os_written_bytes": 109625344
+        },
+        {
+          "games": 32,
+          "unique_selected": 441,
+          "seconds": 84.8121836249993,
+          "os_written_bytes": 446660608
+        }
+      ],
+      "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+      "source_changed": false
+    },
+    {
+      "cell": "plausible-p96-n10000-g128",
+      "raw_results": "artifacts/learning/generation-resource-v1/plausible-p96-n10000-g128/results.json",
+      "raw_sha256": "7ce1082f778f9fb87a314a01b4a3a54678698de684031bfb28ee00f99744367e",
+      "verification": {
+        "games": 128,
+        "successful_analyses": 5076,
+        "selected": 1575,
+        "unique_selected": 1381,
+        "continuation_plies": 11987,
+        "stop_reasons": {
+          "ply-budget": 109,
+          "terminal": 19
+        },
+        "referee_outcomes": {
+          "unfinished": 109,
+          "checkmate": 18,
+          "stalemate": 1
+        },
+        "decision_reasons": {
+          "complete-best-mismatch": 2711,
+          "incompatible-scores": 3268,
+          "later-best-changed": 547,
+          "uniform-eligible": 5226,
+          "mate-score": 227,
+          "inconsistent-ranks": 8
+        },
+        "phases": {
+          "endgame": 427,
+          "middlegame": 1020,
+          "opening": 128
+        },
+        "interventions": 0,
+        "intervention_games": 0,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        }
+      },
+      "generation_seconds": 256.6874922499992,
+      "verification_seconds": 8.07859124999959,
+      "execution_counters": {
+        "actor_attempts": 11987,
+        "actor_reported_nodes": 119776977,
+        "actor_successes": 11987,
+        "actor_seconds": 105.7448636612462,
+        "label_attempts": 3150,
+        "label_reported_nodes": 171955899,
+        "label_successes": 3150,
+        "label_seconds": 136.99533908789454
+      },
+      "os_written_bytes": 1177178112,
+      "database_bytes": 56139776,
+      "peak_combined_rss_bytes": 600948736,
+      "peak_wal_bytes": 4157112,
+      "sql_callbacks": {
+        "SELECT": 113433,
+        "BEGIN": 39770,
+        "INSERT": 20493,
+        "COMMIT": 39770,
+        "UPDATE": 24353
+      },
+      "sql_callback_bytes": {
+        "SELECT": 6929007,
+        "BEGIN": 238620,
+        "INSERT": 11637433,
+        "COMMIT": 238620,
+        "UPDATE": 130905975
+      },
+      "write_amplification": 20.968699839486355,
+      "last_checkpoint_write_per_game_growth": 1.1053241275265937,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 98,
+          "seconds": 16.553822583999136,
+          "os_written_bytes": 62668800
+        },
+        {
+          "games": 32,
+          "unique_selected": 368,
+          "seconds": 64.56580595899868,
+          "os_written_bytes": 266072064
+        },
+        {
+          "games": 128,
+          "unique_selected": 1381,
+          "seconds": 256.70208820900007,
+          "os_written_bytes": 1176383488
+        }
+      ],
+      "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+      "source_changed": false
+    },
+    {
+      "cell": "plausible-p96-n100000-g32",
+      "raw_results": "artifacts/learning/generation-resource-v1/plausible-p96-n100000-g32/results.json",
+      "raw_sha256": "a08995215f6b50f08406f6038e67ddcecb350f29f888b237ebb03595f8a94c24",
+      "verification": {
+        "games": 32,
+        "successful_analyses": 1255,
+        "selected": 390,
+        "unique_selected": 369,
+        "continuation_plies": 3050,
+        "stop_reasons": {
+          "ply-budget": 30,
+          "terminal": 2
+        },
+        "referee_outcomes": {
+          "unfinished": 30,
+          "checkmate": 2
+        },
+        "decision_reasons": {
+          "incompatible-scores": 788,
+          "uniform-eligible": 1695,
+          "complete-best-mismatch": 438,
+          "mate-score": 53,
+          "later-best-changed": 76
+        },
+        "phases": {
+          "endgame": 112,
+          "middlegame": 255,
+          "opening": 23
+        },
+        "interventions": 0,
+        "intervention_games": 0,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        }
+      },
+      "generation_seconds": 226.65407929199864,
+      "verification_seconds": 0.1756951250063139,
+      "execution_counters": {
+        "actor_attempts": 3050,
+        "actor_reported_nodes": 304765914,
+        "actor_successes": 3050,
+        "actor_seconds": 193.39905489801458,
+        "label_attempts": 780,
+        "label_reported_nodes": 42870960,
+        "label_successes": 780,
+        "label_seconds": 29.13654846897407
+      },
+      "os_written_bytes": 277381120,
+      "database_bytes": 16416768,
+      "peak_combined_rss_bytes": 595591168,
+      "peak_wal_bytes": 4293072,
+      "sql_callbacks": {
+        "SELECT": 28269,
+        "BEGIN": 9932,
+        "INSERT": 5075,
+        "COMMIT": 9932,
+        "UPDATE": 6112
+      },
+      "sql_callback_bytes": {
+        "SELECT": 1713853,
+        "BEGIN": 59592,
+        "INSERT": 2886950,
+        "COMMIT": 59592,
+        "UPDATE": 38026519
+      },
+      "write_amplification": 16.89620758483034,
+      "last_checkpoint_write_per_game_growth": 1.0786349673620887,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 93,
+          "seconds": 57.42808583399892,
+          "os_written_bytes": 64004096
+        },
+        {
+          "games": 32,
+          "unique_selected": 369,
+          "seconds": 226.67310654200264,
+          "os_written_bytes": 276148224
+        }
+      ],
+      "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+      "source_changed": false
+    },
+    {
+      "cell": "random-p300-n10000-g32",
+      "raw_results": "artifacts/learning/generation-resource-v1/random-p300-n10000-g32/results.json",
+      "raw_sha256": "412edd669bf26da5d4ed3b1be5a5147578b461fcd181647e747924dc558be5aa",
+      "verification": {
+        "games": 32,
+        "successful_analyses": 930,
+        "selected": 465,
+        "unique_selected": 464,
+        "continuation_plies": 8979,
+        "stop_reasons": {
+          "terminal": 32
+        },
+        "referee_outcomes": {
+          "ply_limit": 25,
+          "checkmate": 7
+        },
+        "decision_reasons": {
+          "uniform-legal": 8979
+        },
+        "phases": {
+          "endgame": 177,
+          "middlegame": 256,
+          "opening": 32
+        },
+        "interventions": 0,
+        "intervention_games": 0,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        }
+      },
+      "generation_seconds": 37.796597125001426,
+      "verification_seconds": 7.232749624999997,
+      "execution_counters": {
+        "label_attempts": 930,
+        "label_reported_nodes": 49043699,
+        "label_successes": 930,
+        "label_seconds": 32.88344687002245
+      },
+      "os_written_bytes": 408788992,
+      "database_bytes": 15380480,
+      "peak_combined_rss_bytes": 603062272,
+      "peak_wal_bytes": 4157112,
+      "sql_callbacks": {
+        "SELECT": 36331,
+        "BEGIN": 14658,
+        "INSERT": 4218,
+        "COMMIT": 14658,
+        "UPDATE": 11370
+      },
+      "sql_callback_bytes": {
+        "SELECT": 2016058,
+        "BEGIN": 87948,
+        "INSERT": 2458002,
+        "COMMIT": 87948,
+        "UPDATE": 48579471
+      },
+      "write_amplification": 26.578428761651132,
+      "last_checkpoint_write_per_game_growth": 1.022636744415243,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 120,
+          "seconds": 9.607512374997896,
+          "os_written_bytes": 99745792
+        },
+        {
+          "games": 32,
+          "unique_selected": 464,
+          "seconds": 37.815587124998274,
+          "os_written_bytes": 408014848
+        }
+      ],
+      "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+      "source_changed": false
+    },
+    {
+      "cell": "random-p96-n10000-g128",
+      "raw_results": "artifacts/learning/generation-resource-v1/random-p96-n10000-g128/results.json",
+      "raw_sha256": "da460bd9fbe3788e1a1312e6c00ce757ec164e450c832ed97b303f8e18076aec",
+      "verification": {
+        "games": 128,
+        "successful_analyses": 2272,
+        "selected": 1136,
+        "unique_selected": 1117,
+        "continuation_plies": 12168,
+        "stop_reasons": {
+          "ply-budget": 125,
+          "terminal": 3
+        },
+        "decision_reasons": {
+          "uniform-legal": 12168
+        },
+        "phases": {
+          "endgame": 3,
+          "middlegame": 1020,
+          "opening": 113
+        },
+        "interventions": 0,
+        "intervention_games": 0,
+        "pragma": {
+          "journal_mode": "wal",
+          "synchronous": 2,
+          "page_size": 4096,
+          "cache_size": -8192,
+          "wal_autocheckpoint": 1000
+        },
+        "referee_outcomes": {
+          "unfinished": 125,
+          "checkmate": 3
+        }
+      },
+      "generation_seconds": 109.1766684999966,
+      "verification_seconds": 12.626092457998311,
+      "execution_counters": {
+        "label_attempts": 2272,
+        "label_reported_nodes": 123138897,
+        "label_successes": 2272,
+        "label_seconds": 99.85772131095291
+      },
+      "os_written_bytes": 742494208,
+      "database_bytes": 27361280,
+      "peak_combined_rss_bytes": 599539712,
+      "peak_wal_bytes": 4190072,
+      "sql_callbacks": {
+        "SELECT": 69551,
+        "BEGIN": 26187,
+        "INSERT": 10353,
+        "COMMIT": 26187,
+        "UPDATE": 18106
+      },
+      "sql_callback_bytes": {
+        "SELECT": 4042451,
+        "BEGIN": 157122,
+        "INSERT": 6068385,
+        "COMMIT": 157122,
+        "UPDATE": 68692448
+      },
+      "write_amplification": 27.136676646706587,
+      "last_checkpoint_write_per_game_growth": 1.1104216232125776,
+      "checkpoints": [
+        {
+          "games": 8,
+          "unique_selected": 71,
+          "seconds": 6.827987666001718,
+          "os_written_bytes": 40296448
+        },
+        {
+          "games": 32,
+          "unique_selected": 285,
+          "seconds": 27.32967341600306,
+          "os_written_bytes": 166998016
+        },
+        {
+          "games": 128,
+          "unique_selected": 1117,
+          "seconds": 109.19482066600176,
+          "os_written_bytes": 741752832
+        }
+      ],
+      "source_sha256": "b68c8b2f6a3ce3e444729c28b735e233440dbec3498756462f3b5b3c129eac5f",
+      "source_changed": false
+    }
+  ],
+  "matched_horizon_prefixes": {
+    "random": {
+      "paired_prefixes_equal": 32,
+      "compared": 32
+    },
+    "intervention": {
+      "paired_prefixes_equal": 32,
+      "compared": 32
+    },
+    "plausible": {
+      "paired_prefixes_equal": 32,
+      "compared": 32
+    }
+  },
+  "verification": "All 512 planned games complete under the configured horizons; every stored successful analysis and trajectory replayed, integrity/foreign-key checks passed, WAL checkpoint and read-only reopen passed. Phase quota shortfalls are explicit.",
+  "measurement_correction": "First random-96 cell CPU-seconds lacked Mach timebase 125/3; do not use that raw field. OS bytes, RSS, wall time and SQL callback counters are unaffected. Derived referee outcomes for that cell were audited from its collection. No raw evidence was replaced.",
+  "scope": "32 or 128 games per cell; one seed, one machine, serial fresh processes. Unique counts are per cell, not a globally deduplicated combined dataset. OS bytes include spool and compact benchmark logs, not physical NAND writes; trace callbacks may repeat outer statements for triggers.",
+  "decision": "Use 10k actor, paired 10k/100k labels, 300-ply ceilings, plausible-primary 80/10/10 mixture. Prepare 9000-game overnight profile with guards; do not launch automatically.",
+  "overnight_plan": "data/experiments/learning/generation-resource-v1/overnight-plan-v1.json"
+}

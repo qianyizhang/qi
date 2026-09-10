@@ -12,6 +12,10 @@ This package implements [the accepted model](../../../docs/models.md) and
 [ADR-0004](../../../docs/adr/0004-training-data-bounded-context.md). It owns
 selection and composition; the referee owns outcomes and the trainer owns weights.
 
+The [policy generation guide](../../../docs/data-generation.md) owns candidate-based
+plausible play, marked interventions, phase quotas, generated-parent starts and
+the bounded SQLite pilot command. Its numerical example is an engineering recipe.
+
 ## Formats and compatibility
 
 - `v1.py` owns the supported v1 random generator and Dataset validator.

@@ -1,0 +1,26 @@
+{
+  "version": "generation-resource-pilot-v1",
+  "cells": [
+    "data/experiments/learning/generation-resource-v1/random-p96-n10000-g128.json",
+    "data/experiments/learning/generation-resource-v1/intervention-p96-n10000-g128.json",
+    "data/experiments/learning/generation-resource-v1/plausible-p96-n10000-g128.json",
+    "data/experiments/learning/generation-resource-v1/random-p300-n10000-g32.json",
+    "data/experiments/learning/generation-resource-v1/intervention-p300-n10000-g32.json",
+    "data/experiments/learning/generation-resource-v1/plausible-p300-n10000-g32.json",
+    "data/experiments/learning/generation-resource-v1/plausible-p96-n100000-g32.json"
+  ],
+  "progress_games": [
+    8,
+    32,
+    128
+  ],
+  "ordering": "serial fresh process and fresh collection per cell",
+  "per_cell_seconds": 300,
+  "total_launch_window_seconds": 1800,
+  "limits": {
+    "process_and_teacher_rss_bytes": 1500000000,
+    "os_written_bytes_per_cell": 4000000000
+  },
+  "decision_rule": "Compare disk bytes, database size and time per game at fixed horizon across increasing population. Investigate greater than 2x per-game growth from 32 to 128 or greater than 100x OS writes/final DB size before overnight. Report candidate fallback, selected and unique counts, phase shortfalls and terminal versus ply-cap separately. Longer games use 300-ply referee ceiling. Do not change budgets or refill quotas to pass.",
+  "overnight": "Prepare configuration only; do not launch overnight in this pilot."
+}

@@ -1,0 +1,40 @@
+{
+  "version": "overnight-generation-plan-v1",
+  "generation_config": "data/experiments/learning/generation-resource-v1/overnight-long-play-v1.json",
+  "launch_status": "prepared-not-launched",
+  "games": 9000,
+  "games_by_policy": {
+    "plausible": 7200,
+    "intervention": 900,
+    "random": 900
+  },
+  "split_games": {
+    "train": 8100,
+    "validation": 900
+  },
+  "scheduling": "90 blocks of 100 games, each 80 plausible + 10 intervention + 10 random; every tenth block is validation. Cutoffs preserve actual mixture counts.",
+  "actor_nodes": 10000,
+  "label_nodes": [
+    10000,
+    100000
+  ],
+  "ply_ceiling": 300,
+  "per_game_phase_caps": {
+    "opening": 1,
+    "middlegame": 8,
+    "endgame": 8
+  },
+  "spacing_plies": 4,
+  "generation_seconds": 36000,
+  "planning_total_seconds": 43200,
+  "resource_limits": {
+    "max_write_gb": 150,
+    "max_rss_mb": 1500,
+    "min_free_gb": 30
+  },
+  "expected_small_pool_extrapolation": "About 6 hours generation, 6GB SQLite, 118GB OS-attributed writes, 118k distinct positions if tiny-pool rates persisted. These are linear scenarios, not guarantees.",
+  "conservative_planning": "Allow 8-10h generation, 10-20GB free space for collection/journal/snapshot working files and roughly 60k-100k unique inputs after large-pool dedup/exclusions. Stop on any configured guard; do not refill phase quotas or silently extend limits.",
+  "snapshot_policy": "After generation and before training, freeze exclusions for every cross-split shared observation (with replay prefixes), then check supervision ambiguity and quota feasibility. Preserve original records and all exclusion evidence. Export fails closed on unresolved conflicts or shortfall. Do not choose exclusions using model results.",
+  "evaluation": "The existing reserved evaluation opening corpus stays excluded. Newly generated training games are not promoted to full-game Elo evaluation; freeze the separate paired-game protocol under AB-EVAL-004.",
+  "limits": "One sequential persistent teacher and one SQLite writer. No multiworker scaling assumption. Candidate support is partial; this is a throughput/coverage choice, not proof that 10k actor search or 100k labels optimize strength."
+}

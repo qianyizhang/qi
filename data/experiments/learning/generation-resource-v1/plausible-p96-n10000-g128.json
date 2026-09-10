@@ -1,0 +1,141 @@
+{
+  "schema_version": "generation-policy-run-v1",
+  "name": "plausible-p96-n10000-g128",
+  "seed": 17,
+  "seconds": 300.0,
+  "corpus": {
+    "schema_version": 1,
+    "id": "qi-openings-v1",
+    "purpose": "evaluation",
+    "provenance": "Hand-authored legal opening histories for a small engineering baseline. No teacher labels or strength/representativeness claim. Reserved from future training data.",
+    "openings": [
+      {
+        "id": "initial",
+        "description": "Standard initial position.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": []
+        }
+      },
+      {
+        "id": "central-cannon",
+        "description": "Central cannon facing a developed horse.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "b2e2",
+            "b9c7"
+          ]
+        }
+      },
+      {
+        "id": "double-horse",
+        "description": "Both sides develop the left horse.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "b0c2",
+            "b9c7"
+          ]
+        }
+      },
+      {
+        "id": "flank-soldiers",
+        "description": "Both sides advance a flank soldier.",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": [
+            "a3a4",
+            "i6i5"
+          ]
+        }
+      }
+    ]
+  },
+  "teachers": {
+    "10k": {
+      "engine": "../../../../artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon",
+      "network": "../../../../artifacts/teachers/pikafish-2026-01-02/pikafish.nnue",
+      "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+      "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+      "nodes": 10000,
+      "depth": null,
+      "timeout_seconds": 10.0
+    },
+    "100k": {
+      "engine": "../../../../artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon",
+      "network": "../../../../artifacts/teachers/pikafish-2026-01-02/pikafish.nnue",
+      "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+      "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+      "nodes": 100000,
+      "depth": null,
+      "timeout_seconds": 10.0
+    },
+    "actor": {
+      "engine": "../../../../artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon",
+      "network": "../../../../artifacts/teachers/pikafish-2026-01-02/pikafish.nnue",
+      "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+      "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+      "nodes": 10000,
+      "depth": null,
+      "timeout_seconds": 10.0
+    }
+  },
+  "actor_teacher": "actor",
+  "supervision": [
+    "10k",
+    "100k"
+  ],
+  "actor_audit_every": 32,
+  "sources": [
+    {
+      "id": "plausible",
+      "games": 128,
+      "split": "train",
+      "start": {
+        "id": "standard",
+        "version": "1",
+        "snapshot": {
+          "schema_version": 1,
+          "ruleset": "xiangqi-training-v1",
+          "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+          "moves": []
+        },
+        "family_id": null,
+        "themes": [],
+        "objective": null,
+        "curated_phase": null,
+        "phase_authority": null
+      },
+      "parent_trajectory": null,
+      "actor": {
+        "mode": "plausible",
+        "candidate_count": 3,
+        "max_cp_gap": 50,
+        "intervention_min_ply": 12,
+        "intervention_max_ply": 48,
+        "probability_rule": "uniform-eligible-v1"
+      },
+      "additional_plies": 96,
+      "sampling": {
+        "phase_counts": {
+          "opening": 1,
+          "middlegame": 8,
+          "endgame": 8
+        },
+        "min_spacing": 4,
+        "min_ply": 1,
+        "max_ply": 299,
+        "algorithm": "seeded-greedy-phase-v1"
+      }
+    }
+  ]
+}
