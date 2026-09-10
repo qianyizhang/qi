@@ -119,6 +119,31 @@ def test_trace_rejects_changed_code_and_missing_work(tmp_path, monkeypatch):
         inspect_decision(directory, "unit-00000", 0, directory / "other.json")
 
 
+def test_unknown_source_identities_cannot_certify_trace_parity(tmp_path, monkeypatch):
+    from qi.experiments import inspect
+
+    directory = tmp_path / "run"
+    runner.run(plan(), directory)
+    output = directory / "traces/trace.json"
+    inspect_decision(directory, "unit-00000", 0, output)
+    trace = json.loads(output.read_text())
+    manifest_path = directory / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["provenance"]["source_sha256"] = None
+    runner.write_json(manifest_path, manifest)
+    trace["source_sha256"] = None
+    runner.write_json(output, trace)
+    # Unknown identities may be recorded, but two unknowns do not prove equality.
+    run = load_run(directory)
+    with pytest.raises(ValueError, match="code identity missing"):
+        load_traces(directory, run)
+    original = inspect.provenance()
+    monkeypatch.setattr(inspect, "provenance", lambda: {**original, "source_sha256": None})
+    with pytest.raises(ValueError, match="known checkout source identity"):
+        inspect_decision(directory, "unit-00000", 0, directory / "other.json")
+    assert not (directory / "other.json").exists()
+
+
 def test_html_embeds_untrusted_text_as_inert_data(tmp_path):
     specification = plan().model_copy(update={"question": "</script><script>alert('injected')</script>"})
     directory = tmp_path / "run"

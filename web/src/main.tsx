@@ -2,121 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
 import { RequestGate } from "./request-gate";
+import {
+  request,
+  type Choice,
+  type OpponentResult,
+  type PlayerInfo,
+  type Position,
+} from "./api";
+import { Board, color, coord } from "./board";
+import { ChoiceDetails } from "./choice-details";
 
-type Snapshot = {
-  schema_version: 1;
-  ruleset: "xiangqi-training-v1";
-  initial_fen: string;
-  moves: string[];
-};
-type Position = {
-  snapshot: Snapshot;
-  board: string;
-  turn: "red" | "black";
-  ply: number;
-  state_hash: string;
-  legal_moves: string[];
-  in_check: boolean;
-  outcome: { winner: "red" | "black" | null; reason: string } | null;
-};
-type PlayerInfo = {
-  id: string;
-  version: string;
-  label: string;
-  description: string;
-  uses_search: boolean;
-  default_nodes: number;
-  default_depth: number;
-  default_rollout_plies: number | null;
-};
-type Choice = {
-  move: string;
-  player_version: string;
-  nodes: number;
-  completed_depth: number;
-  seed: number;
-  elapsed_ms: number;
-  qnodes: number;
-  max_qply: number;
-  checkpoint_sha256: string | null;
-  model_calls: number;
-  mcts: {
-    simulations: number;
-    tree_visits: number;
-    rollout_steps: number;
-    terminal_simulations: number;
-    rollout_cutoffs: number;
-    budget_cutoffs: number;
-    unfinished_simulations: number;
-    max_tree_depth: number;
-    leaf_nodes: number;
-    leaf_aborts: number;
-    root_moves: { move: string; visits: number; mean_value: number | null }[];
-  } | null;
-  search_stats: {
-    cutoffs: number;
-    see_nodes: number;
-    extensions: number;
-    max_extensions: number;
-    tt_hits: number;
-    tt_cutoffs: number;
-  } | null;
-  evaluation: {
-    material: number;
-    placement: number;
-    mobility: number;
-    king_safety: number;
-  } | null;
-};
-type OpponentResult = { position: Position; choice: Choice };
-const symbols: Record<string, string> = {
-  K: "帥",
-  A: "仕",
-  B: "相",
-  N: "傌",
-  R: "俥",
-  C: "炮",
-  P: "兵",
-  k: "將",
-  a: "士",
-  b: "象",
-  n: "馬",
-  r: "車",
-  c: "砲",
-  p: "卒",
-};
-const names: Record<string, string> = {
-  K: "general",
-  A: "advisor",
-  B: "elephant",
-  N: "horse",
-  R: "chariot",
-  C: "cannon",
-  P: "soldier",
-};
-const coord = (i: number) =>
-  String.fromCharCode(97 + (i % 9)) + Math.floor(i / 9);
-const color = (piece: string) =>
-  piece === piece.toUpperCase() ? "red" : "black";
-async function request<T = Position>(
-  path: string,
-  data?: unknown,
-  signal?: AbortSignal,
-  method: "GET" | "POST" = "POST",
-): Promise<T> {
-  const response = await fetch(`/api/${path}`, {
-    method,
-    signal,
-    headers: { "Content-Type": "application/json" },
-    body: data === undefined ? undefined : JSON.stringify(data),
-  });
-  const result = await response.json();
-  if (!response.ok)
-    throw new Error(
-      result.error?.message ?? "The request failed. Please try again.",
-    );
-  return result;
-}
 function App() {
   const [live, setLive] = useState<Position | null>(null);
   const [view, setView] = useState<Position | null>(null);
@@ -363,150 +258,21 @@ function App() {
           {!view ? (
             <p role="status">Preparing the board…</p>
           ) : (
-            <svg
-              viewBox="0 0 540 600"
-              role="group"
-              aria-label="Chinese chess board"
-              className="board"
-            >
-              <rect
-                x="0"
-                y="0"
-                width="540"
-                height="600"
-                rx="8"
-                fill="#e9d6ae"
-              />
-              <g stroke="#81694b" strokeWidth="1" fill="none">
-                {Array.from({ length: 10 }, (_, y) => (
-                  <path key={`h${y}`} d={`M50 ${48 + y * 56}H498`} />
-                ))}
-                {Array.from({ length: 9 }, (_, x) => (
-                  <path
-                    key={`v${x}`}
-                    d={
-                      x === 0 || x === 8
-                        ? `M${50 + x * 56} 48V552`
-                        : `M${50 + x * 56} 48V272M${50 + x * 56} 328V552`
-                    }
-                  />
-                ))}
-                <path d="M218 48L330 160M330 48L218 160M218 440L330 552M330 440L218 552" />
-              </g>
-              <g fill="#8b714f" fontSize="20" textAnchor="middle">
-                <text x="162" y="309">
-                  楚 河
-                </text>
-                <text x="386" y="309">
-                  漢 界
-                </text>
-              </g>
-              {Array.from({ length: 9 }, (_, x) => (
-                <text
-                  key={x}
-                  x={50 + x * 56}
-                  y="588"
-                  textAnchor="middle"
-                  className="coordinate"
-                >
-                  {String.fromCharCode(97 + (flipped ? 8 - x : x))}
-                </text>
-              ))}
-              {Array.from({ length: 10 }, (_, y) => (
-                <text
-                  key={y}
-                  x="20"
-                  y={53 + y * 56}
-                  textAnchor="middle"
-                  className="coordinate"
-                >
-                  {flipped ? y : 9 - y}
-                </text>
-              ))}
-              {Array.from({ length: 90 }, (_, i) => {
-                const x = 50 + (flipped ? 8 - (i % 9) : i % 9) * 56,
-                  y =
-                    48 +
-                    (flipped ? Math.floor(i / 9) : 9 - Math.floor(i / 9)) * 56;
-                const piece = view.board[i],
-                  sq = coord(i),
-                  active = selected === sq;
-                const destination =
-                  selected && view.legal_moves.includes(selected + sq);
-                const last = view.snapshot.moves.at(-1);
-                const recent =
-                  last?.slice(0, 2) === sq || last?.slice(2) === sq;
-                const label = `${sq}${piece === "." ? " empty" : ` ${color(piece)} ${names[piece.toUpperCase()]}`}${destination ? ", legal destination" : ""}`;
-                return (
-                  <g
-                    key={i}
-                    transform={`translate(${x},${y})`}
-                    role="button"
-                    tabIndex={
-                      busy || thinking || opponentTurn || reviewing ? -1 : 0
-                    }
-                    aria-disabled={
-                      busy ||
-                      thinking ||
-                      opponentTurn ||
-                      reviewing ||
-                      !!view.outcome ||
-                      confirmNew
-                    }
-                    aria-label={label}
-                    aria-pressed={active}
-                    onClick={() => void choose(i)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        void choose(i);
-                      }
-                    }}
-                    className="square"
-                  >
-                    <circle
-                      r="26"
-                      fill={recent ? "#c0a672" : "transparent"}
-                      opacity="0.5"
-                    />
-                    {piece !== "." && (
-                      <>
-                        <circle
-                          r="23"
-                          fill="#f9ecd2"
-                          stroke={active ? "#a4382d" : "#aa8b5a"}
-                          strokeWidth={active ? 3 : 1.5}
-                        />
-                        <circle
-                          r="19"
-                          fill="none"
-                          stroke={
-                            color(piece) === "red" ? "#b54d3e" : "#484840"
-                          }
-                          opacity="0.5"
-                        />
-                        <text
-                          y="9"
-                          textAnchor="middle"
-                          fontSize="28"
-                          fill={color(piece) === "red" ? "#a4382d" : "#2b3532"}
-                        >
-                          {symbols[piece]}
-                        </text>
-                      </>
-                    )}
-                    {destination && (
-                      <circle
-                        r={piece === "." ? 7 : 25}
-                        fill={piece === "." ? "#426954" : "none"}
-                        stroke="#426954"
-                        strokeWidth="3"
-                      />
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
+            <Board
+              view={view}
+              flipped={flipped}
+              selected={selected}
+              keyboardDisabled={busy || thinking || opponentTurn || reviewing}
+              disabled={
+                busy ||
+                thinking ||
+                opponentTurn ||
+                reviewing ||
+                !!view.outcome ||
+                confirmNew
+              }
+              onChoose={choose}
+            />
           )}
           <div className="board-bottom">
             <span>{flipped ? "BLACK · 黑方" : "RED · 紅方"}</span>
@@ -600,143 +366,7 @@ function App() {
                   Retry opponent
                 </button>
               )}
-            {lastChoice && !reviewing && (
-              <details>
-                <summary>Last computer move</summary>
-                <p>
-                  {lastChoice.move} · {lastChoice.player_version}
-                  <br />
-                  {lastChoice.model_calls > 0
-                    ? `${lastChoice.model_calls} model pass`
-                    : lastChoice.mcts
-                      ? `${lastChoice.mcts.simulations} simulations · ${lastChoice.nodes} visits`
-                      : `${lastChoice.nodes} nodes · depth ${lastChoice.completed_depth}`}{" "}
-                  · {lastChoice.elapsed_ms.toFixed(0)} ms · seed{" "}
-                  {lastChoice.seed}
-                  {lastChoice.checkpoint_sha256 && (
-                    <>
-                      <br />
-                      Checkpoint {lastChoice.checkpoint_sha256.slice(0, 12)}
-                    </>
-                  )}
-                  {lastChoice.qnodes > 0 && (
-                    <>
-                      <br />
-                      {lastChoice.qnodes} quiescence nodes · up to{" "}
-                      {lastChoice.max_qply} extra plies
-                    </>
-                  )}
-                </p>
-                {lastChoice.search_stats && (
-                  <p>
-                    {lastChoice.search_stats.cutoffs} alpha-beta cutoffs ·{" "}
-                    {lastChoice.search_stats.see_nodes} exchange-analysis visits
-                    <br />
-                    {lastChoice.search_stats.extensions} check extensions · at
-                    most {lastChoice.search_stats.max_extensions} per path
-                    <br />
-                    {lastChoice.search_stats.tt_hits} cache hits ·{" "}
-                    {lastChoice.search_stats.tt_cutoffs} cached cutoffs
-                  </p>
-                )}
-                {lastChoice.evaluation && (
-                  <div className="evaluation-terms">
-                    <p>
-                      Before-move static assessment · computer’s perspective
-                    </p>
-                    <dl>
-                      <dt>Material</dt>
-                      <dd>{lastChoice.evaluation.material}</dd>
-                      <dt>Piece placement</dt>
-                      <dd>{lastChoice.evaluation.placement}</dd>
-                      <dt>Mobility</dt>
-                      <dd>{lastChoice.evaluation.mobility}</dd>
-                      <dt>King safety</dt>
-                      <dd>{lastChoice.evaluation.king_safety}</dd>
-                      <dt>Total heuristic</dt>
-                      <dd>
-                        {Object.values(lastChoice.evaluation).reduce(
-                          (a, b) => a + b,
-                          0,
-                        )}
-                      </dd>
-                    </dl>
-                  </div>
-                )}
-                {lastChoice.mcts && (
-                  <>
-                    <p>
-                      {lastChoice.mcts.tree_visits} tree visits ·{" "}
-                      {lastChoice.mcts.rollout_steps} rollout steps
-                      {lastChoice.mcts.leaf_nodes > 0 &&
-                        ` · ${lastChoice.mcts.leaf_nodes} tactical leaf visits`}
-                      <br />
-                      {lastChoice.mcts.terminal_simulations} terminal results ·{" "}
-                      {lastChoice.mcts.rollout_cutoffs +
-                        lastChoice.mcts.budget_cutoffs}{" "}
-                      heuristic cutoffs
-                      <br />
-                      Deepest tree path: {lastChoice.mcts.max_tree_depth} plies.
-                      {lastChoice.mcts.unfinished_simulations > 0 &&
-                        (lastChoice.mcts.leaf_aborts > 0
-                          ? " Budget interrupted the final tactical evaluation; its value was discarded."
-                          : " Budget ended before another root move could be sampled.")}
-                    </p>
-                    <p>
-                      Estimates favor the computer when positive; they are not
-                      win probabilities. The most-visited move is chosen.
-                    </p>
-                    <div
-                      className="root-moves"
-                      tabIndex={0}
-                      role="region"
-                      aria-label="MCTS root move statistics"
-                    >
-                      <table>
-                        <caption>Root moves · computer’s perspective</caption>
-                        <thead>
-                          <tr>
-                            <th scope="col">Move</th>
-                            <th scope="col">Visits</th>
-                            <th scope="col">Mean estimate</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {[...lastChoice.mcts.root_moves]
-                            .sort(
-                              (a, b) =>
-                                b.visits - a.visits ||
-                                (b.mean_value ?? -2) - (a.mean_value ?? -2) ||
-                                a.move.localeCompare(b.move),
-                            )
-                            .map((row) => (
-                              <tr
-                                key={row.move}
-                                className={
-                                  row.move === lastChoice.move
-                                    ? "chosen"
-                                    : undefined
-                                }
-                              >
-                                <th scope="row">
-                                  {row.move}
-                                  {row.move === lastChoice.move ? " ✓" : ""}
-                                </th>
-                                <td>{row.visits}</td>
-                                <td>
-                                  {row.mean_value === null
-                                    ? "—"
-                                    : row.mean_value.toFixed(3)}
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
-              </details>
-            )}
+            {lastChoice && !reviewing && <ChoiceDetails choice={lastChoice} />}
             <div className="meta">
               <span>MOVE HISTORY</span>
               <strong>

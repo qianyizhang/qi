@@ -4,9 +4,10 @@ from pathlib import Path
 from statistics import mean, pstdev
 from time import perf_counter
 
+from qi.artifacts import write_json
 from qi.game import GameError
 from qi.learning.config import Recipe
-from qi.learning.experiment import LearningPlan, source_identity, summarize, write_json
+from qi.learning.experiment import LearningPlan, source_identity, summarize
 from qi.training_data.assembly import TrainingDataset
 from qi.training_data.loading import PreparedDataset
 
@@ -78,8 +79,8 @@ def _execute(
     manifest.update(source_identity(), source_config=str(source_config.resolve()) if source_config else None)
     output.mkdir(parents=True)
     (output / "dataset.json").write_text(dataset.model_dump_json() + "\n")
-    write_json(output / "config.json", recipe.model_dump())
-    write_json(output / "manifest.json", manifest)
+    write_json(output / "config.json", recipe.model_dump(), indent=2)
+    write_json(output / "manifest.json", manifest, indent=2)
     result = {"status": "running", "planned_trials": manifest["planned_trials"], "trials": []}
     started = perf_counter()
 
@@ -89,7 +90,7 @@ def _execute(
             result["cases"] = summarize_cases(result["trials"], manifest["trials"])
         else:
             result["curve"] = summarize(result["trials"], legacy_plan)
-        write_json(output / "summary.json", result)
+        write_json(output / "summary.json", result, indent=2)
 
     save()
     try:
@@ -105,7 +106,7 @@ def _execute(
             config.derived_from = recipe.origin_config
             config.origin_config = str((output / f"{name}.config.json").resolve())
             result["active_trial"] = name
-            write_json(output / f"{name}.config.json", config.model_dump())
+            write_json(output / f"{name}.config.json", config.model_dump(), indent=2)
             save()
             report = train(
                 dataset,
@@ -118,7 +119,7 @@ def _execute(
                 threads=config.execution.threads,
                 train_inputs=planned["train_inputs"],
             )
-            write_json(output / f"{name}.json", report)
+            write_json(output / f"{name}.json", report, indent=2)
             result["trials"].append(
                 {"case": case, "seed": config.training.seed, "config": f"{name}.config.json", "report": report}
             )

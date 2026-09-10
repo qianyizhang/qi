@@ -17,6 +17,7 @@ def inspect_decision(directory: Path, unit_id: str, turn_index: int, output: Pat
     run = load_run(directory)
     current = provenance()
     saved = run["manifest"]["provenance"]
+    require(current["source_sha256"] is not None, "Tracing requires a known checkout source identity.")
     require(
         all(current[key] == saved[key] for key in ("source_sha256", "python", "packages")),
         "Code or runtime changed; run a new benchmark before tracing.",
@@ -65,7 +66,10 @@ def validate_trace(trace: dict, unit: dict, manifest: dict) -> None:
         and trace["unit_sha256"] == unit["sha256"],
         "Trace source unit mismatch.",
     )
-    require(trace["source_sha256"] == manifest["provenance"]["source_sha256"], "Trace code identity mismatch.")
+    require(
+        trace["source_sha256"] is not None and trace["source_sha256"] == manifest["provenance"]["source_sha256"],
+        "Trace code identity missing or mismatched.",
+    )
     index = trace["turn_index"]
     require(0 <= index < len(unit["turns"]), "Trace decision index is invalid.")
     turn = unit["turns"][index]

@@ -1,15 +1,13 @@
 """Bounded learning curves over fixed data, nested subsets, and explicit seeds."""
 
-import json
-import subprocess
 import sys
-from hashlib import sha256
 from pathlib import Path
 from random import Random
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from qi.artifacts import source_provenance
 from qi.evaluation import Corpus
 from qi.game import GameError
 from qi.training_data.v1 import MAX_LABELS, Dataset
@@ -77,34 +75,14 @@ def preview(dataset: Dataset, corpus: Corpus, plan: LearningPlan) -> dict:
     }
 
 
-def write_json(path: Path, value: dict) -> None:
-    temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
-    temporary.replace(path)
-
-
 def source_identity() -> dict:
-    root = Path(__file__).resolve().parents[3]
-    files = [*sorted((root / "src/qi").rglob("*.py")), root / "pyproject.toml", root / "uv.lock"]
-    digest = sha256()
-    for path in files:
-        digest.update(str(path.relative_to(root)).encode() + b"\0" + path.read_bytes() + b"\0")
-    identity = {"source_sha256": digest.hexdigest(), "python": sys.version, "git_revision": None, "git_dirty": None}
-    try:
-        revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True)
-        status = subprocess.run(
-            ["git", "status", "--porcelain", "--", "src/qi", "pyproject.toml", "uv.lock"],
-            cwd=root,
-            capture_output=True,
-            text=True,
-        )
-    except OSError:
-        return identity
-    identity.update(
-        git_revision=revision.stdout.strip() if revision.returncode == 0 else None,
-        git_dirty=bool(status.stdout) if status.returncode == 0 else None,
-    )
-    return identity
+    source = source_provenance(include_assets=False, paths=("src/qi", "pyproject.toml", "uv.lock"))
+    return {
+        "source_sha256": source["source_sha256"],
+        "python": sys.version,
+        "git_revision": source["commit"],
+        "git_dirty": bool(source["working_tree"]) if source["working_tree"] is not None else None,
+    }
 
 
 def summarize(trials: list[dict], plan: LearningPlan) -> list[dict]:

@@ -2,7 +2,7 @@
 description: Run a bounded local teacher-imitation experiment and interpret its evidence.
 scope: supervised policy learning
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -143,7 +143,7 @@ QI_POLICY_CHECKPOINT=artifacts/learning/policy-v1.pt \
 Use fresh output paths for new experiments. Existing datasets and checkpoints
 are never overwritten. Reports are JSON on stdout; errors go to stderr.
 
-## Data boundary (`data.py`)
+## Legacy dataset generation (`training_data/v1.py`)
 
 The default generator makes 16 seeded random legal trajectories of up to 32 plies,
 assigns four whole source games to validation before sampling, and queries up to

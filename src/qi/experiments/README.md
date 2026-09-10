@@ -2,7 +2,7 @@
 description: Plan, run, verify, compare, and inspect bounded local search experiments.
 scope: search experiment evidence and reports
 status: experimental
-last_update: 2026-09-08
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -114,10 +114,12 @@ recording only; search remains unchanged. Omitted events make the recording
 explicitly incomplete. An interrupted search can have a complete recording of
 everything it actually explored. The viewer expands lazily and pages siblings.
 
-Inspection requires the original source digest and Python/package versions, then
+Inspection requires a known original source digest and Python/package versions, then
 checks the move and every deterministic diagnostic against the saved untraced
 choice. Trace timing stays separate. Validation checks parent ordering and all
 charged visits; it does not independently prove each heuristic score.
+An installed package without checkout sources and the dependency lockfile records
+`null` source/Git identity and cannot establish inspection parity.
 
 ## Beginner guide and glossary
 

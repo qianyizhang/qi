@@ -2,7 +2,7 @@
 description: Minimal method for comparable experiments and durable learning.
 scope: experiment methodology
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -60,6 +60,9 @@ checkpoints; no separate fingerprint registry is needed.
 Manifests also record the Git revision and whether source/dependency files are
 dirty. Commit experiment code before relying on Git for reconstruction; a dirty
 run's source hash alone cannot recover uncommitted code.
+Without the checkout source and dependency lockfile, source and Git identity
+fields are `null`; runtime/package metadata remains available. This supports
+installed-package runs without claiming a reconstructable checkout identity.
 
 Compare intended variables first, then check other config differences, dataset and
 implementation identities, and completeness before interpreting a gain. The current
