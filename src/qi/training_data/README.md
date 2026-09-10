@@ -2,7 +2,7 @@
 description: Replay-backed generation, reusable supervision and frozen training mixture contracts.
 scope: training data module
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -38,10 +38,18 @@ selection and composition; the referee owns outcomes and the trainer owns weight
 
 ## Selection and provenance
 
+`relabel.py` selects explicit validation inputs while retaining every training
+label, and replaces supervision on exactly those frozen full-history inputs.
+`relabeled-dataset-v1` retains source records, input order and the selected parent
+digest. It requires one legal answer per input and one uniform teacher identity;
+missing answers, changed histories and mixed supervision are rejected. This is
+label replacement, not new source generation. The loader and trainer accept this
+format alongside existing formats.
+
 `selection.py` supports bounded reuse of historical v1 labels. Its
-`selected-legacy-dataset-v1` format retains exact selected training labels, all
-held-out labels, contributing replay sources, and the parent dataset digest.
-`select_training` rejects missing, duplicate and held-out input IDs; it reuses
+`select_training` operation retains exact selected training labels, all held-out
+labels, contributing replay sources, and the parent dataset digest in
+`selected-legacy-dataset-v1`. It rejects missing, duplicate and held-out input IDs; it reuses
 the v1 replay/leakage validator without claiming to regenerate the selected data.
 The original artifact stays unchanged. This is an explicit historical selection
 adapter; new generated mixtures continue through `assembly.py`.

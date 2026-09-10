@@ -16,12 +16,15 @@ Use the [method](../../../docs/experiments.md) and [trainer guide](../../../src/
 for new experiments. Training recipes here can be previewed with `qi learn run --config`.
 The [preparation example](preparation-two-mode-v1.json) instead runs through
 `qi data prepare --config`; source-coverage protocol JSON is consumed by its study script.
+The [teacher-quality protocol](teacher-quality-v1.json) uses
+`scripts/run_teacher_quality.py`, with repository-relative paths; it is not a training recipe.
 The historical recipes reconstruct settings, not the original implementation.
 Their prepared datasets and weights are local, ignored artifacts; a fresh clone
 alone cannot rerun them. Dataset paths in recipes resolve relative to the config file.
 
 | Historical material | Recipe / retrospective record | Original local evidence |
 | --- | --- | --- |
+| Controlled teacher-label student comparison (18 complete fits) | [Protocol](teacher-quality-v1.json), [results](history/teacher-quality-v1.json), [interpretation](../../../records/work-items/items/AB-LEARN-009-teacher-quality.md) | `artifacts/learning/teacher-quality-v1/` |
 | Teacher budget, MultiPV/WDL, throughput and root-trace pilots | [Aggregates](history/teacher-generation-pilot-v1.json), [owning advisory](../../../records/reports/2026-09-09-teacher-generation-advisory.md) | `artifacts/pikafish-*-20260909/` |
 | Initial imitation and tiny overfit | [Record](history/smoke-v1.json) | `artifacts/learning/diagnostic-v1-report.json`, `policy-v1-report.json` |
 | Nested data-size curve | [Recipe](generalization-v1.json), [record](history/generalization-v1.json) | `artifacts/learning/generalization-v1/` |

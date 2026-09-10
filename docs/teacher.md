@@ -2,7 +2,7 @@
 description: Local UCI teacher contract, pinned Pikafish setup, and validation limits.
 scope: external teacher interface
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -41,6 +41,15 @@ with qi. The installer currently targets Apple Silicon macOS; the pipe adapter
 uses POSIX selectors and is not a Windows implementation.
 
 ## Protocol and records
+
+The Python adapter also accepts `TeacherConfig(depth=None)` for node-only search,
+plus explicit `multipv` and `show_wdl` options. These emit version-2 analysis
+records; ordinary capped, single-PV queries retain version 1. Persistent sessions
+reset both optional settings between queries. MultiPV records retain raw scores
+per candidate and leave the top-level score empty instead of assigning the last
+candidate's score to the selected move. The `qi teach` CLI retains its depth cap.
+The [teacher-quality comparison](../records/work-items/items/AB-LEARN-009-teacher-quality.md)
+uses these options for a shared reference and separate all-legal candidate scores.
 
 Following the [upstream UCI contract](https://github.com/official-pikafish/Pikafish/wiki/UCI-%26-Commands),
 fresh analysis launches a process, waits for `uciok`, requires a named engine

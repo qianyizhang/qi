@@ -27,6 +27,7 @@ player chooses legal actions; the referee owns outcomes. See the [core model](..
 | Tested tuning alternatives did not improve fresh-test top-1 agreement | [Tuning](../work-items/items/AB-LEARN-003-local-policy-tuning.md); small-data regime | Substantially different data scale; this is not a universal rejection of width or regularization |
 | Broader source coverage improved imitation at equal label count | [Source-coverage comparison](../work-items/items/AB-LEARN-006-source-coverage.md): 14.15% → 16.83% agreement; all nine paired fits favored 192 × 4 over 48 × 16, across three source blocks; previously inspected holdout | Fresh source/holdout confirmation, or changed teacher, phase distribution, label budget or representation |
 | The source-coverage direction transferred to fresh blocks and holdouts | [Fresh confirmation](../work-items/items/AB-LEARN-007-fresh-source-confirmation.md): 12.91% → 14.58% agreement across three generation seeds and 6037 held-out positions; all nine pairs favored broader coverage and the predeclared rule passed | Changed teacher, phase distribution, label budget or representation; these absolute scores use a different benchmark from the exploratory comparison |
+| Stronger labels gave mixed student-imitation results but better supporting move estimates | [Teacher-quality comparison](../work-items/items/AB-LEARN-009-teacher-quality.md): +0.955 percentage points mean agreement, block differences -0.521/+1.042/+2.344; supporting expected-score loss improved in all three blocks; 18 fits on fixed inputs with a shared 1M reference | Fresh source blocks and evaluation games under a separately locked decision rule; current result remains exploratory and inconclusive |
 
 ## Unknowns
 
@@ -49,12 +50,25 @@ own curriculum vocabulary and composition.
 ## Work
 
 - [Config scaffold and retrospective migration](../work-items/items/AB-LEARN-005-experiment-configs.md).
-- [Teacher-quality audit](../work-items/items/AB-LEARN-009-teacher-quality.md).
+- [Teacher-quality training comparison](../work-items/items/AB-LEARN-009-teacher-quality.md).
 - [Historical recipes and observations](../../data/experiments/learning/README.md).
 
 Work-item records own execution status; this page owns only the synthesis.
 
 ## Learning ledger
+
+2026-09-10: the teacher-quality comparison completed all 18 fits in 20.02 minutes.
+Stronger labels improved mean shared-reference agreement by 0.955 percentage
+points and reduced supporting move disadvantage in every block, but one block
+failed the positive primary-direction criterion. Retain the inconclusive outcome
+and existing defaults; repeatability of the supporting signal needs fresh sources.
+
+2026-09-10: selected a controlled shallow-versus-100k teacher-label training
+comparison, using the September 9 teacher-budget and MultiPV pilots as prior
+evidence. AB-LEARN-009 locks identical training inputs, 18 paired fits, a shared
+1M-node evaluation reference on 384 previously inspected validation positions,
+and a two-hour execution allowance. This planning entry preceded the completed
+exploratory result recorded above.
 
 2026-09-09: distinguish negative tuning results at tiny scale from positive data
 scaling under a fixed recipe. Preserve both findings and their conditions. An

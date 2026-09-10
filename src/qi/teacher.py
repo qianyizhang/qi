@@ -9,7 +9,7 @@ from pathlib import Path
 from time import monotonic, perf_counter
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from qi.game import Game, GameError, legal_moves
 from qi.protocol import Snapshot
@@ -20,12 +20,21 @@ class TeacherConfig:
     engine: Path
     network: Path
     nodes: int = 10_000
-    depth: int = 6
+    depth: int | None = 6
     timeout_seconds: float = 10
+    multipv: int = 1
+    show_wdl: bool = False
 
     def __post_init__(self) -> None:
-        if self.nodes < 1 or not 1 <= self.depth <= 64 or not 0 < self.timeout_seconds <= 120:
-            raise GameError("invalid_budget", "Teacher needs positive nodes, depth 1-64, and timeout in (0, 120].")
+        if (
+            self.nodes < 1
+            or (self.depth is not None and not 1 <= self.depth <= 64)
+            or not 0 < self.timeout_seconds <= 120
+            or not 1 <= self.multipv <= 256
+        ):
+            raise GameError(
+                "invalid_budget", "Use positive nodes, optional depth 1-64, MultiPV 1-256 and timeout (0,120]."
+            )
         for path in (self.engine, self.network):
             if not path.is_file() or any(c in str(path.resolve()) for c in "\r\n"):
                 raise GameError("invalid_teacher", "Engine and network must be existing files with single-line paths.")
@@ -40,8 +49,8 @@ class TeacherScore(BaseModel):
 
 
 class TeacherAnalysis(BaseModel):
-    schema_version: Literal[1] = 1
-    adapter_version: Literal["uci-teacher-v1"] = "uci-teacher-v1"
+    schema_version: Literal[1, 2] = 1
+    adapter_version: Literal["uci-teacher-v1", "uci-teacher-v2"] = "uci-teacher-v1"
     snapshot: Snapshot
     state_hash: str
     move: str
@@ -50,7 +59,7 @@ class TeacherAnalysis(BaseModel):
     network_sha256: str
     settings: dict[str, str]
     requested_nodes: int
-    requested_depth: int
+    requested_depth: int | None
     timeout_seconds: float
     reported_nodes: int | None
     reported_depth: int | None
@@ -59,6 +68,18 @@ class TeacherAnalysis(BaseModel):
     search_info: list[str]
     invalid_actions: int = 0
     retries: int = 0
+
+    @model_validator(mode="after")
+    def versioned_search(self):
+        if self.adapter_version != f"uci-teacher-v{self.schema_version}":
+            raise ValueError("Teacher schema and adapter versions must agree.")
+        if self.schema_version == 1 and (
+            self.requested_depth is None
+            or self.settings.get("MultiPV", "1") != "1"
+            or self.settings.get("UCI_ShowWDL") == "true"
+        ):
+            raise ValueError("Node-only, MultiPV and WDL records require teacher schema v2.")
+        return self
 
 
 def digest(path: Path) -> str:
@@ -175,13 +196,16 @@ class TeacherSession:
         self.engine: UciProcess | None = None
         self.closed = False
         self.name = ""
+        self.options: set[str] = set()
         self.settings = {
             "Threads": "1",
             "Hash": "16",
-            "MultiPV": "1",
+            "MultiPV": str(config.multipv),
             "Ponder": "false",
             "EvalFile": str(config.network.resolve()),
         }
+        if config.show_wdl:
+            self.settings["UCI_ShowWDL"] = "true"
 
     def __enter__(self) -> "TeacherSession":
         return self
@@ -230,6 +254,7 @@ class TeacherSession:
                 for line in handshake
                 if line.startswith("option name ")
             }
+            self.options = options
             if not name or not settings.keys() <= options:
                 raise GameError(
                     "teacher_protocol",
@@ -242,11 +267,20 @@ class TeacherSession:
             engine = self.engine
             engine.deadline = monotonic() + config.timeout_seconds
             engine.total = len(engine.pending)
+        desired = {"MultiPV": str(config.multipv)}
+        if config.show_wdl or "UCI_ShowWDL" in self.settings:
+            desired["UCI_ShowWDL"] = str(config.show_wdl).lower()
+        for key, value in desired.items():
+            if key not in self.options:
+                raise GameError("teacher_protocol", f"Teacher does not support {key}.")
+            if self.settings.get(key) != value:
+                engine.send(f"setoption name {key} value {value}")
+                self.settings[key] = value
         engine.send("ucinewgame")
         engine.send("isready")
         engine.until("readyok")
         engine.send("position startpos" + (" moves " + " ".join(game.moves) if game.moves else ""))
-        engine.send(f"go nodes {config.nodes} depth {config.depth}")
+        engine.send(f"go nodes {config.nodes}" + (f" depth {config.depth}" if config.depth is not None else ""))
         info = []
         while True:
             line = engine.line()
@@ -262,6 +296,10 @@ class TeacherSession:
             raise GameError("teacher_illegal_move", f"Teacher proposed a move rejected by qi: {move}")
         nodes, depth, score = read_info(info)
         return TeacherAnalysis(
+            schema_version=2 if config.depth is None or config.multipv != 1 or config.show_wdl else 1,
+            adapter_version=(
+                "uci-teacher-v2" if config.depth is None or config.multipv != 1 or config.show_wdl else "uci-teacher-v1"
+            ),
             snapshot=snapshot,
             state_hash=game.state_hash,
             move=move,
@@ -274,7 +312,7 @@ class TeacherSession:
             timeout_seconds=config.timeout_seconds,
             reported_nodes=nodes,
             reported_depth=depth,
-            score=score,
+            score=score if config.multipv == 1 else None,
             elapsed_ms=(perf_counter() - started) * 1000,
             search_info=info,
         )

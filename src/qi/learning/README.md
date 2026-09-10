@@ -352,6 +352,31 @@ dataset size; the supported cap is a bound, not a memory guarantee on every host
 Games can end early and duplicate inputs are removed, so the generator does not
 guarantee a requested training count. Preview rejects insufficient data.
 
+## Fixed-input teacher-quality study
+
+`teacher_quality.py` runs the locked [AB-LEARN-009](../../../records/work-items/items/AB-LEARN-009-teacher-quality.md)
+comparison. Its study config is separate from a training `Recipe`: it pins parent
+dataset bytes, teacher assets, source/position counts, seeds and the total allowance.
+Paths resolve from the repository root. The study writes complete per-fit recipes.
+
+```bash
+uv run python scripts/run_teacher_quality.py \
+  --config data/experiments/learning/teacher-quality-v1.json \
+  --output artifacts/learning/teacher-quality-v1
+uv run python scripts/run_teacher_quality.py --verify \
+  --output artifacts/learning/teacher-quality-v1
+```
+
+Use a fresh output directory. Data selection precedes teacher queries and all
+reference preparation precedes fitting. Both treatments use identical training
+inputs and a separate shared single-PV reference for comparison. Internal dataset
+validation scores use each treatment's own labels and are diagnostic only.
+All-legal MultiPV/WDL supplies separate common-depth move assessments; missing
+support stays unknown. The verifier reloads checkpoints and recomputes reference
+metrics and paired summaries without querying a teacher or training again.
+Raw answers, source copies, file receipts, failures and planned denominators
+remain in the evidence directory. Study completion does not imply an improvement.
+
 ## Checks
 
 `make check` covers encoding and dataset contracts without requiring torch.

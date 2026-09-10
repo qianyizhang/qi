@@ -1,0 +1,231 @@
+{
+  "date": "2026-09-10",
+  "purpose": "Exploratory fixed-input teacher-label student comparison; no playing-strength or default-change claim",
+  "config": "data/experiments/learning/teacher-quality-v1.json",
+  "evidence_root": "artifacts/learning/teacher-quality-v1",
+  "source_identity": {
+    "source_sha256": "40aae09c91163c2e8d2d8c7e7d5c5ec76e71af83b28a24f2b5a20b0eeddd213b",
+    "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
+    "git_revision": "dedfe5bdb2d0e521a622b03b0bb3a3aa1383841c",
+    "git_dirty": false
+  },
+  "original_checkout_identity": {
+    "source_sha256": "40aae09c91163c2e8d2d8c7e7d5c5ec76e71af83b28a24f2b5a20b0eeddd213b",
+    "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
+    "git_revision": "dedfe5bdb2d0e521a622b03b0bb3a3aa1383841c",
+    "git_dirty": true
+  },
+  "evidence_receipts_sha256": "7fad9d4cd276efbab41c798fb113c26a9371cf5b694d44219d69d5253810fece",
+  "verification": {
+    "verified": true,
+    "status": "complete",
+    "queries": 3456
+  },
+  "status": "complete",
+  "wall_seconds": 1201.0836637499997,
+  "phases": {
+    "candidate-reference": {
+      "queries": 384,
+      "engine_elapsed_seconds": 250.30292903609006,
+      "mean_reported_nodes": 1000314.6484375,
+      "median_reported_depth": 11.0
+    },
+    "reference": {
+      "queries": 384,
+      "engine_elapsed_seconds": 278.6136029989866,
+      "mean_reported_nodes": 990051.296875,
+      "median_reported_depth": 20.0
+    },
+    "strong-labels": {
+      "queries": 2688,
+      "engine_elapsed_seconds": 195.7107962129121,
+      "mean_reported_nodes": 99263.59672619047,
+      "median_reported_depth": 15.0
+    }
+  },
+  "blocks": [
+    {
+      "block": 0,
+      "training_labels_changed": 290,
+      "training_positions": 768,
+      "teacher_reference_agreement": {
+        "baseline": 0.65625,
+        "strong": 0.859375
+      },
+      "candidate_positions": 128,
+      "candidate_complete": 128,
+      "candidate_complete_depth_median": 11.0,
+      "student_metrics": {
+        "baseline": {
+          "agreement": 0.15885416666666666,
+          "cross_entropy": 10.236893018086752
+        },
+        "strong": {
+          "agreement": 0.15364583333333334,
+          "cross_entropy": 12.022408803304037
+        }
+      }
+    },
+    {
+      "block": 1,
+      "training_labels_changed": 276,
+      "training_positions": 768,
+      "teacher_reference_agreement": {
+        "baseline": 0.59375,
+        "strong": 0.875
+      },
+      "candidate_positions": 128,
+      "candidate_complete": 128,
+      "candidate_complete_depth_median": 11.0,
+      "student_metrics": {
+        "baseline": {
+          "agreement": 0.13020833333333334,
+          "cross_entropy": 10.916935284932455
+        },
+        "strong": {
+          "agreement": 0.140625,
+          "cross_entropy": 10.792616844177246
+        }
+      }
+    },
+    {
+      "block": 2,
+      "training_labels_changed": 299,
+      "training_positions": 768,
+      "teacher_reference_agreement": {
+        "baseline": 0.671875,
+        "strong": 0.8359375
+      },
+      "candidate_positions": 128,
+      "candidate_complete": 128,
+      "candidate_complete_depth_median": 11.0,
+      "student_metrics": {
+        "baseline": {
+          "agreement": 0.1796875,
+          "cross_entropy": 11.135616938273111
+        },
+        "strong": {
+          "agreement": 0.203125,
+          "cross_entropy": 11.111244519551596
+        }
+      }
+    }
+  ],
+  "summary": {
+    "planned_fits": 18,
+    "completed_fits": 18,
+    "planned_blocks": 3,
+    "complete_blocks": 3,
+    "blocks": [
+      {
+        "block": 0,
+        "pairs": [
+          {
+            "seed": 7,
+            "agreement_delta": -0.03125,
+            "cross_entropy_delta": 1.8549613952636719,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.03159375
+          },
+          {
+            "seed": 17,
+            "agreement_delta": 0.0,
+            "cross_entropy_delta": 1.7826433181762695,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.011910156250000001
+          },
+          {
+            "seed": 27,
+            "agreement_delta": 0.015625,
+            "cross_entropy_delta": 1.718942642211914,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.012589843750000003
+          }
+        ],
+        "agreement_delta": -0.005208333333333333,
+        "cross_entropy_delta": 1.7855157852172852,
+        "support_complete": true,
+        "disadvantage_delta": -0.018697916666666668,
+        "baseline_agreement": 0.15885416666666666,
+        "strong_agreement": 0.15364583333333334
+      },
+      {
+        "block": 1,
+        "pairs": [
+          {
+            "seed": 7,
+            "agreement_delta": 0.0,
+            "cross_entropy_delta": 0.3085012435913086,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.00018749999999999957
+          },
+          {
+            "seed": 17,
+            "agreement_delta": 0.015625,
+            "cross_entropy_delta": -0.4111509323120117,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.0012109374999999974
+          },
+          {
+            "seed": 27,
+            "agreement_delta": 0.015625,
+            "cross_entropy_delta": -0.2703056335449219,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.034992187499999994
+          }
+        ],
+        "agreement_delta": 0.010416666666666666,
+        "cross_entropy_delta": -0.12431844075520833,
+        "support_complete": true,
+        "disadvantage_delta": -0.01213020833333333,
+        "baseline_agreement": 0.13020833333333334,
+        "strong_agreement": 0.140625
+      },
+      {
+        "block": 2,
+        "pairs": [
+          {
+            "seed": 7,
+            "agreement_delta": 0.0,
+            "cross_entropy_delta": -0.04819011688232422,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.012242187500000003
+          },
+          {
+            "seed": 17,
+            "agreement_delta": 0.03125,
+            "cross_entropy_delta": 0.20300865173339844,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.019984375000000002
+          },
+          {
+            "seed": 27,
+            "agreement_delta": 0.0390625,
+            "cross_entropy_delta": -0.227935791015625,
+            "matched_support": 128,
+            "expected_support": 128,
+            "disadvantage_delta": -0.04328125000000001
+          }
+        ],
+        "agreement_delta": 0.0234375,
+        "cross_entropy_delta": -0.024372418721516926,
+        "support_complete": true,
+        "disadvantage_delta": -0.025169270833333337,
+        "baseline_agreement": 0.1796875,
+        "strong_agreement": 0.203125
+      }
+    ],
+    "agreement_delta": 0.009548611111111112,
+    "outcome": "inconclusive",
+    "interpretation": "exploratory reference imitation; not playing strength or independent seed datasets"
+  },
+  "raw_query_input_and_settings_audit": true
+}

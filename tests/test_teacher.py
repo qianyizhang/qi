@@ -236,3 +236,29 @@ def test_session_cancellation_reaps_process(tmp_path):
     with pytest.raises(ProcessLookupError):
         os.kill(int((tmp_path / "pid").read_text()), 0)
     assert session.closed
+
+
+def test_node_only_queries_are_versioned_and_optional_output_settings_are_reset(tmp_path):
+    config = fake_teacher(tmp_path)
+    engine = config.engine.read_text().replace('"Ponder", "EvalFile")', '"Ponder", "EvalFile", "UCI_ShowWDL")')
+    config.engine.write_text(engine)
+    game = replay(("b2e2",))
+    with TeacherSession(config) as session:
+        first = session.analyze(game, replace(config, depth=None, multipv=2, show_wdl=True))
+        second = session.analyze(game, config)
+    assert first.requested_depth is None and first.schema_version == 2
+    assert first.adapter_version == "uci-teacher-v2" and first.score is None
+    assert first.settings["MultiPV"] == "2" and first.settings["UCI_ShowWDL"] == "true"
+    assert second.settings["MultiPV"] == "1" and second.settings["UCI_ShowWDL"] == "false"
+    assert second.schema_version == 1 and second.score.kind == "mate"
+    assert TeacherAnalysis.model_validate_json(first.model_dump_json()) == first
+    commands = (tmp_path / "commands").read_text().splitlines()
+    assert [line for line in commands if line.startswith("go ")] == ["go nodes 100", "go nodes 100 depth 3"]
+    assert commands.count("uci") == 1 and commands.count("ucinewgame") == 2
+
+
+def test_optional_wdl_requires_engine_support(tmp_path):
+    config = fake_teacher(tmp_path)
+    with pytest.raises(GameError, match="UCI_ShowWDL"):
+        with TeacherSession(config) as session:
+            session.analyze(replay(("b2e2",)), replace(config, show_wdl=True))
