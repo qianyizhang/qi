@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -39,6 +39,13 @@ or link them from that index. `README.md` owns human setup and usage.
 ## Working principles
 
 - **Concise is the key.**
+- **Reinforce vocabulary in context.** When wording suggests uncertainty or a
+  forgotten distinction, connect it to `docs/glossary/ddd.md` with a brief plain
+  explanation or example, then reuse the term naturally. State the interpretation
+  and continue unless ambiguity changes the work. Preserve the user's intended
+  meaning and settled decisions; familiar terms must not constrain a new idea.
+  `domain-modeling` records accepted terminology; `glossary-drill` handles
+  deliberate recall practice when requested. Ordinary work needs no quiz.
 - **Full means full.** When asked to complete, extend, or verify coverage, do the
   actual work — never relabel a partial run as "full".
 - **Before claiming done, verify.** Run the repository checks below and
