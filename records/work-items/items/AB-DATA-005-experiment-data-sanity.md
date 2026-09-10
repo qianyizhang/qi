@@ -54,3 +54,14 @@ Resolve diagnostic-mode behavior and compatibility when this item is selected.
 ## Implementation Ledger
 
 No implementation events yet.
+
+### 2026-09-10 — verification: collection generation-side isolation
+
+- AB-DATA-007 adds exact completed-trajectory and family isolation in the collection
+  path, plus SQL snapshot checks over contributing model inputs. Counterexamples
+  cover identical trajectories with disjoint sampled plies and cross-split input
+  lineage; the checks do not depend on label deduplication hiding a source.
+- Evidence: `src/qi/training_data/test_store.py` and the collection/export guide.
+- Scope: contribution to the new collection path only. Existing JSON-generation
+  hardening and independent arena/checkpoint overlap work remain open here.
+- Review: not-required; within the accepted AB-DATA-007 ownership boundary.

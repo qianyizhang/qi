@@ -13,8 +13,10 @@ from qi.training_data.assembly import MixtureRecipe, assemble
 from qi.training_data.config import load_preparation, prepare_dataset
 from qi.training_data.contracts import GenerationRecipe, Library
 from qi.training_data.generation import generate_library
+from qi.training_data.store_cli import app as collection_app
 
 app = typer.Typer(no_args_is_help=True, help="Replay-backed training examples and frozen mixtures.")
+app.add_typer(collection_app, name="collection")
 
 
 @app.command("prepare")

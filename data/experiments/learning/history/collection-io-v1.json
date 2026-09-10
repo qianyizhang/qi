@@ -1,0 +1,125 @@
+{
+  "schema_version": "collection-io-evidence-v1",
+  "protocol": {
+    "games": [
+      16,
+      64,
+      256
+    ],
+    "seed": 7,
+    "plies": 16,
+    "labels_per_game": 4,
+    "shard_rows": 256,
+    "batch_rows": 128,
+    "repetitions": 1,
+    "teacher": "synthetic-first-legal"
+  },
+  "cells": [
+    {
+      "games": 16,
+      "occurrences": 256,
+      "analyses": 64,
+      "write_seconds": 0.23778683300042758,
+      "occurrences_per_second": 1076.594514379775,
+      "logical_sql_write_bytes": 809583,
+      "export_seconds": 0.04795166699477704,
+      "snapshot_rows": 16,
+      "read_rows": 16,
+      "read_seconds": 0.03607108400319703,
+      "read_rows_per_second": 443.5685935743405,
+      "read_peak_rss_bytes": 71024640,
+      "peak_rss_bytes": 78479360,
+      "disk_bytes": 604619,
+      "shared_observation_exclusions": 2,
+      "source_sha256": "c12f59280fc9545049999e6a7b966a2029e4e0da235007d55ebebc56dd1f4758",
+      "commit": "17361519c25bd0b3ae30ec494e0a78a787a87f37",
+      "runtime": {
+        "python": "3.12.13",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "packages": {
+          "qi": "0.1.0",
+          "pydantic": "2.13.5"
+        }
+      }
+    },
+    {
+      "games": 64,
+      "occurrences": 1024,
+      "analyses": 256,
+      "write_seconds": 0.8392344999956549,
+      "occurrences_per_second": 1220.1595620834244,
+      "logical_sql_write_bytes": 3197834,
+      "export_seconds": 0.05667245900258422,
+      "snapshot_rows": 64,
+      "read_rows": 64,
+      "read_seconds": 0.03634483300265856,
+      "read_rows_per_second": 1760.9105535116507,
+      "read_peak_rss_bytes": 71237632,
+      "peak_rss_bytes": 84623360,
+      "disk_bytes": 1810231,
+      "shared_observation_exclusions": 12,
+      "source_sha256": "c12f59280fc9545049999e6a7b966a2029e4e0da235007d55ebebc56dd1f4758",
+      "commit": "17361519c25bd0b3ae30ec494e0a78a787a87f37",
+      "runtime": {
+        "python": "3.12.13",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "packages": {
+          "qi": "0.1.0",
+          "pydantic": "2.13.5"
+        }
+      }
+    },
+    {
+      "games": 256,
+      "occurrences": 4096,
+      "analyses": 1024,
+      "write_seconds": 3.2129068750000442,
+      "occurrences_per_second": 1274.8579897759855,
+      "logical_sql_write_bytes": 12760193,
+      "export_seconds": 0.09301945899642305,
+      "snapshot_rows": 256,
+      "read_rows": 256,
+      "read_seconds": 0.036266667004383635,
+      "read_rows_per_second": 7058.823463679657,
+      "read_peak_rss_bytes": 72122368,
+      "peak_rss_bytes": 105185280,
+      "disk_bytes": 6574351,
+      "shared_observation_exclusions": 56,
+      "source_sha256": "c12f59280fc9545049999e6a7b966a2029e4e0da235007d55ebebc56dd1f4758",
+      "commit": "17361519c25bd0b3ae30ec494e0a78a787a87f37",
+      "runtime": {
+        "python": "3.12.13",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "packages": {
+          "qi": "0.1.0",
+          "pydantic": "2.13.5"
+        }
+      }
+    }
+  ],
+  "source_bundle": "artifacts/learning/collection-io-v1-verified/source",
+  "raw_results": "artifacts/learning/collection-io-v1-verified/results.json",
+  "execution_history": [
+    {
+      "path": "artifacts/learning/collection-io-v1/failure.json",
+      "status": "failed",
+      "reason": "Duplicate initial snapshot in benchmark exclusion corpus; generation succeeded."
+    },
+    {
+      "path": "artifacts/learning/collection-io-v1-retry1/results.json",
+      "status": "complete",
+      "note": "Intermediate implementation series."
+    },
+    {
+      "path": "artifacts/learning/collection-io-v1-final/results.json",
+      "status": "complete",
+      "note": "Series overlapped repository checks; retained but not used for final timing table."
+    },
+    {
+      "path": "artifacts/learning/collection-io-v1-verified/results.json",
+      "status": "complete",
+      "note": "Serial verified series after repository checks."
+    }
+  ],
+  "limits": "Small synthetic storage workload, no teacher/optimizer/overnight inference. SQL bytes are logical traffic, not physical disk writes. PyArrow optional CPU-cache sysctls were restricted by the sandbox; reads succeeded. Source copies preserve executed code; later failed-actor telemetry correction does not affect this random-only workload."
+}

@@ -17,3 +17,10 @@ def load_dataset(path: Path) -> PreparedDataset:
     if isinstance(dataset, TrainingDataset):
         dataset.require_complete()
     return dataset
+
+
+def load_snapshot(path: Path):
+    """Open a verified bounded reader; this does not opt the optimizer into a new protocol."""
+    from qi.training_data.snapshots import SnapshotReader
+
+    return SnapshotReader(path)

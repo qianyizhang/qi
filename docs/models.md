@@ -87,6 +87,31 @@ introducing a new generator implementation for every combination.
 
 ## Composition and isolation
 
+### Accepted collection and snapshot evolution
+
+[ADR-0008](adr/0008-sqlite-collection-parquet-snapshots.md) accepts a growing
+SQLite collection and SQL-selected frozen Parquet snapshots. A **Position** is
+canonical board and side-to-move under a ruleset; a **Position occurrence** adds
+source trajectory, exact ply and replay history. Unlabeled occurrences may exist
+before supervision. An **Analysis attempt** records one execution under a
+supervision specification; dataset assembly chooses a particular successful
+analysis and target. Observed played moves remain trajectory facts.
+
+The first store may repeat board values on occurrence rows while retaining indexed
+board identity. Conceptual separation does not require separately normalized
+tables. Exact-state identity governs analysis reuse; model-visible identity still
+governs input overlap. A **Frozen training snapshot** materializes a validated
+selection with exact targets, source evidence and governing policies; a live SQL
+view is not a frozen selection.
+
+The collection, SQL recipe selection, frozen Parquet and bounded reader are implemented
+under [AB-DATA-007](../records/work-items/items/AB-DATA-007-sqlite-training-data-store.md).
+The [Training Data guide](../src/qi/training_data/README.md#incremental-collection-and-parquet-snapshots)
+owns executable contracts and explicit JSON compatibility. Production optimizer
+integration remains separate; existing training formats below retain their meanings.
+
+### Selection rules
+
 Retain reusable labeled examples, then materialize a frozen selection manifest.
 Mixture quotas count retained unique examples, each assigned to one explicit
 quota bucket. Descriptive tags may overlap; they do not double-count quotas.

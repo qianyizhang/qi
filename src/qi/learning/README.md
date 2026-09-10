@@ -401,3 +401,13 @@ For two independently selectable checkpoints in Play or paired evaluation, use
 pins its own verified model bytes; it does not replace the process-wide
 QI_POLICY_CHECKPOINT convenience entry or activate checkpoints discovered among
 experiment artifacts.
+
+## Bounded snapshot preparation boundary
+
+The Training Data collection can export verified Parquet snapshots and expose
+`loading.load_snapshot(path).label_batches(batch_size)` to the existing `tensors`
+adapter. Optional `tests/test_collection_learning.py` verifies tensor parity on
+bounded batches. This does not change this trainer's full-batch Adam updates or
+make `qi learn train --data` accept snapshot directories. Production integration
+is explicitly deferred to [AB-LEARN-010](../../../records/work-items/items/AB-LEARN-010-snapshot-training-protocol.md),
+which must first lock update, epoch, ordering and checkpoint semantics.

@@ -17,6 +17,7 @@ from qi.training_data.contracts import (
     GenerationRecipe,
     Library,
     Source,
+    SourcePlan,
     classify_phase,
     fingerprint,
     satisfies_objective,
@@ -39,6 +40,19 @@ def teacher_spec(config: TeacherConfig, identity: TeacherIdentity | None = None)
         "nodes": config.nodes,
         "depth": config.depth,
     }
+
+
+def source_identity(recipe: GenerationRecipe, plan: SourcePlan, index: int, actor_spec: dict) -> tuple[dict, str]:
+    """Shared continuation-v2 identity; sampling settings never seed actor randomness."""
+    actor = {
+        "seed": recipe.seed,
+        "plan_id": plan.id,
+        "mode": plan.mode,
+        "start": state_fingerprint(plan.start.snapshot),
+        "index": index,
+        "actor": actor_spec if plan.mode == "teacher-guided" else "sorted-legal-random-v1",
+    }
+    return actor, fingerprint("generated-source-v2", {"actor": actor, "plan": plan.model_dump()})
 
 
 def generate_library(
@@ -90,15 +104,7 @@ def generate_library(
 
     for plan in recipe.sources:
         for index in range(plan.games):
-            actor_identity = {
-                "seed": recipe.seed,
-                "plan_id": plan.id,
-                "mode": plan.mode,
-                "start": state_fingerprint(plan.start.snapshot),
-                "index": index,
-                "actor": actor_spec if plan.mode == "teacher-guided" else "sorted-legal-random-v1",
-            }
-            source_id = fingerprint("generated-source-v2", {"actor": actor_identity, "plan": plan.model_dump()})
+            actor_identity, source_id = source_identity(recipe, plan, index, actor_spec)
             rng = Random(fingerprint("continuation-actor-v2", actor_identity))
             sampler_rng = Random(fingerprint("position-sampler-v2", actor_identity))
             game = plan.start.snapshot.game()

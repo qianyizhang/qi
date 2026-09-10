@@ -34,7 +34,7 @@ to a canonical term; they do not introduce different meanings.
 | Palace | 九宫 | Each side's three-by-three area in the middle of its back three ranks. Generals and advisors stay inside their own palace. | The entire home half | palace |
 | River | 河界 | The boundary between the two halves of the board. It limits elephants and changes soldiers' available moves after crossing. | A playable rank | river |
 | State | 状态 | Everything needed to continue and judge a game: board, side to move, and relevant move history. The same board can have a different outcome under different histories. | Board alone | — |
-| Position | 局面 | A point in a game selected for examination. Saved positions here include the history needed to reconstruct their full state. | Assuming an isolated board includes history | positions |
+| Position | 局面 | Canonical board and side to move under a ruleset. A saved position also carries the history needed to reconstruct its exact state; a Position occurrence identifies its place in a trajectory. | Assuming board equality implies identical replay history | positions |
 | Side to move | 当前行棋方 | The color whose turn it is: Red or Black. Many search scores are expressed from this side's point of view. | Always interpreting positive as good for Red | side; turn; leaf_side |
 | Legal move | 合法着法 | A move accepted by the referee, including the requirement not to leave your own general in check. | A move merely suggested by a player | legal actions; legal moves |
 | Move | 着法 | Moving one piece from one square to another. Raw notation such as b2e2 means source b2 to destination e2; files a–i and ranks 0–9 use Red's viewpoint. | Mixing coordinates with Chinese move notation | moves; selected; cutoff_move |
@@ -287,6 +287,9 @@ fields keep their current contracts.
 | Trajectory source | 轨迹来源 | Produces or replays a game with its actor and origin recorded. | The supervision provider | — |
 | Continuation | 对局续行 | Additional play from a stated starting position under declared limits and move choosers. | An MCTS Rollout by default | — |
 | Position sampler | 局面采样器 | Selects positions from trajectories under explicit conditions and budgets. | Choosing the next game move | — |
+| Position occurrence | 局面出现记录 | A position at an exact absolute ply in a source trajectory, retaining replay history and provenance. | A unique board alone | position_occurrences |
+| Analysis attempt | 分析尝试 | One execution on a recorded state under a supervision specification, retaining success, failure or interruption independently of other attempts. | A reusable request; the definitive label | analyses |
+| Frozen training snapshot | 冻结训练快照 | Materialized validated inputs and selected targets with source evidence and policies, unchanged by later collection updates. | A live SQL view | — |
 | Starting position | 起始局面 | The replay-backed state from which a continuation, probe or match begins; it can belong to any game phase. | Opening phase | — |
 | Game phase | 对局阶段 | A board-based opening, middlegame, endgame or unknown classification under a named policy, with curated labels recorded separately by provenance. | A ply-number range | — |
 | Theme | 局面主题 | A descriptive category such as cannon tactics or defending against check; several themes may apply to one position. | A mutually exclusive game phase | — |

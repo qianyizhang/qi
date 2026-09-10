@@ -256,3 +256,113 @@ pipeline, not improved playing strength. CPU is the default test lane; pass
 
 Learner-driven play, recorded-game ingestion, diagram-only imports, heterogeneous
 targets and dynamic epoch mixing remain later extensions.
+
+## Incremental collection and Parquet snapshots
+
+[ADR-0008](../../../docs/adr/0008-sqlite-collection-parquet-snapshots.md) is implemented
+by `store.py`, `collection_generation.py` and `snapshots.py`. Install the optional
+Parquet dependency with `uv sync --extra data`; tensor integration also requires
+`--extra learning`. SQLite must support JSONB and STRICT tables (3.45+); startup
+checks capabilities and rejects unsupported schema versions.
+
+```bash
+qi data collection generate --config preparation.json --store artifacts/collection.sqlite
+qi data collection inspect --store artifacts/collection.sqlite
+qi data collection positions --store artifacts/collection.sqlite --limit 100
+qi data collection specs --store artifacts/collection.sqlite
+qi data collection export --store artifacts/collection.sqlite --recipe selection.json --output artifacts/frozen
+qi data collection verify --snapshot artifacts/frozen
+```
+
+`generate` accepts the existing resolved `PreparationConfig`; its legacy assembly
+section remains part of that configuration, but export uses a separate
+`SelectionRecipe` from `snapshots.py`. Existing preparation limits still apply per
+run (2048 games, up to 16 selected samples/game, 7200 seconds). A collection may
+accumulate multiple runs; this implementation does not authorize the larger pilot
+or remove its configuration limits. One synchronous writer owns a process lock;
+there is no worker pool. Queries run outside transactions. Per-game actor caches
+and sampling lists are bounded by the referee's 300-ply limit.
+
+Rerunning the same resolved configuration reuses completed logical sources and
+successful occurrence/specification analyses. It reconstructs only relevant
+per-game prefixes. A new execution's provenance is appended to the run record;
+previous execution failures remain in its history. An interrupted trajectory gets
+a new game attempt, with its old prefixes retained. A completed trajectory survives
+a later labeling failure, so reanalysis needs no regeneration. Generation checks
+remaining time before dispatching a query with its pinned timeout; it does not
+silently shorten that specification to fit the remaining allowance.
+
+The store has five tables, foreign-key/status/uniqueness checks, an atomic initial
+schema migration and versioned validated JSONB. `board-turn-v1` hashes the ruleset,
+canonical board and side to move. `replay-state-v1`, `observation-v1` and existing
+input/example fingerprints retain their meanings. Storage row IDs are local;
+occurrences and attempts also carry portable identities. `Collection.positions`
+provides bounded indexed pagination, while count/spec queries use SQLite directly.
+
+`SelectionRecipe` version `sql-selection-v1` declares an explicit collection
+analysis-specification hash, reserved `Corpus`, seed and ordered buckets containing
+split/count plus optional mode/phase/theme/objective filters. It compiles to SQL;
+callers cannot supply arbitrary export SQL. First-bucket ownership precedes quota
+filling, deduplication retains all contributing source evidence, and conflicts,
+family/trajectory/model-input leakage and shortfalls fail closed. The ordering
+scheme hashes seed/bucket/input with deterministic tie-breakers. It is a new
+versioned ordering scheme, not a claim of byte-identical legacy RNG selection.
+
+`selected_only=true` additionally requires occurrence metadata `selected=true`,
+so persisted actor audits can be excluded explicitly; its default is false.
+Only completed game attempts are eligible, including planned
+ply-budget completions. Failed/interrupted games remain inspectable. The first
+committed success per occurrence/specification is the default label; `overrides`
+can explicitly map a portable occurrence identity to another successful attempt
+identity of that pair. Different specifications have independent defaults. New
+analyses cannot change an existing snapshot; a growing collection can change a
+new export's population even with an unchanged recipe.
+
+A frozen directory contains typed Parquet row shards, `manifest.json` and
+`evidence.sqlite`. The latter is a compact frozen supporting subset containing
+all contributing source trajectories, occurrences, specifications and attempts;
+it is evidence for verification, not another training backend. JSONB stays inside
+SQLite and is never used as a content hash or Parquet payload. The manifest pins
+recipe, compiled SQL/parameters, deterministic ordering, exact row identities,
+requested/actual counts and file hashes. Export verifies replay and labels before
+renaming its temporary directory. Failures retain `<output>.pending/manifest.json`
+with the reason and available counts; an incomplete destination is never published.
+Standalone verification replays the recipe over frozen evidence, enforcing bucket
+predicates, first-bucket ownership and seeded order as well as row replay. The
+compact bundle cannot prove ranking against observations omitted from the original
+collection; that full-population selection is checked during export.
+
+`loading.load_snapshot(path)` returns a `SnapshotReader`. `batches(batch_size,
+columns=...)` yields typed Arrow batches; `label_batches(batch_size)` resolves
+bounded replay-backed labels for the existing tensor adapter. Neither method
+constructs a full dataset or all-data tensors. The current production optimizer
+continues to accept its existing JSON contracts; snapshot optimizer integration
+requires the separate training protocol recorded in AB-DATA-007.
+
+```bash
+qi data collection reanalyze --store artifacts/collection.sqlite --occurrence 42 --supervision teacher.json
+qi data collection import-json --store artifacts/collection.sqlite --source library.json
+qi data collection export-json --snapshot artifacts/frozen --output small-dataset.json
+```
+
+Reanalysis uses pinned `SupervisionSettings`; `--force` appends another attempt.
+Successful persisted analyses retain typed partial candidate evidence, explicit
+score bounds/perspective and raw search lines. Unknown coverage stays unknown;
+WDL does not become a policy target. Unselected successful actor queries remain
+in a bounded per-game cache and contribute aggregate work/timing; selected answers
+and failures are persisted.
+
+Explicit import currently supports `Dataset` v1 and `example-library-v1` up to
+64 MiB, preserving parent hashes, source metadata, histories and targets. Other
+supported JSON formats remain readable through `load_dataset`; importing them
+fails with a named compatibility boundary. Small v1 export rejects merged lineage
+and source semantics it cannot express. Only imported v1 sources retain its
+generator claim; export preserves the original generation seed and rejects mixed
+seeds. A provenance sidecar links original parent hashes and the frozen snapshot.
+Original files remain unchanged.
+
+`test_store.py` covers recovery, identities, failure/reanalysis, selection and
+standalone verification. `tests/test_collection_learning.py` checks bounded tensor
+parity. `scripts/benchmark_collection.py` owns the narrow synthetic persistence/read
+workload; [AB-DATA-007](../../../records/work-items/items/AB-DATA-007-sqlite-training-data-store.md)
+records its protocol, measurements and limits.

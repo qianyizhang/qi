@@ -49,3 +49,16 @@ and is not an automatic prerequisite for an LLM feasibility run.
 ## Implementation Ledger
 
 No implementation events yet.
+
+### 2026-09-10 — verification: canonical collection board identity
+
+- AB-DATA-007 implements `board-turn-v1` over ruleset, board and side to move,
+  indexed separately from exact replay-state and existing model-input identities.
+  A repeated-board/different-history test proves the distinction. Existing
+  observation, input and example fingerprint meanings remain unchanged.
+- Reconciled the duplicate Position glossary entry introduced during architecture
+  capture into its existing definition; report glossary consumers require unique terms.
+- Evidence: `src/qi/training_data/store.py`, `test_store.py` and the Training Data guide.
+- Scope: no tensor/text abstraction or second consumer was invented. Broader
+  representation contracts remain deferred.
+- Review: not-required; contribution within AB-DATA-007.

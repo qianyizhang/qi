@@ -17,6 +17,9 @@ stale route, and preserve the owning authority. Doctrine:
 Project scope and milestone direction: [Project plan](project.md).
 Accepted ownership and Training Data model: [Core model](models.md).
 Generation, frozen mixtures and phase policies: [Training Data](../src/qi/training_data/README.md).
+Accepted collection/snapshot evolution: [SQLite and Parquet ADR](adr/0008-sqlite-collection-parquet-snapshots.md),
+[build specification](../records/work-items/items/AB-DATA-007-sqlite-training-data-store.md),
+[generation pilot decisions](../records/work-items/items/AB-DATA-008-generation-scaling-pilot.md).
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).

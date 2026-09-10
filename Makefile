@@ -1,4 +1,4 @@
-.PHONY: install lint test test-learning test-learning-mps check format authoring-check web-build play
+.PHONY: install lint test test-learning test-learning-mps test-data check format authoring-check web-build play
 install:
 	uv sync --locked
 	uv run python scripts/bootstrap_agents.py
@@ -14,6 +14,9 @@ test: web-build
 	npm test --prefix web
 test-learning:
 	uv run --locked --extra learning pytest tests/test_learning.py tests/test_learning_config.py tests/test_training_data.py tests/test_reference.py
+test-data:
+	uv run --locked --extra data pytest src/qi/training_data/test_store.py
+	uv run --locked --extra data --extra learning pytest tests/test_collection_learning.py
 test-learning-mps:
 	QI_TEST_MPS=1 uv run --locked --extra learning pytest tests/test_learning_mps.py
 check: lint test
