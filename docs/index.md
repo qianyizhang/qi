@@ -2,7 +2,7 @@
 description: Compact navigator over authority areas, rules, glossary, and agent flows in qi.
 scope: documentation navigator index
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -21,7 +21,9 @@ Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).
 Search experiment tracking and local reports: [Experiments](../src/qi/experiments/README.md).
-Experiment method and durable findings: [Method](experiments.md), [policy generalization](../records/campaigns/policy-generalization.md).
+Experiment method and campaigns: [Method](experiments.md), [policy generalization](../records/campaigns/policy-generalization.md),
+[LLM move selection](../records/campaigns/llm-move-selection.md),
+[experiment efficiency](../records/campaigns/experiment-efficiency.md).
 Local external analysis: [Teacher](teacher.md).
 Local supervised policy training: [Trainer](../src/qi/learning/README.md).
 Coordinates and replay operations: [Interface](interface.md).

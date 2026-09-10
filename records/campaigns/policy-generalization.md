@@ -2,7 +2,7 @@
 description: Current evidence and open questions about local policy generalization.
 scope: policy generalization campaign
 status: experimental
-last_update: 2026-09-09
+last_update: 2026-09-10
 document_class: coordination
 ---
 
@@ -49,6 +49,7 @@ own curriculum vocabulary and composition.
 ## Work
 
 - [Config scaffold and retrospective migration](../work-items/items/AB-LEARN-005-experiment-configs.md).
+- [Teacher-quality audit](../work-items/items/AB-LEARN-009-teacher-quality.md).
 - [Historical recipes and observations](../../data/experiments/learning/README.md).
 
 Work-item records own execution status; this page owns only the synthesis.
