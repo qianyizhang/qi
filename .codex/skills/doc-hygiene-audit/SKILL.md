@@ -1,13 +1,12 @@
 ---
 name: doc-hygiene-audit
-version: "1.4.0"
+version: "1.5.0"
 description: >-
-  Keep the doc corpus honest: capture knowledge, reconcile drift, review
-  implementation intelligence with the user, and restructure when layout causes
-  confusion. Use after pivots/refactors or for documentation hygiene.
+  Preserve engineering knowledge, reconcile drift, and remove spent documentation
+  and comments. Use after pivots/refactors or for documentation hygiene.
 scope: documentation hygiene skill
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-11
 document_class: artifact
 ---
 
@@ -53,8 +52,10 @@ within scope; review unresolved decisions and restructure only when warranted.
 
 ## 1. Capture
 
-Route knowledge that otherwise exists only in conversation, implementation,
-reports, or comments:
+First ask whether the nearest existing code, schema, test, comment, or evidence
+already preserves the knowledge adequately. Keep useful local explanations there;
+do not manufacture a prose copy. Route knowledge only when its present home is
+insufficient or is about to be removed:
 
 | Finding | Destination |
 |:--|:--|
@@ -76,11 +77,15 @@ Inspect maintained documentation surfaces within scope for:
 - status or lifecycle claims that disagree with actual use;
 - code-to-doc or contract-to-doc drift;
 - skill prose that duplicates portable doctrine or embeds local bindings;
-- active documents that merely redirect readers to a newer authority.
+- active documents that merely redirect readers to a newer authority;
+- READMEs and guides mirroring code inventories, results, or session state;
+- comments that narrate obvious code, contradict it, or retain spent deferrals.
 
-Read linked owners before changing a claim. When a new authority clearly
-supersedes a broad active document, promote any remaining durable content and
-move history out of active paths according to `docs/rules/doc.md`.
+Read linked owners before changing a claim. An accepted invariant can expose a
+code defect; never erase it merely to agree with the implementation. Preserve
+local rationale, API obligations, constraints, and test intent when trimming
+comments. Apply `docs/rules/doc.md` to superseded material after checking its
+remaining purpose and dependencies.
 
 ## 3. Review implementation intelligence
 
@@ -100,7 +105,14 @@ completeness, uncertainty, and observation versus interpretation. Follow the
 repository's evidence or experiment authority; documentation cleanup does not
 establish a stronger result or authorize rerunning an experiment.
 
-## 4. Restructure
+## 4. Reduce and close out
+
+Apply the retention and removal rules in `docs/rules/doc.md` to completed records,
+consumed handoffs, claim ledgers, and promotion receipts. Inspect incoming links,
+IDs, catalogs, and evidence consumers before editing. Preserve protected revisions
+and active operator state. Delete spent material within authorized cleanup scope;
+archive only when the historical document has continuing value. Keep a compact
+record when discovery or lineage still needs it.
 
 When layout repeatedly causes drift, reduce the structure:
 
@@ -108,8 +120,8 @@ When layout repeatedly causes drift, reduce the structure:
 - give a scattered concept one explicit owner and repoint dependants;
 - split an oversized document along real authority seams;
 - retire landed forward designs after promoting durable outcomes;
-- keep active paths current and move superseded detail to the configured
-  historical location.
+- keep active paths current without turning the archive into a second corpus
+  of routinely retained execution notes.
 
 Update `docs/index.md` only when a durable area or concept needs a route. Update
 `CLAUDE.md` only when a project binding changes. Update checker configuration
@@ -120,7 +132,9 @@ itself require entries in all three.
 
 - **Apply within authorized repair scope:** mechanical repairs, factual and term
   corrections against established authority, capture of settled decisions into an
-  existing owner, broken routes, and low-risk cleanup within existing ownership.
+  existing owner, broken routes, and removal of spent material after the retention
+  and dependency checks. An authorized cleanup includes these deletions unless
+  the user or repository explicitly excludes them.
 - **Propose unless already explicitly authorized:** choosing or changing a
   contract, unresolved trade-off or disposition, a new or moved SSOT,
   authority-boundary changes, or a bounded reversal. Correcting prose to match an
@@ -136,7 +150,9 @@ itself require entries in all three.
 - Resolve scoped findings or explicitly defer them with evidence and a concrete
   next action or review trigger. Cross-check existing work items before adding one.
 - Report the scope inspected, omissions, changes or proposals, unresolved owner
-  decisions, and verification. Label sampled or bounded coverage as such.
+  decisions, and verification. For removals, identify where unique meaning was
+  preserved or why none remained. Label sampled or bounded coverage as such;
+  fewer lines and a green checker alone do not establish a successful cleanup.
 
 Return a concise result in conversation. Save a report only when requested or
 when an authorized repair produces a durable finding, decision, or measurement
