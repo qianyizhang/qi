@@ -2,7 +2,7 @@
 description: Current evidence and open questions about local policy generalization.
 scope: policy generalization campaign
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -39,6 +39,15 @@ overconfidence; whether imitation improvements translate into match outcomes.
 Different inspected test sets cannot be compared as if they were one benchmark.
 
 ## Frontier
+
+The next requested decision interview concerns evaluation: compare Pikafish's
+estimated loss from the selected move with top-1 agreement, including whether
+the metrics rank saved models differently and what evidence would establish
+effectiveness. The [session closeout](../reports/generated-data-session-closeout-20260912.md)
+retains the model inventory: 84 comparison fits contain 75 distinct weight
+states, with nine repeated controls. Resolve the evaluation scope and resource
+allowance before a separately registered experiment. Keep previous primary
+outcomes and the sealed-input boundary intact; no new run is scheduled here.
 
 The generated-data follow-ups retain natural tag frequencies and support more
 distinct inputs under both compute views. The 80/10/10 mixture leads at 4k and
