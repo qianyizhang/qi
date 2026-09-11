@@ -320,6 +320,18 @@ identity of that pair. Different specifications have independent defaults. New
 analyses cannot change an existing snapshot; a growing collection can change a
 new export's population even with an unchanged recipe.
 
+`sql-selection-v2` adds `excluded_inputs` (input hash to nonblank reason), optional
+explicit `inputs` per bucket, and conjunctive `semantic_tags` under
+`immediate-position-label-v1`: `in-check`, `teacher-capture`, and
+`teacher-gives-check`. Predicates are recomputed from the board and selected move;
+they are not forced-tactic proofs or inherited source themes. Exclusions apply
+to both splits; collection facts remain intact. With input lists in every bucket,
+candidate analysis is limited to their union, while lineage checks still cover
+all nonexcluded stored observations. Same-input target conflicts remain errors.
+Empty/duplicate lists, unknown tags and using these fields in v1 are rejected.
+Standalone verification replays the same filters and order. `mixing.py` owns the
+study's separate trajectory-balanced selection; export recipes freeze its lists.
+
 A frozen directory contains typed Parquet row shards, `manifest.json` and
 `evidence.sqlite`. The latter is a compact frozen supporting subset containing
 all contributing source trajectories, occurrences, specifications and attempts;
@@ -337,9 +349,11 @@ collection; that full-population selection is checked during export.
 `loading.load_snapshot(path)` returns a `SnapshotReader`. `batches(batch_size,
 columns=...)` yields typed Arrow batches; `label_batches(batch_size)` resolves
 bounded replay-backed labels for the existing tensor adapter. Neither method
-constructs a full dataset or all-data tensors. The current production optimizer
-continues to accept its existing JSON contracts; snapshot optimizer integration
-requires the separate training protocol recorded in AB-DATA-007.
+constructs a full dataset or all-data tensors. The explicit `qi learn snapshot`
+path prepares a disk-backed tensor cache and accumulates full-batch gradients in
+bounded chunks. Existing JSON recipe interpretation is unchanged. See the
+[trainer guide](../learning/README.md#bounded-snapshot-training) and
+[ADR-0010](../../../docs/adr/0010-frozen-selection-and-bounded-full-batch-training.md).
 
 ```bash
 qi data collection reanalyze --store artifacts/collection.sqlite --occurrence 42 --supervision teacher.json

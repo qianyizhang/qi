@@ -294,6 +294,8 @@ fields keep their current contracts.
 | Continuation | 对局续行 | Additional play from a stated starting position under declared limits and move choosers. | An MCTS Rollout by default | — |
 | Position sampler | 局面采样器 | Selects positions from trajectories under explicit conditions and budgets. | Choosing the next game move | — |
 | Position occurrence | 局面出现记录 | A position at an exact absolute ply in a source trajectory, retaining replay history and provenance. | A unique board alone | position_occurrences |
+| Semantic tag | 语义标签 | A versioned descriptive predicate on a position or its selected teacher move, independent of inherited source themes. | A proved tactic or a scalar quality score | semantic_tags |
+| Input exclusion | 输入排除项 | A recorded decision omitting a model observation from selection while retaining its original evidence. | A reserved evaluation opening | excluded_inputs |
 | Analysis attempt | 分析尝试 | One execution on a recorded state under a supervision specification, retaining success, failure or interruption independently of other attempts. | A reusable request; the definitive label | analyses |
 | Frozen training snapshot | 冻结训练快照 | Materialized validated inputs and selected targets with source evidence and policies, unchanged by later collection updates. | A live SQL view | — |
 | Starting position | 起始局面 | The replay-backed state from which a continuation, probe or match begins; it can belong to any game phase. | Opening phase | — |

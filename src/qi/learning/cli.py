@@ -14,6 +14,45 @@ from qi.training_data.v1 import generate
 app = typer.Typer(no_args_is_help=True, help="Bounded local teacher-imitation experiments.")
 
 
+@app.command("snapshot")
+def snapshot_run(
+    config: Annotated[Path, typer.Option()],
+    output: Annotated[Path | None, typer.Option()] = None,
+    preview_only: Annotated[bool, typer.Option("--preview")] = False,
+) -> None:
+    """Prepare and train a verified Parquet snapshot using bounded full-batch updates."""
+    from qi.learning.snapshot import SnapshotConfig, SnapshotTensors, prepare_snapshot, train_snapshot
+    from qi.training_data.snapshots import SnapshotReader
+
+    settings = SnapshotConfig.model_validate_json(config.read_text())
+    snapshot = Path(settings.data.snapshot)
+    if not snapshot.is_absolute():
+        snapshot = (config.parent / snapshot).resolve()
+    settings.data.snapshot = str(snapshot)
+    reader = SnapshotReader(snapshot)
+    if preview_only:
+        typer.echo(
+            json.dumps(
+                {
+                    "config": settings.model_dump(),
+                    "rows": reader.manifest["rows"],
+                    "snapshot_fingerprint": reader.manifest["fingerprint"],
+                }
+            )
+        )
+        return
+    if output is None:
+        raise GameError("missing_output", "Provide --output for execution, or use --preview.")
+    if output.exists():
+        raise GameError("experiment_exists", "Choose a fresh output directory.")
+    output.mkdir(parents=True)
+    prepare_snapshot(snapshot, output / "tensors", chunk_size=settings.training.chunk_size)
+    report = train_snapshot(SnapshotTensors(output / "tensors"), settings, output / "fit")
+    typer.echo(json.dumps(report))
+    if report["status"] != "complete":
+        raise GameError("experiment_incomplete", "Snapshot fit did not complete all requested updates.")
+
+
 @app.command("reference")
 def reference_run(
     output: Annotated[Path | None, typer.Option()] = None,

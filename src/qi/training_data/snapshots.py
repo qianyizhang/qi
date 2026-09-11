@@ -4,7 +4,7 @@ import json
 import os
 import sqlite3
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
@@ -22,16 +22,22 @@ from qi.training_data.contracts import (
     satisfies_objective,
     state_fingerprint,
 )
+from qi.training_data.semantics import SEMANTIC_VERSION, SemanticTag, semantic_tags
 from qi.training_data.store import DDL, AnalysisPayload, AnalysisSpec, Collection, board_identity
 from qi.training_data.v1 import reserved_inputs
+
+InputHash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+_VERIFIED_SNAPSHOTS: dict[str, str] = {}
 
 
 class SnapshotBucket(Bucket):
     count: int = Field(ge=1, le=10_000_000)
+    inputs: list[InputHash] | None = None
+    semantic_tags: list[SemanticTag] = Field(default_factory=list)
 
 
 class SelectionRecipe(Contract):
-    version: Literal["sql-selection-v1"] = "sql-selection-v1"
+    version: Literal["sql-selection-v1", "sql-selection-v2"] = "sql-selection-v1"
     analysis_spec: str = Field(pattern=r"^[0-9a-f]{64}$")
     reserved_corpus: Corpus
     seed: int = 7
@@ -43,9 +49,22 @@ class SelectionRecipe(Contract):
     selected_only: bool = False
     target: Literal["legal-teacher-move-v1"] = "legal-teacher-move-v1"
     overlap_policy: Literal["first-bucket-wins"] = "first-bucket-wins"
+    excluded_inputs: dict[InputHash, str] = Field(default_factory=dict)
+    semantic_version: Literal[SEMANTIC_VERSION] = SEMANTIC_VERSION
 
     @model_validator(mode="after")
     def quotas(self):
+        if self.version == "sql-selection-v1" and (
+            self.excluded_inputs or any(b.inputs is not None or b.semantic_tags for b in self.buckets)
+        ):
+            raise ValueError("Explicit exclusions, input lists and semantic filters require sql-selection-v2.")
+        if any(not reason.strip() for reason in self.excluded_inputs.values()):
+            raise ValueError("Every input exclusion requires a reason.")
+        for bucket in self.buckets:
+            if bucket.inputs is not None and (not bucket.inputs or len(set(bucket.inputs)) != len(bucket.inputs)):
+                raise ValueError("Bucket input lists must be nonempty and distinct.")
+            if len(set(bucket.semantic_tags)) != len(bucket.semantic_tags):
+                raise ValueError("Semantic tag predicates must be distinct.")
         if len({b.id for b in self.buckets}) != len(self.buckets) or {b.split for b in self.buckets} != {
             "train",
             "validation",
@@ -108,20 +127,30 @@ def select_sql(db, recipe: SelectionRecipe) -> tuple[str, dict]:
         return satisfies_objective(snap.game(), move, source["objective"])
 
     db.create_function("objective_matches", 3, objective_matches, deterministic=True)
+    db.create_function("semantic_tags", 3, lambda b, t, m: json.dumps(semantic_tags(b, t, m)), deterministic=True)
     db.executescript("""
         DROP TABLE IF EXISTS temp.excluded;
         DROP TABLE IF EXISTS temp.overrides;
         DROP TABLE IF EXISTS temp.candidates;
         DROP TABLE IF EXISTS temp.selected;
+        DROP TABLE IF EXISTS temp.requested_inputs;
         CREATE TEMP TABLE excluded(input_hash TEXT PRIMARY KEY);
         CREATE TEMP TABLE overrides(occurrence TEXT PRIMARY KEY,attempt TEXT NOT NULL);
+        CREATE TEMP TABLE requested_inputs(input_hash TEXT PRIMARY KEY);
     """)
     # Begin after temporary DDL (executescript commits); everything below reads one DB state.
     db.execute("BEGIN")
     db.executemany(
-        "INSERT INTO excluded VALUES (?)", ((key,) for key in sorted(reserved_inputs(recipe.reserved_corpus)))
+        "INSERT INTO excluded VALUES (?)",
+        ((key,) for key in sorted(reserved_inputs(recipe.reserved_corpus) | recipe.excluded_inputs.keys())),
     )
     db.executemany("INSERT INTO overrides VALUES (?,?)", recipe.overrides.items())
+    explicit_inputs = all(b.inputs is not None for b in recipe.buckets)
+    if explicit_inputs:
+        db.executemany(
+            "INSERT INTO requested_inputs VALUES (?)",
+            ((key,) for key in sorted({key for b in recipe.buckets for key in b.inputs})),
+        )
     if not db.execute("SELECT 1 FROM analysis_specs WHERE identity=?", (recipe.analysis_spec,)).fetchone():
         raise ValueError("Unknown analysis specification.")
     if db.execute(
@@ -147,14 +176,19 @@ def select_sql(db, recipe: SelectionRecipe) -> tuple[str, dict]:
         JOIN analyses a ON a.occurrence_id=o.id AND a.spec_id=s.id AND a.status='success'
         LEFT JOIN overrides x ON x.occurrence=o.identity
         WHERE g.status='complete' AND NOT EXISTS(SELECT 1 FROM excluded e WHERE e.input_hash=o.input_hash)
+        AND (:explicit_inputs=0 OR o.input_hash IN (SELECT input_hash FROM requested_inputs))
         AND (:selected_only=0 OR json_extract(o.payload,'$.metadata.selected')=1)
-        AND objective_matches(json(g.payload),o.ply_count,a.move)
+        AND (json_extract(g.payload,'$.objective') IS NULL OR objective_matches(json(g.payload),o.ply_count,a.move))
         AND ((x.attempt IS NOT NULL AND a.attempt=x.attempt) OR (x.attempt IS NULL AND a.id=(
             SELECT a2.id FROM analyses a2 WHERE a2.occurrence_id=o.id AND a2.spec_id=s.id AND a2.status='success'
             ORDER BY a2.success_order LIMIT 1)))"""
     db.execute(
         "CREATE TEMP TABLE candidates AS " + candidate_sql,
-        {"spec": recipe.analysis_spec, "selected_only": int(recipe.selected_only)},
+        {
+            "spec": recipe.analysis_spec,
+            "selected_only": int(recipe.selected_only),
+            "explicit_inputs": int(explicit_inputs),
+        },
     )
     db.execute("CREATE INDEX temp.candidate_inputs ON candidates(input_hash)")
     if db.execute("SELECT 1 FROM candidates GROUP BY input_hash HAVING count(DISTINCT move)>1 LIMIT 1").fetchone():
@@ -170,6 +204,8 @@ def select_sql(db, recipe: SelectionRecipe) -> tuple[str, dict]:
                 f"objective{i}": bucket.objective,
                 f"bucket{i}": bucket.id,
                 f"quota{i}": bucket.count,
+                f"inputs{i}": json.dumps(bucket.inputs) if bucket.inputs is not None else None,
+                f"tags{i}": json.dumps(bucket.semantic_tags),
             }
         )
         branches.append(f"""SELECT c.*, {i} AS priority, :bucket{i} AS bucket, :quota{i} AS quota FROM candidates c
@@ -177,7 +213,10 @@ def select_sql(db, recipe: SelectionRecipe) -> tuple[str, dict]:
             AND phase IN (SELECT value FROM json_each(:phases{i}))
             AND NOT EXISTS(SELECT 1 FROM json_each(:themes{i}) t WHERE t.value NOT IN (
                 SELECT value FROM json_each(json_extract(game_payload,'$.themes'))))
-            AND (:objective{i} IS NULL OR json_extract(game_payload,'$.objective')=:objective{i})""")
+            AND (:objective{i} IS NULL OR json_extract(game_payload,'$.objective')=:objective{i})
+            AND (:inputs{i} IS NULL OR input_hash IN (SELECT value FROM json_each(:inputs{i})))
+            AND NOT EXISTS(SELECT 1 FROM json_each(:tags{i}) t WHERE t.value NOT IN (
+                SELECT value FROM json_each(semantic_tags(board,turn,move))))""")
     sql = (
         """WITH eligible AS ("""
         + " UNION ALL ".join(branches)
@@ -193,6 +232,7 @@ def select_sql(db, recipe: SelectionRecipe) -> tuple[str, dict]:
     return candidate_sql + ";\n" + sql, {
         "spec": recipe.analysis_spec,
         "selected_only": int(recipe.selected_only),
+        "explicit_inputs": int(explicit_inputs),
         **parameters,
     }
 
@@ -366,6 +406,11 @@ class SnapshotReader:
 
 def verify_snapshot(path: Path) -> dict:
     reader = SnapshotReader(path)
+    # Reader has just checked every file's bytes. Reuse only an in-process proof
+    # of this exact content; modified recipes/files cannot hit this cache.
+    identity = reader.manifest["fingerprint"]
+    if identity in _VERIFIED_SNAPSHOTS:
+        return json.loads(_VERIFIED_SNAPSHOTS[identity])
     actual = {b.id: 0 for b in reader.recipe.buckets}
     total = 0
     with Collection(Path(path) / "evidence.sqlite", readonly=True) as evidence:
@@ -397,7 +442,9 @@ def verify_snapshot(path: Path) -> dict:
         )
         if reader.manifest["requested"] != {b.id: b.count for b in reader.recipe.buckets}:
             raise ValueError("Snapshot requested counts differ from recipe.")
-        reserved = reserved_inputs(reader.recipe.reserved_corpus)
+        reserved = reserved_inputs(reader.recipe.reserved_corpus) | reader.recipe.excluded_inputs.keys()
+        evidence.db.execute("CREATE TEMP TABLE verification_rows(analysis TEXT PRIMARY KEY,payload TEXT NOT NULL)")
+        ordinal = 0
         for batch in reader.batches():
             for row in batch.to_pylist():
                 selected = expected.fetchone()
@@ -408,59 +455,68 @@ def verify_snapshot(path: Path) -> dict:
                     row["bucket"],
                 ):
                     raise ValueError("Snapshot row violates selection recipe or ordering.")
-                record = evidence.db.execute(
-                    """SELECT a.*,json(a.payload) AS answer_json,o.id AS occurrence_id,
-                    o.identity AS occurrence_identity,s.identity AS spec_identity,
-                    json(s.payload) AS spec_json,g.status AS game_status,
-                    g.split FROM analyses a JOIN position_occurrences o ON o.id=a.occurrence_id
-                    JOIN analysis_specs s ON s.id=a.spec_id JOIN games g ON g.id=o.game_id WHERE a.attempt=?""",
-                    (row["analysis"],),
-                ).fetchone()
-                if record is None or record["status"] != "success" or record["game_status"] != "complete":
-                    raise ValueError("Snapshot requires successful analyses of completed games.")
-                override = reader.recipe.overrides.get(row["occurrence"])
-                if override is not None:
-                    if override != row["analysis"]:
-                        raise ValueError("Snapshot ignores explicit attempt override.")
-                elif evidence.first_success(record["occurrence_id"], record["spec_id"])[0] != record["id"]:
-                    raise ValueError("Snapshot does not use first committed success.")
-                annotation = evidence.db.execute(
-                    "SELECT phase,json_extract(payload,'$.phase_method') FROM position_occurrences WHERE id=?",
-                    (record["occurrence_id"],),
-                ).fetchone()
-                if tuple(annotation) != (row["phase"], row["phase_method"]):
-                    raise ValueError("Snapshot annotation differs from frozen evidence.")
-                answer = AnalysisPayload.model_validate_json(record["answer_json"]).answer
-                Example(analysis=answer, source_ids=["verify"])
-                snap = evidence.snapshot(record["occurrence_id"])
-                game = snap.game()
-                spec = AnalysisSpec.model_validate_json(record["spec_json"])
-                if (
-                    answer.snapshot != snap
-                    or AnalysisSpec.from_analysis(answer) != spec
-                    or spec.identity != row["analysis_spec"]
-                    or row["analysis_spec"] != reader.recipe.analysis_spec
-                    or record["occurrence_identity"] != row["occurrence"]
-                    or row["state"] != state_fingerprint(snap)
-                    or row["board_hash"] != board_identity(snap)
-                    or row["observation"] != observation_fingerprint(game)
-                    or row["input_hash"] != input_key(game)
-                    or row["board"] != game.board
-                    or row["turn"] != game.turn
-                    or row["move"] != answer.move
-                    or row["ply_count"] != len(snap.moves)
-                    or row["split"] != record["split"]
-                    or row["ordinal"] != total
-                    or row["input_hash"] in reserved
-                ):
-                    raise ValueError("Snapshot row differs from replay/analysis evidence.")
-                if (
-                    row["bucket"] not in actual
-                    or next(b.split for b in reader.recipe.buckets if b.id == row["bucket"]) != row["split"]
-                ):
-                    raise ValueError("Snapshot bucket mismatch.")
-                actual[row["bucket"]] += 1
-                total += 1
+                if row["ordinal"] != ordinal:
+                    raise ValueError("Snapshot row ordinal differs from ordering.")
+                evidence.db.execute("INSERT INTO verification_rows VALUES (?,?)", (row["analysis"], json.dumps(row)))
+                ordinal += 1
+        # Replay each source in ply order while keeping the published row ordering independently checked.
+        ordered = evidence.db.execute("""SELECT v.payload FROM verification_rows v
+            JOIN analyses a ON a.attempt=v.analysis JOIN position_occurrences o ON o.id=a.occurrence_id
+            ORDER BY o.game_id,o.ply_count""")
+        for serialized in ordered:
+            row = json.loads(serialized[0])
+            record = evidence.db.execute(
+                """SELECT a.*,json(a.payload) AS answer_json,o.id AS occurrence_id,
+                o.identity AS occurrence_identity,s.identity AS spec_identity,
+                json(s.payload) AS spec_json,g.status AS game_status,
+                g.split FROM analyses a JOIN position_occurrences o ON o.id=a.occurrence_id
+                JOIN analysis_specs s ON s.id=a.spec_id JOIN games g ON g.id=o.game_id WHERE a.attempt=?""",
+                (row["analysis"],),
+            ).fetchone()
+            if record is None or record["status"] != "success" or record["game_status"] != "complete":
+                raise ValueError("Snapshot requires successful analyses of completed games.")
+            override = reader.recipe.overrides.get(row["occurrence"])
+            if override is not None:
+                if override != row["analysis"]:
+                    raise ValueError("Snapshot ignores explicit attempt override.")
+            elif evidence.first_success(record["occurrence_id"], record["spec_id"])[0] != record["id"]:
+                raise ValueError("Snapshot does not use first committed success.")
+            annotation = evidence.db.execute(
+                "SELECT phase,json_extract(payload,'$.phase_method') FROM position_occurrences WHERE id=?",
+                (record["occurrence_id"],),
+            ).fetchone()
+            if tuple(annotation) != (row["phase"], row["phase_method"]):
+                raise ValueError("Snapshot annotation differs from frozen evidence.")
+            answer = AnalysisPayload.model_validate_json(record["answer_json"]).answer
+            Example(analysis=answer, source_ids=["verify"])
+            snap = evidence.snapshot(record["occurrence_id"])
+            game = snap.game()
+            spec = AnalysisSpec.model_validate_json(record["spec_json"])
+            if (
+                answer.snapshot != snap
+                or AnalysisSpec.from_analysis(answer) != spec
+                or spec.identity != row["analysis_spec"]
+                or row["analysis_spec"] != reader.recipe.analysis_spec
+                or record["occurrence_identity"] != row["occurrence"]
+                or row["state"] != state_fingerprint(snap)
+                or row["board_hash"] != board_identity(snap)
+                or row["observation"] != observation_fingerprint(game)
+                or row["input_hash"] != input_key(game)
+                or row["board"] != game.board
+                or row["turn"] != game.turn
+                or row["move"] != answer.move
+                or row["ply_count"] != len(snap.moves)
+                or row["split"] != record["split"]
+                or row["input_hash"] in reserved
+            ):
+                raise ValueError("Snapshot row differs from replay/analysis evidence.")
+            if (
+                row["bucket"] not in actual
+                or next(b.split for b in reader.recipe.buckets if b.id == row["bucket"]) != row["split"]
+            ):
+                raise ValueError("Snapshot bucket mismatch.")
+            actual[row["bucket"]] += 1
+            total += 1
         if (
             expected.fetchone() is not None
             or actual != reader.manifest["actual"]
@@ -468,4 +524,8 @@ def verify_snapshot(path: Path) -> dict:
             or total != reader.manifest["rows"]
         ):
             raise ValueError("Snapshot count mismatch.")
-    return {"rows": total, "actual": actual, "fingerprint": reader.manifest["fingerprint"]}
+    result = {"rows": total, "actual": actual, "fingerprint": identity}
+    if len(_VERIFIED_SNAPSHOTS) >= 64:
+        _VERIFIED_SNAPSHOTS.pop(next(iter(_VERIFIED_SNAPSHOTS)))
+    _VERIFIED_SNAPSHOTS[identity] = json.dumps(result)
+    return result

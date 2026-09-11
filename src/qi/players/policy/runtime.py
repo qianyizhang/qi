@@ -35,6 +35,8 @@ class CheckpointMetadata(BaseModel):
     torch_version: str
     training_device: Literal["cpu", "mps"] = "cpu"
     training_threads: int = Field(default=1, ge=1, le=32)
+    training_protocol: Literal["full-batch-v1", "snapshot-full-batch-v1"] = "full-batch-v1"
+    training_chunk_size: int | None = Field(default=None, ge=1, le=4096)
 
 
 def make_model() -> nn.Sequential:

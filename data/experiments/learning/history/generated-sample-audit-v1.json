@@ -1,0 +1,1973 @@
+{
+  "schema_version": 1,
+  "scope": "descriptive-data-only-no-export-no-fits",
+  "produced_by": "experiment@1.0.0 \u00b7 agent=GPT-6 \u00b7 effort=unspecified \u00b7 2026-09-11",
+  "source": "artifacts/learning/overnight-batches-20260911/collection.sqlite",
+  "high_water": {
+    "games": 10000,
+    "position_occurrences": 187727,
+    "analyses": 443832
+  },
+  "specs": {
+    "1": {
+      "identity": "81859409aee53d3ef01db21e85c354d62da7bb60b3135e78c11ede7a1e9eb798",
+      "version": 1,
+      "supervision": {
+        "target": "legal-teacher-move-v1",
+        "authority": "teacher-preference",
+        "adapter": "uci-teacher-v2",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "settings": {
+          "Threads": "1",
+          "Hash": "16",
+          "MultiPV": "3",
+          "Ponder": "false"
+        },
+        "nodes": 10000,
+        "depth": null
+      },
+      "timeout_seconds": 10.0,
+      "output_contract": "teacher-analysis-v1-v2"
+    },
+    "2": {
+      "identity": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50",
+      "version": 1,
+      "supervision": {
+        "target": "legal-teacher-move-v1",
+        "authority": "teacher-preference",
+        "adapter": "uci-teacher-v2",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "settings": {
+          "Threads": "1",
+          "Hash": "16",
+          "MultiPV": "1",
+          "Ponder": "false"
+        },
+        "nodes": 10000,
+        "depth": null
+      },
+      "timeout_seconds": 10.0,
+      "output_contract": "teacher-analysis-v1-v2"
+    },
+    "3": {
+      "identity": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7",
+      "version": 1,
+      "supervision": {
+        "target": "legal-teacher-move-v1",
+        "authority": "teacher-preference",
+        "adapter": "uci-teacher-v2",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "settings": {
+          "Threads": "1",
+          "Hash": "16",
+          "MultiPV": "1",
+          "Ponder": "false"
+        },
+        "nodes": 100000,
+        "depth": null
+      },
+      "timeout_seconds": 10.0,
+      "output_contract": "teacher-analysis-v1-v2"
+    },
+    "4": {
+      "identity": "a8d3f75d9e9f4ca4f01ade3e05acca9c8546b5f2fd76a66ac66444dd50e2d74f",
+      "version": 1,
+      "supervision": {
+        "target": "legal-teacher-move-v1",
+        "authority": "teacher-preference",
+        "adapter": "uci-teacher-v2",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "settings": {
+          "Threads": "8",
+          "Hash": "16",
+          "MultiPV": "3",
+          "Ponder": "false"
+        },
+        "nodes": 10000,
+        "depth": null
+      },
+      "timeout_seconds": 10.0,
+      "output_contract": "teacher-analysis-v1-v2"
+    },
+    "5": {
+      "identity": "40fa8d9dc50669424d61449bec6cd44073aebbc06b757027698643f179c4c8a2",
+      "version": 1,
+      "supervision": {
+        "target": "legal-teacher-move-v1",
+        "authority": "teacher-preference",
+        "adapter": "uci-teacher-v2",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "settings": {
+          "Threads": "8",
+          "Hash": "16",
+          "MultiPV": "1",
+          "Ponder": "false"
+        },
+        "nodes": 10000,
+        "depth": null
+      },
+      "timeout_seconds": 10.0,
+      "output_contract": "teacher-analysis-v1-v2"
+    },
+    "6": {
+      "identity": "2ce427f2cc66d606f2fa47dcb97dba2de7c8d3c51eae2e42f43c4a87c401c898",
+      "version": 1,
+      "supervision": {
+        "target": "legal-teacher-move-v1",
+        "authority": "teacher-preference",
+        "adapter": "uci-teacher-v2",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "settings": {
+          "Threads": "8",
+          "Hash": "16",
+          "MultiPV": "1",
+          "Ponder": "false"
+        },
+        "nodes": 100000,
+        "depth": null
+      },
+      "timeout_seconds": 10.0,
+      "output_contract": "teacher-analysis-v1-v2"
+    }
+  },
+  "games": {
+    "statuses": {
+      "complete": 9963,
+      "failed": 37
+    },
+    "accepted_policy": {
+      "intervention": 970,
+      "plausible": 7993,
+      "random": 1000
+    },
+    "accepted_split": {
+      "train": 8982,
+      "validation": 981
+    },
+    "accepted_threads": {
+      "1": 6963,
+      "8": 3000
+    },
+    "distinct_trajectories": 9810
+  },
+  "game_strata": [
+    {
+      "threads": 1,
+      "policy": "plausible",
+      "games": 5593,
+      "plies": {
+        "n": 5593,
+        "min": 29,
+        "p10": 90,
+        "median": 167,
+        "p90": 300,
+        "max": 300,
+        "mean": 187.58912926872875
+      },
+      "outcomes": {
+        "checkmate": 3461,
+        "ply_limit": 1427,
+        "repetition": 145,
+        "stalemate": 560
+      },
+      "winners": {
+        "None": 1572,
+        "black": 1806,
+        "red": 2215
+      },
+      "requested": {
+        "endgame": 44744,
+        "middlegame": 44744,
+        "opening": 5593
+      },
+      "selected": {
+        "endgame": 33795,
+        "middlegame": 44557,
+        "opening": 5593
+      },
+      "decision_reasons": {
+        "complete-best-mismatch": 235036,
+        "incompatible-scores": 206276,
+        "later-best-changed": 41816,
+        "uniform-eligible": 520839,
+        "mate-score": 44939,
+        "inconsistent-ranks": 258,
+        "latest-best-mismatch": 22
+      },
+      "multi_choice_decisions": 420620,
+      "intervention_applied": 0
+    },
+    {
+      "threads": 1,
+      "policy": "intervention",
+      "games": 670,
+      "plies": {
+        "n": 670,
+        "min": 25,
+        "p10": 41,
+        "median": 71.0,
+        "p90": 132,
+        "max": 300,
+        "mean": 82.43432835820896
+      },
+      "outcomes": {
+        "checkmate": 609,
+        "ply_limit": 11,
+        "repetition": 12,
+        "stalemate": 38
+      },
+      "winners": {
+        "None": 23,
+        "black": 276,
+        "red": 371
+      },
+      "requested": {
+        "endgame": 5360,
+        "middlegame": 5360,
+        "opening": 670
+      },
+      "selected": {
+        "endgame": 1494,
+        "middlegame": 5252,
+        "opening": 593
+      },
+      "decision_reasons": {
+        "teacher-best": 54581,
+        "marked-intervention": 650
+      },
+      "multi_choice_decisions": 0,
+      "intervention_applied": 650
+    },
+    {
+      "threads": 1,
+      "policy": "random",
+      "games": 700,
+      "plies": {
+        "n": 700,
+        "min": 13,
+        "p10": 155,
+        "median": 300.0,
+        "p90": 300,
+        "max": 300,
+        "mean": 266.81
+      },
+      "outcomes": {
+        "checkmate": 206,
+        "ply_limit": 486,
+        "repetition": 1,
+        "stalemate": 7
+      },
+      "winners": {
+        "None": 487,
+        "black": 107,
+        "red": 106
+      },
+      "requested": {
+        "endgame": 5600,
+        "middlegame": 5600,
+        "opening": 700
+      },
+      "selected": {
+        "endgame": 3625,
+        "middlegame": 5579,
+        "opening": 679
+      },
+      "decision_reasons": {
+        "uniform-legal": 186767
+      },
+      "multi_choice_decisions": 0,
+      "intervention_applied": 0
+    },
+    {
+      "threads": 8,
+      "policy": "plausible",
+      "games": 2400,
+      "plies": {
+        "n": 2400,
+        "min": 14,
+        "p10": 55,
+        "median": 114.0,
+        "p90": 241,
+        "max": 300,
+        "mean": 130.43
+      },
+      "outcomes": {
+        "checkmate": 1990,
+        "ply_limit": 189,
+        "repetition": 44,
+        "stalemate": 177
+      },
+      "winners": {
+        "None": 233,
+        "black": 1022,
+        "red": 1145
+      },
+      "requested": {
+        "endgame": 19200,
+        "middlegame": 19200,
+        "opening": 2400
+      },
+      "selected": {
+        "endgame": 10240,
+        "middlegame": 18957,
+        "opening": 1929
+      },
+      "decision_reasons": {
+        "incompatible-scores": 53079,
+        "uniform-eligible": 167991,
+        "complete-best-mismatch": 68839,
+        "later-best-changed": 8475,
+        "mate-score": 13641,
+        "inconsistent-ranks": 600,
+        "incomplete-common-depth": 404,
+        "latest-best-mismatch": 3
+      },
+      "multi_choice_decisions": 128231,
+      "intervention_applied": 0
+    },
+    {
+      "threads": 8,
+      "policy": "intervention",
+      "games": 300,
+      "plies": {
+        "n": 300,
+        "min": 30,
+        "p10": 56,
+        "median": 110.0,
+        "p90": 280,
+        "max": 300,
+        "mean": 128.65
+      },
+      "outcomes": {
+        "checkmate": 233,
+        "ply_limit": 30,
+        "repetition": 7,
+        "stalemate": 30
+      },
+      "winners": {
+        "None": 37,
+        "black": 141,
+        "red": 122
+      },
+      "requested": {
+        "endgame": 2400,
+        "middlegame": 2400,
+        "opening": 300
+      },
+      "selected": {
+        "endgame": 1320,
+        "middlegame": 2373,
+        "opening": 208
+      },
+      "decision_reasons": {
+        "teacher-best": 38303,
+        "marked-intervention": 292
+      },
+      "multi_choice_decisions": 0,
+      "intervention_applied": 292
+    },
+    {
+      "threads": 8,
+      "policy": "random",
+      "games": 300,
+      "plies": {
+        "n": 300,
+        "min": 23,
+        "p10": 182,
+        "median": 300.0,
+        "p90": 300,
+        "max": 300,
+        "mean": 273.8433333333333
+      },
+      "outcomes": {
+        "checkmate": 77,
+        "ply_limit": 219,
+        "repetition": 2,
+        "stalemate": 2
+      },
+      "winners": {
+        "None": 221,
+        "black": 40,
+        "red": 39
+      },
+      "requested": {
+        "endgame": 2400,
+        "middlegame": 2400,
+        "opening": 300
+      },
+      "selected": {
+        "endgame": 1718,
+        "middlegame": 2394,
+        "opening": 293
+      },
+      "decision_reasons": {
+        "uniform-legal": 82153
+      },
+      "multi_choice_decisions": 0,
+      "intervention_applied": 0
+    }
+  ],
+  "observations": {
+    "stored_occurrences": 187727,
+    "selected_occurrences": 140599,
+    "distinct_selected_inputs": 117792,
+    "selected_by_phase": {
+      "endgame": 52192,
+      "middlegame": 79112,
+      "opening": 9295
+    },
+    "selected_by_split": {
+      "train": 126859,
+      "validation": 13740
+    },
+    "distinct_by_split": {
+      "train": 106495,
+      "validation": 12246
+    },
+    "cross_split_selected_distinct_inputs": 949,
+    "cross_split_all_stored_distinct_inputs": 1152,
+    "cross_split_all_stored_nonreserved_inputs": 1151,
+    "selected_occurrences_touching_all_stored_overlap": 19591,
+    "selected_reserved_occurrences": 0
+  },
+  "analysis_status": {
+    "success": 443832
+  },
+  "paired_labels": [
+    {
+      "threads": 1,
+      "policy": "plausible",
+      "phase": "opening",
+      "occurrences": 5593,
+      "paired": 5593,
+      "disagree": 2685,
+      "strong_score_status": {
+        "cp:exact": 2906,
+        "cp:lowerbound": 1066,
+        "cp:upperbound": 1621
+      },
+      "strong_cp": {
+        "n": 2906,
+        "min": -15,
+        "p10": -15,
+        "median": -7.0,
+        "p90": 29,
+        "max": 74,
+        "mean": 2.357536132140399
+      },
+      "strong_depth": {
+        "n": 5593,
+        "min": 14,
+        "p10": 14,
+        "median": 15,
+        "p90": 16,
+        "max": 16,
+        "mean": 15.2370820668693
+      },
+      "reported_nodes": {
+        "n": 5593,
+        "min": 100004,
+        "p10": 100004,
+        "median": 100044,
+        "p90": 100075,
+        "max": 100098,
+        "mean": 100041.64133738601
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "plausible",
+      "phase": "middlegame",
+      "occurrences": 44557,
+      "paired": 44557,
+      "disagree": 12684,
+      "strong_score_status": {
+        "cp:exact": 20321,
+        "cp:lowerbound": 11037,
+        "cp:upperbound": 12307,
+        "mate:exact": 892
+      },
+      "strong_cp": {
+        "n": 20321,
+        "min": -1200,
+        "p10": -396,
+        "median": 0,
+        "p90": 411,
+        "max": 1473,
+        "mean": 9.694109541853255
+      },
+      "strong_depth": {
+        "n": 44557,
+        "min": 8,
+        "p10": 13,
+        "median": 15,
+        "p90": 17,
+        "max": 245,
+        "mean": 17.086114415243397
+      },
+      "reported_nodes": {
+        "n": 44557,
+        "min": 490,
+        "p10": 100011,
+        "median": 100059,
+        "p90": 100110,
+        "max": 100319,
+        "mean": 99403.26855488475
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "plausible",
+      "phase": "endgame",
+      "occurrences": 33795,
+      "paired": 33795,
+      "disagree": 11781,
+      "strong_score_status": {
+        "cp:exact": 20090,
+        "cp:lowerbound": 3171,
+        "cp:upperbound": 4234,
+        "mate:exact": 6300
+      },
+      "strong_cp": {
+        "n": 20090,
+        "min": -1250,
+        "p10": -474,
+        "median": 0.0,
+        "p90": 485,
+        "max": 1461,
+        "mean": 5.026182180189148
+      },
+      "strong_depth": {
+        "n": 33795,
+        "min": 8,
+        "p10": 14,
+        "median": 16,
+        "p90": 57,
+        "max": 245,
+        "mean": 37.08202396804261
+      },
+      "reported_nodes": {
+        "n": 33795,
+        "min": 246,
+        "p10": 96263,
+        "median": 100054,
+        "p90": 100114,
+        "max": 100299,
+        "mean": 93274.39837254032
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "intervention",
+      "phase": "opening",
+      "occurrences": 593,
+      "paired": 593,
+      "disagree": 183,
+      "strong_score_status": {
+        "cp:exact": 449,
+        "cp:upperbound": 144
+      },
+      "strong_cp": {
+        "n": 449,
+        "min": -15,
+        "p10": -15,
+        "median": -15,
+        "p90": 20,
+        "max": 20,
+        "mean": -0.734966592427617
+      },
+      "strong_depth": {
+        "n": 593,
+        "min": 14,
+        "p10": 14,
+        "median": 15,
+        "p90": 15,
+        "max": 15,
+        "mean": 14.75716694772344
+      },
+      "reported_nodes": {
+        "n": 593,
+        "min": 100022,
+        "p10": 100022,
+        "median": 100025,
+        "p90": 100168,
+        "max": 100168,
+        "mean": 100058.79932546374
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "intervention",
+      "phase": "middlegame",
+      "occurrences": 5252,
+      "paired": 5252,
+      "disagree": 1749,
+      "strong_score_status": {
+        "cp:exact": 1975,
+        "cp:lowerbound": 1489,
+        "cp:upperbound": 1231,
+        "mate:exact": 557
+      },
+      "strong_cp": {
+        "n": 1975,
+        "min": -1467,
+        "p10": -623,
+        "median": -9,
+        "p90": 639,
+        "max": 1441,
+        "mean": 22.87240506329114
+      },
+      "strong_depth": {
+        "n": 5252,
+        "min": 9,
+        "p10": 13,
+        "median": 15.0,
+        "p90": 27,
+        "max": 245,
+        "mean": 28.183739527798934
+      },
+      "reported_nodes": {
+        "n": 5252,
+        "min": 490,
+        "p10": 100002,
+        "median": 100046.0,
+        "p90": 100103,
+        "max": 100257,
+        "mean": 95633.90137090631
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "intervention",
+      "phase": "endgame",
+      "occurrences": 1494,
+      "paired": 1494,
+      "disagree": 511,
+      "strong_score_status": {
+        "cp:exact": 637,
+        "cp:lowerbound": 83,
+        "cp:upperbound": 132,
+        "mate:exact": 642
+      },
+      "strong_cp": {
+        "n": 637,
+        "min": -1971,
+        "p10": -761,
+        "median": -1,
+        "p90": 758,
+        "max": 1571,
+        "mean": -19.4552590266876
+      },
+      "strong_depth": {
+        "n": 1494,
+        "min": 11,
+        "p10": 14,
+        "median": 17.0,
+        "p90": 245,
+        "max": 245,
+        "mean": 61.14926372155288
+      },
+      "reported_nodes": {
+        "n": 1494,
+        "min": 490,
+        "p10": 12505,
+        "median": 100038.0,
+        "p90": 100107,
+        "max": 100188,
+        "mean": 85068.5374832664
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "random",
+      "phase": "opening",
+      "occurrences": 679,
+      "paired": 679,
+      "disagree": 197,
+      "strong_score_status": {
+        "cp:exact": 276,
+        "cp:lowerbound": 187,
+        "cp:upperbound": 216
+      },
+      "strong_cp": {
+        "n": 276,
+        "min": -287,
+        "p10": -14,
+        "median": 50.0,
+        "p90": 311,
+        "max": 548,
+        "mean": 93.73188405797102
+      },
+      "strong_depth": {
+        "n": 679,
+        "min": 12,
+        "p10": 14,
+        "median": 15,
+        "p90": 16,
+        "max": 18,
+        "mean": 14.830633284241532
+      },
+      "reported_nodes": {
+        "n": 679,
+        "min": 100000,
+        "p10": 100011,
+        "median": 100067,
+        "p90": 100104,
+        "max": 100145,
+        "mean": 100061.0265095729
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "random",
+      "phase": "middlegame",
+      "occurrences": 5579,
+      "paired": 5579,
+      "disagree": 1120,
+      "strong_score_status": {
+        "cp:exact": 3556,
+        "cp:lowerbound": 688,
+        "cp:upperbound": 696,
+        "mate:exact": 639
+      },
+      "strong_cp": {
+        "n": 3556,
+        "min": -1429,
+        "p10": -582,
+        "median": 390.5,
+        "p90": 728,
+        "max": 1478,
+        "mean": 165.10433070866142
+      },
+      "strong_depth": {
+        "n": 5579,
+        "min": 10,
+        "p10": 14,
+        "median": 15,
+        "p90": 29,
+        "max": 245,
+        "mean": 29.420146979745475
+      },
+      "reported_nodes": {
+        "n": 5579,
+        "min": 490,
+        "p10": 100003,
+        "median": 100057,
+        "p90": 100112,
+        "max": 100323,
+        "mean": 95197.30883670908
+      }
+    },
+    {
+      "threads": 1,
+      "policy": "random",
+      "phase": "endgame",
+      "occurrences": 3625,
+      "paired": 3625,
+      "disagree": 991,
+      "strong_score_status": {
+        "cp:exact": 1652,
+        "cp:lowerbound": 376,
+        "cp:upperbound": 457,
+        "mate:exact": 1140
+      },
+      "strong_cp": {
+        "n": 1652,
+        "min": -1184,
+        "p10": -579,
+        "median": 2.0,
+        "p90": 595,
+        "max": 1171,
+        "mean": 22.996973365617432
+      },
+      "strong_depth": {
+        "n": 3625,
+        "min": 10,
+        "p10": 14,
+        "median": 16,
+        "p90": 196,
+        "max": 245,
+        "mean": 44.76137931034483
+      },
+      "reported_nodes": {
+        "n": 3625,
+        "min": 490,
+        "p10": 82156,
+        "median": 100049,
+        "p90": 100111,
+        "max": 100253,
+        "mean": 91294.88689655172
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "plausible",
+      "phase": "opening",
+      "occurrences": 1929,
+      "paired": 1929,
+      "disagree": 945,
+      "strong_score_status": {
+        "cp:exact": 1882,
+        "cp:lowerbound": 15,
+        "cp:upperbound": 32
+      },
+      "strong_cp": {
+        "n": 1882,
+        "min": -256,
+        "p10": -27,
+        "median": -10.0,
+        "p90": 42,
+        "max": 159,
+        "mean": 4.519128586609989
+      },
+      "strong_depth": {
+        "n": 1929,
+        "min": 7,
+        "p10": 9,
+        "median": 11,
+        "p90": 12,
+        "max": 14,
+        "mean": 10.545878693623639
+      },
+      "reported_nodes": {
+        "n": 1929,
+        "min": 100004,
+        "p10": 100089,
+        "median": 100402,
+        "p90": 100861,
+        "max": 111587,
+        "mean": 100458.95749092795
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "plausible",
+      "phase": "middlegame",
+      "occurrences": 18957,
+      "paired": 18957,
+      "disagree": 6792,
+      "strong_score_status": {
+        "cp:exact": 16768,
+        "cp:lowerbound": 237,
+        "cp:upperbound": 1284,
+        "mate:exact": 668
+      },
+      "strong_cp": {
+        "n": 16768,
+        "min": -1700,
+        "p10": -407,
+        "median": 13.0,
+        "p90": 445,
+        "max": 1358,
+        "mean": 20.5081106870229
+      },
+      "strong_depth": {
+        "n": 18957,
+        "min": 5,
+        "p10": 9,
+        "median": 11,
+        "p90": 12,
+        "max": 245,
+        "mean": 15.298253943134462
+      },
+      "reported_nodes": {
+        "n": 18957,
+        "min": 3920,
+        "p10": 100076,
+        "median": 100419,
+        "p90": 100889,
+        "max": 127752,
+        "mean": 99858.90008967664
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "plausible",
+      "phase": "endgame",
+      "occurrences": 10240,
+      "paired": 10240,
+      "disagree": 4216,
+      "strong_score_status": {
+        "cp:exact": 7132,
+        "cp:lowerbound": 109,
+        "cp:upperbound": 426,
+        "mate:exact": 2572,
+        "mate:upperbound": 1
+      },
+      "strong_cp": {
+        "n": 7132,
+        "min": -1324,
+        "p10": -598,
+        "median": 0.0,
+        "p90": 608,
+        "max": 1422,
+        "mean": -2.5113572630398204
+      },
+      "strong_depth": {
+        "n": 10240,
+        "min": 5,
+        "p10": 10,
+        "median": 12.0,
+        "p90": 87,
+        "max": 245,
+        "mean": 37.17451171875
+      },
+      "reported_nodes": {
+        "n": 10240,
+        "min": 3920,
+        "p10": 96822,
+        "median": 100380.0,
+        "p90": 100902,
+        "max": 268189,
+        "mean": 96126.6162109375
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "intervention",
+      "phase": "opening",
+      "occurrences": 208,
+      "paired": 208,
+      "disagree": 108,
+      "strong_score_status": {
+        "cp:exact": 206,
+        "cp:upperbound": 2
+      },
+      "strong_cp": {
+        "n": 206,
+        "min": -52,
+        "p10": -25,
+        "median": -18.0,
+        "p90": 33,
+        "max": 53,
+        "mean": -4.752427184466019
+      },
+      "strong_depth": {
+        "n": 208,
+        "min": 9,
+        "p10": 10,
+        "median": 11.0,
+        "p90": 11,
+        "max": 13,
+        "mean": 10.600961538461538
+      },
+      "reported_nodes": {
+        "n": 208,
+        "min": 100006,
+        "p10": 100101,
+        "median": 100520.5,
+        "p90": 100935,
+        "max": 101561,
+        "mean": 100507.79807692308
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "intervention",
+      "phase": "middlegame",
+      "occurrences": 2373,
+      "paired": 2373,
+      "disagree": 876,
+      "strong_score_status": {
+        "cp:exact": 2141,
+        "cp:lowerbound": 21,
+        "cp:upperbound": 140,
+        "mate:exact": 71
+      },
+      "strong_cp": {
+        "n": 2141,
+        "min": -1182,
+        "p10": -408,
+        "median": 16,
+        "p90": 469,
+        "max": 1314,
+        "mean": 31.615600186828583
+      },
+      "strong_depth": {
+        "n": 2373,
+        "min": 6,
+        "p10": 9,
+        "median": 11,
+        "p90": 12,
+        "max": 245,
+        "mean": 13.806152549515382
+      },
+      "reported_nodes": {
+        "n": 2373,
+        "min": 4323,
+        "p10": 100084,
+        "median": 100440,
+        "p90": 100920,
+        "max": 102597,
+        "mean": 100135.14622840287
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "intervention",
+      "phase": "endgame",
+      "occurrences": 1320,
+      "paired": 1320,
+      "disagree": 545,
+      "strong_score_status": {
+        "cp:exact": 932,
+        "cp:lowerbound": 14,
+        "cp:upperbound": 49,
+        "mate:exact": 325
+      },
+      "strong_cp": {
+        "n": 932,
+        "min": -1241,
+        "p10": -606,
+        "median": -1.0,
+        "p90": 595,
+        "max": 1174,
+        "mean": -15.53862660944206
+      },
+      "strong_depth": {
+        "n": 1320,
+        "min": 7,
+        "p10": 10,
+        "median": 12.0,
+        "p90": 135,
+        "max": 245,
+        "mean": 38.27878787878788
+      },
+      "reported_nodes": {
+        "n": 1320,
+        "min": 3920,
+        "p10": 91473,
+        "median": 100375.5,
+        "p90": 100945,
+        "max": 102358,
+        "mean": 95976.26666666666
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "random",
+      "phase": "opening",
+      "occurrences": 293,
+      "paired": 293,
+      "disagree": 101,
+      "strong_score_status": {
+        "cp:exact": 281,
+        "cp:lowerbound": 1,
+        "cp:upperbound": 11
+      },
+      "strong_cp": {
+        "n": 281,
+        "min": -173,
+        "p10": -29,
+        "median": 39,
+        "p90": 213,
+        "max": 488,
+        "mean": 64.84697508896797
+      },
+      "strong_depth": {
+        "n": 293,
+        "min": 7,
+        "p10": 9,
+        "median": 10,
+        "p90": 12,
+        "max": 13,
+        "mean": 10.303754266211604
+      },
+      "reported_nodes": {
+        "n": 293,
+        "min": 100009,
+        "p10": 100090,
+        "median": 100384,
+        "p90": 100752,
+        "max": 102207,
+        "mean": 100411.76450511946
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "random",
+      "phase": "middlegame",
+      "occurrences": 2394,
+      "paired": 2394,
+      "disagree": 627,
+      "strong_score_status": {
+        "cp:exact": 2066,
+        "cp:lowerbound": 20,
+        "cp:upperbound": 83,
+        "mate:exact": 225
+      },
+      "strong_cp": {
+        "n": 2066,
+        "min": -1268,
+        "p10": -562,
+        "median": 288.5,
+        "p90": 726,
+        "max": 1785,
+        "mean": 155.648596321394
+      },
+      "strong_depth": {
+        "n": 2394,
+        "min": 6,
+        "p10": 9,
+        "median": 11.0,
+        "p90": 14,
+        "max": 245,
+        "mean": 21.58688387635756
+      },
+      "reported_nodes": {
+        "n": 2394,
+        "min": 3920,
+        "p10": 100062,
+        "median": 100383.0,
+        "p90": 100813,
+        "max": 128153,
+        "mean": 99627.24436090226
+      }
+    },
+    {
+      "threads": 8,
+      "policy": "random",
+      "phase": "endgame",
+      "occurrences": 1718,
+      "paired": 1718,
+      "disagree": 552,
+      "strong_score_status": {
+        "cp:exact": 1123,
+        "cp:lowerbound": 25,
+        "cp:upperbound": 97,
+        "mate:exact": 473
+      },
+      "strong_cp": {
+        "n": 1123,
+        "min": -1605,
+        "p10": -614,
+        "median": 3,
+        "p90": 630,
+        "max": 1518,
+        "mean": 18.533392698130008
+      },
+      "strong_depth": {
+        "n": 1718,
+        "min": 6,
+        "p10": 10,
+        "median": 12.0,
+        "p90": 210,
+        "max": 245,
+        "mean": 39.68917345750873
+      },
+      "reported_nodes": {
+        "n": 1718,
+        "min": 3926,
+        "p10": 94993,
+        "median": 100351.0,
+        "p90": 100826,
+        "max": 110997,
+        "mean": 96716.41618160652
+      }
+    }
+  ],
+  "conflicts": [
+    {
+      "spec": 2,
+      "distinct_after_overlap_exclusion": 79850,
+      "conflicting_inputs": 3,
+      "occurrences_on_conflicting_inputs": 9
+    },
+    {
+      "spec": 3,
+      "distinct_after_overlap_exclusion": 79850,
+      "conflicting_inputs": 4,
+      "occurrences_on_conflicting_inputs": 17
+    },
+    {
+      "spec": 5,
+      "distinct_after_overlap_exclusion": 36939,
+      "conflicting_inputs": 131,
+      "occurrences_on_conflicting_inputs": 496
+    },
+    {
+      "spec": 6,
+      "distinct_after_overlap_exclusion": 36939,
+      "conflicting_inputs": 75,
+      "occurrences_on_conflicting_inputs": 292
+    }
+  ],
+  "provisional_clean_pools": [
+    {
+      "threads": 1,
+      "split": "train",
+      "policy": "plausible",
+      "unique_inputs": 59912,
+      "contributing_games": 5034,
+      "phases": {
+        "endgame": 30455,
+        "middlegame": 29457
+      },
+      "block_groups": {
+        "0": 8986,
+        "1": 8586,
+        "2": 8460,
+        "3": 8449,
+        "4": 8521,
+        "5": 8518,
+        "6": 8392
+      }
+    },
+    {
+      "threads": 1,
+      "split": "train",
+      "policy": "intervention",
+      "unique_inputs": 3508,
+      "contributing_games": 548,
+      "phases": {
+        "endgame": 1278,
+        "middlegame": 2230
+      },
+      "block_groups": {
+        "0": 508,
+        "1": 485,
+        "2": 493,
+        "3": 512,
+        "4": 553,
+        "5": 473,
+        "6": 484
+      }
+    },
+    {
+      "threads": 1,
+      "split": "train",
+      "policy": "random",
+      "unique_inputs": 8746,
+      "contributing_games": 630,
+      "phases": {
+        "endgame": 3288,
+        "middlegame": 5025,
+        "opening": 433
+      },
+      "block_groups": {
+        "0": 1276,
+        "1": 1259,
+        "2": 1313,
+        "3": 1269,
+        "4": 1204,
+        "5": 1227,
+        "6": 1198
+      }
+    },
+    {
+      "threads": 1,
+      "split": "validation",
+      "policy": "plausible",
+      "unique_inputs": 6404,
+      "contributing_games": 558,
+      "phases": {
+        "endgame": 3328,
+        "middlegame": 3076
+      },
+      "block_groups": {
+        "0": 935,
+        "1": 876,
+        "2": 910,
+        "3": 927,
+        "4": 898,
+        "5": 931,
+        "6": 927
+      }
+    },
+    {
+      "threads": 1,
+      "split": "validation",
+      "policy": "intervention",
+      "unique_inputs": 346,
+      "contributing_games": 49,
+      "phases": {
+        "endgame": 119,
+        "middlegame": 227
+      },
+      "block_groups": {
+        "0": 80,
+        "1": 38,
+        "2": 67,
+        "3": 31,
+        "4": 38,
+        "5": 44,
+        "6": 48
+      }
+    },
+    {
+      "threads": 1,
+      "split": "validation",
+      "policy": "random",
+      "unique_inputs": 930,
+      "contributing_games": 70,
+      "phases": {
+        "endgame": 337,
+        "middlegame": 554,
+        "opening": 39
+      },
+      "block_groups": {
+        "0": 149,
+        "1": 124,
+        "2": 125,
+        "3": 131,
+        "4": 130,
+        "5": 124,
+        "6": 147
+      }
+    },
+    {
+      "threads": 8,
+      "split": "train",
+      "policy": "plausible",
+      "unique_inputs": 26127,
+      "contributing_games": 2160,
+      "phases": {
+        "endgame": 9279,
+        "middlegame": 16651,
+        "opening": 197
+      },
+      "block_groups": {
+        "7": 8805,
+        "8": 8793,
+        "9": 8529
+      }
+    },
+    {
+      "threads": 8,
+      "split": "train",
+      "policy": "intervention",
+      "unique_inputs": 3253,
+      "contributing_games": 270,
+      "phases": {
+        "endgame": 1207,
+        "middlegame": 2023,
+        "opening": 23
+      },
+      "block_groups": {
+        "7": 1105,
+        "8": 1069,
+        "9": 1079
+      }
+    },
+    {
+      "threads": 8,
+      "split": "train",
+      "policy": "random",
+      "unique_inputs": 3879,
+      "contributing_games": 270,
+      "phases": {
+        "endgame": 1537,
+        "middlegame": 2155,
+        "opening": 187
+      },
+      "block_groups": {
+        "7": 1287,
+        "8": 1324,
+        "9": 1268
+      }
+    },
+    {
+      "threads": 8,
+      "split": "validation",
+      "policy": "plausible",
+      "unique_inputs": 2834,
+      "contributing_games": 240,
+      "phases": {
+        "endgame": 961,
+        "middlegame": 1852,
+        "opening": 21
+      },
+      "block_groups": {
+        "7": 913,
+        "8": 963,
+        "9": 958
+      }
+    },
+    {
+      "threads": 8,
+      "split": "validation",
+      "policy": "intervention",
+      "unique_inputs": 334,
+      "contributing_games": 30,
+      "phases": {
+        "endgame": 113,
+        "middlegame": 220,
+        "opening": 1
+      },
+      "block_groups": {
+        "7": 111,
+        "8": 93,
+        "9": 130
+      }
+    },
+    {
+      "threads": 8,
+      "split": "validation",
+      "policy": "random",
+      "unique_inputs": 437,
+      "contributing_games": 30,
+      "phases": {
+        "endgame": 181,
+        "middlegame": 239,
+        "opening": 17
+      },
+      "block_groups": {
+        "7": 137,
+        "8": 151,
+        "9": 149
+      }
+    }
+  ],
+  "provisional_clean_semantics": {
+    "threads1:validation:plausible:middlegame": {
+      "n": 3076,
+      "in-check": 213,
+      "teacher-capture": 751,
+      "teacher-gives-check": 259,
+      "budget-disagreement": 859,
+      "missing-or-bound": 1461,
+      "intervention:not-applied": 3076,
+      "cp-within300": 867,
+      "cp-above300": 329,
+      "cp-below-minus300": 324,
+      "teacher-mate-nonpositive": 38,
+      "teacher-mate-positive": 57
+    },
+    "threads1:validation:plausible:endgame": {
+      "n": 3328,
+      "in-check": 311,
+      "teacher-capture": 351,
+      "teacher-gives-check": 541,
+      "budget-disagreement": 1138,
+      "cp-within300": 1201,
+      "intervention:not-applied": 3328,
+      "missing-or-bound": 717,
+      "cp-below-minus300": 390,
+      "cp-above300": 379,
+      "teacher-mate-positive": 372,
+      "teacher-mate-nonpositive": 269
+    },
+    "threads1:validation:intervention:middlegame": {
+      "n": 227,
+      "in-check": 44,
+      "teacher-capture": 61,
+      "teacher-gives-check": 37,
+      "budget-disagreement": 72,
+      "missing-or-bound": 59,
+      "intervention:after-9-plus": 175,
+      "cp-within300": 15,
+      "cp-above300": 57,
+      "cp-below-minus300": 55,
+      "teacher-mate-positive": 26,
+      "intervention:after-1-8": 52,
+      "teacher-mate-nonpositive": 15
+    },
+    "threads1:validation:intervention:endgame": {
+      "n": 119,
+      "in-check": 15,
+      "teacher-capture": 21,
+      "teacher-gives-check": 19,
+      "budget-disagreement": 40,
+      "cp-below-minus300": 23,
+      "intervention:after-9-plus": 119,
+      "cp-above300": 16,
+      "missing-or-bound": 14,
+      "teacher-mate-positive": 36,
+      "teacher-mate-nonpositive": 22,
+      "cp-within300": 8
+    },
+    "threads1:validation:random:opening": {
+      "n": 39,
+      "in-check": 0,
+      "teacher-capture": 8,
+      "teacher-gives-check": 1,
+      "budget-disagreement": 16,
+      "cp-within300": 13,
+      "intervention:not-applied": 39,
+      "missing-or-bound": 22,
+      "cp-above300": 4
+    },
+    "threads1:validation:random:middlegame": {
+      "n": 554,
+      "in-check": 16,
+      "teacher-capture": 275,
+      "teacher-gives-check": 128,
+      "budget-disagreement": 115,
+      "missing-or-bound": 143,
+      "intervention:not-applied": 554,
+      "cp-above300": 184,
+      "teacher-mate-nonpositive": 12,
+      "teacher-mate-positive": 57,
+      "cp-below-minus300": 100,
+      "cp-within300": 58
+    },
+    "threads1:validation:random:endgame": {
+      "n": 337,
+      "in-check": 12,
+      "teacher-capture": 84,
+      "teacher-gives-check": 77,
+      "budget-disagreement": 89,
+      "cp-below-minus300": 56,
+      "intervention:not-applied": 337,
+      "teacher-mate-positive": 79,
+      "teacher-mate-nonpositive": 49,
+      "missing-or-bound": 73,
+      "cp-within300": 46,
+      "cp-above300": 34
+    },
+    "threads1:train:plausible:middlegame": {
+      "n": 29457,
+      "in-check": 2022,
+      "teacher-capture": 6954,
+      "teacher-gives-check": 2349,
+      "budget-disagreement": 8504,
+      "cp-within300": 9039,
+      "intervention:not-applied": 29457,
+      "missing-or-bound": 13702,
+      "cp-above300": 3080,
+      "cp-below-minus300": 2840,
+      "teacher-mate-positive": 464,
+      "teacher-mate-nonpositive": 332
+    },
+    "threads1:train:plausible:endgame": {
+      "n": 30455,
+      "in-check": 3212,
+      "teacher-capture": 3407,
+      "teacher-gives-check": 4696,
+      "budget-disagreement": 10637,
+      "cp-below-minus300": 3641,
+      "intervention:not-applied": 30455,
+      "cp-above300": 3824,
+      "cp-within300": 10644,
+      "missing-or-bound": 6687,
+      "teacher-mate-positive": 3153,
+      "teacher-mate-nonpositive": 2506
+    },
+    "threads1:train:intervention:middlegame": {
+      "n": 2230,
+      "in-check": 343,
+      "teacher-capture": 627,
+      "teacher-gives-check": 428,
+      "budget-disagreement": 596,
+      "cp-below-minus300": 560,
+      "intervention:after-1-8": 556,
+      "teacher-mate-positive": 279,
+      "cp-above300": 586,
+      "intervention:after-9-plus": 1669,
+      "teacher-mate-nonpositive": 160,
+      "intervention:not-applied": 3,
+      "missing-or-bound": 551,
+      "cp-within300": 94,
+      "intervention:at-deviation": 1,
+      "intervention:before": 1
+    },
+    "threads1:train:intervention:endgame": {
+      "n": 1278,
+      "in-check": 163,
+      "teacher-capture": 174,
+      "teacher-gives-check": 224,
+      "budget-disagreement": 439,
+      "teacher-mate-nonpositive": 237,
+      "intervention:after-9-plus": 1277,
+      "teacher-mate-positive": 299,
+      "cp-below-minus300": 227,
+      "cp-above300": 212,
+      "missing-or-bound": 177,
+      "cp-within300": 126,
+      "intervention:after-1-8": 1
+    },
+    "threads1:train:random:opening": {
+      "n": 433,
+      "in-check": 1,
+      "teacher-capture": 99,
+      "teacher-gives-check": 6,
+      "budget-disagreement": 123,
+      "missing-or-bound": 241,
+      "intervention:not-applied": 433,
+      "cp-within300": 166,
+      "cp-above300": 26
+    },
+    "threads1:train:random:middlegame": {
+      "n": 5025,
+      "in-check": 126,
+      "teacher-capture": 2512,
+      "teacher-gives-check": 1147,
+      "budget-disagreement": 1005,
+      "missing-or-bound": 1241,
+      "intervention:not-applied": 5025,
+      "teacher-mate-positive": 485,
+      "cp-below-minus300": 943,
+      "cp-above300": 1829,
+      "cp-within300": 442,
+      "teacher-mate-nonpositive": 85
+    },
+    "threads1:train:random:endgame": {
+      "n": 3288,
+      "in-check": 110,
+      "teacher-capture": 873,
+      "teacher-gives-check": 723,
+      "budget-disagreement": 902,
+      "cp-below-minus300": 506,
+      "intervention:not-applied": 3288,
+      "teacher-mate-positive": 708,
+      "cp-above300": 593,
+      "missing-or-bound": 760,
+      "cp-within300": 417,
+      "teacher-mate-nonpositive": 304
+    },
+    "threads8:validation:plausible:middlegame": {
+      "n": 1852,
+      "in-check": 117,
+      "teacher-capture": 447,
+      "teacher-gives-check": 172,
+      "budget-disagreement": 644,
+      "cp-within300": 988,
+      "intervention:not-applied": 1852,
+      "missing-or-bound": 150,
+      "cp-above300": 355,
+      "cp-below-minus300": 288,
+      "teacher-mate-nonpositive": 24,
+      "teacher-mate-positive": 47
+    },
+    "threads8:validation:plausible:endgame": {
+      "n": 961,
+      "in-check": 101,
+      "teacher-capture": 118,
+      "teacher-gives-check": 185,
+      "budget-disagreement": 410,
+      "teacher-mate-positive": 158,
+      "intervention:not-applied": 961,
+      "teacher-mate-nonpositive": 90,
+      "cp-within300": 212,
+      "cp-below-minus300": 237,
+      "cp-above300": 230,
+      "missing-or-bound": 34
+    },
+    "threads8:validation:plausible:opening": {
+      "n": 21,
+      "in-check": 1,
+      "teacher-capture": 2,
+      "teacher-gives-check": 0,
+      "budget-disagreement": 11,
+      "cp-within300": 20,
+      "intervention:not-applied": 21,
+      "missing-or-bound": 1
+    },
+    "threads8:validation:intervention:middlegame": {
+      "n": 220,
+      "in-check": 11,
+      "teacher-capture": 49,
+      "teacher-gives-check": 18,
+      "budget-disagreement": 86,
+      "cp-within300": 110,
+      "intervention:before": 93,
+      "missing-or-bound": 13,
+      "cp-below-minus300": 40,
+      "intervention:at-deviation": 3,
+      "intervention:after-9-plus": 82,
+      "cp-above300": 53,
+      "intervention:after-1-8": 23,
+      "intervention:not-applied": 19,
+      "teacher-mate-positive": 4
+    },
+    "threads8:validation:intervention:endgame": {
+      "n": 113,
+      "in-check": 13,
+      "teacher-capture": 17,
+      "teacher-gives-check": 16,
+      "budget-disagreement": 48,
+      "teacher-mate-nonpositive": 12,
+      "intervention:after-9-plus": 105,
+      "teacher-mate-positive": 23,
+      "cp-above300": 16,
+      "cp-below-minus300": 22,
+      "missing-or-bound": 8,
+      "cp-within300": 32,
+      "intervention:not-applied": 8
+    },
+    "threads8:validation:intervention:opening": {
+      "n": 1,
+      "in-check": false,
+      "teacher-capture": false,
+      "teacher-gives-check": false,
+      "budget-disagreement": false,
+      "cp-within300": 1,
+      "intervention:before": 1
+    },
+    "threads8:validation:random:opening": {
+      "n": 17,
+      "in-check": 0,
+      "teacher-capture": 6,
+      "teacher-gives-check": 0,
+      "budget-disagreement": 6,
+      "cp-within300": 14,
+      "intervention:not-applied": 17,
+      "cp-above300": 2,
+      "missing-or-bound": 1
+    },
+    "threads8:validation:random:middlegame": {
+      "n": 239,
+      "in-check": 5,
+      "teacher-capture": 121,
+      "teacher-gives-check": 53,
+      "budget-disagreement": 61,
+      "missing-or-bound": 12,
+      "intervention:not-applied": 239,
+      "cp-within300": 58,
+      "cp-above300": 105,
+      "teacher-mate-positive": 17,
+      "cp-below-minus300": 46,
+      "teacher-mate-nonpositive": 1
+    },
+    "threads8:validation:random:endgame": {
+      "n": 181,
+      "in-check": 3,
+      "teacher-capture": 47,
+      "teacher-gives-check": 30,
+      "budget-disagreement": 75,
+      "cp-within300": 53,
+      "intervention:not-applied": 181,
+      "cp-above300": 40,
+      "cp-below-minus300": 41,
+      "teacher-mate-positive": 27,
+      "teacher-mate-nonpositive": 9,
+      "missing-or-bound": 11
+    },
+    "threads8:train:plausible:middlegame": {
+      "n": 16651,
+      "in-check": 1025,
+      "teacher-capture": 3894,
+      "teacher-gives-check": 1324,
+      "budget-disagreement": 5936,
+      "cp-within300": 9339,
+      "intervention:not-applied": 16651,
+      "cp-below-minus300": 2476,
+      "cp-above300": 2889,
+      "missing-or-bound": 1350,
+      "teacher-mate-nonpositive": 211,
+      "teacher-mate-positive": 386
+    },
+    "threads8:train:plausible:endgame": {
+      "n": 9279,
+      "in-check": 975,
+      "teacher-capture": 1276,
+      "teacher-gives-check": 1619,
+      "budget-disagreement": 3806,
+      "cp-below-minus300": 2123,
+      "intervention:not-applied": 9279,
+      "teacher-mate-nonpositive": 908,
+      "cp-above300": 2032,
+      "missing-or-bound": 502,
+      "cp-within300": 2298,
+      "teacher-mate-positive": 1416
+    },
+    "threads8:train:plausible:opening": {
+      "n": 197,
+      "in-check": 3,
+      "teacher-capture": 4,
+      "teacher-gives-check": 2,
+      "budget-disagreement": 77,
+      "cp-within300": 186,
+      "intervention:not-applied": 197,
+      "missing-or-bound": 11
+    },
+    "threads8:train:intervention:middlegame": {
+      "n": 2023,
+      "in-check": 113,
+      "teacher-capture": 470,
+      "teacher-gives-check": 172,
+      "budget-disagreement": 730,
+      "cp-within300": 1071,
+      "intervention:before": 750,
+      "intervention:at-deviation": 31,
+      "intervention:after-1-8": 239,
+      "intervention:after-9-plus": 972,
+      "cp-below-minus300": 333,
+      "teacher-mate-nonpositive": 13,
+      "teacher-mate-positive": 54,
+      "cp-above300": 407,
+      "missing-or-bound": 145,
+      "intervention:not-applied": 31
+    },
+    "threads8:train:intervention:endgame": {
+      "n": 1207,
+      "in-check": 142,
+      "teacher-capture": 159,
+      "teacher-gives-check": 159,
+      "budget-disagreement": 497,
+      "cp-below-minus300": 292,
+      "intervention:after-9-plus": 1196,
+      "missing-or-bound": 55,
+      "cp-above300": 266,
+      "teacher-mate-positive": 171,
+      "teacher-mate-nonpositive": 119,
+      "cp-within300": 304,
+      "intervention:after-1-8": 9,
+      "intervention:at-deviation": 1,
+      "intervention:before": 1
+    },
+    "threads8:train:random:middlegame": {
+      "n": 2155,
+      "in-check": 60,
+      "teacher-capture": 1091,
+      "teacher-gives-check": 502,
+      "budget-disagreement": 566,
+      "cp-within300": 493,
+      "intervention:not-applied": 2155,
+      "cp-above300": 904,
+      "cp-below-minus300": 460,
+      "missing-or-bound": 91,
+      "teacher-mate-positive": 185,
+      "teacher-mate-nonpositive": 22
+    },
+    "threads8:train:random:opening": {
+      "n": 187,
+      "in-check": 0,
+      "teacher-capture": 47,
+      "teacher-gives-check": 1,
+      "budget-disagreement": 61,
+      "cp-within300": 161,
+      "intervention:not-applied": 187,
+      "cp-above300": 19,
+      "missing-or-bound": 7
+    },
+    "threads8:train:random:endgame": {
+      "n": 1537,
+      "in-check": 58,
+      "teacher-capture": 401,
+      "teacher-gives-check": 373,
+      "budget-disagreement": 477,
+      "cp-below-minus300": 333,
+      "intervention:not-applied": 1537,
+      "missing-or-bound": 111,
+      "teacher-mate-positive": 323,
+      "teacher-mate-nonpositive": 114,
+      "cp-above300": 356,
+      "cp-within300": 300
+    },
+    "threads8:train:intervention:opening": {
+      "n": 23,
+      "in-check": 0,
+      "teacher-capture": 2,
+      "teacher-gives-check": 0,
+      "budget-disagreement": 9,
+      "cp-within300": 23,
+      "intervention:before": 22,
+      "intervention:not-applied": 1
+    }
+  },
+  "capacity_preflight": {
+    "scope": "Necessary capacity bounds only; trajectory grouping and cross-block exclusion remain.",
+    "grouping": "(source_block//10)%3",
+    "counts": {
+      "0:plausible": {
+        "games": 2157,
+        "total_cap8": 16587,
+        "phase_cap8": {
+          "middlegame": 12733,
+          "endgame": 13094
+        }
+      },
+      "0:intervention": {
+        "games": 241,
+        "total_cap8": 1257,
+        "phase_cap8": {
+          "middlegame": 985,
+          "endgame": 519
+        }
+      },
+      "0:random": {
+        "games": 270,
+        "total_cap8": 2155,
+        "phase_cap8": {
+          "middlegame": 2155,
+          "endgame": 1402
+        }
+      },
+      "1:plausible": {
+        "games": 1440,
+        "total_cap8": 11063,
+        "phase_cap8": {
+          "middlegame": 8472,
+          "endgame": 8635
+        }
+      },
+      "1:intervention": {
+        "games": 162,
+        "total_cap8": 852,
+        "phase_cap8": {
+          "middlegame": 654,
+          "endgame": 384
+        }
+      },
+      "1:random": {
+        "games": 180,
+        "total_cap8": 1434,
+        "phase_cap8": {
+          "middlegame": 1434,
+          "endgame": 900
+        }
+      },
+      "2:plausible": {
+        "games": 1437,
+        "total_cap8": 11054,
+        "phase_cap8": {
+          "middlegame": 8252,
+          "endgame": 8726
+        }
+      },
+      "2:intervention": {
+        "games": 145,
+        "total_cap8": 771,
+        "phase_cap8": {
+          "middlegame": 591,
+          "endgame": 375
+        }
+      },
+      "2:random": {
+        "games": 180,
+        "total_cap8": 1436,
+        "phase_cap8": {
+          "middlegame": 1436,
+          "endgame": 986
+        }
+      }
+    }
+  },
+  "verification": {
+    "independent_sql_selected_counts": [
+      140599,
+      117792
+    ],
+    "all_selected_occurrences_have_two_single_pv_labels": true,
+    "strata_partition_selected_occurrences": true
+  },
+  "notes": [
+    "All paired label comparisons count occurrences; they are not independent games or a truth audit.",
+    "Provisional clean census excludes all recorded cross-split inputs and all chosen-spec target conflicts.",
+    "Policy census uses lowest occurrence ID for multi-source inputs; selection must preserve all lineage.",
+    "Full-history validity uses existing retained final validation; this audit does not replay every trajectory.",
+    "Nonretained intermediate boards and earlier external datasets are not exhaustively overlap-audited here.",
+    "One/eight threads occupy different source blocks; differences are confounded with generated data.",
+    "cp bands use engine-native side-to-move scores; neither mate scores nor budget agreement proves correctness.",
+    "No snapshot exported, recipe changed, teacher queried, trainer changed or model fitted."
+  ],
+  "source_files": {
+    "artifacts/learning/overnight-batches-20260911/collection.sqlite": {
+      "bytes": 5883645952,
+      "sha256": "5ff947c479a9a5de22446bead1d37e2bc0e71015308211a1aac77c46742a07ad"
+    },
+    "artifacts/learning/overnight-batches-20260911/collection.sqlite-wal": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "audit_script_sha256": "647d0adaf82bef02bfeaeddb8a0efe4eb5ff24f70edc0164f3a337ae3a54b9a7",
+  "elapsed_seconds": 8.914539813995361
+}

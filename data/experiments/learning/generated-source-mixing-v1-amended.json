@@ -1,0 +1,57 @@
+{
+  "version": "generated-source-mixing-v1",
+  "collection": "../../../artifacts/learning/overnight-batches-20260911/collection.sqlite",
+  "collection_sha256": "5ff947c479a9a5de22446bead1d37e2bc0e71015308211a1aac77c46742a07ad",
+  "analysis_spec": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7",
+  "selection_seed": 20260911,
+  "blocks": 3,
+  "seeds": [
+    7,
+    17,
+    27
+  ],
+  "train_size": 4000,
+  "phase_weights": {
+    "middlegame": 0.5,
+    "endgame": 0.5
+  },
+  "trajectory_cap": 8,
+  "development_max_per_cell": 64,
+  "cases": {
+    "plausible": {
+      "plausible": 1.0,
+      "intervention": 0.0,
+      "random": 0.0
+    },
+    "intervention": {
+      "plausible": 0.9,
+      "intervention": 0.1,
+      "random": 0.0
+    },
+    "random": {
+      "plausible": 0.9,
+      "intervention": 0.0,
+      "random": 0.1
+    },
+    "both": {
+      "plausible": 0.8,
+      "intervention": 0.1,
+      "random": 0.1
+    }
+  },
+  "training": {
+    "updates": 200,
+    "chunk_size": 256
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 1,
+    "pilot_seconds": 600,
+    "total_seconds": 7200,
+    "max_fit_seconds": 600
+  },
+  "primary": "equal-weight-mean-development-policy-phase-agreement",
+  "decision": "Advance the highest-mean nonbaseline only if every training block has positive seed-mean delta; baseline wins ties.",
+  "holdout": "Trajectory-hash half of original validation is sealed before predictions; never scored in this screen.",
+  "development_quota_policy": "cap-aware-up-to-limit-scarce-first-v1"
+}

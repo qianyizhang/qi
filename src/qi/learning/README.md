@@ -417,12 +417,40 @@ pins its own verified model bytes; it does not replace the process-wide
 QI_POLICY_CHECKPOINT convenience entry or activate checkpoints discovered among
 experiment artifacts.
 
-## Bounded snapshot preparation boundary
+## Bounded snapshot training
 
-The Training Data collection can export verified Parquet snapshots and expose
-`loading.load_snapshot(path).label_batches(batch_size)` to the existing `tensors`
-adapter. Optional `tests/test_collection_learning.py` verifies tensor parity on
-bounded batches. This does not change this trainer's full-batch Adam updates or
-make Recipe's `data.dataset` accept snapshot directories. Production integration
-is explicitly deferred to [AB-LEARN-010](../../../records/work-items/items/AB-LEARN-010-snapshot-training-protocol.md),
-which must first lock update, epoch, ordering and checkpoint semantics.
+`qi learn snapshot --config snapshot-training.json --output artifacts/fit` uses
+the explicit `snapshot-training-v1` seven-section configuration. Set
+`data.snapshot` to a frozen directory; `model`, `objective`, `optimizer`,
+`training`, `evaluation`, and `execution` retain separate responsibilities.
+`--preview` reads the config/manifest without creating output. Existing JSON
+`Recipe.data.dataset` interpretation is unchanged.
+
+`snapshot.py` verifies replay and recipe selection, then prepares a hash-pinned
+disk-backed cache of uint8 features, boolean masks and int64 targets. Only bounded
+chunks become float32 tensors. Evaluation, semantic slices and checkpoint reload
+comparison also use bounded batches. Cache and checkpoint metadata retain the
+snapshot fingerprint and teacher specification. Per-input predictions are saved.
+
+`training.batching` is `snapshot-full-batch-v1`: sum each chunk's masked
+cross-entropy divided by total training count, accumulate all gradients, and
+apply one Adam update per complete pass. Defaults are 256-row chunks, fixed
+snapshot order, 200 updates, seed 7 and Adam .01. Device and CPU thread count
+are explicit. Uneven final chunks retain sample weighting. Float32 reduction
+order may differ from whole-tensor training; tests compare losses, gradients
+and updates within declared tolerances.
+
+Deadlines are checked between chunks; an incomplete pass contributes no update.
+Completed updates can produce a terminal checkpoint and `deadline` report.
+Zero completed updates, nonfinite values and unexpected errors retain failure
+reports. Evaluation/checkpoint finalization can extend past the optimization
+deadline and its full elapsed time is reported. Optimizer-state resume is not
+implemented. Preparation time is separate; process peak RSS is a lifetime
+high-water mark, not isolated per-fit memory.
+
+[ADR-0010](../../../docs/adr/0010-frozen-selection-and-bounded-full-batch-training.md)
+owns the trade-off; [AB-LEARN-010](../../../records/work-items/items/AB-LEARN-010-snapshot-training-protocol.md)
+retains build evidence, and [AB-LEARN-012](../../../records/work-items/items/AB-LEARN-012-generated-source-mixing.md)
+owns the source comparison. Its bounded runner is `scripts/run_generated_mixing.py`:
+pass `--config data/experiments/learning/generated-source-mixing-v1-amended.json`,
+a fresh `--output`, and `--stage prepare`, `run`, or `verify` in sequence.

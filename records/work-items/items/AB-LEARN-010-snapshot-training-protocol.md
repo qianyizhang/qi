@@ -2,10 +2,10 @@
 description: Lock optimizer semantics before integrating bounded Parquet reads into production training.
 scope: backlog item
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: work_record
 work_id: AB-LEARN-010
-work_status: deferred
+work_status: wip
 work_kind: build
 added: 2026-09-10
 tags: domain
@@ -46,7 +46,15 @@ owns executable training semantics.
 | Date | Actor | From | To | Reason / evidence |
 | --- | --- | --- | --- | --- |
 | 2026-09-10 | Codex | — | deferred | User accepted separate production optimizer integration when locking AB-DATA-007 completion. |
+| 2026-09-11 | Codex | deferred | wip | User accepted bounded full-batch Adam and authorized implementation with the generated-source study. |
 
 ## Implementation Ledger
 
-No implementation events yet.
+### 2026-09-11 — decision: preserve full-batch updates
+
+The user accepted full-batch Adam and authorized the first generated-source
+mixture study. [ADR-0010](../../../docs/adr/0010-frozen-selection-and-bounded-full-batch-training.md)
+locks bounded gradient accumulation, fixed snapshot ordering, completed-pass
+accounting and checkpoint/report semantics. Implement under that decision and
+verify with objective/gradient/update parity and a representative resource pilot.
+Evidence: user decision and AB-LEARN-012; review not-required.
