@@ -94,6 +94,19 @@ union enrichment, not the causal contribution of each tag.
 - Follow-up: complete preparation, gates, fits, verification and assessed catalog entry.
 - Review: not-required; user authorized the next two stages.
 
+### 2026-09-11 — verification: preparation and implementation gates
+
+- Evidence: all six datasets are ready after 867.249 seconds of preparation;
+  full repository gate passed 597 Python tests, one MPS skip and five browser
+  tests. Focused source-signature, nesting, shared-point and decision-rule tests
+  passed. Config, plan and catalog evidence hashes were rechecked before fitting.
+- Consequence: start the 18 fits with implementation `967d50c`. Independent
+  scaling snapshot preparation may overlap these fits; report wall times as
+  observations under host contention, not an isolated throughput benchmark.
+- Follow-up: independently reload and verify every completed fit before the
+  scaling resource pilot or scientific scaling fits.
+- Review: not-required; authorized execution of the frozen protocol.
+
 
 ```experiment
 {
