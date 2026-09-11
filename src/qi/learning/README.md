@@ -78,21 +78,31 @@ training seed. Dataset, total allowance and initialization seed cannot be
 overridden inside a case. Use the shared dataset/allowance and `seeds` instead.
 Up to 16 cases and eight distinct seeds are supported. This initial comparison
 shape is provisional. It does not automatically certify comparability or perform
-adaptive selection. All trial metrics remain available; means/seed standard
-deviations require a complete seed group. Additional diagnostic metrics in the
-training report remain unchanged.
+adaptive selection. No checkpoint is selected by validation.
 
 Paths resolve relative to the config file, not the shell working directory.
 `runs.py` preserves `dataset.json`, a fully resolved `config.json`, `manifest.json`
 and `summary.json`. Every new run uses the same Recipe format, including single fits:
 the manifest lists concrete trials and exact inputs, and the summary groups `cases`.
 There are no legacy `plan`, `curve`, or per-trial `size` aliases; the size is in each
-trial config's `data.train_size`. Each started trial additionally saves
-`<case>-seed-N.config.json`, its result JSON and CPU checkpoint. The trial config
-records concrete training size and the effective fit allowance after the remaining
-total budget is applied. Pending trials remain in the manifest; failures retain
-the active trial name and config. Deadline semantics match the existing elapsed
-allowances: setup/reporting and a bounded step can overrun them.
+trial config's `data.train_size`. Each started trial saves `<case>-seed-N.config.json`
+with concrete training size and the effective fit allowance. A fit that finishes or
+reaches its optimization deadline after completing updates also saves
+`<case>-seed-N.json` and a CPU checkpoint, `<case>-seed-N.pt`. A failure before that
+can leave only the trial config. Pending trials remain in the manifest; failures
+retain the active trial name and config.
+
+Atomic `summary.json` updates retain per-trial reports and case aggregates:
+train/validation agreement and cross-entropy means and population standard deviations,
+plus expected random-legal agreement. Only seed groups in which every fit completes
+receive aggregates; deadline-limited fits are excluded from comparison.
+
+The total elapsed deadline is checked between trials; each fit receives at most
+the remaining allowance for its optimization loop. Setup, reporting, saving and a
+bounded step can overrun that allowance. Failed or interrupted runs retain prior
+trials; the CLI exits nonzero for incomplete runs. There is no resume or overwrite.
+Abrupt process termination can leave a `running` summary and an orphan checkpoint;
+use a fresh run path rather than inferring completion.
 
 Copy either the whole saved recipe or a single trial config, edit a parameter,
 and pass the copy to the same command. Saved configs carry `origin_config`; the
@@ -102,8 +112,8 @@ Saved configured runs reference their preserved dataset by absolute local path,
 so moving a copied config within this machine does not change its input. Moving
 the dataset to another machine requires updating that path. Reusing a config
 starts training from its seed; it does not resume checkpoint weights.
-The legacy single-fit command saves `<checkpoint-filename>.config.json` and references
-its original dataset path; the legacy matrix also preserves its dataset copy.
+Historical single-fit `<checkpoint-filename>.config.json` sidecars remain accepted;
+their dataset paths still point to the original files.
 
 Historical settings and limits are in the [experiment index](../../../data/experiments/learning/README.md).
 Use the [experiment method](../../../docs/experiments.md) to record expectations,
@@ -256,15 +266,16 @@ This avoids repeatedly replaying interleaved source histories at larger sizes.
 Defaults: seed 7, 200 full-batch steps, learning rate 0.01, CPU, one thread.
 The 60-second budget covers the optimization loop, checked between steps; setup,
 replay, reporting and serialization are outside it. One bounded step may finish
-past the deadline. MPS timing synchronizes completed GPU work at the loop boundaries. The report
-records actual steps, elapsed optimization time and `complete`/`deadline` status.
+past the deadline. MPS timing synchronizes completed GPU work at the loop boundaries.
+The report records actual steps, elapsed optimization time and `complete`/`deadline` status.
 For a diagnostic fit, `data.selection: "source-order"` with `data.train_size: N`
 uses only the first N training labels and records their identities.
 Set `execution.device` to `mps` for Mac GPU training, or use `cpu` and
 `execution.threads: 4` for a threaded CPU fit. MPS must be available and CPU fallback
-disabled; selection never silently changes devices. Model/data use float32. Final weights move to CPU for
-validation, serialization, and exact reload checks; inference timings describe CPU
-play, not GPU training. Checkpoints record training device and thread count.
+disabled; selection never silently changes devices. Model/data use float32. Final
+weights move to CPU for validation, serialization, and exact reload checks; inference
+timings describe CPU play, not GPU training. Checkpoints record training device and
+thread count.
 
 A successful tiny overfit proves the loss/gradient path works. Equal predictions
 before and after checkpoint reload prove serialization consistency. Held-out
@@ -312,22 +323,8 @@ that training-only order; different initialization seeds receive identical input
 Insufficient labels or invalid dataset evidence fail before output is created.
 Preview requires no torch import and writes nothing.
 
-The fresh run directory contains `manifest.json` (configuration, code/data hashes,
-exact input order and validation identities), `dataset.json`, each trial's JSON and
-CPU checkpoint, and atomic `summary.json` updates. The summary reports train and
-validation agreement, cross-entropy, expected random-legal agreement, and mean and
-population standard deviation across completed seeds. Only fully completed seed
-groups receive comparison metrics; no checkpoint is selected by validation.
+The shared [Recipe artifact and deadline semantics](#declarative-experiments) apply.
 Exact teacher agreement is an imitation measure, not a move-quality oracle.
-
-The total elapsed deadline is checked between trials; each fit receives at most
-the remaining allowance for its optimization loop. Setup, CPU reporting and saving
-can overrun that allowance. A deadline is not a hard process limit. Failed or
-interrupted runs retain prior trials; an incomplete fit retains its checkpoint and
-actual steps but is excluded from comparison. CLI exits nonzero for incomplete
-runs. There is no resume or overwrite. Abrupt process termination can leave a
-`running` summary and an orphan checkpoint; use a fresh run path rather than
-inferring completion. This is separate from the search-only experiment module.
 
 ## Recorded results
 

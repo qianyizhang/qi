@@ -113,3 +113,19 @@ schema version bump, command generator or new configuration system belongs here.
   trial selections, initialization seeds, dataset/corpus digests and validation
   identities against their original manifests. Both new guide JSON examples validate
   as Recipe. These are migration checks, not new training or strength measurements.
+
+## Follow-up review
+
+Fresh review of `e262b99` against its predecessor, with callers checked at `9c21620`,
+found no runtime defects. The maintained guide still described removed commands in
+the present tense and promised a report/checkpoint for every started trial. Corrected
+the historical-sidecar wording, documented config-only failures, and consolidated
+the shared artifact, aggregation and deadline rules under Recipe execution.
+
+`make check` passed in the shared checkout: 591 Python tests, five JavaScript tests,
+Ruff, documentation/catalog validation, browser type/format checks and production
+builds. The optional MPS test was skipped. Additional hermetic review probes confirmed
+preview does not mutate either input, a zero-step timeout preserves a failed summary
+and active trial config without a checkpoint, and reserved-input leakage fails before
+output creation. No runtime changes or new scientific runs were needed; unrelated
+data-generation and audit work was preserved.
