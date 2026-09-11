@@ -46,7 +46,8 @@ the metrics rank saved models differently and what evidence would establish
 effectiveness. The [session closeout](../reports/generated-data-session-closeout-20260912.md)
 retains the model inventory: 84 comparison fits contain 75 distinct weight
 states, with nine repeated controls. Resolve the evaluation scope and resource
-allowance before a separately registered experiment. Keep previous primary
+allowance in [AB-LEARN-015](../work-items/items/AB-LEARN-015-evaluation-metric-comparison.md)
+before a separately registered experiment. Keep previous primary
 outcomes and the sealed-input boundary intact; no new run is scheduled here.
 
 The generated-data follow-ups retain natural tag frequencies and support more
