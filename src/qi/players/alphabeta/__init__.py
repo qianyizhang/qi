@@ -15,10 +15,6 @@ LeafEvaluator = Callable[[Game, int, int, int, NodeBudget], int]
 Evaluator = Callable[[Game], int]
 
 
-def static_leaf(game: Game, alpha: int, beta: int, ply: int, budget: NodeBudget) -> int:
-    return evaluate(game)
-
-
 @dataclass(frozen=True)
 class SearchOptions:
     evaluator: Evaluator = evaluate

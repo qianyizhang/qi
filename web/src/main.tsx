@@ -35,7 +35,6 @@ import { catalogQuery, jobsQuery, playersQuery, runsQuery } from "./queries";
 import { SessionProvider, useSession } from "./session";
 import { PlayPage } from "./play";
 import { ExperimentCatalogView } from "./experiment-catalog";
-import { DataPage } from "./data";
 import { parseDataFilters } from "./data-review";
 import { ReferencePage } from "./reference";
 import { GenerationLessonPage, parseLessonSearch } from "./generation-lesson";
@@ -44,6 +43,9 @@ import { Button } from "./components/ui/button";
 import "./style.css";
 const ReportView = lazy(() =>
   import("./report").then((module) => ({ default: module.ReportView })),
+);
+const DataPage = lazy(() =>
+  import("./data").then((module) => ({ default: module.DataPage })),
 );
 const navigation = [
   { to: "/", label: "Home", icon: HomeIcon },
@@ -309,10 +311,12 @@ function DataWorkspace() {
   const filters = dataRoute.useSearch(),
     navigate = dataRoute.useNavigate();
   return (
-    <DataPage
-      filters={filters}
-      onFilters={(search) => void navigate({ search, resetScroll: false })}
-    />
+    <Suspense fallback={<p role="status">Loading the data workspace…</p>}>
+      <DataPage
+        filters={filters}
+        onFilters={(search) => void navigate({ search, resetScroll: false })}
+      />
+    </Suspense>
   );
 }
 const referenceRoute = createRoute({

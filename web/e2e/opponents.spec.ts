@@ -384,6 +384,73 @@ test("settings can be typed without interrupted focus and apply together", async
   expect((await stored(page)).history[0].config.nodes).toBe(256);
 });
 
+for (const status of [200, 503]) {
+  test(`cancelled settings validation releases the lock and ignores a late ${status} response`, async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const fetch = window.fetch.bind(window);
+      window.fetch = (input, init) =>
+        fetch(input, { ...init, signal: undefined });
+    });
+    await start(page);
+    await humanMove(page);
+    const before = await stored(page);
+    const entered = deferred(),
+      released = deferred();
+    await page.route("**/api/play/controller/inspect", async (route) => {
+      const controller = route.request().postDataJSON();
+      if (controller.player !== "alphabeta") return route.continue();
+      entered.resolve();
+      await released.promise;
+      await route.fulfill({
+        status,
+        json:
+          status === 200
+            ? controller
+            : { error: { message: "Obsolete settings failure" } },
+      });
+    });
+    try {
+      await page
+        .getByLabel("red player", { exact: true })
+        .selectOption("alphabeta");
+      await entered.promise;
+      await page.getByRole("link", { name: "Reference", exact: true }).click();
+      await page.getByRole("link", { name: "Play", exact: true }).click();
+      // Navigation cancels the edit and must release the cross-tab write lock.
+      await choose(page, "black", "random");
+      const response = page.waitForResponse("**/api/play/controller/inspect");
+      released.resolve();
+      await response;
+      await page.getByRole("button", { name: "Flip board" }).click();
+      const saved = await stored(page);
+      expect(saved.controllers.red.player).toBe("human");
+      expect(saved.controllers.black.player).toBe("random");
+      expect(saved.changes).toHaveLength(before.changes.length + 1);
+      await expect(page.getByRole("alert")).toHaveCount(0);
+    } finally {
+      released.resolve();
+    }
+  });
+}
+
+test("clearing saved storage in another tab pauses the stale session", async ({
+  page,
+  context,
+}) => {
+  await start(page);
+  await humanMove(page);
+  const other = await context.newPage();
+  await other.goto("/play");
+  await expect(other.locator(".board-status")).toContainText("Ply 1");
+  await other.evaluate(() => localStorage.clear());
+  await expect(page.getByRole("alert")).toContainText("Another tab changed");
+  await page.getByRole("button", { name: "Load saved session" }).click();
+  await expect(page.locator(".board-status")).toContainText("Ply 0");
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
 for (const action of ["new", "import"] as const) {
   test(`late replay cannot replace a ${action} session`, async ({ page }) => {
     await page.addInitScript(() => {

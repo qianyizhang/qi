@@ -70,7 +70,18 @@ and cohort timestamps are distinct; refreshing is explicit.
   [browser cases](../../../web/e2e/data.spec.ts).
   **Consequence:** UI suggestions remain independent of source evidence and frozen
   selection. No generation or training settings changed.
-  **Follow-up:** Integrate the isolated branch only after the active generator and
-  its final source-provenance accounting have stopped; this is an operational timing
-  constraint, not unfinished feature behavior.
+  **Follow-up:** Integration completed below after generator exit and final accounting.
+  **Review:** not-required.
+
+- **Integration:** Fast-forwarded `main` through `615a808` and `4fca9fa` after the
+  generation ledger reported paused/no further dispatch and process inspection
+  confirmed no generator. Data review and the generation walkthrough are integrated.
+  **Verification:** `make check` passed with 573 Python tests, one optional MPS skip
+  and five request-lifecycle tests; all 68 desktop/mobile browser cases passed after
+  settings-cancellation fixes and deferred Data-page loading. Existing dependency
+  deprecation and bundler directive warnings remain non-failing.
+  **Consequence:** The preview now runs from `main` on port 18766 with the same
+  collection source; ignored evidence was checked or preserved before worktree removal.
+  **Follow-up:** [AB-UI-004](AB-UI-004-bounded-collection-reads.md) proposes bounded
+  collection-page reads; no reader or training contract changed during integration.
   **Review:** not-required.

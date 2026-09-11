@@ -175,7 +175,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void restore();
     const updated = (event: StorageEvent) => {
-      if (event.key === SESSION_KEY) {
+      if (
+        event.storageArea === localStorage &&
+        (event.key === SESSION_KEY || event.key === null)
+      ) {
         pause();
         dispatch({
           type: "error",
@@ -280,14 +283,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [state.paused, state.busy, state.position, state.session]);
   const configure = async (side: "red" | "black", controller: Controller) => {
     pause();
+    const ticket = gate.current.start();
     dispatch({ type: "busy", busy: true });
     try {
       await lock(async () => {
+        if (!gate.current.isCurrent(ticket)) return;
         const validated = await request<Controller>(
           "play/controller/inspect",
           controller,
+          ticket.signal,
         );
-        if (current.current.session)
+        if (gate.current.isCurrent(ticket) && current.current.session)
           persist(
             changeControllers(current.current.session, {
               ...current.current.session.controllers,
@@ -296,9 +302,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           );
       });
     } catch (error) {
-      fail(error);
+      if (gate.current.isCurrent(ticket)) fail(error);
     } finally {
-      dispatch({ type: "busy", busy: false });
+      if (gate.current.isCurrent(ticket))
+        dispatch({ type: "busy", busy: false });
     }
   };
   const replace = async (data?: unknown) => {
