@@ -165,6 +165,15 @@ percentages are implementation/experiment choices, not additional locked claims.
 
 ## Experiment knowledge
 
+A **Benchmark series** freezes comparison conditions and its reference panel.
+A **Benchmark entrant** pins a Player's implementation, resources and settings;
+a new checkpoint is a new entrant, not a rewrite of an old rating. A **Rating
+snapshot** projects replay-validated complete pairs under the series' rating
+method. The referee owns outcomes and the benchmark owns comparison semantics.
+Development and locked-test books have separate lifecycles; reveal retires a
+locked book from confirmatory use. [ADR-0009](adr/0009-local-benchmark-ratings.md)
+and the [benchmark contract](benchmark.md) bind these accepted relationships.
+
 An experiment tests a question through one or more concrete executions. Its owning
 work item or report retains the authored finding, conditions, limits and decision;
 run artifacts retain measured evidence and execution provenance. A catalog entry

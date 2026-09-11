@@ -1,11 +1,11 @@
 ---
 description: Define development and locked-test use and uncertainty units for future comparisons.
 scope: backlog item
-status: experimental
-last_update: 2026-09-10
+status: stable
+last_update: 2026-09-11
 document_class: work_record
 work_id: AB-EVAL-004
-work_status: deferred
+work_status: done
 work_kind: decision
 added: 2026-09-10
 tags: domain
@@ -45,10 +45,23 @@ inferred from this methodology proposal.
 | Date | Actor | From | To | Reason / evidence |
 | --- | --- | --- | --- | --- |
 | 2026-09-10 | Codex | — | deferred | Capture review suggestions on test reuse and uncertainty for later discussion. |
+| 2026-09-11 | Codex | deferred | done | User accepted all benchmark interview decisions; promoted to benchmark contract and ADR-0009. |
 
 ## Implementation Ledger
 
-No implementation events yet.
+### 2026-09-11 — decision: adopted benchmark methodology
+
+- Evidence: the user accepted all thirteen interview recommendations and
+  authorized implementation. [Benchmark contract](../../../docs/benchmark.md)
+  and [ADR-0009](../../../docs/adr/0009-local-benchmark-ratings.md) now own the
+  frozen reference scale, paired starts, family-level uncertainty, development
+  use, locked-test reservation/reveal/retirement and failure semantics.
+- Consequence: methodology decisions are settled without changing historical
+  findings or asserting unverified training/test isolation.
+- Follow-up: [AB-EVAL-005](AB-EVAL-005-local-elo-benchmark.md) implements and
+  validates the rating, runner and UI contracts. Unknown model training provenance
+  must remain explicitly unknown when interpreting held-out results.
+- Review: ratified.
 
 ### 2026-09-10 — decision: next comparison should use full-game results
 

@@ -23,6 +23,7 @@ Accepted collection/snapshot evolution: [SQLite and Parquet ADR](adr/0008-sqlite
 Player modules and learning guide: [Players](../src/qi/players/README.md).
 Baseline players and matches: [Baselines](baselines.md).
 Performance specs, evidence, and scoring: [Evaluation](evaluation.md).
+Local Elo, reference panels and paired-game recovery: [Benchmark](benchmark.md).
 Shared experiment recall, conclusion recording and search reports: [Experiments](../src/qi/experiments/README.md).
 Experiment method and campaigns: [Method](experiments.md), [policy generalization](../records/campaigns/policy-generalization.md),
 [LLM move selection](../records/campaigns/llm-move-selection.md),

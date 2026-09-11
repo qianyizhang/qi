@@ -33,7 +33,7 @@ Replay navigation is read-only; return to the last move to continue playing.
 
 ## Unified local app
 
-Routes `/`, `/play`, `/data`, `/learn/generation`, `/experiments`, `/experiments/:runId`, and `/reference`
+Routes `/`, `/play`, `/data`, `/learn/generation`, `/experiments`, `/experiments/:runId`, `/benchmarks`, and `/reference`
 share a React/TypeScript/Vite frontend and FastAPI server. TanStack Router owns
 navigation and report URL filters; TanStack Query owns server reads. Source-owned
 shadcn/ui controls and Tailwind styles are shared with the offline report build.
@@ -137,6 +137,22 @@ computations publish nothing. Cancellation and success races resolve to one
 terminal job state. Job metadata is bounded to 32 recent entries in
 `QI_LAB_STATE` (default `artifacts/lab`) and kept separate from evidence. No queue,
 experiment launcher, training launcher or background game execution is included.
+
+## Playing-strength benchmarks
+
+`/benchmarks` reads frozen local benchmark runs through `GET /api/benchmarks`,
+`/api/benchmarks/{id}`, and `/api/benchmarks/{id}/snapshots/{snapshot}`. Discovery
+uses `QI_BENCHMARK_ROOTS` (a platform path-separated list; default
+`artifacts/benchmarks`), with opaque run IDs and paths confined to configured roots.
+Python replays retained evidence before deriving progress, ratings and matchups.
+
+The page shows complete color pairs, failures, immutable report snapshots,
+uncertainty or its unavailability reason, configurations and observed resources.
+Standard-start diagnostics are displayed separately from varied-opening ratings.
+Locked tests show progress while results remain hidden until explicit CLI reveal
+after completion. The [benchmark contract](benchmark.md) owns scheduling, rating
+assumptions and pool retirement. Execution, resume and reveal use `qi bench`;
+these read-only routes do not start players or change benchmark state.
 
 ## Generated game review
 

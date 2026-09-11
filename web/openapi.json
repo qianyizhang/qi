@@ -1114,6 +1114,111 @@
         }
       }
     },
+    "/api/benchmarks": {
+      "get": {
+        "summary": "List Benchmarks",
+        "operationId": "list_benchmarks_api_benchmarks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkCatalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/benchmarks/{id}": {
+      "get": {
+        "summary": "Report",
+        "operationId": "report_api_benchmarks__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/benchmarks/{id}/snapshots/{snapshot}": {
+      "get": {
+        "summary": "Saved Snapshot",
+        "operationId": "saved_snapshot_api_benchmarks__id__snapshots__snapshot__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "snapshot",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Snapshot"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/players": {
       "get": {
         "summary": "Players",
@@ -1516,6 +1621,255 @@
           "expected_state_hash"
         ],
         "title": "ApplyRequest"
+      },
+      "BenchmarkCatalog": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Issues"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BenchmarkCatalog"
+      },
+      "BenchmarkEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "series_id": {
+            "type": "string",
+            "title": "Series Id"
+          },
+          "series_sha256": {
+            "type": "string",
+            "title": "Series Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "book_use": {
+            "type": "string",
+            "title": "Book Use"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "series_id",
+          "series_sha256",
+          "created_at",
+          "mode",
+          "book_use"
+        ],
+        "title": "BenchmarkEntry"
+      },
+      "BenchmarkReport": {
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/BenchmarkSummary"
+          },
+          "settings": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Settings"
+          },
+          "book_provenance": {
+            "type": "string",
+            "title": "Book Provenance"
+          },
+          "book_selection": {
+            "type": "string",
+            "title": "Book Selection"
+          },
+          "snapshots": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Snapshots"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "summary",
+          "settings",
+          "book_provenance",
+          "book_selection",
+          "snapshots"
+        ],
+        "title": "BenchmarkReport"
+      },
+      "BenchmarkSummary": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Schema Version",
+            "default": 1
+          },
+          "series_id": {
+            "type": "string",
+            "title": "Series Id"
+          },
+          "series_sha256": {
+            "type": "string",
+            "title": "Series Sha256"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "spec_sha256": {
+            "type": "string",
+            "title": "Spec Sha256"
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "title": "Evidence Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "incomplete",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "pool_status": {
+            "type": "string",
+            "title": "Pool Status"
+          },
+          "results_hidden": {
+            "type": "boolean",
+            "title": "Results Hidden"
+          },
+          "planned_games": {
+            "type": "integer",
+            "title": "Planned Games"
+          },
+          "completed_games": {
+            "type": "integer",
+            "title": "Completed Games"
+          },
+          "failed_attempts": {
+            "type": "integer",
+            "title": "Failed Attempts"
+          },
+          "interrupted_attempts": {
+            "type": "integer",
+            "title": "Interrupted Attempts"
+          },
+          "running_games": {
+            "type": "integer",
+            "title": "Running Games"
+          },
+          "reused_games": {
+            "type": "integer",
+            "title": "Reused Games"
+          },
+          "anchor": {
+            "type": "string",
+            "title": "Anchor"
+          },
+          "entrants": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Entrants"
+          },
+          "fit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RatingFit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "matchups": {
+            "items": {
+              "$ref": "#/components/schemas/Matchup"
+            },
+            "type": "array",
+            "title": "Matchups"
+          },
+          "costs": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Cost"
+            },
+            "type": "object",
+            "title": "Costs"
+          },
+          "heldout_evidence": {
+            "type": "string",
+            "title": "Heldout Evidence"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "series_id",
+          "series_sha256",
+          "label",
+          "spec_sha256",
+          "evidence_sha256",
+          "created_at",
+          "status",
+          "pool_status",
+          "results_hidden",
+          "planned_games",
+          "completed_games",
+          "failed_attempts",
+          "interrupted_attempts",
+          "running_games",
+          "reused_games",
+          "anchor",
+          "entrants",
+          "heldout_evidence"
+        ],
+        "title": "BenchmarkSummary"
       },
       "CandidateEvidence": {
         "properties": {
@@ -2300,6 +2654,59 @@
           "openings"
         ],
         "title": "Corpus"
+      },
+      "Cost": {
+        "properties": {
+          "decisions": {
+            "type": "integer",
+            "title": "Decisions",
+            "default": 0
+          },
+          "elapsed_ms": {
+            "type": "number",
+            "title": "Elapsed Ms",
+            "default": 0
+          },
+          "mean_move_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Move Ms"
+          },
+          "qi_visits": {
+            "type": "integer",
+            "title": "Qi Visits",
+            "default": 0
+          },
+          "model_calls": {
+            "type": "integer",
+            "title": "Model Calls",
+            "default": 0
+          },
+          "engine_nodes": {
+            "type": "integer",
+            "title": "Engine Nodes",
+            "default": 0
+          },
+          "engine_decisions": {
+            "type": "integer",
+            "title": "Engine Decisions",
+            "default": 0
+          },
+          "engine_nodes_unknown": {
+            "type": "integer",
+            "title": "Engine Nodes Unknown",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Cost"
       },
       "EngineScore": {
         "properties": {
@@ -3285,6 +3692,93 @@
         ],
         "title": "MatchSummary"
       },
+      "Matchup": {
+        "properties": {
+          "a": {
+            "type": "string",
+            "title": "A"
+          },
+          "b": {
+            "type": "string",
+            "title": "B"
+          },
+          "diagnostic": {
+            "type": "boolean",
+            "title": "Diagnostic"
+          },
+          "planned_pairs": {
+            "type": "integer",
+            "title": "Planned Pairs",
+            "default": 0
+          },
+          "completed_pairs": {
+            "type": "integer",
+            "title": "Completed Pairs",
+            "default": 0
+          },
+          "completed_games": {
+            "type": "integer",
+            "title": "Completed Games",
+            "default": 0
+          },
+          "failed_attempts": {
+            "type": "integer",
+            "title": "Failed Attempts",
+            "default": 0
+          },
+          "interrupted_attempts": {
+            "type": "integer",
+            "title": "Interrupted Attempts",
+            "default": 0
+          },
+          "reused_games": {
+            "type": "integer",
+            "title": "Reused Games",
+            "default": 0
+          },
+          "wins": {
+            "type": "integer",
+            "title": "Wins",
+            "default": 0
+          },
+          "draws": {
+            "type": "integer",
+            "title": "Draws",
+            "default": 0
+          },
+          "losses": {
+            "type": "integer",
+            "title": "Losses",
+            "default": 0
+          },
+          "score_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Rate"
+          },
+          "termination_reasons": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Termination Reasons"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "a",
+          "b",
+          "diagnostic"
+        ],
+        "title": "Matchup"
+      },
       "MctsStats": {
         "properties": {
           "simulations": {
@@ -3984,6 +4478,132 @@
           "leaf_aborts"
         ],
         "title": "ProbeSummary"
+      },
+      "Rating": {
+        "properties": {
+          "entrant": {
+            "type": "string",
+            "title": "Entrant"
+          },
+          "elo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elo"
+          },
+          "lower": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lower"
+          },
+          "upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper"
+          },
+          "games": {
+            "type": "integer",
+            "title": "Games",
+            "default": 0
+          },
+          "families": {
+            "type": "integer",
+            "title": "Families",
+            "default": 0
+          },
+          "interval_reason": {
+            "type": "string",
+            "title": "Interval Reason",
+            "default": "No complete pairs connected to the anchor."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "entrant"
+        ],
+        "title": "Rating"
+      },
+      "RatingFit": {
+        "properties": {
+          "method": {
+            "type": "string",
+            "title": "Method",
+            "default": "davidson-map-v1"
+          },
+          "ratings": {
+            "items": {
+              "$ref": "#/components/schemas/Rating"
+            },
+            "type": "array",
+            "title": "Ratings"
+          },
+          "red_advantage_elo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Red Advantage Elo"
+          },
+          "draw_log_weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draw Log Weight"
+          },
+          "iterations": {
+            "type": "integer",
+            "title": "Iterations",
+            "default": 0
+          },
+          "bootstrap_successes": {
+            "type": "integer",
+            "title": "Bootstrap Successes",
+            "default": 0
+          },
+          "bootstrap_failures": {
+            "type": "integer",
+            "title": "Bootstrap Failures",
+            "default": 0
+          },
+          "interval_kind": {
+            "type": "string",
+            "title": "Interval Kind",
+            "default": "95% source-family cluster-bootstrap percentile interval of the regularized estimate"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ratings"
+        ],
+        "title": "RatingFit"
       },
       "RecordedTurn": {
         "properties": {

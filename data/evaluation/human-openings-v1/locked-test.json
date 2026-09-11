@@ -1,0 +1,789 @@
+{
+  "schema_version": 1,
+  "id": "ccpd-openings-v1-locked-test",
+  "use": "locked-test",
+  "provenance": "Yu-Han Tseng and Bo-Nian Chen (2026), Chinese Chess Practical Dataset (CCPD), https://github.com/Yvonne761/Chinese-Chess-Practical-Dataset, CC BY 4.0. Pinned revision 368a47a947773dd8692c026e286dd19b6277b993. First 256 master-game entries ordered by SHA256(qi-benchmark-book-v1: + path) among the 53685 master-game files returned by the pinned truncated tree; not a full-dataset sample.",
+  "selection": "Sorted source identity; one 12-ply prefix per source; deduplicate board/turn; group by board/turn after six plies; SHA256(qi-book-split-v1, family) modulo 5 == 0 is locked-test. Recorded prefixes only are replay-validated; source continuations are not referee-certified.",
+  "starts": [
+    {
+      "id": "opening-b0e722840ee0f6a9",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "0407e46082625fa9eadbb267844138493c90511b400e749b6d01b9a62d7ed6ce",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%90%84%E5%9C%B0%E6%9D%AF%E8%B3%BD/00001565.pgn",
+      "description": "\u7f85\u5143\u7ae0 vs BRADLER Stephan \u00b7 20090901 \u00b7 2009;\u4e16\u754c\u8c61\u68cb\u9326\u6a19\u8cfd MR8T26 \u52a0\u62ff\u5927-\u6eab\u54e5\u83ef \u7f85\u5143\u7ae0(\u5148\u548c)\u5fb7\u570b BRADLER Stephan \u9806\u70ae\u76f4\u8eca",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "i0h0",
+          "i9i8",
+          "h0h6",
+          "g6g5",
+          "b2d2",
+          "i8d8",
+          "d0e1",
+          "b9c7"
+        ]
+      }
+    },
+    {
+      "id": "opening-e94979f35adb33e4",
+      "family": "60739d791dd5f0d47157c7c1edf54a2ba8057d1b1bb11f4e34e506edc228eb4b",
+      "source_game": "0c3b35b3edb041773c20deff3e22917282083601c0e7ed4e50ea276d84001f02",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%B6%99%E5%9C%8B%E6%A6%AE/00000968.pgn",
+      "description": "\u9ed1\u9f8d\u6c5f\u8d99\u570b\u69ae vs \u6c5f\u8607\u5f90\u5929\u7d05 \u00b7 1984\u5e744\u670812\u65e5 \u00b7 1984\u5e74\u5168\u570b\u8c61\u68cb\u5718\u9ad4\u8cfd \u4ed9\u4eba\u6307\u8def\u5c0d\u5352\u5e95\u70ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g3g4",
+          "h7g7",
+          "b2e2",
+          "g9e7",
+          "h0i2",
+          "a9a8",
+          "e2e6",
+          "f9e8",
+          "b0c2",
+          "a8d8",
+          "a0b0",
+          "d8d5"
+        ]
+      }
+    },
+    {
+      "id": "opening-c0ddadbe2606c7ec",
+      "family": "7ce92b63aca6532cc91f9f092b65e85881d8bbb9fcd01f9f16c4ddcd95e06f22",
+      "source_game": "20d010da9423774bc028ce76b2dd06c050a88000e919a58703d78d026c6c0565",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E9%96%8B%E5%B1%80%E5%88%86%E9%A1%9E/%E4%B8%AD%E7%82%AE%E5%B1%80/00000427.pgn",
+      "description": "\u5ee3\u5dde\u8521\u798f\u5982 vs \u907c\u5be7\u535c\u98a8\u6ce2 \u00b7 19860426 \u00b7 1986\u5168\u570b\u8c61\u68cb\u5718\u9ad4\u8cfd 19860426\u8521\u798f\u5982\u8ca0\u535c\u98a8\u6ce2-",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "h0g2",
+          "i9h9",
+          "g3g4",
+          "c6c5",
+          "i0h0",
+          "b9c7",
+          "b0a2",
+          "c9e7",
+          "b2c2",
+          "c7b5"
+        ]
+      }
+    },
+    {
+      "id": "opening-24669f54e8a5b5c7",
+      "family": "73303ea613718b37e00e76df4a86089a28f60d09139f11ba4a286c816fa4bc56",
+      "source_game": "2bf845ca95406f0d1da49acf694336de45207f1980cf0cc2dda132b33d2f7466",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00002619.pgn",
+      "description": "\u6cb3\u5317\u95bb\u6587\u6e05 vs \u89e3\u653e\u8ecd\u674e\u570b\u5f37 \u00b7 1992.5.11 \u00b7 1992\u5e74\u5168\u570b\u8c61\u68cb\u5718\u9ad4\u8cfd \u4e2d\u70ae\u4e03\u8def\u99ac\u5c0d\u5c4f\u98a8\u99ac",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "h0g2",
+          "i9h9",
+          "b0c2",
+          "b9c7",
+          "c3c4",
+          "g6g5",
+          "i0i1",
+          "c9e7",
+          "i1f1",
+          "h7i7"
+        ]
+      }
+    },
+    {
+      "id": "opening-562d46d564153d74",
+      "family": "c4d34055f5c6b044f9961758befd39c9743fd8eaf0503d4836a1951f8d013f9c",
+      "source_game": "30864c185741a3c3b4d8f1da64e3be1e0e003bd4d576d7bf0cfefb6fdce4f702",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00014147.pgn",
+      "description": "\u5ee3\u897f\u79e6\u69ae vs \u5c71\u897f\u5f35\u529b \u00b7 1996.5.19 \u00b7 \u5168\u570b\u8c61\u68cb\u5718\u9ad4\u9326\u6a19\u8cfd \u9806\u70ae\u76f4\u8eca\u5c0d\u6a6b\u8eca",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "b2e2",
+          "b7e7",
+          "b0c2",
+          "b9c7",
+          "a0b0",
+          "a9a8",
+          "h0g2",
+          "a8f8",
+          "c3c4",
+          "h9g7",
+          "g3g4",
+          "i9i8"
+        ]
+      }
+    },
+    {
+      "id": "opening-4e4efb1d1c5c25a5",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "30bda46f9f49b2e10500d27daaa07f2217cba86961a86b216fecc8d0c418a1e6",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E4%B8%96%E7%95%8C%E6%99%BA%E5%8A%9B%E9%81%8B%E5%8B%95%E6%9C%83/00000140.pgn",
+      "description": "\u65b0\u52a0\u5761 \u5442\u745e\u5c55 vs \u8377\u862d \u8449\u69ae\u5149 \u00b7 20081010 \u00b7 20081010\u5442\u745e\u5c55\u8ca0\u8449\u69ae\u5149",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "i9i8",
+          "i0h0",
+          "h9g7",
+          "b0c2",
+          "i8d8",
+          "g3g4",
+          "c6c5",
+          "h0h5",
+          "e7e8"
+        ]
+      }
+    },
+    {
+      "id": "opening-c8e33aaab42b656e",
+      "family": "eb4813e75e0728629a773bb1792500fbc0cb239c046eb7469e53d3588ba0dcbe",
+      "source_game": "39cb7b582985b17e160eb64bca6bd03524ce9a36c4b932ac266dcc963299d82c",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00008422.pgn",
+      "description": "\u5317\u4eac\u9773\u7389\u786f vs \u8f15\u5de5\u9114\u6b63\u5049 \u00b7 1997.10.7 \u00b7 1997\u5e74\u5168\u570b\u8c61\u68cb\u500b\u4eba\u9326\u6a19\u8cfd \u5c0d\u5175\u5c40",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "c3c4",
+          "g6g5",
+          "b0c2",
+          "h9g7",
+          "b2a2",
+          "b7f7",
+          "a0b0",
+          "b9c7",
+          "h0i2",
+          "c9e7",
+          "i0i1",
+          "h7h5"
+        ]
+      }
+    },
+    {
+      "id": "opening-74e5f7b7a145cffc",
+      "family": "432efbd8a98008874900a76080404e55b686ac1f53f8cd925d1682d2f8a812ff",
+      "source_game": "3c64bd16cedee9041296767a85e5bdf494b7c19665b1add32d883c8420391347",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E4%B8%96%E7%95%8C%E6%99%BA%E5%8A%9B%E9%81%8B%E5%8B%95%E6%9C%83/00000435.pgn",
+      "description": "\u9127\u660e\u9ad8 vs TESSEN \u00b7 20081007 \u00b7 2008\u5e74\u9996\u5c46\u4e16\u754c\u667a\u529b\u904b\u52d5\u6703\u7537\u5b50\u500b\u4eba\u8cfd\u7b2c 1 \u8f2a \u82ac\u862d \u9127\u660e\u9ad8 \u548c \u5fb7\u570b TESSEN \u4e2d\u70ae\u5c0d\u55ae\u63d0\u99ac\u6a6b\u8eca",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "b9c7",
+          "h0g2",
+          "i9i8",
+          "i0h0",
+          "i8d8",
+          "f0e1",
+          "d8d5",
+          "c3c4",
+          "h9i7",
+          "b0c2",
+          "i6i5"
+        ]
+      }
+    },
+    {
+      "id": "opening-137d2b02bf7f2337",
+      "family": "453c681615ccec655363aa02bd6351d9d87197ff95366c38dadfcee2645c6386",
+      "source_game": "3f453564ae24e998cbfe6d935db63d65e33d1be7a38416317aa120f4e08608fc",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E6%9D%8E%E4%BE%86%E7%BE%A4/00000379.pgn",
+      "description": "\u5c71\u6771\u738b\u79c9\u570b vs \u6cb3\u5317\u674e\u4f86\u7fa4 \u00b7 1985\u5e7410\u67089\u65e5 \u00b7 19851009\u738b\u79c9\u570b\u8ca0\u674e\u4f86\u7fa4",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "h0g2",
+          "i9h9",
+          "i0h0",
+          "b7e7",
+          "b0c2",
+          "b9c7",
+          "a0b0",
+          "h7h3",
+          "g3g4",
+          "c6c5"
+        ]
+      }
+    },
+    {
+      "id": "opening-575c3a1d8fa0f53b",
+      "family": "90715b33eb3919920b92a775b5fd9c4d884ef573c849713cfb033b4f10f9309c",
+      "source_game": "4152b8aa703f3a4f62277f956e69b5afaa6c5f2de95d8b80402c3070d00210b0",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E9%8A%80%E8%8D%94%E6%9D%AF/00001270.pgn",
+      "description": "\u4e0a\u6d77\u80e1\u69ae\u83ef vs \u958b\u7064\u8523\u9cf3\u5c71 \u00b7 2003\u5e7412\u67083\u65e5 \u00b7 2003\u201c\u5343\u5e74\u9280\u8354\u676f\u201d\u5168\u570b\u8c61\u68cb\u7532\u7d1a\u806f\u8cfd\u7b2c\u5341\u4e00\u8f2a \u80e1\u69ae\u83ef\u5148\u548c\u8523\u9cf3\u5c7111",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "c3c4",
+          "h9g7",
+          "g3g4",
+          "h7i7",
+          "h0i2",
+          "i9h9",
+          "i0h0",
+          "c6c5",
+          "c4c5",
+          "h9h5",
+          "c5c6",
+          "h5c5"
+        ]
+      }
+    },
+    {
+      "id": "opening-fc31b825d74fc45f",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "4e9d1b5ed6c2f97fde2c0d8278c5eb7b1840aed8f360cf772a3d445dc500359a",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00014032.pgn",
+      "description": "\u6df1\u5733\u5289\u661f vs \u5b89\u5fbd\u8523\u5fd7\u6881 \u00b7 1991.5.17 \u00b7 \u5168\u570b\u8c61\u68cb\u5718\u9ad4\u9326\u6a19\u8cfd \u9806\u70ae\u76f4\u8eca\u5c0d\u6a6b\u8eca",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "i9i8",
+          "i0h0",
+          "h9g7",
+          "b2d2",
+          "b9c7",
+          "b0c2",
+          "a9b9",
+          "a0b0",
+          "g6g5"
+        ]
+      }
+    },
+    {
+      "id": "opening-a49911d222c4b7b6",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "562fcbde9a44de8897b18281186e0004661132ccfeaf1d3a697bed0470865d22",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%83%A1%E6%A6%AE%E8%8F%AF/00002470.pgn",
+      "description": "\u6cb3\u5317\u674e\u4f86\u7fa4 vs \u4e0a\u6d77\u80e1\u69ae\u83ef \u00b7 1984\u5e741\u670811\u65e5 \u00b7 \u7b2c\u56db\u5c46\u201c\u4e94\u7f8a\u676f\u201d\u8cfd \u9644.\u53c3\u8003\u5c0d\u5c40 \u9806\u70ae\u76f4\u8eca\u5c0d\u6a6b\u8eca",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "i0h0",
+          "i9i8",
+          "b0c2",
+          "i8d8",
+          "g3g4",
+          "b9a7",
+          "d0e1",
+          "d8d1"
+        ]
+      }
+    },
+    {
+      "id": "opening-3d7b133f7dfc6d3b",
+      "family": "8c4b7bccc0c924d69a6c68abc143c54d25f41ba518d655f93ac802c2a049fc7f",
+      "source_game": "5f1914957ae85c8476e5e8c32a2615d1a95df1187dc6615ed5565415312657e2",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%83%A1%E6%A6%AE%E8%8F%AF/00002254.pgn",
+      "description": "\u5ee3\u6771\u8a31\u9280\u5ddd vs \u4e0a\u6d77\u80e1\u69ae\u83ef \u00b7 \uff11\uff19\uff19\uff12\u5e74\uff17\u6708\uff13\u65e5 \u00b7 \uff11\uff19\uff19\uff12\u5e74\u201c\u84ec\u840a\u95a3\u676f\u201d\u5168\u570b\u8c61\u68cb\u7cbe\u82f1\u8cfd \u7b2c46\u5c40 \u5ee3\u6771\u8a31\u9280\u5ddd\uff08\u7d05\u5148\u8ca0\uff09\u4e0a\u6d77\u80e1\u69ae\u83ef",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "b9c7",
+          "h0g2",
+          "g6g5",
+          "i0h0",
+          "i9i7",
+          "b2d2",
+          "a9b9",
+          "b0c2",
+          "b7a7",
+          "c3c4",
+          "h9g7"
+        ]
+      }
+    },
+    {
+      "id": "opening-011c71c319314975",
+      "family": "453c681615ccec655363aa02bd6351d9d87197ff95366c38dadfcee2645c6386",
+      "source_game": "628d6f77eec4a04490981adef0f5b11f05f44286d51a60e97d072edebec32795",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%B6%99%E5%9C%8B%E6%A6%AE/00000583.pgn",
+      "description": "\u9ed1\u9f8d\u6c5f\u8d99\u570b\u69ae vs \u6e56\u5317\u67f3\u5927\u83ef \u00b7 1984\u5e742\u670825\u65e5 \u00b7 \u201c\u6606\u5316\u676f\u201d\u8c61\u68cb\u5927\u5e2b\u8cfd \u4e2d\u8dd1\u5c0d\u534a\u9014\u5217\u70ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "h0g2",
+          "i9h9",
+          "i0h0",
+          "b7e7",
+          "g3g4",
+          "b9c7",
+          "b2d2",
+          "a9b9",
+          "b0c2",
+          "h7h5"
+        ]
+      }
+    },
+    {
+      "id": "opening-8834d010789d5c48",
+      "family": "56b86036b1bbb260c873928eb9d7f359d3d2b50838ac0a36cb7994874146d94f",
+      "source_game": "644e3b33e2a1a92826e15e048b0cfb9e51c178d5ff236843be43ddc3ba82bed8",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E9%96%8B%E5%B1%80%E5%88%86%E9%A1%9E/%E9%87%91%E9%89%A4%E7%82%AE/00000030.pgn",
+      "description": "\u6731\u932b\u5be6 vs \u9ad8\u660e\u6d77 \u00b7 1987\u5e747\u67082\u65e5 \u00b7 \u6731\u932b\u5be6\u8ca0\u9ad8\u660e\u6d77",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2c2",
+          "h9g7",
+          "g3g4",
+          "b7e7",
+          "h0g2",
+          "b9c7",
+          "b0a2",
+          "a9b9",
+          "a0b0",
+          "b9b3",
+          "c2c6",
+          "e6e5"
+        ]
+      }
+    },
+    {
+      "id": "opening-89c7e6c813cc9c90",
+      "family": "7ce92b63aca6532cc91f9f092b65e85881d8bbb9fcd01f9f16c4ddcd95e06f22",
+      "source_game": "6a3876b6f62a5bc4553ef62393931e562a862723f94be889b9f013e544760ae3",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E4%BA%94%E7%BE%8A%E6%9D%AF/00001029.pgn",
+      "description": "\u6d2a\u667a vs \u5442\u6b3d \u00b7 2005-01-14 \u00b7 2005\u5e74\u7b2c25\u5c46\u4e94\u7f8a\u676f\u5168\u570b\u8c61\u68cb\u51a0\u8ecd\u9080\u8acb\u8cfd \u5409\u6797 \u6d2a\u667a \u548c \u5ee3\u6771 \u5442\u6b3d",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "g3g4",
+          "i9h9",
+          "h0g2",
+          "c6c5",
+          "i0h0",
+          "b9c7",
+          "b0a2",
+          "a9a8",
+          "b2b6",
+          "c7b5"
+        ]
+      }
+    },
+    {
+      "id": "opening-aad543ad082361af",
+      "family": "88bdc26053d4c38b25320ee87e3e0b61187f52a84a9e99557629da20f23d7ade",
+      "source_game": "81cf42efec9adb4fd5810f08f75d38855ec93d9e355889087c8705be36c6d7b6",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00014646.pgn",
+      "description": "\u6c5f\u8607\u5f90\u5929\u7d05 vs \u6e56\u5317\u67f3\u5927\u83ef \u00b7 1997.5.7 \u00b7 '97\u201c\u6046\u6e90\u7965\u676f\u201d\u5168\u570b\u8c61\u68cb\u5718\u9ad4\u9326\u6a19\u8cfd \u98db\u76f8\u5c0d\u58eb\u89d2\u70ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g0e2",
+          "b7d7",
+          "b0a2",
+          "a6a5",
+          "a0b0",
+          "b9a7",
+          "b2d2",
+          "a9a8",
+          "b0b4",
+          "g9e7",
+          "h0g2",
+          "h9g7"
+        ]
+      }
+    },
+    {
+      "id": "opening-418d497718beca79",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "8e5fce902535287a6ebd2c8f55179f99fdec6e8c159c51d064a4d52a06aec5f3",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E4%B8%96%E7%95%8C%E7%9B%83/00001325.pgn",
+      "description": "\u7530\u4e2d\u7be4 vs JOUNI RAMA \u00b7 10/12/2001 \u00b7 2001\u7b2c7\u5c46\u4e16\u9326\u8cfd \u9806\u70ae\u76f4\u8eca\u5c0d\u6a6b\u8eca\uff08\u7530\u4e2d\u7be4 \u8ca0 JOUNI RAMA\uff09",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "i0h0",
+          "i9i8",
+          "b0c2",
+          "g6g5",
+          "h0h4",
+          "i8d8",
+          "c3c4",
+          "d8d3"
+        ]
+      }
+    },
+    {
+      "id": "opening-7ac53d1a2118a025",
+      "family": "453c681615ccec655363aa02bd6351d9d87197ff95366c38dadfcee2645c6386",
+      "source_game": "9a9ade70859b60c848a23e2e9f1de056939185a30460d067ac552f48614ab204",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00008572.pgn",
+      "description": "\u5ee3\u6771\u5442\u6b3d vs \u907c\u5be7\u8d99\u6176\u95a3 \u00b7 1990\u5e7410\u670815\u65e5 \u00b7 90\u5e74\u676d\u5dde\u500b\u4eba\u8cfd \u5c0f\u5217\u624b\u70ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "h0g2",
+          "i9h9",
+          "i0h0",
+          "b7e7",
+          "h0h6",
+          "b9c7",
+          "b0c2",
+          "h7i7",
+          "h6h9",
+          "g7h9"
+        ]
+      }
+    },
+    {
+      "id": "opening-3915e6697fc9f1ad",
+      "family": "7ce92b63aca6532cc91f9f092b65e85881d8bbb9fcd01f9f16c4ddcd95e06f22",
+      "source_game": "9d0f6a59c9f7cf02e7bdc0bc2feaaf57d687b731f09f1165796b68a36b484e13",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%B6%99%E5%9C%8B%E6%A6%AE/00001090.pgn",
+      "description": "\u5f35\u5f37 vs \u8d99\u570b\u69ae \u00b7 2007-06-27 \u00b7 2007\u5e74\u4e03\u9b25\u661f\u676f\u5168\u570b\u8c61\u68cb\u7532\u7d1a\u806f\u8cfd \u5317\u4eac\u4e2d\u52a0 \u5f35\u5f37 \u52dd \u9ed1\u9f8d\u6c5f\u5927\u6176\u5e02\u7d05\u5d17 \u8d99\u570b\u69ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h9g7",
+          "g3g4",
+          "i9h9",
+          "h0g2",
+          "c6c5",
+          "b2b6",
+          "b9c7",
+          "b6c6",
+          "g9e7",
+          "b0c2",
+          "a9b9"
+        ]
+      }
+    },
+    {
+      "id": "opening-497da67ec93f0d98",
+      "family": "2bb1303351643cf9d2434e9dc39f2d82fd2e6ad77287ece2b01eaace7b7f8c5a",
+      "source_game": "a455510524ebc76675173116e85c4856da89abd092c8211528817e56e7c9420b",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00010338.pgn",
+      "description": " vs  \u00b7  \u00b7 \u6cb3\u5317\u80e1\u660e\u7d05\u5148\u52dd\u706b\u8eca\u982d\u5546\u5fd7\u83ef",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g0e2",
+          "b9c7",
+          "b0a2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "i0h0",
+          "i9h9",
+          "h2h6",
+          "g6g5",
+          "a0a1",
+          "b7a7"
+        ]
+      }
+    },
+    {
+      "id": "opening-c6b73ea62619bd7e",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "a4d5b4a1512546fbf18f408e75899233aff3ff9f63eb0e4d075cde215129de8d",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E6%A5%8A%E5%AE%98%E7%92%98/00000803.pgn",
+      "description": "\u5ee3\u6771\u694a\u5b98\u7498 vs \u5317\u4eac\u81e7\u5982\u610f \u00b7 19830722 \u00b7 \u201c\u4e09\u695a\u676f\u201d\u8cfd \u694a\u5b98\u7498\u548c\u81e7\u5982\u610f",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "i0h0",
+          "i9i8",
+          "h0h6",
+          "c6c5",
+          "h6g6",
+          "b9c7",
+          "b0a2",
+          "c7d5"
+        ]
+      }
+    },
+    {
+      "id": "opening-fbff28b2f9788b6e",
+      "family": "8c4b7bccc0c924d69a6c68abc143c54d25f41ba518d655f93ac802c2a049fc7f",
+      "source_game": "ae78531082a8026e1a4c317f633b0a58898193ac03463835187fed22f711ea37",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%83%A1%E6%A6%AE%E8%8F%AF/00000877.pgn",
+      "description": "\u907c\u5be7\u5c1a\u5a01 vs \u4e0a\u6d77\u80e1\u69ae\u83ef \u00b7 1990\u5e7410\u670820\u65e5 \u00b7 90\u5e74\u5168\u570b\u8c61\u68cb\u8cfd \u4e2d\u70ae\u5c0d\u9d1b\u9d26\u70ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "b9c7",
+          "h0g2",
+          "g6g5",
+          "i0h0",
+          "i9i7",
+          "b0c2",
+          "b7b8",
+          "h0h6",
+          "c6c5",
+          "e3e4",
+          "b8e8"
+        ]
+      }
+    },
+    {
+      "id": "opening-d6ee9f5ba8d2ce12",
+      "family": "2242d7347faa4be080af7aff4f8f98fa573049e84cb7822cd9a916146e40f267",
+      "source_game": "af1cebb4e6aab178fc7ec06976b39d435d4661689bd15790d7d27ceb99fdccbf",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E4%BA%94%E7%BE%8A%E6%9D%AF/00002183.pgn",
+      "description": "\u4e0a\u6d77\u80e1\u69ae\u83ef vs \u5ee3\u6771\u5442\u6b3d \u00b7 1999-12-19 \u00b7 \u98db\u76f8\u5c40\u5c0d\u58eb\u89d2\u70ae",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g0e2",
+          "b7d7",
+          "g3g4",
+          "b9c7",
+          "b0a2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "f0e1",
+          "i9h9",
+          "g2f4",
+          "a9b9"
+        ]
+      }
+    },
+    {
+      "id": "opening-5ceb1a4e934bb778",
+      "family": "b8acf03b869914a676c5828b8369f0f283be4354580f4c790617250edf3e2e7f",
+      "source_game": "bc9d50f2893e3364771bb17fd0ada1ff62a25bc54cf41b800a80701c317d2b6b",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%83%A1%E6%A6%AE%E8%8F%AF/00002097.pgn",
+      "description": "\u9676\u6f22\u660e vs \u80e1\u69ae\u83ef \u00b7 96-4-19 \u00b7 \u53cb\u8abc\u8cfd \u5c0d\u5175\u5c40",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g3g4",
+          "c6c5",
+          "b2c2",
+          "h7e7",
+          "c3c4",
+          "h9g7",
+          "c4c5",
+          "b9a7",
+          "g0e2",
+          "i9h9",
+          "b0a2",
+          "a9b9"
+        ]
+      }
+    },
+    {
+      "id": "opening-88cd95f4a5415f32",
+      "family": "917da3b7bf49bb73fcc5b8b933fce7a73fab0fadfc6568f00262c7e4ccbbd55d",
+      "source_game": "c42d7b0a7c3e727bbda42aa6fe654a5db88ea9d0f99f6ca4793995510dd64c0c",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%85%A8%E5%9C%8B%E8%B3%BD%E5%B0%8D%E5%B1%80%E8%AD%9C/00014839.pgn",
+      "description": "\u4e0a\u6d77\u845b\u7dad\u84b2 vs \u676d\u5dde\u9673\u5efa\u570b \u00b7 1996.5.19 \u00b7 96\u5168\u570b\u8c61\u68cb\u9326\u6a19\u8cfd \u98db\u76f8\u5c0d\u908a\u99ac",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g0e2",
+          "b9a7",
+          "b0c2",
+          "h7d7",
+          "a0a1",
+          "b7c7",
+          "c3c4",
+          "a9b9",
+          "c2d4",
+          "h9g7",
+          "a1f1",
+          "i9h9"
+        ]
+      }
+    },
+    {
+      "id": "opening-9cf289e8aa753425",
+      "family": "607fac24c301ee406d131ed94a1b6e386d863c1ab34821afdd98b198db06d5b2",
+      "source_game": "d14e7d7c1268ad32c56046db8360d43501a2b51954d97d7f193410077371ba3c",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E4%BA%94%E7%BE%8A%E6%9D%AF/00001483.pgn",
+      "description": "\u6e56\u5317\u67f3\u5927\u83ef vs \u5ee3\u6771\u5442\u6b3d \u00b7  \u00b7 \u6e56\u5317\u67f3\u5927\u83ef\u5c0d\u5ee3\u6771\u5442\u6b3d",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "g0e2",
+          "g6g5",
+          "b0c2",
+          "h9g7",
+          "a0a1",
+          "g9e7",
+          "c3c4",
+          "b9a7",
+          "a1g1",
+          "h7h9",
+          "g3g4",
+          "g5g4"
+        ]
+      }
+    },
+    {
+      "id": "opening-c7948c78eeb8de08",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "d51a12b9c975c8a0a2ba08de774f5652bf451065e1a3a75849bd5c25ac892e64",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E6%A3%8B%E6%89%8B%E5%88%86%E9%A1%9E/%E8%83%A1%E6%A6%AE%E8%8F%AF/00002635.pgn",
+      "description": "\u6c5f\u8607\u5b63\u672c\u6db5 vs \u4e0a\u6d77\u80e1\u69ae\u83ef \u00b7 1962.11.14 \u00b7 1962\u5e74\u5168\u570b\u68cb\u85dd\u9326\u6a19\u8cfd \u9806\u70ae\u76f4\u8eca\u5c0d\u6a6b\u8eca",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "h9g7",
+          "i0h0",
+          "i9i8",
+          "f0e1",
+          "i8d8",
+          "h0h6",
+          "b9c7",
+          "b0a2",
+          "c6c5"
+        ]
+      }
+    },
+    {
+      "id": "opening-1d43ecbcb3bda308",
+      "family": "432efbd8a98008874900a76080404e55b686ac1f53f8cd925d1682d2f8a812ff",
+      "source_game": "f1123582d233e381391319dfb3917b58f2309655a99a16fdc08f081d12409890",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E8%B3%BD%E4%BA%8B%E5%88%86%E9%A1%9E/%E5%90%84%E5%9C%B0%E6%9D%AF%E8%B3%BD/00003451.pgn",
+      "description": "\u65e5\u672c \u6240\u53f8\u548c\u6674 vs \u7fa9\u5927\u5229 \u4f55\u5fd7\u654f \u00b7  \u00b7 1997\u4e16\u754c\u76c3\u8c61\u68cb\u8cfd \u6240\u53f8\u548c\u6674VS\u4f55\u5fd7\u654f",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "b9c7",
+          "h0g2",
+          "i9i8",
+          "i0h0",
+          "i8d8",
+          "c3c4",
+          "d8d5",
+          "b0c2",
+          "h9i7",
+          "h0h4",
+          "i6i5"
+        ]
+      }
+    },
+    {
+      "id": "opening-f2bc88e585d6e5e8",
+      "family": "d8c53fd69f9056e268c268ab2f785378def5209c3c6fc719f9d047b8a2887a7c",
+      "source_game": "f34368d455976dbe3b26ae2ad18f93b9354dba61d7a0f69844449df1883a2b68",
+      "source_url": "https://raw.githubusercontent.com/Yvonne761/Chinese-Chess-Practical-Dataset/368a47a947773dd8692c026e286dd19b6277b993/Dataset/%E5%B0%8D%E5%B1%80/%E5%A4%A7%E5%B8%AB%E5%B0%8D%E5%B1%80/%E4%BB%A5%E9%96%8B%E5%B1%80%E5%88%86%E9%A1%9E/%E4%B8%AD%E7%82%AE%E5%B1%80/00000579.pgn",
+      "description": "\u4e0a\u6d77\u80e1\u69ae\u83ef vs \u5409\u6797\u66f9\u9716 \u00b7 1988\u5e749\u67083\u65e5 \u00b7 19880903\u80e1\u69ae\u83ef\u52dd\u66f9\u9716",
+      "snapshot": {
+        "schema_version": 1,
+        "ruleset": "xiangqi-training-v1",
+        "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+        "moves": [
+          "h2e2",
+          "h7e7",
+          "h0g2",
+          "i9i8",
+          "i0h0",
+          "h9g7",
+          "b0c2",
+          "i8d8",
+          "c3c4",
+          "b9a7",
+          "h0h4",
+          "d8d3"
+        ]
+      }
+    }
+  ]
+}

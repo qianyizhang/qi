@@ -1,0 +1,21 @@
+{
+  "source_games": 255,
+  "rejected": {
+    "terminal-or-duplicate-start": 55
+  },
+  "accepted": {
+    "development": 170,
+    "locked-test": 30
+  },
+  "families": {
+    "development": 93,
+    "locked-test": 17
+  },
+  "import_rejections": [
+    {
+      "path": "Dataset/\u5c0d\u5c40/\u5927\u5e2b\u5c0d\u5c40/\u4ee5\u8cfd\u4e8b\u5206\u985e/\u5404\u5730\u676f\u8cfd/00003831.pgn",
+      "reason": "Fewer than twelve prefix plies"
+    }
+  ],
+  "import_rejection_count": 1
+}

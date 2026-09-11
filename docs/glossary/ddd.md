@@ -165,6 +165,12 @@ to a canonical term; they do not introduce different meanings.
 | Term | 中文 | Meaning | _Avoid_ | Aliases |
 | :-- | :-- | :-- | :-- | :-- |
 | Arena | 评测场 | Runs games under specified players, openings, seeds, and budgets while retaining replayable results. | A strength guarantee | — |
+| Benchmark series | 基准系列 | Frozen reference entrants, opening book, rules and rating method defining a local comparison scale. | A universal Elo scale | BenchmarkSeries |
+| Benchmark entrant | 基准参赛者 | One pinned player implementation, resource identity and configuration rated as a distinct participant. | A mutable checkpoint nickname | Entrant |
+| Benchmark spec | 基准规格 | A series plus frozen candidates, paired starts and the planned matchups for one execution. | Observed game outcomes | BenchmarkSpec |
+| Rating snapshot | 等级分快照 | An immutable dated projection of verified complete pairs, including uncertainty and evidence identity. | Raw outcome authority | BenchmarkSummary |
+| Opening book | 开局库 | Sourced replayable prefixes selected before matches to vary starting situations. | Moves chosen by the evaluated player | Book |
+| Reference panel | 参照组 | Frozen benchmark entrants against which new candidates are compared. | Known true strengths | references |
 | Evaluation spec | 评测规格 | A versioned protocol, fixed corpus, and participant configurations defining what an evaluation measures. | A score without its benchmark conditions | EvalSpec; spec_sha256 |
 | Evaluation run | 评测运行 | Recorded execution evidence for every planned game, including completion and failures. Summaries can be recomputed without playing again. | A cached summary as outcome authority | EvalRun |
 | Evaluation summary | 评测摘要 | Versioned metrics derived from validated run evidence, linked to the spec identity and completion status. | A universal engine ranking | EvalSummary |

@@ -23,7 +23,7 @@ make check
 make play
 ```
 
-Open http://127.0.0.1:8000. Home connects **Play**, **Data**, **Learn**, **Experiments**, and **Reference**.
+Open http://127.0.0.1:8000. Home connects **Play**, **Data**, **Learn**, **Experiments**, **Benchmarks**, and **Reference**.
 In Play, select Red and Black independently: Human, a search player, a trained
 checkpoint, or configured Pikafish. Set each player's applicable limits, then
 use Resume for automatic turns or Step for one computer move. Pause to change
@@ -110,6 +110,11 @@ See [baseline and evaluation contracts](docs/baselines.md) for seed pairing,
 budget interpretation, and the limits of this small evaluation corpus.
 For a versioned spec, saved evidence, and scores that can be recomputed later,
 see the [performance evaluation protocol](docs/evaluation.md).
+
+For local Elo across heuristic players, Pikafish profiles and checkpoints, use
+[`qi bench`](docs/benchmark.md). It freezes paired schedules, retains resumable
+game evidence, and separates development ratings from locked-test results.
+The **Benchmarks** page shows progress, ratings, matchups and observed costs.
 
 Try **MCTS · UCT** in the Red or Black player selector, then expand **Last computer move**
 to inspect root visits and estimated returns. The [MCTS guide](src/qi/players/mcts/README.md)

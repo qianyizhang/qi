@@ -2,7 +2,7 @@
 description: Versioned paired-game evaluation specs, durable evidence, and replaceable scoring.
 scope: performance evaluation contract
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -81,8 +81,9 @@ remain and an `evaluation` field carries the new summary. Search experiment
 reports use the same paired scorer and show score, planned/completed pairs, and
 failures, while retaining their existing detailed probes and recordings.
 
-Future confidence intervals and rating functions can consume retained game
-evidence without repeating searches. Elo-like ratings additionally need a defined
-opponent pool and reference scale. Position tests and time controls require their
-own execution semantics when implemented. No rating or uncertainty estimate is
-implemented yet.
+The [local benchmark](benchmark.md) adds frozen multi-player reference panels,
+resumable per-game attempts, batch Elo and family-level uncertainty. It reuses
+this validator for completed matches and retains its own versioned execution
+contract. Legacy runs lack benchmark series/family identity and are not silently
+pooled into ratings. Position tests and tournament time controls require their
+own execution semantics when implemented.

@@ -35,6 +35,7 @@ import { catalogQuery, jobsQuery, playersQuery, runsQuery } from "./queries";
 import { SessionProvider, useSession } from "./session";
 import { PlayPage } from "./play";
 import { ExperimentCatalogView } from "./experiment-catalog";
+import { BenchmarksPage } from "./benchmarks";
 import { parseDataFilters } from "./data-review";
 import { ReferencePage } from "./reference";
 import { GenerationLessonPage, parseLessonSearch } from "./generation-lesson";
@@ -53,6 +54,7 @@ const navigation = [
   { to: "/data", label: "Data", icon: Database },
   { to: "/learn/generation", label: "Learn", icon: GraduationCap },
   { to: "/experiments", label: "Experiments", icon: FlaskConical },
+  { to: "/benchmarks", label: "Benchmarks", icon: Swords },
   { to: "/reference", label: "Reference", icon: BookOpen },
 ] as const;
 function Shell() {
@@ -324,6 +326,11 @@ const referenceRoute = createRoute({
   path: "/reference",
   component: ReferencePage,
 });
+const benchmarksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/benchmarks",
+  component: BenchmarksPage,
+});
 const lessonRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/learn/generation",
@@ -443,6 +450,7 @@ const router = createRouter({
     experimentsRoute,
     reportRoute,
     referenceRoute,
+    benchmarksRoute,
     lessonRoute,
   ]),
   defaultPreload: "intent",

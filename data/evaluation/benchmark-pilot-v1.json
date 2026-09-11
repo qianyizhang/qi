@@ -1,0 +1,833 @@
+{
+  "schema_version": 1,
+  "purpose": "Engineering and throughput pilot; one varied starting family, no representative strength conclusion.",
+  "elapsed_seconds": 229.90158487499866,
+  "protocol": "benchmark-pairs-v1",
+  "ruleset": "xiangqi-training-v1",
+  "selected_starts": [
+    "opening-13748fbae3390a93"
+  ],
+  "standard_start": true,
+  "book_sha256": "1373890057cd1c4e585798e772e5ce7d5e6d558a74671d822c8cc69551b177c1",
+  "series_sha256": "b95c4c3ec8542f264aee86155542ab18947fa3ac2b5278f46beb850702ce371c",
+  "profiles": [
+    {
+      "id": "random",
+      "label": "Random",
+      "config": {
+        "kind": "random",
+        "seed": 7,
+        "depth": 1,
+        "nodes": 1,
+        "checkpoint_sha256": null,
+        "rollout_plies": 8,
+        "binding_sha256": null,
+        "timeout_seconds": 10.0,
+        "work_semantics": "qi"
+      },
+      "player_version": "random-v1"
+    },
+    {
+      "id": "alphabeta",
+      "label": "Alpha-beta · 128 visits",
+      "config": {
+        "kind": "alphabeta",
+        "seed": 7,
+        "depth": 2,
+        "nodes": 128,
+        "checkpoint_sha256": null,
+        "rollout_plies": 8,
+        "binding_sha256": null,
+        "timeout_seconds": 10.0,
+        "work_semantics": "qi"
+      },
+      "player_version": "alphabeta-material-v1"
+    },
+    {
+      "id": "alphabeta-enhanced",
+      "label": "Enhanced alpha-beta · 128 visits",
+      "config": {
+        "kind": "alphabeta-enhanced",
+        "seed": 7,
+        "depth": 2,
+        "nodes": 128,
+        "checkpoint_sha256": null,
+        "rollout_plies": 8,
+        "binding_sha256": null,
+        "timeout_seconds": 10.0,
+        "work_semantics": "qi"
+      },
+      "player_version": "alphabeta-enhanced-v1"
+    },
+    {
+      "id": "mcts",
+      "label": "MCTS · 128 visits",
+      "config": {
+        "kind": "mcts",
+        "seed": 7,
+        "depth": 2,
+        "nodes": 128,
+        "checkpoint_sha256": null,
+        "rollout_plies": 8,
+        "binding_sha256": null,
+        "timeout_seconds": 10.0,
+        "work_semantics": "qi"
+      },
+      "player_version": "mcts-uct-v1"
+    },
+    {
+      "id": "pikafish-small",
+      "label": "Pikafish · 1k nodes / depth 3",
+      "config": {
+        "kind": "pikafish-benchmark",
+        "seed": 7,
+        "depth": 3,
+        "nodes": 1000,
+        "checkpoint_sha256": null,
+        "rollout_plies": 8,
+        "binding_sha256": "128e442dffab7f2fe9c1a3c85d20f79b8453a4bf3e16d27afa2e81dc0996c426",
+        "timeout_seconds": 10.0,
+        "work_semantics": "engine_native"
+      },
+      "player_version": "pikafish-uci-v1"
+    },
+    {
+      "id": "pikafish-large",
+      "label": "Pikafish · 100k nodes / depth 8",
+      "config": {
+        "kind": "pikafish-benchmark",
+        "seed": 7,
+        "depth": 8,
+        "nodes": 100000,
+        "checkpoint_sha256": null,
+        "rollout_plies": 8,
+        "binding_sha256": "128e442dffab7f2fe9c1a3c85d20f79b8453a4bf3e16d27afa2e81dc0996c426",
+        "timeout_seconds": 10.0,
+        "work_semantics": "engine_native"
+      },
+      "player_version": "pikafish-uci-v1"
+    }
+  ],
+  "summary": {
+    "schema_version": 1,
+    "series_id": "qi-local-v1",
+    "series_sha256": "b95c4c3ec8542f264aee86155542ab18947fa3ac2b5278f46beb850702ce371c",
+    "label": "Qi local player benchmark",
+    "spec_sha256": "53d37806056fa550396c0d506649cd6a2378fe3750f0703e5bb95e8632a81e6c",
+    "evidence_sha256": "dd179b8d649116cf96aa19fa5eb071b7f7328b4b04e56f03a75c1c584c41e6f6",
+    "created_at": "2026-09-11T11:46:27.510519+00:00",
+    "status": "complete",
+    "pool_status": "development",
+    "results_hidden": false,
+    "planned_games": 60,
+    "completed_games": 60,
+    "failed_attempts": 0,
+    "interrupted_attempts": 0,
+    "running_games": 0,
+    "reused_games": 0,
+    "anchor": "alphabeta",
+    "entrants": {
+      "random": "Random",
+      "alphabeta": "Alpha-beta · 128 visits",
+      "alphabeta-enhanced": "Enhanced alpha-beta · 128 visits",
+      "mcts": "MCTS · 128 visits",
+      "pikafish-small": "Pikafish · 1k nodes / depth 3",
+      "pikafish-large": "Pikafish · 100k nodes / depth 8"
+    },
+    "fit": {
+      "method": "davidson-map-v1",
+      "ratings": [
+        {
+          "entrant": "alphabeta",
+          "elo": 1000.0,
+          "lower": null,
+          "upper": null,
+          "games": 10,
+          "families": 1,
+          "interval_reason": "Fixed coordinate anchor; 1000 is a convention, not known absolute strength."
+        },
+        {
+          "entrant": "alphabeta-enhanced",
+          "elo": 1195.2184803218133,
+          "lower": null,
+          "upper": null,
+          "games": 10,
+          "families": 1,
+          "interval_reason": "Fewer than 8 source families; provisional estimate."
+        },
+        {
+          "entrant": "mcts",
+          "elo": 637.3207984297723,
+          "lower": null,
+          "upper": null,
+          "games": 10,
+          "families": 1,
+          "interval_reason": "Fewer than 8 source families; provisional estimate."
+        },
+        {
+          "entrant": "pikafish-large",
+          "elo": 2138.2869507482123,
+          "lower": null,
+          "upper": null,
+          "games": 10,
+          "families": 1,
+          "interval_reason": "Fewer than 8 source families; provisional estimate."
+        },
+        {
+          "entrant": "pikafish-small",
+          "elo": 1659.662187150128,
+          "lower": null,
+          "upper": null,
+          "games": 10,
+          "families": 1,
+          "interval_reason": "Fewer than 8 source families; provisional estimate."
+        },
+        {
+          "entrant": "random",
+          "elo": 359.2404290882703,
+          "lower": null,
+          "upper": null,
+          "games": 10,
+          "families": 1,
+          "interval_reason": "Fewer than 8 source families; provisional estimate."
+        }
+      ],
+      "red_advantage_elo": -106.82869861515853,
+      "draw_log_weight": -0.67128800143972,
+      "iterations": 6,
+      "bootstrap_successes": 0,
+      "bootstrap_failures": 0,
+      "interval_kind": "95% source-family cluster-bootstrap percentile interval of the regularized estimate"
+    },
+    "matchups": [
+      {
+        "a": "alphabeta",
+        "b": "alphabeta-enhanced",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 1,
+        "losses": 1,
+        "score_rate": 0.25,
+        "termination_reasons": {
+          "checkmate": 1,
+          "repetition": 1
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "alphabeta-enhanced",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 1,
+          "stalemate": 1
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "mcts",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "mcts",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 2,
+        "losses": 0,
+        "score_rate": 0.5,
+        "termination_reasons": {
+          "repetition": 2
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "pikafish-large",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "pikafish-large",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "pikafish-small",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "pikafish-small",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "random",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 1,
+        "draws": 1,
+        "losses": 0,
+        "score_rate": 0.75,
+        "termination_reasons": {
+          "repetition": 1,
+          "stalemate": 1
+        }
+      },
+      {
+        "a": "alphabeta",
+        "b": "random",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 1,
+        "draws": 1,
+        "losses": 0,
+        "score_rate": 0.75,
+        "termination_reasons": {
+          "repetition": 1,
+          "checkmate": 1
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "mcts",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "mcts",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "stalemate": 2
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "pikafish-large",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "pikafish-large",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "pikafish-small",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "pikafish-small",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "random",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 1,
+          "stalemate": 1
+        }
+      },
+      {
+        "a": "alphabeta-enhanced",
+        "b": "random",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "mcts",
+        "b": "pikafish-large",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "mcts",
+        "b": "pikafish-large",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "mcts",
+        "b": "pikafish-small",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "mcts",
+        "b": "pikafish-small",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 2,
+        "score_rate": 0.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "mcts",
+        "b": "random",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "mcts",
+        "b": "random",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "stalemate": 1,
+          "checkmate": 1
+        }
+      },
+      {
+        "a": "pikafish-large",
+        "b": "pikafish-small",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "pikafish-large",
+        "b": "pikafish-small",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "pikafish-large",
+        "b": "random",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "pikafish-large",
+        "b": "random",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "pikafish-small",
+        "b": "random",
+        "diagnostic": false,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      },
+      {
+        "a": "pikafish-small",
+        "b": "random",
+        "diagnostic": true,
+        "planned_pairs": 1,
+        "completed_pairs": 1,
+        "completed_games": 2,
+        "failed_attempts": 0,
+        "interrupted_attempts": 0,
+        "reused_games": 0,
+        "wins": 2,
+        "draws": 0,
+        "losses": 0,
+        "score_rate": 1.0,
+        "termination_reasons": {
+          "checkmate": 2
+        }
+      }
+    ],
+    "costs": {
+      "random": {
+        "decisions": 366,
+        "elapsed_ms": 10.973249067319557,
+        "mean_move_ms": 0.029981554828741958,
+        "qi_visits": 0,
+        "model_calls": 0,
+        "engine_nodes": 0,
+        "engine_decisions": 0,
+        "engine_nodes_unknown": 0
+      },
+      "alphabeta": {
+        "decisions": 407,
+        "elapsed_ms": 8212.354173854692,
+        "mean_move_ms": 20.17777438293536,
+        "qi_visits": 44824,
+        "model_calls": 0,
+        "engine_nodes": 0,
+        "engine_decisions": 0,
+        "engine_nodes_unknown": 0
+      },
+      "alphabeta-enhanced": {
+        "decisions": 269,
+        "elapsed_ms": 18415.017006074777,
+        "mean_move_ms": 68.45731229024081,
+        "qi_visits": 34356,
+        "model_calls": 0,
+        "engine_nodes": 0,
+        "engine_decisions": 0,
+        "engine_nodes_unknown": 0
+      },
+      "mcts": {
+        "decisions": 384,
+        "elapsed_ms": 14721.498258892098,
+        "mean_move_ms": 38.33723504919817,
+        "qi_visits": 49152,
+        "model_calls": 0,
+        "engine_nodes": 0,
+        "engine_decisions": 0,
+        "engine_nodes_unknown": 0
+      },
+      "pikafish-small": {
+        "decisions": 175,
+        "elapsed_ms": 28545.25250988081,
+        "mean_move_ms": 163.11572862789035,
+        "qi_visits": 0,
+        "model_calls": 0,
+        "engine_nodes": 40409,
+        "engine_decisions": 175,
+        "engine_nodes_unknown": 0
+      },
+      "pikafish-large": {
+        "decisions": 212,
+        "elapsed_ms": 35484.79688014777,
+        "mean_move_ms": 167.38111735918758,
+        "qi_visits": 0,
+        "model_calls": 0,
+        "engine_nodes": 566974,
+        "engine_decisions": 212,
+        "engine_nodes_unknown": 0
+      }
+    },
+    "heldout_evidence": "Not audited against entrant training data; no certified held-out claim.",
+    "notes": [
+      "Local ratings under this book, ruleset and configured players; resources are not equalized.",
+      "Only complete color pairs score. Standard-start diagnostics are excluded from ratings.",
+      "Intervals resample source families and retain both colors and all associated matchups.",
+      "Approximate regularized estimates; inspect matchup outcomes and unavailable-interval reasons."
+    ]
+  },
+  "verification": {
+    "complete_games_replayed": 60,
+    "noop_resume_unchanged": true,
+    "source_archive_sha256": "6ffc551a1a99fd2cc6b202b24ae24f02f5779f81355e7573f0e03886149b3a59"
+  },
+  "limits": [
+    "One varied start and one standard-start diagnostic per matchup.",
+    "Per-move fresh Pikafish processes and heterogeneous resources.",
+    "Shared machine: browser tests and repository checks ran concurrently during the pilot.",
+    "Raw game evidence and executed source archive remain local under artifacts/."
+  ],
+  "raw_evidence": "artifacts/benchmarks/reference-pilot-v1",
+  "source_archive": "artifacts/benchmark-pilot-v1/source"
+}

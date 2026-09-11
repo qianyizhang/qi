@@ -379,6 +379,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/benchmarks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Benchmarks */
+    get: operations["list_benchmarks_api_benchmarks_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/benchmarks/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Report */
+    get: operations["report_api_benchmarks__id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/benchmarks/{id}/snapshots/{snapshot}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Saved Snapshot */
+    get: operations["saved_snapshot_api_benchmarks__id__snapshots__snapshot__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/players": {
     parameters: {
       query?: never;
@@ -583,6 +634,105 @@ export interface components {
       move: string;
       /** Expected State Hash */
       expected_state_hash: string;
+    };
+    /** BenchmarkCatalog */
+    BenchmarkCatalog: {
+      /** Entries */
+      entries?: components["schemas"]["BenchmarkEntry"][];
+      /** Issues */
+      issues?: string[];
+    };
+    /** BenchmarkEntry */
+    BenchmarkEntry: {
+      /** Id */
+      id: string;
+      /** Label */
+      label: string;
+      /** Series Id */
+      series_id: string;
+      /** Series Sha256 */
+      series_sha256: string;
+      /** Created At */
+      created_at: string;
+      /** Mode */
+      mode: string;
+      /** Book Use */
+      book_use: string;
+    };
+    /** BenchmarkReport */
+    BenchmarkReport: {
+      summary: components["schemas"]["BenchmarkSummary"];
+      /** Settings */
+      settings: {
+        [key: string]: {
+          [key: string]: unknown;
+        };
+      };
+      /** Book Provenance */
+      book_provenance: string;
+      /** Book Selection */
+      book_selection: string;
+      /** Snapshots */
+      snapshots: string[];
+    };
+    /** BenchmarkSummary */
+    BenchmarkSummary: {
+      /**
+       * Schema Version
+       * @default 1
+       * @constant
+       */
+      schema_version: 1;
+      /** Series Id */
+      series_id: string;
+      /** Series Sha256 */
+      series_sha256: string;
+      /** Label */
+      label: string;
+      /** Spec Sha256 */
+      spec_sha256: string;
+      /** Evidence Sha256 */
+      evidence_sha256: string;
+      /** Created At */
+      created_at: string;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "complete" | "incomplete" | "failed";
+      /** Pool Status */
+      pool_status: string;
+      /** Results Hidden */
+      results_hidden: boolean;
+      /** Planned Games */
+      planned_games: number;
+      /** Completed Games */
+      completed_games: number;
+      /** Failed Attempts */
+      failed_attempts: number;
+      /** Interrupted Attempts */
+      interrupted_attempts: number;
+      /** Running Games */
+      running_games: number;
+      /** Reused Games */
+      reused_games: number;
+      /** Anchor */
+      anchor: string;
+      /** Entrants */
+      entrants: {
+        [key: string]: string;
+      };
+      fit?: components["schemas"]["RatingFit"] | null;
+      /** Matchups */
+      matchups?: components["schemas"]["Matchup"][];
+      /** Costs */
+      costs?: {
+        [key: string]: components["schemas"]["Cost"];
+      };
+      /** Heldout Evidence */
+      heldout_evidence: string;
+      /** Notes */
+      notes?: string[];
     };
     /** CandidateEvidence */
     CandidateEvidence: {
@@ -899,6 +1049,46 @@ export interface components {
       provenance: string;
       /** Openings */
       openings: components["schemas"]["Opening"][];
+    };
+    /** Cost */
+    Cost: {
+      /**
+       * Decisions
+       * @default 0
+       */
+      decisions: number;
+      /**
+       * Elapsed Ms
+       * @default 0
+       */
+      elapsed_ms: number;
+      /** Mean Move Ms */
+      mean_move_ms?: number | null;
+      /**
+       * Qi Visits
+       * @default 0
+       */
+      qi_visits: number;
+      /**
+       * Model Calls
+       * @default 0
+       */
+      model_calls: number;
+      /**
+       * Engine Nodes
+       * @default 0
+       */
+      engine_nodes: number;
+      /**
+       * Engine Decisions
+       * @default 0
+       */
+      engine_decisions: number;
+      /**
+       * Engine Nodes Unknown
+       * @default 0
+       */
+      engine_nodes_unknown: number;
     };
     /** EngineScore */
     EngineScore: {
@@ -1266,6 +1456,66 @@ export interface components {
       /** Pairs */
       pairs: number;
     };
+    /** Matchup */
+    Matchup: {
+      /** A */
+      a: string;
+      /** B */
+      b: string;
+      /** Diagnostic */
+      diagnostic: boolean;
+      /**
+       * Planned Pairs
+       * @default 0
+       */
+      planned_pairs: number;
+      /**
+       * Completed Pairs
+       * @default 0
+       */
+      completed_pairs: number;
+      /**
+       * Completed Games
+       * @default 0
+       */
+      completed_games: number;
+      /**
+       * Failed Attempts
+       * @default 0
+       */
+      failed_attempts: number;
+      /**
+       * Interrupted Attempts
+       * @default 0
+       */
+      interrupted_attempts: number;
+      /**
+       * Reused Games
+       * @default 0
+       */
+      reused_games: number;
+      /**
+       * Wins
+       * @default 0
+       */
+      wins: number;
+      /**
+       * Draws
+       * @default 0
+       */
+      draws: number;
+      /**
+       * Losses
+       * @default 0
+       */
+      losses: number;
+      /** Score Rate */
+      score_rate?: number | null;
+      /** Termination Reasons */
+      termination_reasons?: {
+        [key: string]: number;
+      };
+    };
     /** MctsStats */
     MctsStats: {
       /** Simulations */
@@ -1559,6 +1809,66 @@ export interface components {
       tt_cutoffs: number;
       /** Leaf Aborts */
       leaf_aborts: number;
+    };
+    /** Rating */
+    Rating: {
+      /** Entrant */
+      entrant: string;
+      /** Elo */
+      elo?: number | null;
+      /** Lower */
+      lower?: number | null;
+      /** Upper */
+      upper?: number | null;
+      /**
+       * Games
+       * @default 0
+       */
+      games: number;
+      /**
+       * Families
+       * @default 0
+       */
+      families: number;
+      /**
+       * Interval Reason
+       * @default No complete pairs connected to the anchor.
+       */
+      interval_reason: string;
+    };
+    /** RatingFit */
+    RatingFit: {
+      /**
+       * Method
+       * @default davidson-map-v1
+       */
+      method: string;
+      /** Ratings */
+      ratings: components["schemas"]["Rating"][];
+      /** Red Advantage Elo */
+      red_advantage_elo?: number | null;
+      /** Draw Log Weight */
+      draw_log_weight?: number | null;
+      /**
+       * Iterations
+       * @default 0
+       */
+      iterations: number;
+      /**
+       * Bootstrap Successes
+       * @default 0
+       */
+      bootstrap_successes: number;
+      /**
+       * Bootstrap Failures
+       * @default 0
+       */
+      bootstrap_failures: number;
+      /**
+       * Interval Kind
+       * @default 95% source-family cluster-bootstrap percentile interval of the regularized estimate
+       */
+      interval_kind: string;
     };
     /** RecordedTurn */
     RecordedTurn: {
@@ -2825,6 +3135,89 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SamplingResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_benchmarks_api_benchmarks_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BenchmarkCatalog"];
+        };
+      };
+    };
+  };
+  report_api_benchmarks__id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BenchmarkReport"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  saved_snapshot_api_benchmarks__id__snapshots__snapshot__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        snapshot: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BenchmarkSummary"];
         };
       };
       /** @description Validation Error */

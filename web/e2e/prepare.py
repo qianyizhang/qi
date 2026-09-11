@@ -53,3 +53,25 @@ owner.write_text("# Historical teacher pilot\n\n```experiment\n" + fixture.model
 # Read-only collection review fixtures, without a teacher process or training.
 from qi.test_collection_view import build_review_collection
 build_review_collection(root / "collections/review.sqlite")
+
+# Paired benchmark evidence uses real lightweight players and an isolated pool registry.
+import os
+from qi.benchmark.models import BenchmarkSpec, BenchmarkSeries, Book, BookStart, Entrant
+from qi.benchmark.runner import run_benchmark
+from qi.benchmark.summary import summarize_benchmark
+from qi.players import PlayerConfig
+os.environ["QI_BENCHMARK_STATE"] = str(root / "benchmark-state")
+book = Book(id="browser-fixture", use="smoke", provenance="Hermetic browser benchmark",
+            selection="One fixed start", starts=[BookStart(id="horse", family="fixture-horse",
+            source_game="fixture-game", source_url="test:browser", description="Horse development",
+            snapshot=Snapshot(moves=["b0c2", "b9c7"]))])
+panel = [Entrant(id="baseline", label="Baseline random", config=PlayerConfig("random", seed=7)),
+         Entrant(id="candidate", label="Candidate random", config=PlayerConfig("random", seed=17))]
+spec = BenchmarkSpec(series=BenchmarkSeries(id="browser-benchmark", label="Benchmark browser fixture",
+                     book=book, references=panel, anchor="baseline"), starts=["horse"])
+run_benchmark(spec, root / "benchmarks/complete")
+summarize_benchmark(root / "benchmarks/complete", persist=True)
+locked = spec.model_copy(deep=True)
+locked.series.label = "Locked benchmark fixture"
+locked.series.book.use = "locked-test"
+run_benchmark(locked, root / "benchmarks/locked")
