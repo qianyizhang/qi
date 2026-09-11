@@ -7,7 +7,7 @@ from qi.training_data.store import AnalysisPayload, AnalysisSpec, Collection, Oc
 
 
 def analysis_spec(config: TeacherConfig, identity: TeacherIdentity) -> AnalysisSpec:
-    settings = {"Threads": "1", "Hash": "16", "MultiPV": str(config.multipv), "Ponder": "false"}
+    settings = {"Threads": str(config.threads), "Hash": "16", "MultiPV": str(config.multipv), "Ponder": "false"}
     if config.show_wdl:
         settings["UCI_ShowWDL"] = "true"
     return AnalysisSpec(

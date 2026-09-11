@@ -17,10 +17,12 @@ def select(game: Game, config: PlayerConfig) -> Decision:
     from pathlib import Path
 
     engine, network = Path(binding.engine), Path(binding.network)
-    settings = TeacherConfig(engine, network, config.nodes, config.depth, config.timeout_seconds)
+    settings = TeacherConfig(
+        engine, network, config.nodes, config.depth, config.timeout_seconds, threads=binding.threads
+    )
     identity = TeacherIdentity(engine, network, resource.engine_sha256, resource.network_sha256)
     with TeacherSession(settings, identity=identity) as session:
-        session.settings.update(Threads=str(binding.threads), Hash=str(binding.hash_mb))
+        session.settings.update(Hash=str(binding.hash_mb))
         analysis = session.analyze(game, settings)
     native = EngineWork(
         analysis.engine_name,

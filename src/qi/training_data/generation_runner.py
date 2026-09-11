@@ -36,12 +36,15 @@ class GenerationTeacher(Contract):
     network: str
     engine_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     network_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    threads: int = Field(default=1, ge=1, le=16, strict=True)
     nodes: int = Field(ge=1)
     depth: int | None = Field(default=None, ge=1, le=64)
     timeout_seconds: float = Field(default=10.0, gt=0, le=120)
 
     def config(self) -> TeacherConfig:
-        return TeacherConfig(Path(self.engine), Path(self.network), self.nodes, self.depth, self.timeout_seconds)
+        return TeacherConfig(
+            Path(self.engine), Path(self.network), self.nodes, self.depth, self.timeout_seconds, threads=self.threads
+        )
 
 
 class GenerationSource(Contract):

@@ -55,7 +55,7 @@ uses these options for a shared reference and separate all-legal candidate score
 
 Following the [upstream UCI contract](https://github.com/official-pikafish/Pikafish/wiki/UCI-%26-Commands),
 fresh analysis launches a process, waits for `uciok`, requires a named engine
-and Threads/Hash/MultiPV/Ponder/EvalFile options, sets one thread, 16 MiB hash,
+and Threads/Hash/MultiPV/Ponder/EvalFile options, sets configured threads (1–16, default 1), 16 MiB hash,
 the configured MultiPV value (default 1), no pondering, and an explicit network
 path. It sends `ucinewgame`, waits
 for `readyok`, then sends `position startpos moves ...` with the entire history.

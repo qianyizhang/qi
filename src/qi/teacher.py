@@ -24,6 +24,7 @@ class TeacherConfig:
     timeout_seconds: float = 10
     multipv: int = 1
     show_wdl: bool = False
+    threads: int = 1
 
     def __post_init__(self) -> None:
         if (
@@ -31,9 +32,13 @@ class TeacherConfig:
             or (self.depth is not None and not 1 <= self.depth <= 64)
             or not 0 < self.timeout_seconds <= 120
             or not 1 <= self.multipv <= 256
+            or not isinstance(self.threads, int)
+            or isinstance(self.threads, bool)
+            or not 1 <= self.threads <= 16
         ):
             raise GameError(
-                "invalid_budget", "Use positive nodes, optional depth 1-64, MultiPV 1-256 and timeout (0,120]."
+                "invalid_budget",
+                "Use positive nodes, optional depth 1-64, MultiPV 1-256, threads 1-16 and timeout (0,120].",
             )
         for path in (self.engine, self.network):
             if not path.is_file() or any(c in str(path.resolve()) for c in "\r\n"):
@@ -198,7 +203,7 @@ class TeacherSession:
         self.name = ""
         self.options: set[str] = set()
         self.settings = {
-            "Threads": "1",
+            "Threads": str(config.threads),
             "Hash": "16",
             "MultiPV": str(config.multipv),
             "Ponder": "false",
@@ -267,7 +272,7 @@ class TeacherSession:
             engine = self.engine
             engine.deadline = monotonic() + config.timeout_seconds
             engine.total = len(engine.pending)
-        desired = {"MultiPV": str(config.multipv)}
+        desired = {"MultiPV": str(config.multipv), "Threads": str(config.threads)}
         if config.show_wdl or "UCI_ShowWDL" in self.settings:
             desired["UCI_ShowWDL"] = str(config.show_wdl).lower()
         for key, value in desired.items():

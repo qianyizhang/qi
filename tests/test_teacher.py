@@ -262,3 +262,27 @@ def test_optional_wdl_requires_engine_support(tmp_path):
     with pytest.raises(GameError, match="UCI_ShowWDL"):
         with TeacherSession(config) as session:
             session.analyze(replay(("b2e2",)), replace(config, show_wdl=True))
+
+
+def test_thread_changes_reach_engine_and_preserve_prior_evidence(tmp_path):
+    config = fake_teacher(tmp_path)
+    game = replay(("b2e2",))
+    with TeacherSession(config) as session:
+        first = session.analyze(game, config)
+        second = session.analyze(game, replace(config, threads=4))
+    assert first.settings["Threads"] == "1"
+    assert second.settings["Threads"] == "4"
+    assert "setoption name Threads value 4" in (tmp_path / "commands").read_text()
+    from qi.teacher import TeacherIdentity
+    from qi.training_data.generation_io import analysis_spec
+
+    assert (
+        analysis_spec(config, TeacherIdentity.read(config)).identity
+        != analysis_spec(replace(config, threads=4), TeacherIdentity.read(config)).identity
+    )
+
+
+@pytest.mark.parametrize("threads", [0, 17, 1.5, True])
+def test_invalid_thread_budget(tmp_path, threads):
+    with pytest.raises(GameError, match="threads"):
+        replace(fake_teacher(tmp_path), threads=threads)

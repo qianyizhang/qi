@@ -36,7 +36,7 @@ def teacher_spec(config: TeacherConfig, identity: TeacherIdentity | None = None)
         "adapter": "uci-teacher-v1",
         "engine_sha256": identity.engine_sha256,
         "network_sha256": identity.network_sha256,
-        "settings": {"Threads": "1", "Hash": "16", "MultiPV": "1", "Ponder": "false"},
+        "settings": {"Threads": str(config.threads), "Hash": "16", "MultiPV": "1", "Ponder": "false"},
         "nodes": config.nodes,
         "depth": config.depth,
     }

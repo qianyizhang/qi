@@ -167,7 +167,7 @@ It supports these investigation priorities, not a new default recipe:
   future streaming boundary; throughput contention and learning benefit remain untested.
 
 **Current support:** `qi data prepare` is sequential, with fresh processes by
-default and opt-in single-process reuse. The adapter fixes Threads=1, Hash=16 and
+default and opt-in single-process reuse. The adapter defaults to Threads=1, supports configured threads 1–16, and fixes Hash=16 and
 MultiPV=1; preparation requires a depth and exposes no worker-pool, WDL, MultiPV
 or root-trace options. Training consumes frozen datasets. See the [teacher guide](../../../docs/teacher.md#search-settings-and-query-speed)
 for setting semantics and the linked report for evidence and review triggers.
@@ -375,3 +375,8 @@ Trajectory split rejections in policy generation remain `failed` games with
 `rejected-trajectory` stop reason. They are terminal dispositions for the run plan,
 never accepted snapshot rows. See [generation continuation](../../../docs/data-generation.md)
 for explicit references across a reviewed implementation repair.
+
+Generation teacher `threads` is frozen in each recipe and persisted in actor and
+supervision identities. Changing it requires a fresh run; multithreaded engine
+search can change trajectories and labels even at the same seed and node budget.
+Measure throughput before increasing it; small node budgets may not benefit.
