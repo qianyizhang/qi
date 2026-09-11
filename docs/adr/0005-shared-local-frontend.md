@@ -2,14 +2,14 @@
 description: Use one local React frontend and extensible report projections over Python-owned evidence.
 scope: architecture decision
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
 # ADR-0005: Shared local frontend and report projections
 
 - **Status**: accepted
-- **Last Update**: 2026-09-10
+- **Last Update**: 2026-09-11
 
 Extend the existing React/FastAPI app into one local frontend with Home, Play,
 Experiments and Reference. Use shared native views and retain standalone offline
@@ -85,13 +85,13 @@ as additional runs. Loading saved evidence does not activate checkpoints or
 start experiments. The first UI may explicitly request a recorded decision's
 trace; that is execution through the existing Python inspection boundary, not
 an incidental effect of opening a report. Trace jobs and active games have
-separate lifecycle contracts in the implementation specification.
+separate lifecycle contracts in the [interface guide](../interface.md).
 
 The [work item](../../records/work-items/items/AB-UI-002-consolidated-lab.md)
-owns the interview, delivery stages and acceptance criteria. Exact
-dependency versions belong in the implementation lockfile after compatibility
-checks, rather than being frozen by this decision. Acceptance defines the
-architecture; the linked work item records implementation and verification.
+retains accepted delivery scope and implementation verification. Exact dependency
+versions belong in the implementation lockfile after compatibility checks,
+rather than being frozen by this decision. This ADR retains the architecture;
+the [interface guide](../interface.md) owns current behavior.
 
 ## References
 

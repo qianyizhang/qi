@@ -1,8 +1,8 @@
 ---
 description: Implement a shared local frontend with configured players, extensible reports and bounded trace jobs.
-scope: backlog item and implementation specification
+scope: completed frontend work item and delivery evidence
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: work_record
 work_id: AB-UI-002
 work_status: done
@@ -77,38 +77,17 @@ evidence. Current contracts live in the [interface guide](../../../docs/interfac
     formats have explicit extension points without duplicating evidence
     derivation. API types are generated from the Python-owned schemas. Game
     execution, query caching and report rendering have distinct state owners.
-12. **Verification and promotion:** the stage proofs below, repository checks,
+12. **Verification and promotion:** the completion proofs below, repository checks,
     real browser integration and explicit optional-resource smoke cases pass.
     Promote implemented contracts into their owning guides and update this
     record with exact evidence; intermediate stages do not complete the item.
 
 ## Context and Trade-offs
 
-### Evidence at the decision interview
-
-- [Game UI](../../../web/src/main.tsx): one computer opponent and human color;
-  fixed catalog-default budgets; replay/import/export and decision diagnostics.
-  Current reusable modules include [board](../../../web/src/board.tsx),
-  [API types/client](../../../web/src/api.ts) and
-  [choice details](../../../web/src/choice-details.tsx).
-- [HTTP](../../../src/qi/api.py): stateless referee/player operations and static
-  board serving, without a shared frontend home or experiment discovery.
-- [Search reports](../../../src/qi/experiments/README.md): standalone HTML
-  comparisons, paired outcomes, replay, trees, provenance and bilingual glossary.
-  [Report construction](../../../src/qi/experiments/report.py) derives views
-  from validated evidence.
-- [Policy](../../../src/qi/players/policy/README.md): one process-configured
-  checkpoint, one CPU inference pass and no search.
-- [Teacher](../../../docs/teacher.md): bounded local Pikafish/UCI analysis,
-  already separate from the referee and registered players.
-- [Trace inspection](../../../src/qi/experiments/inspect.py): reruns one saved
-  decision only with matching source/runtime identity and deterministic parity;
-  fresh trace paths and explicit recording completeness are required.
-- Training, data preparation and paired evaluation have CLI/artifact workflows;
-  their dedicated graphical workflows remain later work.
-
-Concurrent frontend extraction and shared-validation work exists. Survey live
-files before each stage and preserve other writers' edits.
+The decision interview started from separate game, report, checkpoint, teacher,
+and trace surfaces. ADR-0005 and ADR-0006 retain why these were consolidated and
+why player bindings remain independent. The table below retains the accepted
+scope; the promoted owners after it define current behavior.
 
 ### Locked decisions and authorities
 
@@ -132,214 +111,23 @@ frontend/report architecture. [ADR-0006](../../../docs/adr/0006-independent-play
 owns independent player bindings and external-engine participation.
 [Core model](../../../docs/models.md#player-configuration-and-identity) and
 [glossary](../../../docs/glossary/ddd.md) own accepted meaning.
-The current [interface guide](../../../docs/interface.md) continues to describe
-implemented behavior until these stages land.
+The [interface guide](../../../docs/interface.md) owns the implemented app and
+session behavior.
 
-## User Flows
+## Promoted Contract Map
 
-| Surface | Flow |
+| Concern | Current owner |
 | --- | --- |
-| Home | Resume the saved game, see available players, or open recently discovered experiments and trace-job status. |
-| Play | Select Red/Black controllers and applicable settings, then Resume or Step. Pause to change future configuration; inspect history without altering it. |
-| Experiments | Choose a run, filter by player/budget/position, inspect a game/decision, and open a recorded tree or explicitly generate a compatible trace. |
-| Reports | Read Markdown narrative beside measured evidence; export an offline interactive HTML report or static Markdown summary. |
-| Reference | Search the canonical bilingual glossary; follow context links from controls, diagnostics and report fields. |
+| Routes, API generation, state ownership and shared app behavior | [Interface: Unified local app](../../../docs/interface.md#unified-local-app); rationale in [ADR-0005](../../../docs/adr/0005-shared-local-frontend.md) |
+| Independent player bindings, resource identity and native budget semantics | [Player guide](../../../src/qi/players/README.md#named-player-bindings), [Interface: Players and settings](../../../docs/interface.md#players-and-settings); rationale in [ADR-0006](../../../docs/adr/0006-independent-player-bindings.md) |
+| Paused play, saved-session history, stale-response rejection and multi-tab writes | [Interface: Play lifecycle and saved sessions](../../../docs/interface.md#play-lifecycle-and-saved-sessions) |
+| Experiment discovery, evidence validation, narrative and native/offline/Markdown projections | [Experiment guide](../../../src/qi/experiments/README.md#shared-app-and-report-projections), [Interface: Experiment readers and trace jobs](../../../docs/interface.md#experiment-readers-and-trace-jobs) |
+| Explicit bounded trace execution, cancellation, parity publication and incomplete recordings | [Interface: Experiment readers and trace jobs](../../../docs/interface.md#experiment-readers-and-trace-jobs), [Experiment guide](../../../src/qi/experiments/README.md#optional-explored-tree-recording) |
 
-Example target: Red uses checkpoint A and Black uses Pikafish with explicit
-limits. After several moves the user pauses, changes Black's future node limit
-and resumes. Earlier decisions retain their original configuration. Navigating
-to Experiments pauses the game; a separately requested trace job may continue.
-Returning to Play restores the board and waits for Resume.
-
-## Frontend and API Architecture
-
-Use route-level feature containers and shared presentation components. Native
-and offline report components receive validated data; they do not depend on
-route loaders or a running API to render an exported report. Reuse board,
-decision, glossary, table and tree components rather than retaining divergent
-native and export implementations.
-
-The route shape starts with /, /play, /experiments,
-/experiments/:runId and /reference. Selected units, plies, traces and filters
-belong in validated URL parameters where useful for navigation. Direct route
-loads must reach the app, while unknown API/static requests preserve proper
-errors. Future pages enter through explicit route/navigation registration.
-
-TanStack Query owns catalog, run and job-status reads. Player selection remains
-an explicitly triggered operation with automatic retry disabled, guarded by the
-existing request-generation and full-state hash boundaries. Refocus/refetch must
-never advance a game or start a trace. Keep replay view state distinct from live
-game state. Deep-freezing or caching a client object is not evidence validation.
-
-Generate TypeScript API declarations from the Python OpenAPI schema and use
-typed request/response adapters. Python validates authoritative inputs and
-evidence. Client form/URL validation improves feedback without becoming a
-second domain implementation. Pin compatible dependency versions in the
-lockfile during implementation; use the accepted libraries without unrelated
-framework upgrades.
-
-Extend existing Python adapters with separately owned operations for binding
-metadata, experiment discovery/detail/exports and trace start/status/cancel.
-Return readable errors plus stable codes. Request IDs resolve only within
-configured roots; canonical path containment also applies to symlinks and
-referenced artifacts. The frontend cannot supply executable, checkpoint,
-arbitrary input or output paths.
-
-## Player and Game-Session Contract
-
-Human is a controller choice; automated choices reference a Player binding.
-Catalog metadata separates implementation ID/version, binding ID/label, resource
-identity, availability and supported settings. Existing algorithm registrations
-remain shared; checkpoint files do not become new algorithm implementations.
-
-Resolve and pin the chosen resources per participant. A readable but changed
-binding is not the saved identity. Preserve a restored game in paused state
-when a resource is unavailable, incompatible or mismatched. The user may select
-a replacement explicitly; only subsequent decisions acquire its identity.
-
-Publish applicable defaults, bounds, units and semantics from the server.
-Local search has a hard qi work budget. Pikafish has requested UCI limits,
-engine-reported diagnostics and a finite deadline; missing native counters stay
-unknown and overshoot is reported rather than clamped. Native cp/mate scores
-retain perspective and bounds. CPU policy inference exposes no ineffective
-search controls. The server rejects out-of-range or inapplicable submitted
-settings rather than silently changing the user's selected configuration.
-
-Maintain one active game session per browser origin. Its versioned saved record
-contains the existing referee snapshot, current controller bindings/settings,
-configuration changes at ply boundaries, and known per-move attribution and
-diagnostics. Save authoritative move results only after accepting the guarded
-response. Restore through Python snapshot validation, then reconcile resources,
-and remain paused. Concurrent tabs must not silently overwrite a newer saved
-revision or both auto-run the same active session.
-
-Pause and invalidate an outstanding decision before applying settings changes.
-These changes affect future moves; old configuration, identity and diagnostics
-remain immutable. Preserve explicit human attribution for newly played human
-moves. Snapshot-only imports have unknown player attribution for their existing
-prefix; do not invent it. Session import/export is a distinct versioned format,
-and users can still export or import a portable game-only snapshot.
-
-Replay and raw snapshots remain referee-owned. A mixed-player exploratory
-session is not a fixed-participant evaluation: do not score or import it as such
-without the evaluation owner's explicit protocol. Round-trip session tests must
-cover mixed configurations, unknown imported prefixes and absent resources.
-
-## Experiment and Report Contract
-
-Initially recognize the existing search-experiment format. Use explicit
-format-aware discovery beneath configured roots; exclude source snapshots,
-dependency trees, generated reports and trace-job state. Return bounded metadata
-for listings and validate selected evidence before exposing derived results.
-Keep invalid entries visible with reasons; isolate invalid traces from valid
-base-game evidence without presenting the trace as verified.
-
-Display planned/completed counts, pair denominators, null outcomes and
-recording completeness from their owning validators/scorers. Reading a legacy
-supported run does not require its original runtime; generating a new trace
-does. Unsupported formats should be named as unsupported, not guessed into the
-search schema. Load large units and paginated trace children on demand.
-
-Provide a versioned presentation-data boundary with Markdown narrative sections,
-validated evidence references and registered application views for comparisons,
-boards, decisions and trees. Reader adapters and output renderers are separate
-extension points. Add new run kinds when their schemas arrive; no executable
-plugins are loaded from artifact folders.
-
-Author narrative in an optional Markdown sidecar using an ordinary editor;
-an in-app editor is outside this delivery. Treat narrative as authored
-interpretation, distinct from measured fields. Support ordinary Markdown and
-GFM tables/links, resolve local evidence references within the run, and render
-without executable MDX or raw active HTML. Validate unsupported references
-explicitly. Record narrative and presentation identity separately from raw-run
-identity; editing narrative must not alter evidence fingerprints.
-
-Offline HTML is a self-contained interactive projection with bundled assets,
-retaining the existing no-server/no-network operation. Markdown export contains
-readable narrative, static summary tables, provenance and references to detailed
-evidence. Represent interactive-only sections with clear references; do not
-claim that a Markdown file reproduces the full interactive tree. Existing HTML
-CLI usage stays valid and gains Markdown export. Derived export files must
-never overwrite raw evidence.
-
-## Trace-Job Contract
-
-The UI requests one recorded unit/turn with its run/unit identity and a bounded
-event limit. Player settings, seed and starting history come from the saved
-decision and cannot be overridden by that request. Preflight verifies supported
-format, evidence and exact source/Python/package compatibility before launch;
-the worker rechecks before execution. A mismatch explains the unavailable
-action and preserves readable reports/existing traces. Do not automatically
-checkout historical code or rerun the benchmark.
-
-Run one job at a time in a cancellable child process, with a finite
-server-configured wall-time ceiling and the existing event-cap semantics:
-100000 default events, with a maximum accepted limit of 1000000. A second start
-while occupied returns a clear busy response; duplicate submission must not
-start another job. Bound job-state/log output as well as trace memory.
-
-Persist minimal job metadata separately from valid trace files, with explicit
-running, succeeded, failed, cancelled, timed-out and interrupted states.
-Report status and observed counters when available, without invented percentage
-progress. The job can finish after navigation or browser closure. Server shutdown
-terminates its worker; a later startup marks unfinished jobs interrupted without
-resuming them. These are explicit trace jobs, not a general scheduler.
-
-Cancellation and deadline handling terminate only the owned worker and clean up
-its unpublished output. Publish a fresh trace atomically after deterministic
-parity and trace validation. A capacity-limited recording may be published only
-with its explicit incomplete status and successful decision parity; a failed or
-terminated computation must not appear as a valid completed trace. Cancellation
-and success races have one terminal result, never contradictory status.
-
-Save successful traces under their run's existing trace area; refresh native
-views and allow subsequent export to include them. Do not rewrite benchmark
-units or mix traced timing into original untraced metrics.
-
-## Delivery Stages and Ownership
-
-| Stage | Owner and scope | Independent proof |
-| --- | --- | --- |
-| 1. App foundation | AB-UI-002: React shell, routes, typed API integration, Query reads, shared controls/reference and preserved game state across navigation. | Direct links, Back/Forward, glossary and existing game/replay flows work; navigation cannot advance a paused game. |
-| 2. Reports | AB-UI-002: configured experiment discovery, validated detail APIs, native views, Markdown narrative/export and offline HTML reuse. | One valid and one incomplete run agree across views/exports; invalid/unsupported entries and large traces behave correctly. |
-| 3. Player boundary | AB-ENGINE-005 owns independent checkpoint bindings and paired proof. AB-UI-002 adds explicit Pikafish player adaptation/capabilities, reusing that boundary and shared validators from AB-EVAL-003. | Different checkpoint digests coexist, changed resources fail, native engine limits stay distinct, and pure evidence readers execute no players. |
-| 4. Play sessions | AB-UI-002: Red/Black controllers, applicable settings, paused changes, Resume/Step, local persistence and session import/export. | All accepted matchups, delayed-response races, restoration and mixed-configuration history pass. |
-| 5. Trace jobs | AB-UI-002: explicit bounded trace execution, persisted job status/cancel, fresh validated publication and report refresh. | Compatible trace succeeds; mismatch, timeout, cancellation, duplicate start and server interruption are handled honestly. |
-| 6. Integrated verification | AB-UI-002: browser parity, optional-resource smoke proof, usage/contracts and exact completion ledger. | All acceptance criteria pass with recorded conditions; remaining optional-resource gaps are named rather than called complete. |
-
-Stages 1 and 2 can proceed while shared player prerequisites are being completed.
-Stage 3 must consume the current shared-validation work, not recreate its checks.
-Each implementation writer owns its named modules/files and preserves concurrent
-changes. No new Campaign is needed for this settled, staged scope.
-
-## Verification and Documentation
-
-Use focused Python tests for readers, binding/identity, settings validation,
-session parsing and trace-job lifecycle. Use meaningful component/lifecycle
-tests for state transitions and rendering, and Playwright for user-visible
-navigation, matchup configuration, restore/export/import, delayed responses,
-reports/Markdown and trace controls at desktop/mobile widths.
-
-Run make check and the affected browser E2E lane. Run the learning lane for
-checkpoint integration and explicit local smoke cases for two distinct
-checkpoints and configured Pikafish. Record actual artifact identities, settings,
-outcomes and skip reasons; these functional checks make no strength claim.
-Default tests must remain usable without installed engines, GPU or model files.
-Use protocol fakes for default failure/timeout tests and actual optional resources
-for the explicitly recorded integration proof.
-
-Check native and exported summary parity on the same validated run, preserving
-nulls, sample counts, partial status and provenance. Check HTML offline behavior
-and Markdown links/content. Retain existing source-compatibility, tree-capacity,
-saved-evidence and replay tests. Browser tests must cover focus/refetch,
-configuration changes during a delayed request, multiple tabs, cancellation
-races, restored missing resources and imported unknown history.
-
-Promote completed behavior into README, docs/interface.md, the player,
-experiment and learning guides as applicable. Keep the glossary source shared.
-Update API/artifact schema versions where contracts change, describe supported
-old formats, and preserve original evidence during migration. ADRs own durable
-rationale; this item owns stage progress and implementation evidence.
+The acceptance criteria above retain the delivery boundary. The implementation
+ledger below retains failures, corrections, optional-resource proof and exact
+verification conditions; these current guides replace the completed design and
+test-plan prose that previously followed here.
 
 ## Deferred Work and Open Questions
 
