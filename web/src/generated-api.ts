@@ -243,6 +243,108 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/collections": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Collections */
+    get: operations["collections_api_collections_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/collections/{collection_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** View */
+    get: operations["view_api_collections__collection_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/collections/{collection_id}/quality": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Quality */
+    get: operations["quality_api_collections__collection_id__quality_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/collections/{collection_id}/games/{game_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Game */
+    get: operations["game_api_collections__collection_id__games__game_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/collections/{collection_id}/games/{game_id}/position": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Position */
+    get: operations["position_api_collections__collection_id__games__game_id__position_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/collections/{collection_id}/games/{game_id}/analyses/{analysis_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Evidence */
+    get: operations["evidence_api_collections__collection_id__games__game_id__analyses__analysis_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/players": {
     parameters: {
       query?: never;
@@ -383,6 +485,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** AnalysisPayload */
+    AnalysisPayload: {
+      /**
+       * Version
+       * @default 1
+       * @constant
+       */
+      version: 1;
+      answer?: components["schemas"]["TeacherAnalysis"] | null;
+      /** Failure */
+      failure?: string | null;
+      /** Raw */
+      raw?: string[];
+      /** Candidates */
+      candidates?: components["schemas"]["CandidateEvidence"][];
+      /**
+       * Coverage
+       * @default unknown
+       * @constant
+       */
+      coverage: "unknown";
+    };
     /** ApplyRequest */
     ApplyRequest: {
       snapshot: components["schemas"]["Snapshot"];
@@ -390,6 +514,23 @@ export interface components {
       move: string;
       /** Expected State Hash */
       expected_state_hash: string;
+    };
+    /** CandidateEvidence */
+    CandidateEvidence: {
+      /** Move */
+      move: string;
+      /** Depth */
+      depth?: number | null;
+      /**
+       * Rank
+       * @default 1
+       */
+      rank: number;
+      score?: components["schemas"]["TeacherScore"] | null;
+      /** Wdl */
+      wdl?: number[] | null;
+      /** Pv */
+      pv: string[];
     };
     /** CatalogEntry */
     CatalogEntry: {
@@ -524,6 +665,120 @@ export interface components {
       engine?: components["schemas"]["EngineWork"] | null;
       /** Binding Sha256 */
       binding_sha256?: string | null;
+    };
+    /** CollectionCatalog */
+    CollectionCatalog: {
+      /** Collections */
+      collections: components["schemas"]["CollectionEntry"][];
+      /** Issues */
+      issues: string[];
+    };
+    /** CollectionEntry */
+    CollectionEntry: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Location */
+      location: string;
+      /** Bytes */
+      bytes: number;
+      /** Updated */
+      updated: number;
+    };
+    /** CollectionPage */
+    CollectionPage: {
+      collection: components["schemas"]["CollectionEntry"];
+      /** As Of */
+      as_of: number;
+      /** Runs */
+      runs: components["schemas"]["GeneratedRun"][];
+      overall: components["schemas"]["CollectionStats"];
+      /** Run Stats */
+      run_stats: {
+        [key: string]: components["schemas"]["CollectionStats"];
+      };
+      filtered: components["schemas"]["CollectionStats"];
+      /** Games */
+      games: components["schemas"]["GeneratedGame"][];
+      /** Total */
+      total: number;
+      /** Offset */
+      offset: number;
+      /** Limit */
+      limit: number;
+    };
+    /** CollectionQuality */
+    CollectionQuality: {
+      /** As Of */
+      as_of: number;
+      /** Selected Occurrences */
+      selected_occurrences: number;
+      /** Unique Inputs */
+      unique_inputs: number;
+      /** Cross Split Inputs */
+      cross_split_inputs: number;
+      /** Affected Train */
+      affected_train: number;
+      /** Affected Validation */
+      affected_validation: number;
+      /** Phases */
+      phases: {
+        [key: string]: number;
+      };
+      /** Single Pv Budget Coverage */
+      single_pv_budget_coverage: {
+        [key: string]: number;
+      };
+      /** Specs */
+      specs: components["schemas"]["SpecCoverage"][];
+      /** Overlap Examples */
+      overlap_examples: components["schemas"]["OverlapExample"][];
+    };
+    /** CollectionStats */
+    CollectionStats: {
+      /** Attempts */
+      attempts: number;
+      /** Accepted */
+      accepted: number;
+      /** Rejected */
+      rejected: number;
+      /** Other */
+      other: number;
+      /** Selected */
+      selected: number;
+      /** Shortfall Games */
+      shortfall_games: number;
+      /** Sampling Games */
+      sampling_games: number;
+      /** Unique Trajectories */
+      unique_trajectories: number;
+      /** Mean Plies */
+      mean_plies: number | null;
+      /** Policies */
+      policies: {
+        [key: string]: number;
+      };
+      /** Splits */
+      splits: {
+        [key: string]: number;
+      };
+      /** Outcomes */
+      outcomes: {
+        [key: string]: number;
+      };
+      /** Lengths */
+      lengths: {
+        [key: string]: number;
+      };
+      /** Actual */
+      actual: {
+        [key: string]: number;
+      };
+      /** Requested */
+      requested: {
+        [key: string]: number;
+      };
     };
     /** ConfigurationChange */
     ConfigurationChange: {
@@ -717,6 +972,83 @@ export interface components {
       /** History */
       history?: components["schemas"]["SessionMove"][];
     };
+    /** GeneratedGame */
+    GeneratedGame: {
+      /** Id */
+      id: number;
+      /** Run Id */
+      run_id: number;
+      /** Attempt */
+      attempt: string;
+      /** Trajectory */
+      trajectory: string;
+      /** Source */
+      source: string;
+      /** Policy */
+      policy: string;
+      /** Split */
+      split: string;
+      /** Status */
+      status: string;
+      /** Disposition */
+      disposition: string;
+      /** Stop Reason */
+      stop_reason: string | null;
+      /** Outcome */
+      outcome: string;
+      /** Outcome Reason */
+      outcome_reason: string | null;
+      /** Plies */
+      plies: number;
+      /** Start Ply */
+      start_ply: number;
+      /** Selected */
+      selected: number;
+      /** Actual */
+      actual: {
+        [key: string]: number;
+      };
+      /** Requested */
+      requested: {
+        [key: string]: number;
+      };
+      /** Shortfall */
+      shortfall: number;
+      /** Updated */
+      updated: number;
+    };
+    /** GeneratedGameDetail */
+    GeneratedGameDetail: {
+      game: components["schemas"]["GeneratedGame"];
+      snapshot: components["schemas"]["Snapshot"];
+      /** Initial Ply */
+      initial_ply: number;
+      /** Family */
+      family: string;
+      /** Failure */
+      failure: string | null;
+      /** Occurrences */
+      occurrences: components["schemas"]["StoredOccurrence"][];
+      /** Duplicate Games */
+      duplicate_games: number[];
+    };
+    /** GeneratedRun */
+    GeneratedRun: {
+      /** Id */
+      id: number;
+      /** Identity */
+      identity: string;
+      /** Name */
+      name: string;
+      /** Status */
+      status: string;
+      /** Planned */
+      planned: number;
+      /** Continued From */
+      continued_from: number | null;
+      /** Created */
+      created: number;
+    };
     /** Glossary */
     Glossary: {
       /** Source */
@@ -865,6 +1197,23 @@ export interface components {
     OpponentResult: {
       position: components["schemas"]["Position"];
       choice: components["schemas"]["Choice"];
+    };
+    /** OverlapExample */
+    OverlapExample: {
+      /** Input Hash */
+      input_hash: string;
+      /** Train Occurrences */
+      train_occurrences: number;
+      /** Validation Occurrences */
+      validation_occurrences: number;
+      /** Train Game */
+      train_game: number;
+      /** Train Ply */
+      train_ply: number;
+      /** Validation Game */
+      validation_game: number;
+      /** Validation Ply */
+      validation_ply: number;
     };
     /** Plan */
     Plan: {
@@ -1263,6 +1612,76 @@ export interface components {
       /** Moves */
       moves?: string[];
     };
+    /** SpecCoverage */
+    SpecCoverage: {
+      /** Identity */
+      identity: string;
+      /** Nodes */
+      nodes: number;
+      /** Depth */
+      depth: number | null;
+      /** Multipv */
+      multipv: number;
+      /** Threads */
+      threads: string;
+      /** Engine */
+      engine: string;
+      /** Network */
+      network: string;
+      /** Occurrences */
+      occurrences: number;
+    };
+    /** StoredAnalysis */
+    StoredAnalysis: {
+      /** Id */
+      id: number;
+      /** Spec Id */
+      spec_id: string;
+      /** Status */
+      status: string;
+      /** Resolved */
+      resolved: boolean;
+      /** Move */
+      move: string | null;
+      /** Nodes */
+      nodes: number;
+      /** Depth Limit */
+      depth_limit: number | null;
+      /** Multipv */
+      multipv: number;
+      /** Threads */
+      threads: string;
+      /** Engine */
+      engine: string;
+      /** Network */
+      network: string;
+      score: components["schemas"]["TeacherScore"] | null;
+      /** Reported Depth */
+      reported_depth: number | null;
+      /** Reported Nodes */
+      reported_nodes: number | null;
+      /** Failure */
+      failure: string | null;
+    };
+    /** StoredOccurrence */
+    StoredOccurrence: {
+      /** Id */
+      id: number;
+      /** Identity */
+      identity: string;
+      /** Ply */
+      ply: number;
+      /** Phase */
+      phase: string;
+      /** Selected */
+      selected: boolean;
+      /** Actor Move */
+      actor_move: string | null;
+      /** Intervention */
+      intervention: boolean;
+      /** Analyses */
+      analyses: components["schemas"]["StoredAnalysis"][];
+    };
     /** Summary */
     Summary: {
       /** Probes */
@@ -1271,6 +1690,88 @@ export interface components {
       matches: components["schemas"]["MatchSummary"][];
       /** Unpaired Completed Games */
       unpaired_completed_games: number;
+    };
+    /** TeacherAnalysis */
+    TeacherAnalysis: {
+      /**
+       * Schema Version
+       * @default 1
+       * @enum {integer}
+       */
+      schema_version: 1 | 2;
+      /**
+       * Adapter Version
+       * @default uci-teacher-v1
+       * @enum {string}
+       */
+      adapter_version: "uci-teacher-v1" | "uci-teacher-v2";
+      snapshot: components["schemas"]["Snapshot"];
+      /** State Hash */
+      state_hash: string;
+      /** Move */
+      move: string;
+      /** Engine Name */
+      engine_name: string;
+      /** Engine Sha256 */
+      engine_sha256: string;
+      /** Network Sha256 */
+      network_sha256: string;
+      /** Settings */
+      settings: {
+        [key: string]: string;
+      };
+      /** Requested Nodes */
+      requested_nodes: number;
+      /** Requested Depth */
+      requested_depth: number | null;
+      /** Timeout Seconds */
+      timeout_seconds: number;
+      /** Reported Nodes */
+      reported_nodes: number | null;
+      /** Reported Depth */
+      reported_depth: number | null;
+      score: components["schemas"]["TeacherScore"] | null;
+      /** Elapsed Ms */
+      elapsed_ms: number;
+      /** Search Info */
+      search_info: string[];
+      /**
+       * Invalid Actions
+       * @default 0
+       */
+      invalid_actions: number;
+      /**
+       * Retries
+       * @default 0
+       */
+      retries: number;
+    };
+    /** TeacherScore */
+    TeacherScore: {
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "cp" | "mate";
+      /** Value */
+      value: number;
+      /**
+       * Bound
+       * @enum {string}
+       */
+      bound: "exact" | "lowerbound" | "upperbound";
+      /**
+       * Perspective
+       * @default side_to_move
+       * @constant
+       */
+      perspective: "side_to_move";
+      /**
+       * Semantics
+       * @default engine_native
+       * @constant
+       */
+      semantics: "engine_native";
     };
     /** TraceBundle */
     TraceBundle: {
@@ -1876,6 +2377,200 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["TraceJob"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  collections_api_collections_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CollectionCatalog"];
+        };
+      };
+    };
+  };
+  view_api_collections__collection_id__get: {
+    parameters: {
+      query?: {
+        run?: number;
+        policy?: string;
+        split?: string;
+        disposition?: string;
+        outcome?: string;
+        q?: string;
+        phase?: "" | "opening" | "middlegame" | "endgame" | "unknown";
+        lens?: "all" | "shortfall" | "long";
+        sort?: "newest" | "longest" | "shortfall";
+        offset?: number;
+        limit?: number;
+        attempts?: string;
+      };
+      header?: never;
+      path: {
+        collection_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CollectionPage"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  quality_api_collections__collection_id__quality_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        collection_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CollectionQuality"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  game_api_collections__collection_id__games__game_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        collection_id: string;
+        game_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GeneratedGameDetail"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  position_api_collections__collection_id__games__game_id__position_get: {
+    parameters: {
+      query?: {
+        ply?: number;
+      };
+      header?: never;
+      path: {
+        collection_id: string;
+        game_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Position"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  evidence_api_collections__collection_id__games__game_id__analyses__analysis_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        collection_id: string;
+        game_id: number;
+        analysis_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AnalysisPayload"];
         };
       };
       /** @description Validation Error */

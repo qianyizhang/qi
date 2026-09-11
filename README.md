@@ -222,3 +222,15 @@ Plan bounded recipe comparisons, preserve partial runs, and inspect local HTML
 reports with optional explored-search trees. See the
 [experiment guide](src/qi/experiments/README.md) for preview, run, verify, report,
 and selected-decision inspection commands.
+
+## Review generated games
+
+Open **Data** in the local lab to inspect generated collections, compare phase
+coverage and batch counts, audit train/validation input overlap, and replay saved
+games with teacher analyses. Keep a browser review shortlist with notes and export
+it as JSON. Reviews do not change training eligibility.
+
+The default source is SQLite collections under `artifacts/learning`. For an
+explicit source, start the local app with `QI_COLLECTION_PATHS=/absolute/path/collection.sqlite`.
+See the [interface guide](docs/interface.md#generated-game-review) for denominators,
+review persistence and evidence boundaries.

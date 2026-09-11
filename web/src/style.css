@@ -579,9 +579,18 @@ footer {
   }
 }
 @media (max-width: 550px) {
+  .app-header nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    flex-basis: 100%;
+    min-width: 0;
+    gap: 2px;
+  }
   .app-header nav a {
-    font-size: 12px;
-    gap: 5px;
+    font-size: 11px;
+    gap: 4px;
+    padding: 8px 2px;
+    flex-direction: column;
   }
   .app-header nav svg {
     width: 14px;

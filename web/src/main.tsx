@@ -21,6 +21,7 @@ import {
   Home as HomeIcon,
   BookOpen,
   Swords,
+  Database,
 } from "lucide-react";
 import {
   read,
@@ -33,6 +34,8 @@ import { catalogQuery, jobsQuery, playersQuery, runsQuery } from "./queries";
 import { SessionProvider, useSession } from "./session";
 import { PlayPage } from "./play";
 import { ExperimentCatalogView } from "./experiment-catalog";
+import { DataPage } from "./data";
+import { parseDataFilters } from "./data-review";
 import { ReferencePage } from "./reference";
 import type { Filters, ReportSource } from "./report";
 import { Button } from "./components/ui/button";
@@ -43,6 +46,7 @@ const ReportView = lazy(() =>
 const navigation = [
   { to: "/", label: "Home", icon: HomeIcon },
   { to: "/play", label: "Play", icon: Swords },
+  { to: "/data", label: "Data", icon: Database },
   { to: "/experiments", label: "Experiments", icon: FlaskConical },
   { to: "/reference", label: "Reference", icon: BookOpen },
 ] as const;
@@ -201,6 +205,14 @@ function Home() {
         </article>
       </div>
       <article className="card">
+        <h2>Explore generated games</h2>
+        <p className="muted">
+          Inspect recent batches, compare phase coverage, replay teacher
+          decisions, and curate a review shortlist.
+        </p>
+        <Link to="/data">Open the data workspace →</Link>
+      </article>
+      <article className="card">
         <h2>Trace activity</h2>
         <JobStatus />
       </article>
@@ -279,6 +291,22 @@ const experimentsRoute = createRoute({
   path: "/experiments",
   component: Experiments,
 });
+const dataRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/data",
+  validateSearch: parseDataFilters,
+  component: DataWorkspace,
+});
+function DataWorkspace() {
+  const filters = dataRoute.useSearch(),
+    navigate = dataRoute.useNavigate();
+  return (
+    <DataPage
+      filters={filters}
+      onFilters={(search) => void navigate({ search, resetScroll: false })}
+    />
+  );
+}
 const referenceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/reference",
@@ -383,6 +411,7 @@ const router = createRouter({
   routeTree: rootRoute.addChildren([
     homeRoute,
     playRoute,
+    dataRoute,
     experimentsRoute,
     reportRoute,
     referenceRoute,

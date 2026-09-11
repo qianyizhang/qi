@@ -31,6 +31,7 @@ export const color = (piece: string) =>
   piece === piece.toUpperCase() ? "red" : "black";
 
 type BoardProps = {
+  arrows?: { move: string; color: string }[];
   view: Pick<Position, "board" | "legal_moves"> & {
     snapshot: { moves?: string[] };
   };
@@ -43,6 +44,7 @@ type BoardProps = {
 
 export function Board({
   view,
+  arrows = [],
   flipped,
   selected,
   keyboardDisabled,
@@ -169,6 +171,43 @@ export function Board({
                 strokeWidth="3"
               />
             )}
+          </g>
+        );
+      })}
+      {arrows.map(({ move, color }, index) => {
+        const point = (square: string) => {
+          const file = square.charCodeAt(0) - 97,
+            rank = Number(square[1]);
+          return [
+            50 + (flipped ? 8 - file : file) * 56,
+            48 + (flipped ? rank : 9 - rank) * 56,
+          ];
+        };
+        const [x1, y1] = point(move.slice(0, 2)),
+          [x2, y2] = point(move.slice(2));
+        const dx = x2 - x1,
+          dy = y2 - y1,
+          length = Math.hypot(dx, dy);
+        if (!length) return null;
+        const ux = dx / length,
+          uy = dy / length,
+          endX = x2 - ux * 12,
+          endY = y2 - uy * 12;
+        return (
+          <g key={index} pointerEvents="none" opacity="0.8" aria-hidden="true">
+            <line
+              x1={x1 + ux * 15}
+              y1={y1 + uy * 15}
+              x2={endX - ux * 12}
+              y2={endY - uy * 12}
+              stroke={color}
+              strokeWidth="7"
+              strokeLinecap="round"
+            />
+            <polygon
+              points={`${endX},${endY} ${endX - ux * 19 - uy * 9},${endY - uy * 19 + ux * 9} ${endX - ux * 19 + uy * 9},${endY - uy * 19 - ux * 9}`}
+              fill={color}
+            />
           </g>
         );
       })}

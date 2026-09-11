@@ -33,7 +33,7 @@ Replay navigation is read-only; return to the last move to continue playing.
 
 ## Unified local app
 
-Routes `/`, `/play`, `/experiments`, `/experiments/:runId`, and `/reference`
+Routes `/`, `/play`, `/data`, `/experiments`, `/experiments/:runId`, and `/reference`
 share a React/TypeScript/Vite frontend and FastAPI server. TanStack Router owns
 navigation and report URL filters; TanStack Query owns server reads. Source-owned
 shadcn/ui controls and Tailwind styles are shared with the offline report build.
@@ -137,3 +137,48 @@ computations publish nothing. Cancellation and success races resolve to one
 terminal job state. Job metadata is bounded to 32 recent entries in
 `QI_LAB_STATE` (default `artifacts/lab`) and kept separate from evidence. No queue,
 experiment launcher, training launcher or background game execution is included.
+
+## Generated game review
+
+`/data` is the read-only collection workspace. `QI_COLLECTION_PATHS` explicitly
+selects a platform path-separated list of SQLite files. Otherwise discovery checks
+`artifacts/learning` under `QI_WORKSPACE`, including two directory levels, excluding
+symlinks and execution/source directories. Invalid collections are isolated.
+`src/qi/collection_view.py` owns the Python projections; HTTP only accepts discovered
+collection IDs. Each response reads one SQLite snapshot with a finite query deadline,
+without writer locks, recovery, schema changes or teacher execution.
+
+The cohort filters cover logical run, policy, split, disposition, outcome, source,
+review shortlist and sampling/length lenses. Counts follow those filters. Accepted
+and duplicate-rejected attempts form the acceptance denominator; other failures,
+interruptions and running attempts remain separate. Selected counts are occurrences,
+not unique boards. Phase bars retain requested versus actual sampling totals for
+accepted games with sampling evidence. Clicking a phase selects its shortfalls.
+A generation ply-budget stop is unfinished; a referee ply-limit draw is a draw.
+Continuation runs retain links and original game ownership, so inherited rows are
+not counted again or combined into misleading planned totals.
+
+The separately timestamped quality audit always covers the whole collection's
+selected occurrences in accepted games. It reads stored learner-input identities,
+counts within/across-split repetitions, provides bounded shared-input examples, and
+counts successful analysis coverage by exact specification. Two distinct single-PV
+node budgets means retained coverage, not label correctness. Thread settings and
+other specification identities remain separate. The JSON audit export is descriptive
+evidence, not an eligible training snapshot or exclusion manifest. Full collection
+integrity, immutable training export and selection remain Training Data operations.
+
+Select a game for referee-validated replay, actor/teacher move overlays, selected
+position navigation and retained analysis inspection. Full raw analysis is loaded
+and checked against its position/specification on demand. Score points show only
+exact single-PV centipawn values converted to Red's perspective; bounds, mate and
+missing scores remain explicit in the per-position comparison. Neither disagreement
+nor generated outcomes establish player strength.
+
+Keep/inspect/exclude reviews and notes are browser-owned suggestions. Explicit Save
+stores one record per collection/game-attempt under `qi.collection-review.v1`, with
+trajectory identity, current ply and timestamp. They do not write to the collection
+or change training eligibility. Corrupt/unavailable browser storage blocks overwrite
+and preserves the existing bytes. Review JSON and referee-snapshot exports are
+separate formats. Reviews are local to this browser/origin; retain exports for a
+portable copy. Filters, game and ply live in the URL. Refresh reads current evidence;
+no background generation, auto-resume or curation-to-training promotion is provided.

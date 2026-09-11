@@ -9,6 +9,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from qi.collection_api import register_collections
 from qi.experiment_api import register
 from qi.game import Game, GameError
 from qi.lab import TraceJobs
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI(title="Qi local laboratory", version="0.2.0", lifespan=lifespan)
     register(app, jobs)
+    register_collections(app)
 
     @app.exception_handler(ValueError)
     async def invalid_evidence(request: Request, exc: ValueError):
@@ -118,7 +120,7 @@ def create_app() -> FastAPI:
 
         @app.get("/{page:path}", include_in_schema=False)
         def frontend(page: str):
-            if page in ("", "play", "experiments", "reference") or (
+            if page in ("", "play", "experiments", "reference", "data") or (
                 page.startswith("experiments/") and len(page.split("/")) == 2
             ):
                 return FileResponse(static / "index.html")

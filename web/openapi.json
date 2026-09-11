@@ -638,6 +638,410 @@
         }
       }
     },
+    "/api/collections": {
+      "get": {
+        "summary": "Collections",
+        "operationId": "collections_api_collections_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionCatalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}": {
+      "get": {
+        "summary": "View",
+        "operationId": "view_api_collections__collection_id__get",
+        "parameters": [
+          {
+            "name": "collection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Collection Id"
+            }
+          },
+          {
+            "name": "run",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Run"
+            }
+          },
+          {
+            "name": "policy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Policy"
+            }
+          },
+          {
+            "name": "split",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Split"
+            }
+          },
+          {
+            "name": "disposition",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Disposition"
+            }
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Outcome"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "",
+                "opening",
+                "middlegame",
+                "endgame",
+                "unknown"
+              ],
+              "type": "string",
+              "default": "",
+              "title": "Phase"
+            }
+          },
+          {
+            "name": "lens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "all",
+                "shortfall",
+                "long"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "Lens"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "newest",
+                "longest",
+                "shortfall"
+              ],
+              "type": "string",
+              "default": "newest",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "attempts",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 40000,
+              "default": "",
+              "title": "Attempts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/quality": {
+      "get": {
+        "summary": "Quality",
+        "operationId": "quality_api_collections__collection_id__quality_get",
+        "parameters": [
+          {
+            "name": "collection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Collection Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionQuality"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/games/{game_id}": {
+      "get": {
+        "summary": "Game",
+        "operationId": "game_api_collections__collection_id__games__game_id__get",
+        "parameters": [
+          {
+            "name": "collection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Collection Id"
+            }
+          },
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Game Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneratedGameDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/games/{game_id}/position": {
+      "get": {
+        "summary": "Position",
+        "operationId": "position_api_collections__collection_id__games__game_id__position_get",
+        "parameters": [
+          {
+            "name": "collection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Collection Id"
+            }
+          },
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Game Id"
+            }
+          },
+          {
+            "name": "ply",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 300,
+              "minimum": 0,
+              "default": 0,
+              "title": "Ply"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Position"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/games/{game_id}/analyses/{analysis_id}": {
+      "get": {
+        "summary": "Evidence",
+        "operationId": "evidence_api_collections__collection_id__games__game_id__analyses__analysis_id__get",
+        "parameters": [
+          {
+            "name": "collection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Collection Id"
+            }
+          },
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Game Id"
+            }
+          },
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Analysis Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisPayload"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/players": {
       "get": {
         "summary": "Players",
@@ -909,6 +1313,60 @@
   },
   "components": {
     "schemas": {
+      "AnalysisPayload": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "const": 1,
+            "title": "Version",
+            "default": 1
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TeacherAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          },
+          "raw": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Raw"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateEvidence"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "coverage": {
+            "type": "string",
+            "const": "unknown",
+            "title": "Coverage",
+            "default": "unknown"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AnalysisPayload"
+      },
       "ApplyRequest": {
         "properties": {
           "snapshot": {
@@ -935,6 +1393,70 @@
           "expected_state_hash"
         ],
         "title": "ApplyRequest"
+      },
+      "CandidateEvidence": {
+        "properties": {
+          "move": {
+            "type": "string",
+            "title": "Move"
+          },
+          "depth": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth"
+          },
+          "rank": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Rank",
+            "default": 1
+          },
+          "score": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TeacherScore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "wdl": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wdl"
+          },
+          "pv": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pv"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "move",
+          "pv"
+        ],
+        "title": "CandidateEvidence"
       },
       "CatalogEntry": {
         "properties": {
@@ -1234,6 +1756,305 @@
           "elapsed_ms"
         ],
         "title": "Choice"
+      },
+      "CollectionCatalog": {
+        "properties": {
+          "collections": {
+            "items": {
+              "$ref": "#/components/schemas/CollectionEntry"
+            },
+            "type": "array",
+            "title": "Collections"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "collections",
+          "issues"
+        ],
+        "title": "CollectionCatalog"
+      },
+      "CollectionEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "bytes": {
+            "type": "integer",
+            "title": "Bytes"
+          },
+          "updated": {
+            "type": "number",
+            "title": "Updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "location",
+          "bytes",
+          "updated"
+        ],
+        "title": "CollectionEntry"
+      },
+      "CollectionPage": {
+        "properties": {
+          "collection": {
+            "$ref": "#/components/schemas/CollectionEntry"
+          },
+          "as_of": {
+            "type": "number",
+            "title": "As Of"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/GeneratedRun"
+            },
+            "type": "array",
+            "title": "Runs"
+          },
+          "overall": {
+            "$ref": "#/components/schemas/CollectionStats"
+          },
+          "run_stats": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CollectionStats"
+            },
+            "type": "object",
+            "title": "Run Stats"
+          },
+          "filtered": {
+            "$ref": "#/components/schemas/CollectionStats"
+          },
+          "games": {
+            "items": {
+              "$ref": "#/components/schemas/GeneratedGame"
+            },
+            "type": "array",
+            "title": "Games"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "collection",
+          "as_of",
+          "runs",
+          "overall",
+          "run_stats",
+          "filtered",
+          "games",
+          "total",
+          "offset",
+          "limit"
+        ],
+        "title": "CollectionPage"
+      },
+      "CollectionQuality": {
+        "properties": {
+          "as_of": {
+            "type": "number",
+            "title": "As Of"
+          },
+          "selected_occurrences": {
+            "type": "integer",
+            "title": "Selected Occurrences"
+          },
+          "unique_inputs": {
+            "type": "integer",
+            "title": "Unique Inputs"
+          },
+          "cross_split_inputs": {
+            "type": "integer",
+            "title": "Cross Split Inputs"
+          },
+          "affected_train": {
+            "type": "integer",
+            "title": "Affected Train"
+          },
+          "affected_validation": {
+            "type": "integer",
+            "title": "Affected Validation"
+          },
+          "phases": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Phases"
+          },
+          "single_pv_budget_coverage": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Single Pv Budget Coverage"
+          },
+          "specs": {
+            "items": {
+              "$ref": "#/components/schemas/SpecCoverage"
+            },
+            "type": "array",
+            "title": "Specs"
+          },
+          "overlap_examples": {
+            "items": {
+              "$ref": "#/components/schemas/OverlapExample"
+            },
+            "type": "array",
+            "title": "Overlap Examples"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "selected_occurrences",
+          "unique_inputs",
+          "cross_split_inputs",
+          "affected_train",
+          "affected_validation",
+          "phases",
+          "single_pv_budget_coverage",
+          "specs",
+          "overlap_examples"
+        ],
+        "title": "CollectionQuality"
+      },
+      "CollectionStats": {
+        "properties": {
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "other": {
+            "type": "integer",
+            "title": "Other"
+          },
+          "selected": {
+            "type": "integer",
+            "title": "Selected"
+          },
+          "shortfall_games": {
+            "type": "integer",
+            "title": "Shortfall Games"
+          },
+          "sampling_games": {
+            "type": "integer",
+            "title": "Sampling Games"
+          },
+          "unique_trajectories": {
+            "type": "integer",
+            "title": "Unique Trajectories"
+          },
+          "mean_plies": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Plies"
+          },
+          "policies": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Policies"
+          },
+          "splits": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Splits"
+          },
+          "outcomes": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Outcomes"
+          },
+          "lengths": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Lengths"
+          },
+          "actual": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Actual"
+          },
+          "requested": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Requested"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attempts",
+          "accepted",
+          "rejected",
+          "other",
+          "selected",
+          "shortfall_games",
+          "sampling_games",
+          "unique_trajectories",
+          "mean_plies",
+          "policies",
+          "splits",
+          "outcomes",
+          "lengths",
+          "actual",
+          "requested"
+        ],
+        "title": "CollectionStats"
       },
       "ConfigurationChange": {
         "properties": {
@@ -1706,6 +2527,233 @@
         "title": "GameSession",
         "description": "Exploratory session evidence; validation does not resolve live resources."
       },
+      "GeneratedGame": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "run_id": {
+            "type": "integer",
+            "title": "Run Id"
+          },
+          "attempt": {
+            "type": "string",
+            "title": "Attempt"
+          },
+          "trajectory": {
+            "type": "string",
+            "title": "Trajectory"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "policy": {
+            "type": "string",
+            "title": "Policy"
+          },
+          "split": {
+            "type": "string",
+            "title": "Split"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "disposition": {
+            "type": "string",
+            "title": "Disposition"
+          },
+          "stop_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop Reason"
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "outcome_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Reason"
+          },
+          "plies": {
+            "type": "integer",
+            "title": "Plies"
+          },
+          "start_ply": {
+            "type": "integer",
+            "title": "Start Ply"
+          },
+          "selected": {
+            "type": "integer",
+            "title": "Selected"
+          },
+          "actual": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Actual"
+          },
+          "requested": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Requested"
+          },
+          "shortfall": {
+            "type": "integer",
+            "title": "Shortfall"
+          },
+          "updated": {
+            "type": "number",
+            "title": "Updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "run_id",
+          "attempt",
+          "trajectory",
+          "source",
+          "policy",
+          "split",
+          "status",
+          "disposition",
+          "stop_reason",
+          "outcome",
+          "outcome_reason",
+          "plies",
+          "start_ply",
+          "selected",
+          "actual",
+          "requested",
+          "shortfall",
+          "updated"
+        ],
+        "title": "GeneratedGame"
+      },
+      "GeneratedGameDetail": {
+        "properties": {
+          "game": {
+            "$ref": "#/components/schemas/GeneratedGame"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "initial_ply": {
+            "type": "integer",
+            "title": "Initial Ply"
+          },
+          "family": {
+            "type": "string",
+            "title": "Family"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          },
+          "occurrences": {
+            "items": {
+              "$ref": "#/components/schemas/StoredOccurrence"
+            },
+            "type": "array",
+            "title": "Occurrences"
+          },
+          "duplicate_games": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Duplicate Games"
+          }
+        },
+        "type": "object",
+        "required": [
+          "game",
+          "snapshot",
+          "initial_ply",
+          "family",
+          "failure",
+          "occurrences",
+          "duplicate_games"
+        ],
+        "title": "GeneratedGameDetail"
+      },
+      "GeneratedRun": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "identity": {
+            "type": "string",
+            "title": "Identity"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "planned": {
+            "type": "integer",
+            "title": "Planned"
+          },
+          "continued_from": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Continued From"
+          },
+          "created": {
+            "type": "number",
+            "title": "Created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "identity",
+          "name",
+          "status",
+          "planned",
+          "continued_from",
+          "created"
+        ],
+        "title": "GeneratedRun"
+      },
       "Glossary": {
         "properties": {
           "source": {
@@ -2067,6 +3115,49 @@
           "choice"
         ],
         "title": "OpponentResult"
+      },
+      "OverlapExample": {
+        "properties": {
+          "input_hash": {
+            "type": "string",
+            "title": "Input Hash"
+          },
+          "train_occurrences": {
+            "type": "integer",
+            "title": "Train Occurrences"
+          },
+          "validation_occurrences": {
+            "type": "integer",
+            "title": "Validation Occurrences"
+          },
+          "train_game": {
+            "type": "integer",
+            "title": "Train Game"
+          },
+          "train_ply": {
+            "type": "integer",
+            "title": "Train Ply"
+          },
+          "validation_game": {
+            "type": "integer",
+            "title": "Validation Game"
+          },
+          "validation_ply": {
+            "type": "integer",
+            "title": "Validation Ply"
+          }
+        },
+        "type": "object",
+        "required": [
+          "input_hash",
+          "train_occurrences",
+          "validation_occurrences",
+          "train_game",
+          "train_ply",
+          "validation_game",
+          "validation_ply"
+        ],
+        "title": "OverlapExample"
       },
       "Plan": {
         "properties": {
@@ -3015,6 +4106,243 @@
         "type": "object",
         "title": "Snapshot"
       },
+      "SpecCoverage": {
+        "properties": {
+          "identity": {
+            "type": "string",
+            "title": "Identity"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "depth": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth"
+          },
+          "multipv": {
+            "type": "integer",
+            "title": "Multipv"
+          },
+          "threads": {
+            "type": "string",
+            "title": "Threads"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "network": {
+            "type": "string",
+            "title": "Network"
+          },
+          "occurrences": {
+            "type": "integer",
+            "title": "Occurrences"
+          }
+        },
+        "type": "object",
+        "required": [
+          "identity",
+          "nodes",
+          "depth",
+          "multipv",
+          "threads",
+          "engine",
+          "network",
+          "occurrences"
+        ],
+        "title": "SpecCoverage"
+      },
+      "StoredAnalysis": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "spec_id": {
+            "type": "string",
+            "title": "Spec Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "resolved": {
+            "type": "boolean",
+            "title": "Resolved"
+          },
+          "move": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Move"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "depth_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth Limit"
+          },
+          "multipv": {
+            "type": "integer",
+            "title": "Multipv"
+          },
+          "threads": {
+            "type": "string",
+            "title": "Threads"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "network": {
+            "type": "string",
+            "title": "Network"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TeacherScore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reported_depth": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Depth"
+          },
+          "reported_nodes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Nodes"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "spec_id",
+          "status",
+          "resolved",
+          "move",
+          "nodes",
+          "depth_limit",
+          "multipv",
+          "threads",
+          "engine",
+          "network",
+          "score",
+          "reported_depth",
+          "reported_nodes",
+          "failure"
+        ],
+        "title": "StoredAnalysis"
+      },
+      "StoredOccurrence": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "identity": {
+            "type": "string",
+            "title": "Identity"
+          },
+          "ply": {
+            "type": "integer",
+            "title": "Ply"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "selected": {
+            "type": "boolean",
+            "title": "Selected"
+          },
+          "actor_move": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Move"
+          },
+          "intervention": {
+            "type": "boolean",
+            "title": "Intervention"
+          },
+          "analyses": {
+            "items": {
+              "$ref": "#/components/schemas/StoredAnalysis"
+            },
+            "type": "array",
+            "title": "Analyses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "identity",
+          "ply",
+          "phase",
+          "selected",
+          "actor_move",
+          "intervention",
+          "analyses"
+        ],
+        "title": "StoredOccurrence"
+      },
       "Summary": {
         "properties": {
           "probes": {
@@ -3043,6 +4371,193 @@
           "unpaired_completed_games"
         ],
         "title": "Summary"
+      },
+      "TeacherAnalysis": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ],
+            "title": "Schema Version",
+            "default": 1
+          },
+          "adapter_version": {
+            "type": "string",
+            "enum": [
+              "uci-teacher-v1",
+              "uci-teacher-v2"
+            ],
+            "title": "Adapter Version",
+            "default": "uci-teacher-v1"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "state_hash": {
+            "type": "string",
+            "title": "State Hash"
+          },
+          "move": {
+            "type": "string",
+            "title": "Move"
+          },
+          "engine_name": {
+            "type": "string",
+            "title": "Engine Name"
+          },
+          "engine_sha256": {
+            "type": "string",
+            "title": "Engine Sha256"
+          },
+          "network_sha256": {
+            "type": "string",
+            "title": "Network Sha256"
+          },
+          "settings": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Settings"
+          },
+          "requested_nodes": {
+            "type": "integer",
+            "title": "Requested Nodes"
+          },
+          "requested_depth": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Depth"
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "title": "Timeout Seconds"
+          },
+          "reported_nodes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Nodes"
+          },
+          "reported_depth": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Depth"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TeacherScore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "elapsed_ms": {
+            "type": "number",
+            "title": "Elapsed Ms"
+          },
+          "search_info": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Search Info"
+          },
+          "invalid_actions": {
+            "type": "integer",
+            "title": "Invalid Actions",
+            "default": 0
+          },
+          "retries": {
+            "type": "integer",
+            "title": "Retries",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "snapshot",
+          "state_hash",
+          "move",
+          "engine_name",
+          "engine_sha256",
+          "network_sha256",
+          "settings",
+          "requested_nodes",
+          "requested_depth",
+          "timeout_seconds",
+          "reported_nodes",
+          "reported_depth",
+          "score",
+          "elapsed_ms",
+          "search_info"
+        ],
+        "title": "TeacherAnalysis"
+      },
+      "TeacherScore": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "cp",
+              "mate"
+            ],
+            "title": "Kind"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "bound": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "lowerbound",
+              "upperbound"
+            ],
+            "title": "Bound"
+          },
+          "perspective": {
+            "type": "string",
+            "const": "side_to_move",
+            "title": "Perspective",
+            "default": "side_to_move"
+          },
+          "semantics": {
+            "type": "string",
+            "const": "engine_native",
+            "title": "Semantics",
+            "default": "engine_native"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "value",
+          "bound"
+        ],
+        "title": "TeacherScore"
       },
       "TraceBundle": {
         "properties": {

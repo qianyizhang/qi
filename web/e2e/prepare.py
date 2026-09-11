@@ -49,3 +49,7 @@ fixture = ExperimentEntry(
 owner.write_text("# Historical teacher pilot\n\n```experiment\n" + fixture.model_dump_json() + "\n```\n")
 (root / "data").mkdir()
 (root / "data/compact.json").write_text('{"agreement":24,"positions":36}')
+
+# Read-only collection review fixtures, without a teacher process or training.
+from qi.test_collection_view import build_review_collection
+build_review_collection(root / "collections/review.sqlite")

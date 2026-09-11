@@ -30,6 +30,7 @@ Experiment method and campaigns: [Method](experiments.md), [policy generalizatio
 Local external analysis: [Teacher](teacher.md).
 Local supervised policy training: [Trainer](../src/qi/learning/README.md).
 Coordinates, replay and implemented frontend behavior: [Interface](interface.md).
+Generated batch quality, coverage and review: [Data workspace](interface.md#generated-game-review).
 Frontend rationale: [shared app ADR](adr/0005-shared-local-frontend.md),
 [independent bindings ADR](adr/0006-independent-player-bindings.md); delivery evidence:
 [consolidated lab work item](../records/work-items/items/AB-UI-002-consolidated-lab.md).
