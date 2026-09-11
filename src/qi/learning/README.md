@@ -21,12 +21,14 @@ PUCT, or GPU requirement.
 
 ## Declarative experiments
 
-Use `qi learn run --config <recipe.json> --preview` before a new comparison.
+Use `qi learn run --config <recipe.json> --preview` before a single fit or comparison.
 Execution adds `--output <fresh-directory>`; scientific settings cannot be
-overridden on this command line. Existing `train` and `experiment` commands
-remain supported and save config artifacts. `qi learn train` accepts both v1
-datasets and complete frozen mixtures, and saves `<checkpoint>.report.json` with
-its metrics. The duplicate `qi data train` command has been removed.
+overridden on this command line. This is the general training entry point.
+The flag-based `qi learn train` and `qi learn experiment` commands were removed
+under [AB-LEARN-011](../../../records/work-items/items/AB-LEARN-011-curve-adapter-retirement.md).
+Migrate single fits with `data.selection: "source-order"`; use `data.train_size`
+for a diagnostic subset. Curves use `source-interleaved` (the Recipe default).
+Existing datasets, checkpoints, historical reports and copied trial configs remain readable.
 
 Recipes use seven sections, validated in `config.py`:
 
@@ -44,7 +46,9 @@ Omitted settings resolve to schema-v1 defaults. Saved configs include all seven
 sections and all declared settings. Library implementation details remain governed
 by code and the dependency lock; this is not a dump of every PyTorch parameter.
 Dataset generation, split construction and teacher labeling happen before this
-runner. The embedded reserved corpus and existing dataset validation remain in force.
+runner. The dataset's embedded reserved corpus is authoritative; its digest is saved
+in the manifest and checkpoint. There is no separate corpus option or expected-corpus
+field. Existing dataset validation, including leakage checks, remains in force.
 Use the separate `qi data prepare --config` command for
 [configured preparation](../training_data/README.md#commands-and-partial-work),
 then set `data.dataset` to its frozen output. Training configs do not trigger generation.
@@ -79,8 +83,11 @@ deviations require a complete seed group. Additional diagnostic metrics in the
 training report remain unchanged.
 
 Paths resolve relative to the config file, not the shell working directory.
-`runs.py` preserves `dataset.json`, a fully resolved `config.json`, the existing
-style of manifest, and `summary.json`. Each started trial additionally saves
+`runs.py` preserves `dataset.json`, a fully resolved `config.json`, `manifest.json`
+and `summary.json`. Every new run uses the same Recipe format, including single fits:
+the manifest lists concrete trials and exact inputs, and the summary groups `cases`.
+There are no legacy `plan`, `curve`, or per-trial `size` aliases; the size is in each
+trial config's `data.train_size`. Each started trial additionally saves
 `<case>-seed-N.config.json`, its result JSON and CPU checkpoint. The trial config
 records concrete training size and the effective fit allowance after the remaining
 total budget is applied. Pending trials remain in the manifest; failures retain
@@ -183,24 +190,27 @@ uv run --extra learning qi learn dataset \
   --network artifacts/teachers/pikafish-2026-01-02/pikafish.nnue \
   --output artifacts/learning/smoke-v1.json
 
-uv run --extra learning qi learn train \
-  --data artifacts/learning/smoke-v1.json \
-  --checkpoint artifacts/learning/diagnostic-v1.pt --diagnostic-examples 8 \
-  > artifacts/learning/diagnostic-v1-report.json
+cat > artifacts/learning/smoke-fit.json <<'JSON'
+{
+  "name": "policy",
+  "data": {"dataset": "smoke-v1.json", "selection": "source-order"}
+}
+JSON
 
-uv run --extra learning qi learn train \
-  --data artifacts/learning/smoke-v1.json \
-  --checkpoint artifacts/learning/policy-v1.pt \
-  > artifacts/learning/policy-v1-report.json
+uv run --extra learning qi learn run --config artifacts/learning/smoke-fit.json --preview
+uv run --extra learning qi learn run --config artifacts/learning/smoke-fit.json \
+  --output artifacts/learning/smoke-fit
 
-QI_POLICY_CHECKPOINT=artifacts/learning/policy-v1.pt \
+QI_POLICY_CHECKPOINT=artifacts/learning/smoke-fit/policy-seed-7.pt \
   uv run --extra learning qi evaluate --corpus data/evaluation/search-positions-v1.json \
   --player-a policy --player-b alphabeta --seed 7 \
   > artifacts/learning/policy-vs-alphabeta.json
 ```
 
-Use fresh output paths for new experiments. Existing datasets and checkpoints
-are never overwritten. Reports are JSON on stdout; errors go to stderr.
+For a tiny overfit, copy this config, add `"train_size": 8` inside `data`, and use a
+fresh output directory. The saved trial config and input list record the subset.
+Existing run directories and checkpoints are never overwritten. Run summaries are
+JSON on stdout; full per-fit reports are saved in the run directory; errors go to stderr.
 
 ## Legacy dataset generation (`training_data/v1.py`)
 
@@ -248,10 +258,11 @@ The 60-second budget covers the optimization loop, checked between steps; setup,
 replay, reporting and serialization are outside it. One bounded step may finish
 past the deadline. MPS timing synchronizes completed GPU work at the loop boundaries. The report
 records actual steps, elapsed optimization time and `complete`/`deadline` status.
-The diagnostic option uses only the first N training labels and records that fact.
-Pass `--device mps` for Mac GPU training or `--device cpu --threads 4` for a
-threaded CPU fit. MPS must be available and CPU fallback disabled; selection never
-silently changes devices. Model/data use float32. Final weights move to CPU for
+For a diagnostic fit, `data.selection: "source-order"` with `data.train_size: N`
+uses only the first N training labels and records their identities.
+Set `execution.device` to `mps` for Mac GPU training, or use `cpu` and
+`execution.threads: 4` for a threaded CPU fit. MPS must be available and CPU fallback
+disabled; selection never silently changes devices. Model/data use float32. Final weights move to CPU for
 validation, serialization, and exact reload checks; inference timings describe CPU
 play, not GPU training. Checkpoints record training device and thread count.
 
@@ -261,7 +272,7 @@ agreement asks whether imitation generalizes to unseen source games. Legal outpu
 prove the mask works. Paired-color replayable matches exercise the player boundary;
 the small fixed corpus does not establish general strength.
 
-## Data-size experiment (`experiment.py`)
+## Data-size experiment
 
 Generate a fresh dataset once, then preview and execute the fixed comparison:
 
@@ -273,25 +284,33 @@ uv run --extra learning qi learn dataset \
   --games 64 --samples 16 --plies 32 --seed 7 --nodes 1000 --depth 3 --seconds 600 \
   --output artifacts/learning/generalization-v1-data.json
 
-uv run --extra learning qi learn experiment \
-  --data artifacts/learning/generalization-v1-data.json \
-  --corpus data/evaluation/search-positions-v1.json \
-  --output artifacts/learning/generalization-v1 --device mps --preview
+cat > artifacts/learning/generalization-recipe.json <<'JSON'
+{
+  "name": "generalization",
+  "data": {"dataset": "generalization-v1-data.json", "selection": "source-interleaved", "subset_seed": 7},
+  "training": {"updates": 200},
+  "execution": {"device": "mps", "fit_seconds": 60, "total_seconds": 600},
+  "cases": [
+    {"name": "size-96", "overrides": {"data": {"train_size": 96}}},
+    {"name": "size-192", "overrides": {"data": {"train_size": 192}}},
+    {"name": "size-384", "overrides": {"data": {"train_size": 384}}},
+    {"name": "size-768", "overrides": {"data": {"train_size": 768}}}
+  ],
+  "seeds": [7, 17, 27]
+}
+JSON
 
-uv run --extra learning qi learn experiment \
-  --data artifacts/learning/generalization-v1-data.json \
-  --corpus data/evaluation/search-positions-v1.json \
-  --output artifacts/learning/generalization-v1 --device mps \
-  > artifacts/learning/generalization-v1-report.json
+uv run --extra learning qi learn run --config artifacts/learning/generalization-recipe.json --preview
+uv run --extra learning qi learn run --config artifacts/learning/generalization-recipe.json \
+  --output artifacts/learning/generalization-v1
 ```
 
-Defaults compare `--sizes 96,192,384,768` using `--seeds 7,17,27`, 200 updates,
-60 seconds per fit, and `--total-seconds 600`. The existing model, Adam settings,
-teacher and whole-game validation split stay fixed. One `--subset-seed 7` shuffles
+The recipe declares the size/seed matrix and allowances. The model, Adam settings,
+teacher and whole-game validation split stay fixed. `data.subset_seed` shuffles
 source games and their labels, then interleaves them. Every size takes a prefix of
 that training-only order; different initialization seeds receive identical inputs.
-Insufficient labels or a mismatched reserved-corpus digest fail before output is
-created. Preview requires no torch import and writes nothing.
+Insufficient labels or invalid dataset evidence fail before output is created.
+Preview requires no torch import and writes nothing.
 
 The fresh run directory contains `manifest.json` (configuration, code/data hashes,
 exact input order and validation identities), `dataset.json`, each trial's JSON and
@@ -333,16 +352,17 @@ uv run --extra learning qi learn dataset \
   --network artifacts/teachers/pikafish-2026-01-02/pikafish.nnue \
   --output artifacts/learning/scaled-data.json \
   --seed 211 --games 1056 --samples 16 --workers 4 --seconds 7200
-
-uv run --extra learning qi learn experiment \
-  --data artifacts/learning/scaled-data.json \
-  --corpus data/evaluation/search-positions-v1.json \
-  --output artifacts/learning/scaled-curve \
-  --sizes 768,3072,12288 --device mps --fit-seconds 600 --total-seconds 7200
 ```
 
-The experiment accepts sizes through 32768, at most 600 seconds per fit and
-7200 seconds for the matrix; defaults remain unchanged. Training is still full
+Copy the preceding recipe to `artifacts/learning/scaled-recipe.json`, set
+`data.dataset` to `scaled-data.json`, and declare cases with `data.train_size`
+768, 3072 and 12288. Set `execution.fit_seconds` to 600 and `execution.total_seconds`
+to 7200, keeping the model, optimizer, initialization seeds and 200 updates fixed.
+Preview with `qi learn run --config artifacts/learning/scaled-recipe.json --preview`,
+then execute with a fresh `--output artifacts/learning/scaled-curve`.
+
+Recipe accepts sizes through 32768, at most 600 seconds per fit and
+7200 seconds for the matrix. Training is still full
 batch: every update sees the entire chosen subset, so larger sizes also use more
 compute. This measures the benefit of more data with the same number of passes
 and optimizer updates, not equal compute. Full-batch tensor memory grows with
@@ -406,6 +426,6 @@ The Training Data collection can export verified Parquet snapshots and expose
 `loading.load_snapshot(path).label_batches(batch_size)` to the existing `tensors`
 adapter. Optional `tests/test_collection_learning.py` verifies tensor parity on
 bounded batches. This does not change this trainer's full-batch Adam updates or
-make `qi learn train --data` accept snapshot directories. Production integration
+make Recipe's `data.dataset` accept snapshot directories. Production integration
 is explicitly deferred to [AB-LEARN-010](../../../records/work-items/items/AB-LEARN-010-snapshot-training-protocol.md),
 which must first lock update, epoch, ordering and checkpoint semantics.

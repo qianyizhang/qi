@@ -1,6 +1,7 @@
 """Small declarative recipes; importing or previewing one needs no trainer."""
 
 from pathlib import Path
+from random import Random
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
@@ -61,6 +62,25 @@ class ExecutionSettings(Settings):
     total_seconds: float = Field(default=600.0, gt=0, le=7200)
 
 
+def _ordered_inputs(dataset: PreparedDataset, seed: int) -> list[str]:
+    """Interleave shuffled source games so small subsets span multiple games."""
+    groups = {}
+    for label in dataset.split_labels("train"):
+        groups.setdefault(label.source_id, []).append(label.input_sha256)
+    rng = Random(seed)
+    ids = sorted(groups)
+    rng.shuffle(ids)
+    for source in ids:
+        groups[source].sort()
+        rng.shuffle(groups[source])
+    return [
+        groups[source][index]
+        for index in range(max(map(len, groups.values())))
+        for source in ids
+        if index < len(groups[source])
+    ]
+
+
 class RunConfig(Settings):
     schema_version: Literal[1] = 1
     name: str = Field(default="policy", pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$")
@@ -75,10 +95,8 @@ class RunConfig(Settings):
     execution: ExecutionSettings = Field(default_factory=ExecutionSettings)
 
     def training_inputs(self, dataset: PreparedDataset) -> list[str]:
-        from qi.learning.experiment import ordered_inputs
-
         inputs = (
-            ordered_inputs(dataset, self.data.subset_seed)
+            _ordered_inputs(dataset, self.data.subset_seed)
             if self.data.selection == "source-interleaved"
             else [label.input_sha256 for label in dataset.split_labels("train")]
         )

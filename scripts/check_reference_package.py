@@ -46,7 +46,7 @@ def check_package(output: Path) -> None:
             str(python),
             "-I",
             "-c",
-            "from qi.learning.experiment import source_identity; "
+            "from qi.learning.provenance import source_identity; "
             "p=source_identity(); "
             "assert all(p[k] is None for k in ('source_sha256','git_revision','git_dirty')), p",
             cwd=work,

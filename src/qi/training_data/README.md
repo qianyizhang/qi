@@ -213,8 +213,6 @@ moving it; changing engine bytes also requires explicitly updating the pins.
 ```bash
 qi data prepare --config data/experiments/learning/preparation-two-mode-v1.json \
   --output artifacts/learning/prepared-example
-qi learn train --data artifacts/learning/prepared-example/dataset.json \
-  --checkpoint artifacts/learning/prepared-example/policy.pt --steps 30
 ```
 
 Preparation saves the resolved `config.json`, checkpointed `library.json`,
@@ -232,14 +230,14 @@ The individual generation/assembly commands remain available:
 qi data generate --recipe generation.json --corpus data/evaluation/search-positions-v1.json \
   --engine /path/to/pikafish --network /path/to/pikafish.nnue --output library.json
 qi data assemble --library library.json --recipe mixture.json --output dataset.json
-qi learn train --data dataset.json --checkpoint policy.pt --device cpu --steps 30
 ```
 
-Training has one command boundary: `qi learn train` for a single fit, or
-`qi learn run` for a configured experiment. The duplicate `qi data train` command
-was removed. Single fits save `<checkpoint>.config.json` and
-`<checkpoint>.report.json`, including slice diagnostics; a partial fit returns
-nonzero after saving its report and completed checkpoint.
+Single fits and comparisons use `qi learn run --config <recipe.json>`, with
+`data.dataset` pointing to the prepared JSON and `training.updates` declaring the
+fit budget. Use `--preview` before execution into a fresh `--output` directory.
+The [trainer guide](../learning/README.md#run-the-small-experiment) owns the recipe
+example, run artifacts and checkpoint paths. Per-trial reports retain slice
+diagnostics; a partial fit returns nonzero after saving its report and checkpoint.
 
 Generation checkpoints the newly created library after each source. Retained
 checkpoint objects are independent snapshots; later lineage merges do not mutate

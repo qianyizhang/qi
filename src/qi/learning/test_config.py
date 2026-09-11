@@ -1,6 +1,8 @@
 """Recipes remain copyable and cannot hide ignored settings."""
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -34,6 +36,51 @@ def test_cases_expand_independently_and_keep_the_same_holdout(tiny_dataset):
 
 
 @pytest.mark.parametrize(
+    "seed,indices",
+    [(7, [7, 2, 4, 6, 1, 3, 8, 0, 5]), (8, [7, 5, 2, 6, 4, 1, 8, 3, 0]), (-1, [4, 6, 0, 3, 7, 1, 5, 8, 2])],
+)
+def test_curve_input_order_matches_pre_migration_selection(tiny_dataset, seed, indices):
+    # These index orders were captured from the retired curve adapter before migration.
+    source_order = [label.input_sha256 for label in tiny_dataset.split_labels("train")]
+    recipe = Recipe.model_validate(
+        {
+            "data": {"dataset": "dataset.json", "subset_seed": seed},
+            "cases": [{"name": f"size-{size}", "overrides": {"data": {"train_size": size}}} for size in (3, 6, 9)],
+            "seeds": [7, 17, 27],
+        }
+    )
+    manifest = preview_recipe(recipe, tiny_dataset)
+    assert manifest["planned_trials"] == 9
+    expected = [source_order[index] for index in indices]
+    sources = {label.input_sha256: label.source_id for label in tiny_dataset.labels}
+    assert len({sources[key] for key in expected[:3]}) == 3
+    for trial in manifest["trials"]:
+        assert trial["train_inputs"] == expected[: trial["config"]["data"]["train_size"]]
+        assert not set(trial["train_inputs"]) & set(manifest["validation_inputs"])
+    assert manifest["reserved_corpus_sha256"] == tiny_dataset.reserved_corpus.digest
+    assert "plan" not in manifest and "ordered_train_inputs" not in manifest
+
+
+def test_source_order_and_insufficient_data_preserve_recipe_contract(tiny_dataset):
+    from qi.game import GameError
+
+    recipe = Recipe.model_validate({"data": {"dataset": "dataset.json", "selection": "source-order", "train_size": 3}})
+    assert recipe.training_inputs(tiny_dataset) == [
+        label.input_sha256 for label in tiny_dataset.split_labels("train")[:3]
+    ]
+    recipe.data.train_size = 100
+    with pytest.raises(GameError, match="dataset has"):
+        preview_recipe(recipe, tiny_dataset)
+
+
+@pytest.mark.parametrize("command", ["train", "experiment"])
+def test_retired_flag_commands_are_unknown(command):
+    result = CliRunner().invoke(app, ["learn", command, "--help"])
+    assert result.exit_code != 0
+    assert "No such command" in result.output
+
+
+@pytest.mark.parametrize(
     "patch",
     [
         {"optimizer": {"learn_rate": 0.02}},
@@ -62,6 +109,23 @@ def test_preview_reads_paths_relative_to_config_and_rejects_cli_overrides(tiny_d
     result = CliRunner().invoke(app, ["learn", "run", "--config", str(config), "--preview"])
     assert result.exit_code == 0, result.output
     assert json.loads(result.stdout)["planned_trials"] == 1
+    without_trainer = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import sys; sys.modules['torch'] = None; from qi.cli import main; main()",
+            "learn",
+            "run",
+            "--config",
+            str(config),
+            "--preview",
+        ],
+        cwd=tmp_path,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert json.loads(without_trainer.stdout) == json.loads(result.stdout)
     rejected = CliRunner().invoke(app, ["learn", "run", "--config", str(config), "--seed", "17", "--preview"])
     assert rejected.exit_code != 0
     assert set(tmp_path.iterdir()) == before

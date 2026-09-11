@@ -141,7 +141,7 @@ uv run qi data prepare --config data/experiments/learning/preparation-two-mode-v
 The [Training Data guide](src/qi/training_data/README.md#commands-and-partial-work)
 owns generation modes, teacher supervision, pinned inputs and partial-work behavior.
 To train a local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
-For repeatable comparisons, use `qi learn run --config <recipe.json> --preview`,
+For single fits and repeatable comparisons, use `qi learn run --config <recipe.json> --preview`,
 then add `--output <fresh-directory>` to execute. Saved configs can be copied and
 edited; the [recipe and evidence guide](data/experiments/learning/README.md) links retained inputs.
 Use the shared [experiment catalog](#experiment-recall) to recall findings.

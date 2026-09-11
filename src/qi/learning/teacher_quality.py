@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from qi.artifacts import digest, write_json
 from qi.game import legal_moves
 from qi.learning.config import DataSettings, ExecutionSettings, Recipe, TrainingSettings
-from qi.learning.experiment import source_identity
+from qi.learning.provenance import source_identity
 from qi.learning.teacher_quality_scores import candidates, disadvantage
 from qi.teacher import TeacherConfig, TeacherIdentity, TeacherSession
 from qi.training_data.loading import load_dataset

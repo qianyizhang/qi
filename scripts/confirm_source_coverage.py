@@ -15,7 +15,7 @@ from run_source_coverage import write
 
 from qi.evaluation import Corpus
 from qi.learning.config import DataSettings, ExecutionSettings, Recipe, TrainingSettings
-from qi.learning.experiment import source_identity
+from qi.learning.provenance import source_identity
 from qi.teacher import TeacherConfig, analyze, digest
 from qi.training_data.selection import select_training
 from qi.training_data.v1 import Dataset, generate, teacher_identity

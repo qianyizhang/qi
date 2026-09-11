@@ -7,7 +7,7 @@ from time import perf_counter
 from qi.artifacts import write_json
 from qi.game import GameError
 from qi.learning.config import Recipe
-from qi.learning.experiment import LearningPlan, source_identity, summarize
+from qi.learning.provenance import source_identity
 from qi.training_data.assembly import TrainingDataset
 from qi.training_data.loading import PreparedDataset
 
@@ -48,22 +48,7 @@ def summarize_cases(trials: list[dict], planned: list[dict]) -> list[dict]:
 
 
 def run_recipe(recipe: Recipe, dataset: PreparedDataset, output: Path, *, source_config: Path) -> dict:
-    return _execute(recipe, dataset, output, source_config=source_config)
-
-
-def _execute(
-    recipe: Recipe,
-    dataset: PreparedDataset,
-    output: Path,
-    *,
-    source_config: Path | None = None,
-    legacy_manifest: dict | None = None,
-    legacy_plan: LearningPlan | None = None,
-) -> dict:
-    # COMPAT: Legacy plans keep their manifest/curve fields through this one execution loop.
     manifest = preview_recipe(recipe, dataset)
-    if legacy_manifest is not None:
-        manifest.update(legacy_manifest)
     from qi.learning.train import train, validate_device
 
     for _, config in recipe.expand():
@@ -71,12 +56,10 @@ def _execute(
     if output.exists():
         raise GameError("experiment_exists", "Choose a fresh experiment directory; existing runs are preserved.")
     recipe = recipe.model_copy(deep=True)
-    recipe.derived_from = (
-        recipe.origin_config or recipe.derived_from or (str(source_config.resolve()) if source_config else None)
-    )
+    recipe.derived_from = recipe.origin_config or recipe.derived_from or str(source_config.resolve())
     recipe.origin_config = str((output / "config.json").resolve())
     recipe.data.dataset = str((output / "dataset.json").resolve())
-    manifest.update(source_identity(), source_config=str(source_config.resolve()) if source_config else None)
+    manifest.update(source_identity(), source_config=str(source_config.resolve()))
     output.mkdir(parents=True)
     (output / "dataset.json").write_text(dataset.model_dump_json() + "\n")
     write_json(output / "config.json", recipe.model_dump(), indent=2)
@@ -86,10 +69,7 @@ def _execute(
 
     def save() -> None:
         result["elapsed_seconds"] = perf_counter() - started
-        if legacy_plan is None:
-            result["cases"] = summarize_cases(result["trials"], manifest["trials"])
-        else:
-            result["curve"] = summarize(result["trials"], legacy_plan)
+        result["cases"] = summarize_cases(result["trials"], manifest["trials"])
         write_json(output / "summary.json", result, indent=2)
 
     save()
@@ -123,8 +103,6 @@ def _execute(
             result["trials"].append(
                 {"case": case, "seed": config.training.seed, "config": f"{name}.config.json", "report": report}
             )
-            if legacy_plan is not None:
-                result["trials"][-1]["size"] = config.data.train_size
             result.pop("active_trial")
             save()
         result["status"] = (

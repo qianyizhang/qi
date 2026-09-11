@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from qi import artifacts
-from qi.learning.experiment import source_identity
+from qi.learning.provenance import source_identity
 
 
 @pytest.mark.parametrize("indent", [None, 2])

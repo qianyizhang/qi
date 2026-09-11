@@ -6,6 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from qi.cli import app
+from qi.learning.config import Recipe
 from qi.training_data.assembly import Bucket, MixtureRecipe, assemble
 
 
@@ -20,6 +21,22 @@ def mixture_recipe(library):
             for split in ("train", "validation")
         ],
     )
+
+
+@pytest.fixture
+def prepared_run(library, mixture_recipe, tmp_path):
+    dataset = assemble(library, mixture_recipe)
+    (tmp_path / "dataset.json").write_text(dataset.model_dump_json())
+    config = tmp_path / "recipe.json"
+    config.write_text(
+        Recipe.model_validate(
+            {
+                "data": {"dataset": "dataset.json", "selection": "source-order"},
+                "training": {"updates": 2},
+            }
+        ).model_dump_json()
+    )
+    return dataset, config, tmp_path / "run"
 
 
 def test_cli_assembly_writes_complete_and_incomplete_manifests(library, mixture_recipe, tmp_path):
@@ -62,50 +79,48 @@ def test_manifest_training_checkpoint_and_slice_results(library, mixture_recipe,
     assert not (tmp_path / "refused.pt").exists()
 
 
-def test_single_training_cli_accepts_frozen_data_and_saves_config_and_report(library, mixture_recipe, tmp_path):
+def test_single_recipe_cli_accepts_frozen_data_and_saves_config_and_report(prepared_run):
     pytest.importorskip("torch")
-    dataset = assemble(library, mixture_recipe)
-    path, checkpoint = tmp_path / "dataset.json", tmp_path / "policy.pt"
-    path.write_text(dataset.model_dump_json())
-    result = CliRunner().invoke(
-        app, ["learn", "train", "--data", str(path), "--checkpoint", str(checkpoint), "--steps", "2"]
-    )
+    dataset, config, output = prepared_run
+    result = CliRunner().invoke(app, ["learn", "run", "--config", str(config), "--output", str(output)])
     assert result.exit_code == 0, result.output
-    report = json.loads((tmp_path / "policy.pt.report.json").read_text())
+    report = json.loads((output / "policy-seed-7.json").read_text())
     assert report["metadata"]["dataset_manifest_fingerprint"] == dataset.manifest.fingerprint
     assert report["reload_predictions_equal"]
-    assert (tmp_path / "policy.pt.config.json").exists()
+    assert (output / "policy-seed-7.config.json").exists()
+    assert (output / "policy-seed-7.pt").exists()
+    assert json.loads(result.stdout)["trials"][0]["report"] == report
 
 
-def test_training_deadline_saves_report_and_exits_nonzero(library, mixture_recipe, tmp_path, monkeypatch):
+def test_training_deadline_saves_report_and_exits_nonzero(prepared_run, monkeypatch):
     pytest.importorskip("torch")
-    path, checkpoint = tmp_path / "dataset.json", tmp_path / "partial.pt"
-    path.write_text(assemble(library, mixture_recipe).model_dump_json())
+    _, config, output = prepared_run
 
     def deadline(dataset, checkpoint, **kwargs):
         checkpoint.write_bytes(b"test checkpoint")
         return {"status": "deadline", "completed_steps": 1, "requested_steps": kwargs["steps"]}
 
     monkeypatch.setattr("qi.learning.train.train", deadline)
-    result = CliRunner().invoke(app, ["learn", "train", "--data", str(path), "--checkpoint", str(checkpoint)])
+    result = CliRunner().invoke(app, ["learn", "run", "--config", str(config), "--output", str(output)])
     assert result.exit_code != 0
-    assert json.loads((tmp_path / "partial.pt.report.json").read_text())["status"] == "deadline"
-    assert getattr(result.exception, "code", None) == "training_incomplete"
+    assert json.loads((output / "policy-seed-7.json").read_text())["status"] == "deadline"
+    assert (output / "policy-seed-7.pt").read_bytes() == b"test checkpoint"
+    summary = json.loads((output / "summary.json").read_text())
+    assert summary["status"] == "incomplete"
+    assert summary["cases"] == [{"case": "policy", "complete_seeds": 0, "expected_seeds": 1}]
+    assert getattr(result.exception, "code", None) == "experiment_incomplete"
 
 
-def test_existing_report_rejects_training_before_any_outputs(library, mixture_recipe, tmp_path):
+def test_existing_run_rejects_training_before_any_outputs(prepared_run):
     pytest.importorskip("torch")
-    path = tmp_path / "dataset.json"
-    path.write_text(assemble(library, mixture_recipe).model_dump_json())
-    report = tmp_path / "policy.pt.report.json"
+    _, config, output = prepared_run
+    output.mkdir()
+    report = output / "summary.json"
     report.write_text("preserved")
-    result = CliRunner().invoke(
-        app, ["learn", "train", "--data", str(path), "--checkpoint", str(tmp_path / "policy.pt")]
-    )
+    result = CliRunner().invoke(app, ["learn", "run", "--config", str(config), "--output", str(output)])
     assert result.exit_code != 0
     assert report.read_text() == "preserved"
-    assert not (tmp_path / "policy.pt").exists()
-    assert not (tmp_path / "policy.pt.config.json").exists()
+    assert list(output.iterdir()) == [report]
 
 
 def test_obsolete_generation_recipe_fails_before_teacher_or_artifact_creation(data_setup, tmp_path):
