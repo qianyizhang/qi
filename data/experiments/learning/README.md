@@ -2,7 +2,7 @@
 description: Declarative learning recipes and retrospective experiment evidence.
 scope: learning recipes and retained evidence
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: artifact
 ---
 
@@ -18,12 +18,21 @@ The [preparation example](preparation-two-mode-v1.json) instead runs through
 `qi data prepare --config`; source-coverage protocol JSON is consumed by its study script.
 The [teacher-quality protocol](teacher-quality-v1.json) uses
 `scripts/run_teacher_quality.py`, with repository-relative paths; it is not a training recipe.
+The [generated follow-up protocol](generated-followups-v1.json) similarly uses
+`scripts/run_generated_followups.py` for `prepare`, `run` and `verify`, selecting
+`--study semantic` or `--study scaling`. Its `--attempt` selects a fresh execution
+directory while charging retained prior attempts. The script under
+`generated-followups-v1/summarize.py` projects verified results and renders the
+scaling plot (Matplotlib required only for plotting); `verify_closeout.py` audits
+the complete local execution, resource accounting and sealed-input exclusion.
 The historical recipes reconstruct settings, not the original implementation.
 Their prepared datasets and weights are local, ignored artifacts; a fresh clone
 alone cannot rerun them. Dataset paths in recipes resolve relative to the config file.
 
 | Historical material | Recipe / retrospective record | Original local evidence |
 | --- | --- | --- |
+| Matched generated semantic enrichment (18 complete comparisons; three retained earlier controls) | [Protocol](generated-followups-v1.json), [results](history/generated-semantic-enrichment-v1.json), [interpretation](../../../records/work-items/items/AB-LEARN-013-semantic-enrichment.md) | `artifacts/learning/generated-followups-v1/semantic/` |
+| Generated-data scaling (30 unique fits; one resource pilot) | [Protocol](generated-followups-v1.json), [results](history/generated-data-scaling-v1.json), [interpretation](../../../records/work-items/items/AB-LEARN-014-generated-data-scaling.md) | `artifacts/learning/generated-followups-v1/scaling/` |
 | Controlled teacher-label student comparison (18 complete fits) | [Protocol](teacher-quality-v1.json), [results](history/teacher-quality-v1.json), [interpretation](../../../records/work-items/items/AB-LEARN-009-teacher-quality.md) | `artifacts/learning/teacher-quality-v1/` |
 | Teacher budget, MultiPV/WDL, throughput and root-trace pilots | [Aggregates](history/teacher-generation-pilot-v1.json), [owning advisory](../../../records/reports/2026-09-09-teacher-generation-advisory.md) | `artifacts/pikafish-*-20260909/` |
 | Initial imitation and tiny overfit | [Record](history/smoke-v1.json) | `artifacts/learning/diagnostic-v1-report.json`, `policy-v1-report.json` |

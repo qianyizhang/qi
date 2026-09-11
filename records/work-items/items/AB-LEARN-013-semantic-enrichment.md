@@ -5,7 +5,7 @@ status: experimental
 last_update: 2026-09-11
 document_class: work_record
 work_id: AB-LEARN-013
-work_status: wip
+work_status: done
 work_kind: research
 added: 2026-09-11
 tags: domain
@@ -82,6 +82,7 @@ union enrichment, not the causal contribution of each tag.
 | Date | Actor | From | To | Reason / evidence |
 | --- | --- | --- | --- | --- |
 | 2026-09-11 | Codex | — | wip | User said to run the proposed semantic and scaling follow-ups; training-only feasibility and protocol frozen before fitting. |
+| 2026-09-11 | Codex | wip | done | All 18 fits independently verified; two blocks declined, so retain natural tag frequencies. |
 
 ## Implementation Ledger
 
@@ -122,6 +123,40 @@ union enrichment, not the causal contribution of each tag.
 - Follow-up: rerun gates, then the full matrix and independent verification.
 - Review: not-required; routine authorized runner repair with evidence retention.
 
+### 2026-09-11 — finding: enrichment does not pass the frozen rule
+
+- Evidence: [compact results](../../../data/experiments/learning/history/generated-semantic-enrichment-v1.json),
+  `artifacts/learning/generated-followups-v1/semantic/verification.json` and its
+  receipt manifest retain all 18 fits, independently reloaded predictions, exact
+  selection proofs and source archive. All nine natural controls reproduce the
+  parent screen's predictions exactly. Implementation `ec7613f` passed 598 Python
+  tests, one optional MPS skip, five browser tests and the full repository gate.
+- Observation: balanced development agreement changes from 16.020% to 15.771%
+  (-0.249 pp). Paired block-mean differences are -0.326/-0.452/+0.029 pp. The
+  all-block-positive rule fails. Both cases reach 100% training agreement.
+- Supporting slices: teacher-capture agreement rises 9.259% → 10.022% (102
+  development inputs), teacher-gives-check rises 15.625% → 18.403% (64), while
+  in-check falls 74.286% → 71.746% (35, including forced-action positions).
+  Plausible endgames fall 18.403% → 18.229% (64); full phase/source slices and
+  denominators remain in the compact results. Unweighted development
+  cross-entropy changes only slightly, 9.147 → 9.132; it is a different objective
+  from six-cell macro agreement and does not reverse the primary decision.
+- Resources: the successful matrix takes 845.013 seconds; the retained failed
+  attempt adds 100.062 seconds, totaling 945.074 seconds charged to the shared
+  allowance. Fits span 23.368–92.785 seconds, with process peak RSS 543031296
+  bytes (517.875 MiB). Preparation takes 867.249 seconds. Concurrent scaling
+  preparation makes these host-contended timing observations. A standalone
+  verification wall timer was not retained; do not infer one from fit times.
+- Consequence: retain natural frequencies. These tags describe immediate
+  position/teacher-move features; enriching their union is not evidence that
+  any individual tactical category is unhelpful. This reused 373-input
+  development benchmark and one generation seed remain exploratory; the 3900
+  sealed inputs were not scored and no player defaults changed.
+- Follow-up: finish the independently frozen natural-tag scaling matrix in
+  [AB-LEARN-014](AB-LEARN-014-generated-data-scaling.md). Revisit enrichment only
+  with a separately locked tag-specific hypothesis and fresh evaluation data.
+- Review: not-required; authorized study completed under its decision rule.
+
 
 ```experiment
 {
@@ -159,6 +194,101 @@ union enrichment, not the causal contribution of each tag.
       "path": "artifacts/learning/generated-followups-v1/pool/manifest.json",
       "role": "data",
       "sha256": "f79e9abf0ab8d4c54038ba7d8f3f944140d23c51ce407cd4816a9e1cb2e8d7c9"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generated-source-mixing-v1",
+      "relationship": "extends",
+      "contribution": "Keep the chosen source mixture and measured limitations while isolating the next data variable."
+    },
+    {
+      "id": "policy-data-scaling-v1",
+      "relationship": "extends",
+      "contribution": "Measure changed longer-game stronger-teacher data, separating passes from presentations."
+    }
+  ],
+  "novelty": "First matched semantic intervention on this source pool."
+}
+```
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "generated-semantic-enrichment-v1",
+  "title": "Matched generated semantic enrichment",
+  "question": "Does +10 pp immediate tactical-tag coverage improve imitation with identical trajectory contributions?",
+  "kind": "learning",
+  "topics": [
+    "generated data",
+    "semantic",
+    "semantic tags",
+    "scaling",
+    "full-batch"
+  ],
+  "execution": "complete",
+  "conclusion": "not-supported",
+  "finding": "18 verified fits on 373 reused development inputs: +10 pp matched union-tag enrichment changes six-cell macro agreement 16.020% to 15.771% (-0.249 pp); block deltas -0.326/-0.452/+0.029 pp. All nine natural controls exactly reproduce parent predictions. Capture and checking-move slices improve, but two blocks decline and both cases fit training labels completely.",
+  "conditions": "80/10/10; 4000 inputs, exact per-trajectory contributions; +10 pp union-tag enrichment per policy/phase cell; three training blocks and seeds 7/17/27; 18 fresh fits at 200 updates. Fixed one-thread 100k labels, CPU one thread, MLP 1261-64-8100, Adam .01, float32, chunks 256. Fixed 373-input six-cell macro development metric; 3900 sealed inputs unscored. Combined follow-ups 7200 seconds, max 600 seconds/fit and 1.5GB process peak RSS.",
+  "limitations": "Exploratory reused development set, one generation seed; initialization seeds are not independent datasets. No correctness or playing-strength claim. First attempt failed before enrichment after three completed controls; retained in place and its 100.062 seconds charged alongside the fresh 18-fit matrix. Fit timings overlap scaling preparation. Independent verification has no separately retained wall timer.",
+  "decision": "Retain natural tag frequencies; continue the independently frozen scaling matrix. No player-default or playing-strength promotion.",
+  "revisit": "A separately locked tag-specific hypothesis with fresh evaluation data; this union enrichment does not isolate individual tags.",
+  "evidence": [
+    {
+      "path": "data/experiments/learning/generated-followups-v1.json",
+      "role": "config",
+      "sha256": "6e133c4e6b3c68b3a75b2f02b574a900ba91d40bc7349d2be20fa847b2da8746"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/plan/manifest.json",
+      "role": "data",
+      "sha256": "b65857bdc5c2e469884fd144a3bef4a401f1edaa48ad7ca7211cb29673890ab7"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/pool/manifest.json",
+      "role": "data",
+      "sha256": "f79e9abf0ab8d4c54038ba7d8f3f944140d23c51ce407cd4816a9e1cb2e8d7c9"
+    },
+    {
+      "path": "data/experiments/learning/history/generated-semantic-enrichment-v1.json",
+      "role": "results",
+      "sha256": "ed1e61a9c7988562e432bbe486b9dccf8c58c7bec2b53cb053ef2c099c70d30a"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/verification.json",
+      "role": "results",
+      "sha256": "eda5f13b8ebcb08d76a062fb179bfe601c5f8f3b743d1524df7d76112bfa3aa6"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/receipts.json",
+      "role": "run",
+      "sha256": "f8fd14fda819bf00213d37a1487259ed268cc8f2a87681fd6f68affdd28a4794"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/study-retry-1/summary.json",
+      "role": "run",
+      "sha256": "90764a2ddf41af6ebcee8c711a1be3a5294f5fb8a8d5c31afaf957bb9cd2aee0"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/study-retry-1/source-files.json",
+      "role": "source",
+      "sha256": "cade61dcf4cb8b1939f786402a08c4e7327ff86472fe0314120f6b81a8e69cc8"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/study/summary.json",
+      "role": "run",
+      "sha256": "1ee9a34cd41a9c3ff7a7a3f34250f4674091bf78ec05fb2af4ec007bcda703f6"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/semantic/execution.log",
+      "role": "run",
+      "sha256": "f0e8a8036f161f013e4a61155afd30a3cb038ee42e01543075f8951a3ae5bea5"
+    },
+    {
+      "path": "artifacts/learning/generated-followups-v1/repair-build-check.log",
+      "role": "report",
+      "sha256": "9a5b734e9e91a1f9a4c47b4baf2a6008a8bcbfc8c81bc903521c3a3a26225361"
     }
   ],
   "prior_work": [

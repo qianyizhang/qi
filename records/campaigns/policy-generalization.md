@@ -29,6 +29,8 @@ player chooses legal actions; the referee owns outcomes. See the [core model](..
 | The source-coverage direction transferred to fresh blocks and holdouts | [Fresh confirmation](../work-items/items/AB-LEARN-007-fresh-source-confirmation.md): 12.91% → 14.58% agreement across three generation seeds and 6037 held-out positions; all nine pairs favored broader coverage and the predeclared rule passed | Changed teacher, phase distribution, label budget or representation; these absolute scores use a different benchmark from the exploratory comparison |
 | Stronger labels gave mixed student-imitation results but better supporting move estimates | [Teacher-quality comparison](../work-items/items/AB-LEARN-009-teacher-quality.md): +0.955 percentage points mean agreement, block differences -0.521/+1.042/+2.344; supporting expected-score loss improved in all three blocks; 18 fits on fixed inputs with a shared 1M reference | Fresh source blocks and evaluation games under a separately locked decision rule; current result remains exploratory and inconclusive |
 | Intervention mixtures improved balanced longer-game imitation, with source-specific losses | [Generated-source screen](../work-items/items/AB-LEARN-012-generated-source-mixing.md): 4000 inputs, fixed one-thread 100k labels, 36 fits; 80/10/10 improved six-cell macro agreement from 14.998% to 16.020%, positive in every training block. Random alone reduced agreement. Plausible endgame agreement fell; all cases fit training labels completely | Semantic enrichment and nested scaling under frozen source/phase ratios, followed by sealed confirmation; one generation seed and shared development set do not establish general superiority |
+| Matched immediate-tag enrichment did not improve the primary metric | [Semantic enrichment](../work-items/items/AB-LEARN-013-semantic-enrichment.md): +10 pp union-tag coverage at identical trajectory contributions; 18 verified fits, 16.020% → 15.771%, two of three blocks declined. Capture and checking-move slices improved | Separately locked tag-specific hypothesis and fresh evaluation; retain natural frequencies |
+| More generated inputs helped at fixed passes and fixed example presentations | [Generated-data scaling](../work-items/items/AB-LEARN-014-generated-data-scaling.md): 30 verified fits, nested 1k/4k/16k; both source cases pass both scaling rules. At 16k/50 updates, balanced agreement is 17.210% plausible-only and 18.151% mixed; the mixture loses on plausible endgames. More updates fit training labels completely but increase development cross-entropy | Sealed confirmation with source/phase slices and declared update budget; one nested pool and initialization seeds remain exploratory |
 
 ## Unknowns
 
@@ -38,13 +40,15 @@ Different inspected test sets cannot be compared as if they were one benchmark.
 
 ## Frontier
 
-The completed generated-source screen advances 80/10/10 as an exploratory
-candidate for its balanced development objective; 90/10/0 remains a close
-comparator. Freeze training-only semantic enrichment next, then nested scaling
-with constant-pass and constant-presentation comparisons. The 3900 sealed inputs
-remain unscored; confirmation requires its own fixed protocol. The
-[screen owner](../work-items/items/AB-LEARN-012-generated-source-mixing.md) retains
-the source-specific losses and large generalization gap.
+The generated-data follow-ups retain natural tag frequencies and support more
+distinct inputs under both compute views. The 80/10/10 mixture leads at 4k and
+16k on the balanced objective, but loses at 1k and retains a plausible-endgame
+loss at 16k. Its 16k/50-update mean exceeds the 200-update mean, while the
+update-count direction varies across seeds; this does not establish an optimal
+stopping rule. Preserve plausible-only as a comparator. The 3900 sealed inputs
+remain unscored; the next confirmation needs a separately fixed protocol and
+source/phase reporting. The [scaling owner](../work-items/items/AB-LEARN-014-generated-data-scaling.md)
+retains the full curves, training gap and resource evidence.
 
 Use broader source coverage as the working choice for the next comparable
 fixed-label dataset. The [fresh confirmation](../work-items/items/AB-LEARN-007-fresh-source-confirmation.md)
@@ -61,11 +65,21 @@ own curriculum vocabulary and composition.
 - [Config scaffold and retrospective migration](../work-items/items/AB-LEARN-005-experiment-configs.md).
 - [Teacher-quality training comparison](../work-items/items/AB-LEARN-009-teacher-quality.md).
 - [Generated-source mixture screen](../work-items/items/AB-LEARN-012-generated-source-mixing.md).
+- [Matched semantic enrichment](../work-items/items/AB-LEARN-013-semantic-enrichment.md).
+- [Generated-data scaling](../work-items/items/AB-LEARN-014-generated-data-scaling.md).
 - [Historical recipes and observations](../../data/experiments/learning/README.md).
 
 Work-item records own execution status; this page owns only the synthesis.
 
 ## Learning ledger
+
+2026-09-11: completed 18 matched enrichment and 30 nested scaling fits, each
+independently verified. Enrichment fails its all-block-positive rule; retain
+natural frequencies. Scaling passes all four predeclared curve rules, including
+fixed presentations, while the mixture's plausible-endgame loss and the large
+training/development gap persist. All 52 retained fits, including the resource
+pilot and three controls from the repaired first attempt, exclude sealed inputs.
+Combined charged fitting time is 45.893 minutes; no player defaults changed.
 
 2026-09-11: all 36 generated-source fits completed and independently verified.
 Both intervention-containing mixtures improved the frozen balanced metric in
