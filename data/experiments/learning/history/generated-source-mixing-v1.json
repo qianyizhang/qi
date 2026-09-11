@@ -1,0 +1,1047 @@
+{
+  "experiment": "generated-source-mixing-v1",
+  "execution": "complete",
+  "complete_fits": 36,
+  "train_inputs_per_fit": 4000,
+  "development_inputs": 373,
+  "sealed_test_inputs": 3900,
+  "sealed_test_scored": false,
+  "training_blocks": 3,
+  "initialization_seeds": [
+    7,
+    17,
+    27
+  ],
+  "primary": "equal-weight mean of six development policy/phase agreements",
+  "advance": "both",
+  "cases": {
+    "plausible": {
+      "mean": 0.14998252969951084,
+      "block_means": [
+        0.15192610062893083,
+        0.15267950733752622,
+        0.14534198113207547
+      ],
+      "block_deltas": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "all_blocks_positive": false,
+      "fits": 9,
+      "train_mean_agreement": 1.0,
+      "train_mean_cross_entropy": 0.0011813375284276406,
+      "fit_seconds": [
+        24.895130667020567,
+        24.961775375006255,
+        25.749527916981606,
+        22.590652415994555,
+        23.014239542011637,
+        22.687795290985378,
+        22.85970491700573,
+        22.58941483401577,
+        22.617942250013584
+      ],
+      "peak_process_rss_bytes": 522780672,
+      "source_trajectories_by_block": [
+        1699,
+        1632,
+        1698
+      ],
+      "max_inputs_per_trajectory_by_block": [
+        5,
+        5,
+        5
+      ],
+      "slices": {
+        "validation": {
+          "positions_per_fit": 373,
+          "mean_agreement": 0.1483467381590706,
+          "mean_cross_entropy": 10.075915292360921,
+          "correct_per_fit": [
+            54,
+            58,
+            57,
+            58,
+            47,
+            63,
+            56,
+            51,
+            54
+          ]
+        },
+        "bucket:development-plausible-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.11631944444444445,
+          "mean_cross_entropy": 9.915232027149834,
+          "correct_per_fit": [
+            8,
+            9,
+            8,
+            9,
+            5,
+            9,
+            7,
+            5,
+            7
+          ]
+        },
+        "validation:phase:middlegame": {
+          "positions_per_fit": 192,
+          "mean_agreement": 0.11979166666666667,
+          "mean_cross_entropy": 12.289452145463029,
+          "correct_per_fit": [
+            25,
+            26,
+            29,
+            24,
+            18,
+            24,
+            19,
+            20,
+            22
+          ]
+        },
+        "validation:tag:teacher-capture": {
+          "positions_per_fit": 102,
+          "mean_agreement": 0.07298474945533769,
+          "mean_cross_entropy": 13.860658476881499,
+          "correct_per_fit": [
+            8,
+            10,
+            9,
+            10,
+            6,
+            9,
+            7,
+            4,
+            4
+          ]
+        },
+        "validation:tag:in-check": {
+          "positions_per_fit": 35,
+          "mean_agreement": 0.7238095238095238,
+          "mean_cross_entropy": 1.4494954880114672,
+          "correct_per_fit": [
+            27,
+            25,
+            28,
+            24,
+            25,
+            25,
+            23,
+            24,
+            27
+          ]
+        },
+        "validation:tag:teacher-gives-check": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.125,
+          "mean_cross_entropy": 10.129835167794662,
+          "correct_per_fit": [
+            5,
+            9,
+            11,
+            7,
+            6,
+            10,
+            8,
+            8,
+            8
+          ]
+        },
+        "bucket:development-plausible-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.21354166666666666,
+          "mean_cross_entropy": 6.9844344877955615,
+          "correct_per_fit": [
+            12,
+            13,
+            12,
+            11,
+            12,
+            19,
+            17,
+            12,
+            15
+          ]
+        },
+        "validation:phase:endgame": {
+          "positions_per_fit": 181,
+          "mean_agreement": 0.17863720073664824,
+          "mean_cross_entropy": 7.727854100120013,
+          "correct_per_fit": [
+            29,
+            32,
+            28,
+            34,
+            29,
+            39,
+            37,
+            31,
+            32
+          ]
+        },
+        "bucket:development-intervention-endgame": {
+          "positions_per_fit": 53,
+          "mean_agreement": 0.20545073375262055,
+          "mean_cross_entropy": 7.823094421397389,
+          "correct_per_fit": [
+            11,
+            8,
+            10,
+            14,
+            13,
+            11,
+            14,
+            8,
+            9
+          ]
+        },
+        "bucket:development-intervention-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.20833333333333334,
+          "mean_cross_entropy": 9.37784780357239,
+          "correct_per_fit": [
+            16,
+            15,
+            15,
+            12,
+            12,
+            13,
+            11,
+            13,
+            13
+          ]
+        },
+        "bucket:development-random-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.12152777777777778,
+          "mean_cross_entropy": 8.39240282138664,
+          "correct_per_fit": [
+            6,
+            11,
+            6,
+            9,
+            4,
+            9,
+            6,
+            11,
+            8
+          ]
+        },
+        "bucket:development-random-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.034722222222222224,
+          "mean_cross_entropy": 17.57527660566686,
+          "correct_per_fit": [
+            1,
+            2,
+            6,
+            3,
+            1,
+            2,
+            1,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    "intervention": {
+      "mean": 0.15780594863731656,
+      "block_means": [
+        0.15731459643605872,
+        0.16222811844863733,
+        0.15387513102725367
+      ],
+      "block_deltas": [
+        0.0053884958071278855,
+        0.009548611111111105,
+        0.0085331498951782
+      ],
+      "all_blocks_positive": true,
+      "fits": 9,
+      "train_mean_agreement": 1.0,
+      "train_mean_cross_entropy": 0.0011777627115939395,
+      "fit_seconds": [
+        25.96791187499184,
+        26.032522249995964,
+        25.04530816699844,
+        22.114035083010094,
+        22.123251792014344,
+        22.10904920901521,
+        22.59777670900803,
+        23.18286425000406,
+        22.806593958026497
+      ],
+      "peak_process_rss_bytes": 527220736,
+      "source_trajectories_by_block": [
+        1853,
+        1775,
+        1853
+      ],
+      "max_inputs_per_trajectory_by_block": [
+        6,
+        6,
+        6
+      ],
+      "slices": {
+        "validation": {
+          "positions_per_fit": 373,
+          "mean_agreement": 0.15609174858504618,
+          "mean_cross_entropy": 9.625934461301462,
+          "correct_per_fit": [
+            60,
+            52,
+            63,
+            53,
+            57,
+            69,
+            59,
+            54,
+            57
+          ]
+        },
+        "bucket:development-plausible-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.11284722222222222,
+          "mean_cross_entropy": 9.78726286011992,
+          "correct_per_fit": [
+            7,
+            7,
+            11,
+            7,
+            8,
+            6,
+            8,
+            5,
+            6
+          ]
+        },
+        "validation:phase:middlegame": {
+          "positions_per_fit": 192,
+          "mean_agreement": 0.1388888888888889,
+          "mean_cross_entropy": 11.642807495746359,
+          "correct_per_fit": [
+            27,
+            26,
+            31,
+            24,
+            26,
+            28,
+            27,
+            24,
+            27
+          ]
+        },
+        "validation:tag:teacher-capture": {
+          "positions_per_fit": 102,
+          "mean_agreement": 0.08169934640522876,
+          "mean_cross_entropy": 13.359446982942131,
+          "correct_per_fit": [
+            10,
+            12,
+            10,
+            7,
+            7,
+            9,
+            6,
+            6,
+            8
+          ]
+        },
+        "validation:tag:in-check": {
+          "positions_per_fit": 35,
+          "mean_agreement": 0.7523809523809524,
+          "mean_cross_entropy": 1.2531862006111327,
+          "correct_per_fit": [
+            26,
+            26,
+            27,
+            23,
+            27,
+            27,
+            28,
+            26,
+            27
+          ]
+        },
+        "validation:tag:teacher-gives-check": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.16493055555555555,
+          "mean_cross_entropy": 9.03286416460121,
+          "correct_per_fit": [
+            14,
+            9,
+            11,
+            11,
+            9,
+            13,
+            8,
+            11,
+            9
+          ]
+        },
+        "bucket:development-plausible-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.1892361111111111,
+          "mean_cross_entropy": 6.999835817367644,
+          "correct_per_fit": [
+            12,
+            9,
+            13,
+            9,
+            13,
+            19,
+            13,
+            9,
+            12
+          ]
+        },
+        "validation:phase:endgame": {
+          "positions_per_fit": 181,
+          "mean_agreement": 0.17434008594229589,
+          "mean_cross_entropy": 7.486489032498036,
+          "correct_per_fit": [
+            33,
+            26,
+            32,
+            29,
+            31,
+            41,
+            32,
+            30,
+            30
+          ]
+        },
+        "bucket:development-intervention-endgame": {
+          "positions_per_fit": 53,
+          "mean_agreement": 0.2159329140461216,
+          "mean_cross_entropy": 7.170591515407542,
+          "correct_per_fit": [
+            11,
+            9,
+            10,
+            13,
+            11,
+            14,
+            13,
+            12,
+            10
+          ]
+        },
+        "bucket:development-intervention-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.2586805555555556,
+          "mean_cross_entropy": 8.502015650011883,
+          "correct_per_fit": [
+            18,
+            18,
+            17,
+            14,
+            15,
+            19,
+            17,
+            15,
+            16
+          ]
+        },
+        "bucket:development-random-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.125,
+          "mean_cross_entropy": 8.234744878968993,
+          "correct_per_fit": [
+            10,
+            8,
+            9,
+            7,
+            7,
+            8,
+            6,
+            9,
+            8
+          ]
+        },
+        "bucket:development-random-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.04513888888888889,
+          "mean_cross_entropy": 16.639143977107274,
+          "correct_per_fit": [
+            2,
+            1,
+            3,
+            3,
+            3,
+            3,
+            2,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    "random": {
+      "mean": 0.1417824074074074,
+      "block_means": [
+        0.14255765199161424,
+        0.14399895178197064,
+        0.13879061844863733
+      ],
+      "block_deltas": [
+        -0.00936844863731659,
+        -0.00868055555555558,
+        -0.006551362683438144
+      ],
+      "all_blocks_positive": false,
+      "fits": 9,
+      "train_mean_agreement": 1.0,
+      "train_mean_cross_entropy": 0.0011482530642636165,
+      "fit_seconds": [
+        25.46507754101185,
+        25.778967332997127,
+        24.357423500012374,
+        23.34262829198269,
+        23.18732216701028,
+        22.92405608302215,
+        22.902029042015783,
+        25.457314999977825,
+        68.18320900000981
+      ],
+      "peak_process_rss_bytes": 541949952,
+      "source_trajectories_by_block": [
+        1908,
+        1845,
+        1898
+      ],
+      "max_inputs_per_trajectory_by_block": [
+        5,
+        5,
+        5
+      ],
+      "slices": {
+        "validation": {
+          "positions_per_fit": 373,
+          "mean_agreement": 0.13941018766756033,
+          "mean_cross_entropy": 9.524899060270988,
+          "correct_per_fit": [
+            49,
+            54,
+            55,
+            54,
+            50,
+            54,
+            52,
+            53,
+            47
+          ]
+        },
+        "bucket:development-plausible-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.1076388888888889,
+          "mean_cross_entropy": 9.821158483856873,
+          "correct_per_fit": [
+            6,
+            9,
+            6,
+            9,
+            7,
+            5,
+            8,
+            5,
+            7
+          ]
+        },
+        "validation:phase:middlegame": {
+          "positions_per_fit": 192,
+          "mean_agreement": 0.11631944444444445,
+          "mean_cross_entropy": 11.513553553920325,
+          "correct_per_fit": [
+            23,
+            27,
+            25,
+            25,
+            20,
+            20,
+            21,
+            21,
+            19
+          ]
+        },
+        "validation:tag:teacher-capture": {
+          "positions_per_fit": 102,
+          "mean_agreement": 0.06535947712418301,
+          "mean_cross_entropy": 12.954468902240407,
+          "correct_per_fit": [
+            5,
+            9,
+            8,
+            10,
+            5,
+            8,
+            3,
+            10,
+            2
+          ]
+        },
+        "validation:tag:in-check": {
+          "positions_per_fit": 35,
+          "mean_agreement": 0.7238095238095238,
+          "mean_cross_entropy": 1.3341984423533528,
+          "correct_per_fit": [
+            24,
+            26,
+            28,
+            23,
+            26,
+            27,
+            23,
+            25,
+            26
+          ]
+        },
+        "validation:tag:teacher-gives-check": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.10416666666666667,
+          "mean_cross_entropy": 9.705466951288152,
+          "correct_per_fit": [
+            4,
+            7,
+            6,
+            8,
+            5,
+            5,
+            7,
+            11,
+            7
+          ]
+        },
+        "bucket:development-plausible-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.1579861111111111,
+          "mean_cross_entropy": 7.000439169779055,
+          "correct_per_fit": [
+            10,
+            9,
+            12,
+            7,
+            9,
+            14,
+            9,
+            10,
+            11
+          ]
+        },
+        "validation:phase:endgame": {
+          "positions_per_fit": 181,
+          "mean_agreement": 0.16390423572744015,
+          "mean_cross_entropy": 7.415387111206496,
+          "correct_per_fit": [
+            26,
+            27,
+            30,
+            29,
+            30,
+            34,
+            31,
+            32,
+            28
+          ]
+        },
+        "bucket:development-intervention-endgame": {
+          "positions_per_fit": 53,
+          "mean_agreement": 0.22222222222222224,
+          "mean_cross_entropy": 7.241185085875185,
+          "correct_per_fit": [
+            10,
+            9,
+            11,
+            12,
+            14,
+            12,
+            14,
+            14,
+            10
+          ]
+        },
+        "bucket:development-intervention-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.2048611111111111,
+          "mean_cross_entropy": 9.424471054610718,
+          "correct_per_fit": [
+            15,
+            16,
+            15,
+            10,
+            11,
+            13,
+            12,
+            15,
+            11
+          ]
+        },
+        "bucket:development-random-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.12152777777777778,
+          "mean_cross_entropy": 7.9745961048614316,
+          "correct_per_fit": [
+            6,
+            9,
+            7,
+            10,
+            7,
+            8,
+            8,
+            8,
+            7
+          ]
+        },
+        "bucket:development-random-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.036458333333333336,
+          "mean_cross_entropy": 15.295031123293382,
+          "correct_per_fit": [
+            2,
+            2,
+            4,
+            6,
+            2,
+            2,
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    "both": {
+      "mean": 0.16020265548567436,
+      "block_means": [
+        0.16357114779874216,
+        0.16468487945492663,
+        0.1523519392033543
+      ],
+      "block_deltas": [
+        0.011645047169811323,
+        0.012005372117400409,
+        0.007009958071278827
+      ],
+      "all_blocks_positive": true,
+      "fits": 9,
+      "train_mean_agreement": 1.0,
+      "train_mean_cross_entropy": 0.0011370767484627346,
+      "fit_seconds": [
+        23.37429879201227,
+        23.02355087499018,
+        22.717537624994293,
+        22.945178209018195,
+        22.791023541998584,
+        23.33599108402268,
+        46.16154562498559,
+        24.478712833020836,
+        27.18589179200353
+      ],
+      "peak_process_rss_bytes": 558514176,
+      "source_trajectories_by_block": [
+        2052,
+        1986,
+        2040
+      ],
+      "max_inputs_per_trajectory_by_block": [
+        6,
+        6,
+        6
+      ],
+      "slices": {
+        "validation": {
+          "positions_per_fit": 373,
+          "mean_agreement": 0.15787905868334823,
+          "mean_cross_entropy": 9.14711547217289,
+          "correct_per_fit": [
+            56,
+            59,
+            67,
+            57,
+            53,
+            71,
+            58,
+            51,
+            58
+          ]
+        },
+        "bucket:development-plausible-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.1111111111111111,
+          "mean_cross_entropy": 9.806780430809955,
+          "correct_per_fit": [
+            7,
+            10,
+            13,
+            7,
+            4,
+            6,
+            7,
+            4,
+            6
+          ]
+        },
+        "validation:phase:middlegame": {
+          "positions_per_fit": 192,
+          "mean_agreement": 0.1371527777777778,
+          "mean_cross_entropy": 11.101849536464593,
+          "correct_per_fit": [
+            29,
+            30,
+            35,
+            27,
+            20,
+            28,
+            24,
+            21,
+            23
+          ]
+        },
+        "validation:tag:teacher-capture": {
+          "positions_per_fit": 102,
+          "mean_agreement": 0.0925925925925926,
+          "mean_cross_entropy": 12.681369668383493,
+          "correct_per_fit": [
+            11,
+            14,
+            11,
+            8,
+            6,
+            10,
+            10,
+            6,
+            9
+          ]
+        },
+        "validation:tag:in-check": {
+          "positions_per_fit": 35,
+          "mean_agreement": 0.7428571428571429,
+          "mean_cross_entropy": 1.2211332285754202,
+          "correct_per_fit": [
+            25,
+            26,
+            27,
+            22,
+            25,
+            28,
+            28,
+            24,
+            29
+          ]
+        },
+        "validation:tag:teacher-gives-check": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.15625,
+          "mean_cross_entropy": 8.39598703756849,
+          "correct_per_fit": [
+            10,
+            11,
+            13,
+            9,
+            9,
+            12,
+            6,
+            11,
+            9
+          ]
+        },
+        "bucket:development-plausible-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.1840277777777778,
+          "mean_cross_entropy": 6.692942402022709,
+          "correct_per_fit": [
+            11,
+            9,
+            13,
+            8,
+            15,
+            19,
+            12,
+            8,
+            11
+          ]
+        },
+        "validation:phase:endgame": {
+          "positions_per_fit": 181,
+          "mean_agreement": 0.17986494782074894,
+          "mean_cross_entropy": 7.0735854150236825,
+          "correct_per_fit": [
+            27,
+            29,
+            32,
+            30,
+            33,
+            43,
+            34,
+            30,
+            35
+          ]
+        },
+        "bucket:development-intervention-endgame": {
+          "positions_per_fit": 53,
+          "mean_agreement": 0.2389937106918239,
+          "mean_cross_entropy": 6.660385752679549,
+          "correct_per_fit": [
+            10,
+            10,
+            11,
+            16,
+            11,
+            15,
+            14,
+            14,
+            13
+          ]
+        },
+        "bucket:development-intervention-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.2552083333333333,
+          "mean_cross_entropy": 8.46214280243971,
+          "correct_per_fit": [
+            20,
+            17,
+            19,
+            14,
+            13,
+            18,
+            15,
+            16,
+            15
+          ]
+        },
+        "bucket:development-random-endgame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.1267361111111111,
+          "mean_cross_entropy": 7.796409398403392,
+          "correct_per_fit": [
+            6,
+            10,
+            8,
+            6,
+            7,
+            9,
+            8,
+            8,
+            11
+          ]
+        },
+        "bucket:development-random-middlegame": {
+          "positions_per_fit": 64,
+          "mean_agreement": 0.04513888888888889,
+          "mean_cross_entropy": 15.036625376144116,
+          "correct_per_fit": [
+            2,
+            3,
+            3,
+            6,
+            3,
+            4,
+            2,
+            1,
+            2
+          ]
+        }
+      }
+    }
+  },
+  "post_screen_development_action_diagnostics": {
+    "all": {
+      "positions": 373,
+      "mean_legal_moves": 26.289544235924932,
+      "single_legal_move_positions": 14,
+      "uniform_legal_expected_agreement": 0.10736561292654372
+    },
+    "development-plausible-middlegame": {
+      "positions": 64,
+      "mean_legal_moves": 32.984375,
+      "single_legal_move_positions": 2,
+      "uniform_legal_expected_agreement": 0.07696507319953427
+    },
+    "teacher-capture": {
+      "positions": 102,
+      "mean_legal_moves": 30.92156862745098,
+      "single_legal_move_positions": 1,
+      "uniform_legal_expected_agreement": 0.06631348894675962
+    },
+    "in-check": {
+      "positions": 35,
+      "mean_legal_moves": 1.9142857142857144,
+      "single_legal_move_positions": 13,
+      "uniform_legal_expected_agreement": 0.6476190476190476
+    },
+    "teacher-gives-check": {
+      "positions": 64,
+      "mean_legal_moves": 30.515625,
+      "single_legal_move_positions": 0,
+      "uniform_legal_expected_agreement": 0.038594145086860224
+    },
+    "development-plausible-endgame": {
+      "positions": 64,
+      "mean_legal_moves": 18.9375,
+      "single_legal_move_positions": 1,
+      "uniform_legal_expected_agreement": 0.1144434775715238
+    },
+    "development-intervention-endgame": {
+      "positions": 53,
+      "mean_legal_moves": 19.150943396226417,
+      "single_legal_move_positions": 5,
+      "uniform_legal_expected_agreement": 0.17557210042572408
+    },
+    "development-intervention-middlegame": {
+      "positions": 64,
+      "mean_legal_moves": 28.78125,
+      "single_legal_move_positions": 6,
+      "uniform_legal_expected_agreement": 0.18378429039132874
+    },
+    "development-random-endgame": {
+      "positions": 64,
+      "mean_legal_moves": 19.546875,
+      "single_legal_move_positions": 0,
+      "uniform_legal_expected_agreement": 0.07525789214530934
+    },
+    "development-random-middlegame": {
+      "positions": 64,
+      "mean_legal_moves": 37.109375,
+      "single_legal_move_positions": 0,
+      "uniform_legal_expected_agreement": 0.029893833864763734
+    }
+  },
+  "matrix_elapsed_seconds": 928.7840905410121,
+  "calibrated_fit_seconds": 75.21810787502909,
+  "source": {
+    "source_sha256": "afa7cf75929b49c511df15a308114d8329847cf47ec2f8b5d4c30dc154d3037e",
+    "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
+    "git_revision": "bad81d97e34c77233ca8d146a23e9ff8d6cda14d",
+    "git_dirty": false
+  },
+  "resource_pilot": {
+    "status": "complete",
+    "completed_updates": 200,
+    "elapsed_seconds": 25.072702625009697,
+    "optimization_seconds": 24.312617832998512,
+    "process_peak_rss_bytes": 429457408
+  },
+  "raw_evidence": "/Users/zhangqy/pkgs/qi/artifacts/learning/generated-source-mixing-v1-run3",
+  "receipts": {
+    "config.json": "7eb9d52ad6a383d572158eb7a82dd8eabb2857c0d33feeebba8b6b55e39b78e6",
+    "verification.json": "af59ebb7821652275674579480c46789d8e80883d50be7694fbdc8a03473c7d5",
+    "receipts.json": "17af633e92dc6d51a86b11be4c3bc6528def1cadc6dd6717029b459b01951567",
+    "plan/manifest.json": "4dcb05654f6c17b7265eeee5a6af690b8776fd55051cb33a715bcdbbce446951",
+    "study/summary.json": "b7033671e992dee21975a59f8ef56321c7d3d973de12c1890caa51dcc761f300",
+    "study/source-files.json": "e9b312c08bcdf0d888cbe264cae398514bbb6043ee01dc65737de8db5474883b"
+  },
+  "summarizer_sha256": "5db4cd53d6c6132e58c650fc7df08de804f03ca165bd2ab2c41563dd18e1669e",
+  "limits": [
+    "Exploratory teacher imitation, not playing strength or a correctness label.",
+    "Three training blocks share one generation seed and the same development benchmark.",
+    "Initialization seeds do not create independent datasets; all-block positivity is a decision rule, not a significance test.",
+    "Trajectory cap is fixed, but mixtures change total source coverage.",
+    "In-check development slice has only 35 positions; semantic slices are descriptive.",
+    "Process RSS is a lifetime high-water mark including earlier fits and imports.",
+    "Fixed 4000-input screen does not measure data scaling."
+  ]
+}

@@ -23,6 +23,12 @@ Outcome is **inconclusive for training benefit**. Review after a frozen selectio
 passes the remaining eligibility checks and the proposed paired training study
 produces complete results.
 
+Subsequent execution: [AB-LEARN-012](../work-items/items/AB-LEARN-012-generated-source-mixing.md)
+owns the accepted protocol, implemented tag/exclusion selection, retained data-only
+amendment and completed 36-fit screen. It advances 80/10/10 for the balanced
+development objective. This audit's original descriptive findings and proposal
+remain historical; the follow-up record owns training conclusions.
+
 ## Evidence and prior contribution
 
 Source: the completed collection owned by

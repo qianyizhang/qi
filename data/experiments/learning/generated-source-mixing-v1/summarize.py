@@ -3,10 +3,40 @@
 import argparse
 import json
 import statistics
+from collections import defaultdict
 from pathlib import Path
+
+import numpy as np
 
 from qi.artifacts import write_json
 from qi.teacher import digest
+
+
+def action_diagnostics(root):
+    """Post-screen description of legal-choice constraints; not a selection metric."""
+    path = root / "tensors/block-0-plausible"
+    manifest = json.loads((path / "manifest.json").read_text())
+    for name in ("mask.npy", "rows.jsonl"):
+        if digest(path / name) != manifest["files"][name]:
+            raise ValueError("Frozen development evidence changed.")
+    mask = np.load(path / "mask.npy", mmap_mode="r", allow_pickle=False)
+    groups = defaultdict(list)
+    for line in (path / "rows.jsonl").read_text().splitlines():
+        row = json.loads(line)
+        if row["split"] == "validation":
+            count = int(mask[row["ordinal"]].sum())
+            for key in ["all", row["bucket"]] + row["semantic_tags"]:
+                groups[key].append(count)
+    result = {
+        key: {
+            "positions": len(values),
+            "mean_legal_moves": statistics.mean(values),
+            "single_legal_move_positions": values.count(1),
+            "uniform_legal_expected_agreement": statistics.mean(1 / n for n in values),
+        }
+        for key, values in groups.items()
+    }
+    return result
 
 
 def summarize(root):
@@ -62,6 +92,7 @@ def summarize(root):
         "primary": "equal-weight mean of six development policy/phase agreements",
         "advance": verification["advance"],
         "cases": cases,
+        "post_screen_development_action_diagnostics": action_diagnostics(root),
         "matrix_elapsed_seconds": summary["elapsed_seconds"],
         "calibrated_fit_seconds": summary["fit_seconds"],
         "source": summary["source"],
