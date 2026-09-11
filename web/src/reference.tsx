@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import * as Dialog from "@radix-ui/react-dialog";
 import { glossaryQuery } from "./queries";
@@ -143,6 +144,11 @@ export function ReferencePage() {
     <section>
       <p className="eyebrow">SHARED LANGUAGE</p>
       <h1>Reference</h1>
+      <p>
+        <Link to="/learn/generation">
+          Learn how games become training examples →
+        </Link>
+      </p>
       <p>
         Players choose moves; the referee owns rules and outcomes. “Engine” is
         conventional for software that searches and evaluates positions. In Qi,

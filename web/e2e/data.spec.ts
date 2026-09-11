@@ -37,15 +37,23 @@ test("quality audit, scoped counts, replay, review persistence and export", asyn
     .nth(2)
     .getAttribute("value");
   await inspector.getByLabel("Move overlay").selectOption(teacherSpec!);
+  const nextPly = inspector.getByRole("button", {
+    name: "Next ply",
+    exact: true,
+  });
+  // selectOption can act outside the viewport. Measure after bringing the
+  // actual click target into view, so Playwright's scrolling is not a failure.
+  await nextPly.scrollIntoViewIfNeeded();
   const inspectorScroll = await page.evaluate(() => window.scrollY);
-  await inspector
-    .getByRole("button", { name: "Next ply", exact: true })
-    .click();
+  await nextPly.click();
   await expect(inspector.getByText("Ply 1 / 2", { exact: true })).toBeVisible();
   await expect(
     inspector.getByText("No analysis retained at ply 1.", { exact: false }),
   ).toBeVisible();
   await expect(inspector.getByLabel("Move overlay")).toHaveValue(teacherSpec!);
+  await expect(
+    inspector.getByRole("group", { name: "Chinese chess board" }),
+  ).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => window.scrollY))
     .toBe(inspectorScroll);

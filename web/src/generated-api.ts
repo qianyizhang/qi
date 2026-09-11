@@ -345,6 +345,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/learn/generation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lesson */
+    get: operations["lesson_api_learn_generation_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/learn/generation/sampling": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Sampling */
+    get: operations["sampling_api_learn_generation_sampling_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/players": {
     parameters: {
       query?: never;
@@ -485,6 +519,41 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** ActorPolicy */
+    ActorPolicy: {
+      /**
+       * Mode
+       * @default plausible
+       * @enum {string}
+       */
+      mode: "random" | "plausible" | "intervention";
+      /**
+       * Candidate Count
+       * @default 3
+       */
+      candidate_count: number;
+      /**
+       * Max Cp Gap
+       * @default 50
+       */
+      max_cp_gap: number;
+      /**
+       * Intervention Min Ply
+       * @default 8
+       */
+      intervention_min_ply: number;
+      /**
+       * Intervention Max Ply
+       * @default 80
+       */
+      intervention_max_ply: number;
+      /**
+       * Probability Rule
+       * @default uniform-eligible-v1
+       * @constant
+       */
+      probability_rule: "uniform-eligible-v1";
+    };
     /** AnalysisPayload */
     AnalysisPayload: {
       /**
@@ -1049,6 +1118,14 @@ export interface components {
       /** Created */
       created: number;
     };
+    /** GenerationLesson */
+    GenerationLesson: {
+      example: components["schemas"]["LessonExample"];
+      /** Phase Policy */
+      phase_policy: string;
+      /** Frames */
+      frames: components["schemas"]["LessonFrame"][];
+    };
     /** Glossary */
     Glossary: {
       /** Source */
@@ -1081,6 +1158,72 @@ export interface components {
     /** InspectRequest */
     InspectRequest: {
       snapshot: components["schemas"]["Snapshot"];
+    };
+    /** LessonAnalysis */
+    LessonAnalysis: {
+      /** Ply */
+      ply: number;
+      /** Analysis Id */
+      analysis_id: number;
+      /** Nodes */
+      nodes: number;
+      /** Move */
+      move: string;
+      score: components["schemas"]["TeacherScore"];
+      /** Spec Id */
+      spec_id: string;
+    };
+    /** LessonBatch */
+    LessonBatch: {
+      /** Attempts */
+      attempts: number;
+      /** Accepted */
+      accepted: number;
+      /** Rejected */
+      rejected: number;
+      /** Endgame Shortfall Games */
+      endgame_shortfall_games: number;
+      /** Shared Inputs */
+      shared_inputs: number;
+      /** Observed At */
+      observed_at: number;
+    };
+    /** LessonExample */
+    LessonExample: {
+      /** Collection */
+      collection: string;
+      /** Captured */
+      captured: string;
+      /** Game Id */
+      game_id: number;
+      /** Attempt */
+      attempt: string;
+      /** Trajectory */
+      trajectory: string;
+      snapshot: components["schemas"]["Snapshot"];
+      actor: components["schemas"]["ActorPolicy"];
+      /** Intervention Ply */
+      intervention_ply: number;
+      sampling_policy: components["schemas"]["SamplingPolicy"];
+      sampling: components["schemas"]["SamplingResult"];
+      /** Analyses */
+      analyses: components["schemas"]["LessonAnalysis"][];
+      /** Duplicate Games */
+      duplicate_games: number[];
+      batch: components["schemas"]["LessonBatch"];
+    };
+    /** LessonFrame */
+    LessonFrame: {
+      position: components["schemas"]["Position"];
+      /**
+       * Phase
+       * @enum {string}
+       */
+      phase: "opening" | "middlegame" | "endgame" | "unknown";
+      /** Mobile */
+      mobile: number;
+      /** Developed */
+      developed: number;
     };
     /** MatchSummary */
     MatchSummary: {
@@ -1516,6 +1659,65 @@ export interface components {
       status: string;
       /** Error */
       error?: string | null;
+    };
+    /** SamplingPolicy */
+    SamplingPolicy: {
+      /** Phase Counts */
+      phase_counts?: {
+        [key: string]: number;
+      };
+      /**
+       * Min Spacing
+       * @default 4
+       */
+      min_spacing: number;
+      /**
+       * Min Ply
+       * @default 1
+       */
+      min_ply: number;
+      /**
+       * Max Ply
+       * @default 299
+       */
+      max_ply: number;
+      /**
+       * Algorithm
+       * @default seeded-greedy-phase-v1
+       * @constant
+       */
+      algorithm: "seeded-greedy-phase-v1";
+    };
+    /** SamplingResult */
+    SamplingResult: {
+      /** Selected */
+      selected: number[];
+      /** Requested */
+      requested: {
+        [key: string]: number;
+      };
+      /** Actual */
+      actual: {
+        [key: string]: number;
+      };
+      /** Available */
+      available: {
+        [key: string]: number;
+      };
+      /** Shortfall */
+      shortfall: {
+        [key: string]: number;
+      };
+      /**
+       * Excluded
+       * @default 0
+       */
+      excluded: number;
+      /**
+       * Duplicates
+       * @default 0
+       */
+      duplicates: number;
     };
     /** SearchStats */
     SearchStats: {
@@ -2571,6 +2773,58 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["AnalysisPayload"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  lesson_api_learn_generation_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GenerationLesson"];
+        };
+      };
+    };
+  };
+  sampling_api_learn_generation_sampling_get: {
+    parameters: {
+      query?: {
+        spacing?: number;
+        seed?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SamplingResult"];
         };
       };
       /** @description Validation Error */

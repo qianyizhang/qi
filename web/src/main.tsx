@@ -22,6 +22,7 @@ import {
   BookOpen,
   Swords,
   Database,
+  GraduationCap,
 } from "lucide-react";
 import {
   read,
@@ -37,6 +38,7 @@ import { ExperimentCatalogView } from "./experiment-catalog";
 import { DataPage } from "./data";
 import { parseDataFilters } from "./data-review";
 import { ReferencePage } from "./reference";
+import { GenerationLessonPage, parseLessonSearch } from "./generation-lesson";
 import type { Filters, ReportSource } from "./report";
 import { Button } from "./components/ui/button";
 import "./style.css";
@@ -47,6 +49,7 @@ const navigation = [
   { to: "/", label: "Home", icon: HomeIcon },
   { to: "/play", label: "Play", icon: Swords },
   { to: "/data", label: "Data", icon: Database },
+  { to: "/learn/generation", label: "Learn", icon: GraduationCap },
   { to: "/experiments", label: "Experiments", icon: FlaskConical },
   { to: "/reference", label: "Reference", icon: BookOpen },
 ] as const;
@@ -211,6 +214,11 @@ function Home() {
           decisions, and curate a review shortlist.
         </p>
         <Link to="/data">Open the data workspace →</Link>
+        <p>
+          <Link to="/learn/generation">
+            Learn the generation process, step by step →
+          </Link>
+        </p>
       </article>
       <article className="card">
         <h2>Trace activity</h2>
@@ -312,6 +320,22 @@ const referenceRoute = createRoute({
   path: "/reference",
   component: ReferencePage,
 });
+const lessonRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/learn/generation",
+  validateSearch: parseLessonSearch,
+  component: LessonWorkspace,
+});
+function LessonWorkspace() {
+  const { step } = lessonRoute.useSearch(),
+    navigate = lessonRoute.useNavigate();
+  return (
+    <GenerationLessonPage
+      step={step ?? 1}
+      onStep={(step) => void navigate({ search: { step }, resetScroll: false })}
+    />
+  );
+}
 const reportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/experiments/$runId",
@@ -415,6 +439,7 @@ const router = createRouter({
     experimentsRoute,
     reportRoute,
     referenceRoute,
+    lessonRoute,
   ]),
   defaultPreload: "intent",
 });

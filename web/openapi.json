@@ -1042,6 +1042,78 @@
         }
       }
     },
+    "/api/learn/generation": {
+      "get": {
+        "summary": "Lesson",
+        "operationId": "lesson_api_learn_generation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerationLesson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/learn/generation/sampling": {
+      "get": {
+        "summary": "Sampling",
+        "operationId": "sampling_api_learn_generation_sampling_get",
+        "parameters": [
+          {
+            "name": "spacing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 8,
+              "minimum": 1,
+              "default": 4,
+              "title": "Spacing"
+            }
+          },
+          {
+            "name": "seed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 31,
+              "minimum": 0,
+              "default": 7,
+              "title": "Seed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplingResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/players": {
       "get": {
         "summary": "Players",
@@ -1313,6 +1385,57 @@
   },
   "components": {
     "schemas": {
+      "ActorPolicy": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "random",
+              "plausible",
+              "intervention"
+            ],
+            "title": "Mode",
+            "default": "plausible"
+          },
+          "candidate_count": {
+            "type": "integer",
+            "maximum": 256.0,
+            "minimum": 1.0,
+            "title": "Candidate Count",
+            "default": 3
+          },
+          "max_cp_gap": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Max Cp Gap",
+            "default": 50
+          },
+          "intervention_min_ply": {
+            "type": "integer",
+            "maximum": 299.0,
+            "minimum": 0.0,
+            "title": "Intervention Min Ply",
+            "default": 8
+          },
+          "intervention_max_ply": {
+            "type": "integer",
+            "maximum": 299.0,
+            "minimum": 0.0,
+            "title": "Intervention Max Ply",
+            "default": 80
+          },
+          "probability_rule": {
+            "type": "string",
+            "const": "uniform-eligible-v1",
+            "title": "Probability Rule",
+            "default": "uniform-eligible-v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ActorPolicy"
+      },
       "AnalysisPayload": {
         "properties": {
           "version": {
@@ -2754,6 +2877,31 @@
         ],
         "title": "GeneratedRun"
       },
+      "GenerationLesson": {
+        "properties": {
+          "example": {
+            "$ref": "#/components/schemas/LessonExample"
+          },
+          "phase_policy": {
+            "type": "string",
+            "title": "Phase Policy"
+          },
+          "frames": {
+            "items": {
+              "$ref": "#/components/schemas/LessonFrame"
+            },
+            "type": "array",
+            "title": "Frames"
+          }
+        },
+        "type": "object",
+        "required": [
+          "example",
+          "phase_policy",
+          "frames"
+        ],
+        "title": "GenerationLesson"
+      },
       "Glossary": {
         "properties": {
           "source": {
@@ -2846,6 +2994,188 @@
           "snapshot"
         ],
         "title": "InspectRequest"
+      },
+      "LessonAnalysis": {
+        "properties": {
+          "ply": {
+            "type": "integer",
+            "title": "Ply"
+          },
+          "analysis_id": {
+            "type": "integer",
+            "title": "Analysis Id"
+          },
+          "nodes": {
+            "type": "integer",
+            "title": "Nodes"
+          },
+          "move": {
+            "type": "string",
+            "title": "Move"
+          },
+          "score": {
+            "$ref": "#/components/schemas/TeacherScore"
+          },
+          "spec_id": {
+            "type": "string",
+            "title": "Spec Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ply",
+          "analysis_id",
+          "nodes",
+          "move",
+          "score",
+          "spec_id"
+        ],
+        "title": "LessonAnalysis"
+      },
+      "LessonBatch": {
+        "properties": {
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "endgame_shortfall_games": {
+            "type": "integer",
+            "title": "Endgame Shortfall Games"
+          },
+          "shared_inputs": {
+            "type": "integer",
+            "title": "Shared Inputs"
+          },
+          "observed_at": {
+            "type": "number",
+            "title": "Observed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attempts",
+          "accepted",
+          "rejected",
+          "endgame_shortfall_games",
+          "shared_inputs",
+          "observed_at"
+        ],
+        "title": "LessonBatch"
+      },
+      "LessonExample": {
+        "properties": {
+          "collection": {
+            "type": "string",
+            "title": "Collection"
+          },
+          "captured": {
+            "type": "string",
+            "title": "Captured"
+          },
+          "game_id": {
+            "type": "integer",
+            "title": "Game Id"
+          },
+          "attempt": {
+            "type": "string",
+            "title": "Attempt"
+          },
+          "trajectory": {
+            "type": "string",
+            "title": "Trajectory"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/ActorPolicy"
+          },
+          "intervention_ply": {
+            "type": "integer",
+            "title": "Intervention Ply"
+          },
+          "sampling_policy": {
+            "$ref": "#/components/schemas/SamplingPolicy"
+          },
+          "sampling": {
+            "$ref": "#/components/schemas/SamplingResult"
+          },
+          "analyses": {
+            "items": {
+              "$ref": "#/components/schemas/LessonAnalysis"
+            },
+            "type": "array",
+            "title": "Analyses"
+          },
+          "duplicate_games": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Duplicate Games"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/LessonBatch"
+          }
+        },
+        "type": "object",
+        "required": [
+          "collection",
+          "captured",
+          "game_id",
+          "attempt",
+          "trajectory",
+          "snapshot",
+          "actor",
+          "intervention_ply",
+          "sampling_policy",
+          "sampling",
+          "analyses",
+          "duplicate_games",
+          "batch"
+        ],
+        "title": "LessonExample"
+      },
+      "LessonFrame": {
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/Position"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "opening",
+              "middlegame",
+              "endgame",
+              "unknown"
+            ],
+            "title": "Phase"
+          },
+          "mobile": {
+            "type": "integer",
+            "title": "Mobile"
+          },
+          "developed": {
+            "type": "integer",
+            "title": "Developed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "phase",
+          "mobile",
+          "developed"
+        ],
+        "title": "LessonFrame"
       },
       "MatchSummary": {
         "properties": {
@@ -3933,6 +4263,148 @@
           "status"
         ],
         "title": "RunEntry"
+      },
+      "SamplingPolicy": {
+        "properties": {
+          "phase_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "opening",
+                "middlegame",
+                "endgame",
+                "unknown"
+              ]
+            },
+            "type": "object",
+            "title": "Phase Counts"
+          },
+          "min_spacing": {
+            "type": "integer",
+            "maximum": 300.0,
+            "minimum": 1.0,
+            "title": "Min Spacing",
+            "default": 4
+          },
+          "min_ply": {
+            "type": "integer",
+            "maximum": 299.0,
+            "minimum": 0.0,
+            "title": "Min Ply",
+            "default": 1
+          },
+          "max_ply": {
+            "type": "integer",
+            "maximum": 299.0,
+            "minimum": 0.0,
+            "title": "Max Ply",
+            "default": 299
+          },
+          "algorithm": {
+            "type": "string",
+            "const": "seeded-greedy-phase-v1",
+            "title": "Algorithm",
+            "default": "seeded-greedy-phase-v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SamplingPolicy"
+      },
+      "SamplingResult": {
+        "properties": {
+          "selected": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Selected"
+          },
+          "requested": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "opening",
+                "middlegame",
+                "endgame",
+                "unknown"
+              ]
+            },
+            "type": "object",
+            "title": "Requested"
+          },
+          "actual": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "opening",
+                "middlegame",
+                "endgame",
+                "unknown"
+              ]
+            },
+            "type": "object",
+            "title": "Actual"
+          },
+          "available": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "opening",
+                "middlegame",
+                "endgame",
+                "unknown"
+              ]
+            },
+            "type": "object",
+            "title": "Available"
+          },
+          "shortfall": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "opening",
+                "middlegame",
+                "endgame",
+                "unknown"
+              ]
+            },
+            "type": "object",
+            "title": "Shortfall"
+          },
+          "excluded": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Excluded",
+            "default": 0
+          },
+          "duplicates": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Duplicates",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "selected",
+          "requested",
+          "actual",
+          "available",
+          "shortfall"
+        ],
+        "title": "SamplingResult"
       },
       "SearchStats": {
         "properties": {

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ArrowDownToLine, RefreshCw, Search } from "lucide-react";
 import { read, download, type Schema } from "./api";
 import { Button } from "./components/ui/button";
@@ -86,6 +87,11 @@ export function DataPage({
         <div>
           <p className="eyebrow">GENERATED GAME COLLECTIONS</p>
           <h1>From games to understanding.</h1>
+          <p>
+            <Link to="/learn/generation">
+              New to these terms? Follow one game through generation →
+            </Link>
+          </p>
           <p className="muted">
             Explore the batch, inspect the evidence, and save the examples worth
             a closer look.

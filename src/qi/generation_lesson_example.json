@@ -1,0 +1,296 @@
+{
+  "collection": "overnight-batches-20260911",
+  "captured": "2026-09-11",
+  "game_id": 6286,
+  "attempt": "0f8d2a79abd140d3b533b15d522641c9",
+  "trajectory": "f6e534bbd9aeb8d03373a306ea23287d9a0211985d7c8079dd2ca430c365e468",
+  "snapshot": {
+    "schema_version": 1,
+    "ruleset": "xiangqi-training-v1",
+    "initial_fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w",
+    "moves": [
+      "c3c4",
+      "b7c7",
+      "b2e2",
+      "h7e7",
+      "b0c2",
+      "h9g7",
+      "h0g2",
+      "i9h9",
+      "a0b0",
+      "b9a7",
+      "i0h0",
+      "h9h4",
+      "b0b8",
+      "a9b9",
+      "b8d8",
+      "c6c5",
+      "g3g4",
+      "h4g4",
+      "h2h9",
+      "g4g2",
+      "d8g8",
+      "e7d7",
+      "h9i9",
+      "c9e7",
+      "h0h9",
+      "g2f2",
+      "c2d4",
+      "c5c4",
+      "d4e6",
+      "c7c0",
+      "e0e1",
+      "b9b1"
+    ]
+  },
+  "actor": {
+    "mode": "intervention",
+    "candidate_count": 3,
+    "max_cp_gap": 50,
+    "intervention_min_ply": 12,
+    "intervention_max_ply": 48,
+    "probability_rule": "uniform-eligible-v1"
+  },
+  "intervention_ply": 30,
+  "sampling_policy": {
+    "phase_counts": {
+      "opening": 1,
+      "middlegame": 8,
+      "endgame": 8
+    },
+    "min_spacing": 4,
+    "min_ply": 1,
+    "max_ply": 299
+  },
+  "sampling": {
+    "selected": [
+      3,
+      10,
+      17,
+      22,
+      26,
+      31
+    ],
+    "requested": {
+      "endgame": 8,
+      "middlegame": 8,
+      "opening": 1
+    },
+    "actual": {
+      "endgame": 0,
+      "middlegame": 5,
+      "opening": 1
+    },
+    "available": {
+      "endgame": 0,
+      "middlegame": 28,
+      "opening": 3
+    },
+    "shortfall": {
+      "endgame": 8,
+      "middlegame": 3,
+      "opening": 0
+    },
+    "excluded": 0,
+    "duplicates": 0
+  },
+  "analyses": [
+    {
+      "ply": 3,
+      "analysis_id": 289555,
+      "nodes": 10000,
+      "move": "h7e7",
+      "score": {
+        "kind": "cp",
+        "value": -15,
+        "bound": "lowerbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50"
+    },
+    {
+      "ply": 3,
+      "analysis_id": 289556,
+      "nodes": 100000,
+      "move": "h7e7",
+      "score": {
+        "kind": "cp",
+        "value": -8,
+        "bound": "upperbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7"
+    },
+    {
+      "ply": 10,
+      "analysis_id": 289557,
+      "nodes": 10000,
+      "move": "i0h0",
+      "score": {
+        "kind": "cp",
+        "value": -5,
+        "bound": "upperbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50"
+    },
+    {
+      "ply": 10,
+      "analysis_id": 289558,
+      "nodes": 100000,
+      "move": "c2d4",
+      "score": {
+        "kind": "cp",
+        "value": -21,
+        "bound": "exact",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7"
+    },
+    {
+      "ply": 17,
+      "analysis_id": 289559,
+      "nodes": 10000,
+      "move": "h4g4",
+      "score": {
+        "kind": "cp",
+        "value": 51,
+        "bound": "exact",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50"
+    },
+    {
+      "ply": 17,
+      "analysis_id": 289560,
+      "nodes": 100000,
+      "move": "h4g4",
+      "score": {
+        "kind": "cp",
+        "value": 68,
+        "bound": "upperbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7"
+    },
+    {
+      "ply": 22,
+      "analysis_id": 289561,
+      "nodes": 10000,
+      "move": "h9i9",
+      "score": {
+        "kind": "cp",
+        "value": 92,
+        "bound": "upperbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50"
+    },
+    {
+      "ply": 22,
+      "analysis_id": 289562,
+      "nodes": 100000,
+      "move": "g8d8",
+      "score": {
+        "kind": "cp",
+        "value": 92,
+        "bound": "lowerbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7"
+    },
+    {
+      "ply": 26,
+      "analysis_id": 289563,
+      "nodes": 10000,
+      "move": "c2d4",
+      "score": {
+        "kind": "cp",
+        "value": 63,
+        "bound": "upperbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50"
+    },
+    {
+      "ply": 26,
+      "analysis_id": 289564,
+      "nodes": 100000,
+      "move": "c2d4",
+      "score": {
+        "kind": "cp",
+        "value": 46,
+        "bound": "upperbound",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7"
+    },
+    {
+      "ply": 31,
+      "analysis_id": 289565,
+      "nodes": 10000,
+      "move": "b9b1",
+      "score": {
+        "kind": "mate",
+        "value": 1,
+        "bound": "exact",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "3e69fbee0b81ac8b19c845e6411beba2278297307b701ea7ddb804ef8e1fdc50"
+    },
+    {
+      "ply": 31,
+      "analysis_id": 289566,
+      "nodes": 100000,
+      "move": "b9b1",
+      "score": {
+        "kind": "mate",
+        "value": 1,
+        "bound": "exact",
+        "perspective": "side_to_move",
+        "semantics": "engine_native"
+      },
+      "spec_id": "942721450301e4969917ce4e2ece508a388f40d659e91b3e64d04e4f41e9b3a7"
+    }
+  ],
+  "duplicate_games": [
+    183,
+    287,
+    289,
+    384,
+    1185,
+    1689,
+    2286,
+    2386,
+    2682,
+    2987,
+    2990,
+    3381,
+    3789,
+    4385,
+    5384,
+    5588,
+    5686,
+    6184,
+    6185
+  ],
+  "batch": {
+    "attempts": 10000,
+    "accepted": 9963,
+    "rejected": 37,
+    "endgame_shortfall_games": 4398,
+    "observed_at": 1789115378.610749,
+    "shared_inputs": 949
+  }
+}

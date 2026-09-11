@@ -33,7 +33,7 @@ Replay navigation is read-only; return to the last move to continue playing.
 
 ## Unified local app
 
-Routes `/`, `/play`, `/data`, `/experiments`, `/experiments/:runId`, and `/reference`
+Routes `/`, `/play`, `/data`, `/learn/generation`, `/experiments`, `/experiments/:runId`, and `/reference`
 share a React/TypeScript/Vite frontend and FastAPI server. TanStack Router owns
 navigation and report URL filters; TanStack Query owns server reads. Source-owned
 shadcn/ui controls and Tailwind styles are shared with the offline report build.
@@ -182,3 +182,28 @@ and preserves the existing bytes. Review JSON and referee-snapshot exports are
 separate formats. Reviews are local to this browser/origin; retain exports for a
 portable copy. Filters, game and ply live in the URL. Refresh reads current evidence;
 no background generation, auto-resume or curation-to-training promotion is provided.
+
+## Generation learning walkthrough
+
+`/learn/generation` teaches the path from actor policies through replay, board-based
+phases, position sampling, teacher supervision, input-quality checks and frozen
+dataset selection. The Learn navigation entry and links from Home, Data and
+Reference make it discoverable. `?step=1` through `?step=7` supports direct links,
+refresh and browser history; contextual terms use the shared bilingual glossary.
+
+`src/qi/generation_lesson_example.json` retains a fixed teaching excerpt from
+`overnight-batches-20260911`, game #6286, captured on 2026-09-11. It includes replay,
+actor/sampling settings, selected single-PV score evidence, source identities and
+separately identified historical batch counts. It is a teaching projection, not a
+live collection, full raw-analysis archive or eligible training snapshot. Updating
+it requires re-deriving the retained facts from the source evidence.
+
+`GET /api/learn/generation` replays the excerpt through the referee and computes
+phases through the Training Data classifier. The board is read-only. The sampling
+exercise calls `GET /api/learn/generation/sampling` with bounded spacing and seed,
+using the production sampler on that same fixed game. Practice results are labelled
+separately from the recorded selection. Neither endpoint reads or writes a live
+collection, starts an engine, generates games, nor launches training. The walkthrough
+explains score bounds/mate omissions and distinguishes full-trajectory identity,
+occurrence provenance and learner-input overlap. The generation policies remain
+owned by the [generation guide](data-generation.md) and its Python implementation.

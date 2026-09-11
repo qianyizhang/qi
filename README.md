@@ -23,7 +23,7 @@ make check
 make play
 ```
 
-Open http://127.0.0.1:8000. Home connects **Play**, **Experiments**, and **Reference**.
+Open http://127.0.0.1:8000. Home connects **Play**, **Data**, **Learn**, **Experiments**, and **Reference**.
 In Play, select Red and Black independently: Human, a search player, a trained
 checkpoint, or configured Pikafish. Set each player's applicable limits, then
 use Resume for automatic turns or Step for one computer move. Pause to change
