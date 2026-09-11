@@ -1,0 +1,73 @@
+{
+  "version": "generated-followups-v1",
+  "parent": "artifacts/learning/generated-source-mixing-v1-run3",
+  "collection": "artifacts/learning/overnight-batches-20260911/collection.sqlite",
+  "collection_sha256": "5ff947c479a9a5de22446bead1d37e2bc0e71015308211a1aac77c46742a07ad",
+  "chunk_size": 256,
+  "seeds": [
+    7,
+    17,
+    27
+  ],
+  "semantic": {
+    "percentage_point_increase": 10,
+    "updates": 200,
+    "decision": "Advance enrichment only if every training-block seed-mean delta is positive; otherwise retain natural tags."
+  },
+  "scaling": {
+    "sizes": [
+      1000,
+      4000,
+      16000
+    ],
+    "passes": 200,
+    "presentations": 800000,
+    "decision": "Assess each case and regime separately: increasing mean at both size transitions and positive 16k-minus-1k delta in every initialization seed. These are not independent data repetitions."
+  },
+  "execution": {
+    "fit_seconds": 600,
+    "total_seconds": 7200,
+    "max_rss_bytes": 1500000000
+  },
+  "frozen_files": {
+    "artifacts/learning/generated-source-mixing-v1-run3/config.json": "7eb9d52ad6a383d572158eb7a82dd8eabb2857c0d33feeebba8b6b55e39b78e6",
+    "artifacts/learning/generated-source-mixing-v1-run3/plan/manifest.json": "4dcb05654f6c17b7265eeee5a6af690b8776fd55051cb33a715bcdbbce446951",
+    "artifacts/learning/generated-source-mixing-v1-run3/plan/eligibility.json": "a9929396534d3b833cc729d0249221cbbbb6f09dcb199ab1fe43e5c95de596e5",
+    "artifacts/learning/generated-source-mixing-v1-run3/plan/sealed-test-inputs.json": "bd5c0bdb7966b4519dc6fa0415138c549ed6fdb64e4367b878fa17f7f6bacf0b",
+    "artifacts/learning/generated-source-mixing-v1-run3/verification.json": "af59ebb7821652275674579480c46789d8e80883d50be7694fbdc8a03473c7d5",
+    "artifacts/learning/generated-source-mixing-v1-run3/receipts.json": "17af633e92dc6d51a86b11be4c3bc6528def1cadc6dd6717029b459b01951567",
+    "artifacts/learning/generated-followups-v1/pool/manifest.json": "f79e9abf0ab8d4c54038ba7d8f3f944140d23c51ce407cd4816a9e1cb2e8d7c9",
+    "artifacts/learning/generated-followups-v1/semantic/plan/block-2-enriched.json": "1e4466c3ac2df33d3d31436aef0ecab9b56b2a2c3addcd6a8b3ba0f0d396bbc9",
+    "artifacts/learning/generated-followups-v1/semantic/plan/block-2-natural.json": "529fc860a6fd9eb33ba2bb29ebb53dd753231b09413cd7f55f9ca42997ae9be7",
+    "artifacts/learning/generated-followups-v1/semantic/plan/block-1-enriched.json": "463c738c2069376d0bf37c8eb2d7eeac6d4d7174b91c23c3e9ad7beb79f63c63",
+    "artifacts/learning/generated-followups-v1/semantic/plan/manifest.json": "b65857bdc5c2e469884fd144a3bef4a401f1edaa48ad7ca7211cb29673890ab7",
+    "artifacts/learning/generated-followups-v1/semantic/plan/block-1-natural.json": "9c1ba71f78794dbe700347f39f5f48702d146d294fa95a5b4721670d9989b1f2",
+    "artifacts/learning/generated-followups-v1/semantic/plan/block-0-enriched.json": "63dbe030982e662bedb57f147a083922f3044bbd26c792bc9d02ab9d10b4d2ca",
+    "artifacts/learning/generated-followups-v1/semantic/plan/block-0-natural.json": "635630acf2b923e7050f064479cd8b5d308f14a1dc4fd2576a9241131e4b6201",
+    "artifacts/learning/generated-followups-v1/scaling/plan/mixed-1000.json": "9afb156394a60a9506688fe4bfca9191c5f071a6dbc5c7cea3c48956873e353a",
+    "artifacts/learning/generated-followups-v1/scaling/plan/plausible-4000.json": "a35e33d33f04d5f05c24fca0d86c5c10f62a1f049fc65691aa02f156f0fa576d",
+    "artifacts/learning/generated-followups-v1/scaling/plan/plausible-1000.json": "c2daec4890ca08e2a29fc7a5ffe42132545c8d17279ed56b904d55f754eb0315",
+    "artifacts/learning/generated-followups-v1/scaling/plan/manifest.json": "ec230844d9e8c45c251e35e71e6d335c45eae5743558c62cb57a0c3eea216c03",
+    "artifacts/learning/generated-followups-v1/scaling/plan/plausible-16000.json": "b45c3034bd8fc92e40d19342f5ed90fc4550d5cb1924c2627b3a94d4bf101b42",
+    "artifacts/learning/generated-followups-v1/scaling/plan/mixed-4000.json": "546da08c626b207439cff48d35daf0af26076202211b0274b7ffdce521c2207e",
+    "artifacts/learning/generated-followups-v1/scaling/plan/mixed-16000.json": "758b1ace4bf559e8b7b17658d39bb9f9c3b5e73c71a87c2715bc6e99230b1354",
+    "artifacts/learning/generated-source-mixing-v1-run3/plan/block-0-both.json": "635630acf2b923e7050f064479cd8b5d308f14a1dc4fd2576a9241131e4b6201",
+    "artifacts/learning/generated-source-mixing-v1-run3/snapshots/block-0-both/manifest.json": "69b622eabf9b9793635abdffb7d6217d5db2e2f47fc02d4f90d1fd07b1688f5e",
+    "artifacts/learning/generated-source-mixing-v1-run3/tensors/block-0-both/manifest.json": "f489cfecbb02fbaede0bdcacf82575955f600770d48ae82acebcd44204a73d68",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-0-both-seed-7/predictions.jsonl": "ebb5cfccd64c4fdad9f1373c04b4e28440ea404f32d8238303419f671d702b7a",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-0-both-seed-17/predictions.jsonl": "b465171333e471c5e46d7ba9cb3590fa79807622dfff5f6ba54d1c434dd1562c",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-0-both-seed-27/predictions.jsonl": "f9223ef212fa5104ea359420a3c7a5a488c5dd16dc4e2c68c8e65e14c69f8d0d",
+    "artifacts/learning/generated-source-mixing-v1-run3/plan/block-1-both.json": "9c1ba71f78794dbe700347f39f5f48702d146d294fa95a5b4721670d9989b1f2",
+    "artifacts/learning/generated-source-mixing-v1-run3/snapshots/block-1-both/manifest.json": "43445785de09b8370670704b080dcb553df426f9764176eca724d7399be03f41",
+    "artifacts/learning/generated-source-mixing-v1-run3/tensors/block-1-both/manifest.json": "e16726a7d7d6fae29f83f366e821267e345e19f25b4e07e9a7308df68c6378bc",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-1-both-seed-7/predictions.jsonl": "ef602bfd15aa2a3af0fc2e736f478a11353e58e7eb4550295372fb663c35b75d",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-1-both-seed-17/predictions.jsonl": "2330dbf46029923ba27c9b4e60256274d66de2b3cc97c3857d433393bbc8df8c",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-1-both-seed-27/predictions.jsonl": "f0710fbfd9c78c095862574809da93e52d2ed1ee8514a5e13bd8c51f34520973",
+    "artifacts/learning/generated-source-mixing-v1-run3/plan/block-2-both.json": "529fc860a6fd9eb33ba2bb29ebb53dd753231b09413cd7f55f9ca42997ae9be7",
+    "artifacts/learning/generated-source-mixing-v1-run3/snapshots/block-2-both/manifest.json": "a39a1513cc23a8ac1c089bfb63235f3e733d1d0118ca0bf677748f3b5c968e92",
+    "artifacts/learning/generated-source-mixing-v1-run3/tensors/block-2-both/manifest.json": "4227060e17520221642cd52aeab368d819b6148feb9e262a4d15593dd74169b5",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-2-both-seed-7/predictions.jsonl": "9a77f8eda43ca972e4ffada700bc8a4fc25e06f4409e806f1076a3e3b6677f1a",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-2-both-seed-17/predictions.jsonl": "95f04d25fc2a6e7cc50807648e20b29a98f7df4f24948b8977e4bb1777a8bf00",
+    "artifacts/learning/generated-source-mixing-v1-run3/study/block-2-both-seed-27/predictions.jsonl": "8c49d26863cc7607b11813993e95e9bbd8e646667cddaa084b0d2cf74a084801"
+  }
+}

@@ -454,3 +454,18 @@ retains build evidence, and [AB-LEARN-012](../../../records/work-items/items/AB-
 owns the source comparison. Its bounded runner is `scripts/run_generated_mixing.py`:
 pass `--config data/experiments/learning/generated-source-mixing-v1-amended.json`,
 a fresh `--output`, and `--stage prepare`, `run`, or `verify` in sequence.
+
+The subsequent frozen semantic and scaling protocols use
+`scripts/run_generated_followups.py --config data/experiments/learning/generated-followups-v1.json
+--output artifacts/learning/generated-followups-v1 --study semantic|scaling
+--stage prepare|run|verify`. Replace each choice with one value. The config pins
+the existing candidate pool and plans at that output root; use its exact paths.
+Reconstruction starts with `prepare_pool`, `semantic_plans` and `scaling_plans`
+in `qi.training_data.followups`, followed by a new explicitly frozen config.
+
+Both natural and enriched semantic cases are freshly fitted. Verification reloads
+every checkpoint and checks historical natural-control prediction equality.
+Scaling runs 30 unique fits: its six 4k/200-update fits are shared by the fixed-pass
+and fixed-presentation views. Its plan uses natural tag frequencies independently
+of the semantic result. The two owning work items fix the decision rules and
+shared budget; these study scripts do not change general trainer defaults.

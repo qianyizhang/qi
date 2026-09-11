@@ -392,3 +392,19 @@ Generation teacher `threads` is frozen in each recipe and persisted in actor and
 supervision identities. Changing it requires a fresh run; multithreaded engine
 search can change trajectories and labels even at the same seed and node budget.
 Measure throughput before increasing it; small node budgets may not benefit.
+
+## Generated-data follow-up selections
+
+`followups.py` builds the training-only candidate pool for the locked
+[semantic enrichment](../../../records/work-items/items/AB-LEARN-013-semantic-enrichment.md)
+and [scaling](../../../records/work-items/items/AB-LEARN-014-generated-data-scaling.md)
+studies. It reuses the completed screen's exclusions and chosen analysis
+specification, verifies the raw collection identity and reproduces its training
+census. It does not inspect development predictions or query teachers.
+
+Enrichment replaces untagged inputs with tagged inputs having the same complete
+trajectory-lineage signature, policy and phase. Exact per-trajectory contributions
+remain fixed. Scaling freezes 16k selections, then takes per-cell prefixes for
+4k and 1k, retaining policy/phase quotas and the eight-input trajectory cap.
+Explicit `SelectionRecipe` input lists remain the snapshot authority; the study
+plans separately retain matched pairs, nesting and source-concentration evidence.
