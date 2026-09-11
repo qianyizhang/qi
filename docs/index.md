@@ -2,7 +2,7 @@
 description: Compact navigator over authority areas, rules, glossary, and agent flows in qi.
 scope: documentation navigator index
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -29,8 +29,10 @@ Experiment method and campaigns: [Method](experiments.md), [policy generalizatio
 [experiment efficiency](../records/campaigns/experiment-efficiency.md).
 Local external analysis: [Teacher](teacher.md).
 Local supervised policy training: [Trainer](../src/qi/learning/README.md).
-Coordinates and replay operations: [Interface](interface.md).
-Accepted frontend design and delivery: [Consolidated lab specification](../records/work-items/items/AB-UI-002-consolidated-lab.md).
+Coordinates, replay and implemented frontend behavior: [Interface](interface.md).
+Frontend rationale: [shared app ADR](adr/0005-shared-local-frontend.md),
+[independent bindings ADR](adr/0006-independent-player-bindings.md); delivery evidence:
+[consolidated lab work item](../records/work-items/items/AB-UI-002-consolidated-lab.md).
 Training adjudication: [xiangqi-training-v1](xiangqi-training-v1.md).
 
 ## Authority by concern

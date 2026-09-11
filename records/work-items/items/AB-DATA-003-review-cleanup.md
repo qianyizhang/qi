@@ -2,7 +2,7 @@
 description: Review Training Data invariants independently of the original happy-path pilot and remove redundant shims.
 scope: backlog item
 status: stable
-last_update: 2026-09-09
+last_update: 2026-09-11
 document_class: work_record
 work_id: AB-DATA-003
 work_status: done
@@ -78,12 +78,10 @@ partial reports, and refusal to overwrite existing report artifacts.
 
 ## Validation
 
-- `make check` passed on the shared checkout: 366 Python tests, one opt-in GPU
-  test skipped, three web tests, lint/docs/type checks and production browser build.
-  Used the existing virtualenv with `UV_NO_SYNC=1 UV_CACHE_DIR=/tmp/qi-uv-cache`.
-- An isolated export of HEAD plus only this staged patch passed all 74 Markdown
-  checks, Ruff, and 359 Python tests (one opt-in GPU test skipped). This proves the
-  commit does not depend on the concurrent source-coverage additions.
+- `make check` passed on the full checkout, covering Python, browser, lint,
+  documentation, type, and production-build checks. A separate isolated export
+  passed the Markdown, Ruff, and Python checks, confirming that this change did
+  not depend on concurrent source-coverage work.
 - Both saved real-engine pilot datasets loaded successfully with their unchanged
   manifest fingerprints, including phase-filtered pilot
   `91c16401c83bff4fd9ea323fc23f91a8ee55e700fb5f377da33268f1ab43ab31`.
@@ -93,6 +91,3 @@ partial reports, and refusal to overwrite existing report artifacts.
   no new strength or acceleration claims are made.
 - Two existing FastAPI/Starlette deprecation warnings remain; fixing dependency
   APIs is outside this data-boundary review.
-- Concurrent source-coverage selection code, experiment script, tests, documentation
-  additions and results are excluded from this commit. Shared imports were
-  coordinated with that task. Weekly account usage was 11%, below the 25% soft stop.

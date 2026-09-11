@@ -2,7 +2,7 @@
 description: Local UCI teacher contract, pinned Pikafish setup, and validation limits.
 scope: external teacher interface
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -10,8 +10,10 @@ document_class: coordination
 
 `src/qi/teacher.py` owns read-only local teacher analysis. `qi teach` accepts a
 replay snapshot and explicit engine/network paths. The external process proposes
-a move; qi verifies legality. The teacher never replaces referee outcomes or
-becomes accessible to baseline evaluation players.
+a move; qi verifies legality. This training-teacher role never replaces referee
+outcomes or grants implicit engine access to other players. A separately selected
+named [Pikafish player](../src/qi/players/pikafish/README.md) reuses the bounded
+UCI transport through the shared player boundary.
 [Training Data](../src/qi/training_data/README.md) owns its use for dataset preparation.
 
 ## Pinned local setup
@@ -54,7 +56,8 @@ uses these options for a shared reference and separate all-legal candidate score
 Following the [upstream UCI contract](https://github.com/official-pikafish/Pikafish/wiki/UCI-%26-Commands),
 fresh analysis launches a process, waits for `uciok`, requires a named engine
 and Threads/Hash/MultiPV/Ponder/EvalFile options, sets one thread, 16 MiB hash,
-MultiPV 1, no pondering, and an explicit network path. It sends `ucinewgame`, waits
+the configured MultiPV value (default 1), no pondering, and an explicit network
+path. It sends `ucinewgame`, waits
 for `readyok`, then sends `position startpos moves ...` with the entire history.
 Terminal or unreconstructible qi states are rejected before launch.
 
@@ -136,10 +139,13 @@ first move. This is an engine-calibrated outcome distribution, not a probability
 of selecting that move or a validated win rate for qi's student/ruleset.
 WDL distributions across different moves do not sum to one.
 
-The current adapter fixes MultiPV=1 and does not parse WDL. Multi-candidate
-analysis exists only in local experiment scripts. Those comparisons use complete,
-unique candidate sets with exact scores at a common reported depth; an incomplete
-final update must not silently mix estimates from different depths.
+The adapter accepts explicit MultiPV and `UCI_ShowWDL` settings and retains their
+raw `info` lines in version-2 analysis records. Generation consumers interpret
+candidate ranks and scores; controlled-study consumers also interpret WDL values.
+The top-level analysis does not present them as a normalized move distribution.
+Those comparisons require complete, unique candidate sets with exact scores at a
+common reported depth; an incomplete final update must not silently mix estimates
+from different depths. The `qi teach` CLI remains a capped single-PV query.
 
 A normal MultiPV=1 search can establish only bounds for many alternatives and
 can discard their scores. The local instrumented prototype captures completed

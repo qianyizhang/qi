@@ -2,7 +2,7 @@
 description: Run a bounded local teacher-imitation experiment and interpret its evidence.
 scope: supervised policy learning
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -312,19 +312,17 @@ inferring completion. This is separate from the search-only experiment module.
 
 ## Recorded results
 
-[AB-LEARN-002](../../../records/work-items/items/AB-LEARN-002-policy-generalization.md)
-records the completed data-size experiment: more examples improved held-out
-imitation within its fixed split, with substantial overfitting remaining.
-[AB-LEARN-003](../../../records/work-items/items/AB-LEARN-003-local-policy-tuning.md)
-records learning-rate, duration, regularization, width and orientation experiments.
-Their selected alternatives did not improve fresh-test move agreement, so the
-production model and training defaults remain unchanged. That final test has
-been inspected and should not be reused for adaptive configuration selection.
-[AB-LEARN-004](../../../records/work-items/items/AB-LEARN-004-dataset-scaling.md)
-records the larger fixed-policy curve: 768 / 3072 / 12288 training positions
-achieved 16.74% / 21.27% / 25.70% teacher agreement on one fresh 4219-position
-holdout, averaged over three seeds. Data scaling helped while substantial
-overfitting remained; these results do not establish playing strength.
+Durable conditions, measurements, limits and decisions remain in the owning
+[initial generalization](../../../records/work-items/items/AB-LEARN-002-policy-generalization.md),
+[tuning](../../../records/work-items/items/AB-LEARN-003-local-policy-tuning.md) and
+[data-scaling](../../../records/work-items/items/AB-LEARN-004-dataset-scaling.md)
+records; the [experiment index](../../../data/experiments/learning/README.md)
+routes their recipes and retained evidence. The two data-size records support
+scaling within their separate measured teacher-imitation setups; the tested tuning
+alternatives did not improve the already inspected fresh test. These results do
+not establish playing strength or authorize adaptive reuse of that test. The
+[policy-generalization campaign](../../../records/campaigns/policy-generalization.md)
+owns the current cross-study synthesis and revisit triggers.
 
 ## Scale the dataset with the model fixed
 

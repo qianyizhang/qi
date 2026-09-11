@@ -196,7 +196,7 @@ records this slice's verification.
 Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` records
 its full-kit baseline. The retention rules (`doc`, `governance`, `python`) and
 `doc-hygiene-audit`, `handoff`, and `governance-sync` skill cores were selectively
-synced from repo-kit `f038b48`; the backlog lifecycle was reconciled locally.
+synced from repo-kit `0a51b52`; the backlog lifecycle was reconciled locally.
 Shared rules and skills remain kit-managed. Use `governance-sync` when updating;
 project bindings and application code belong to qi.
 

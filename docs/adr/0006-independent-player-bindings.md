@@ -2,14 +2,14 @@
 description: Resolve named player configurations and external-engine participation independently per participant.
 scope: architecture decision
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
 # ADR-0006: Independent player bindings and explicit engine participation
 
 - **Status**: accepted
-- **Last Update**: 2026-09-10
+- **Last Update**: 2026-09-11
 - **Serves**: [Core model: player configuration and identity](../models.md#player-configuration-and-identity).
 
 Resolve a named local player binding independently for each participant. A
@@ -83,7 +83,7 @@ interchange contract and identify how old valid artifacts remain readable.
 [AB-ENGINE-005](../../records/work-items/items/AB-ENGINE-005-independent-checkpoints.md)
 owns shared independent checkpoint binding and paired-evaluation proof.
 [AB-UI-002](../../records/work-items/items/AB-UI-002-consolidated-lab.md) owns the
-frontend integration and explicit Pikafish player adapter stages. These owners
+frontend integration acceptance and verification. These owners
 coordinate through the same binding contract rather than implementing separate
 checkpoint selectors. Acceptance records architecture; the linked work items
 record implementation and verification.

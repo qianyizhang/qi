@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -96,8 +96,9 @@ README and tests. Register implementations once in its catalog; adapters discove
 metadata and dispatch through the shared `choose` boundary.
 Implemented architecture: [shared frontend](docs/adr/0005-shared-local-frontend.md)
 and [independent player bindings](docs/adr/0006-independent-player-bindings.md).
-The [frontend work item](records/work-items/items/AB-UI-002-consolidated-lab.md)
-owns implementation stages and verification evidence.
+The [interface guide](docs/interface.md) owns implemented app behavior; the
+[frontend work item](records/work-items/items/AB-UI-002-consolidated-lab.md)
+retains delivery acceptance and verification evidence.
 Training data generation and frozen mixtures live in `src/qi/training_data/`; its
 README owns formats, phase policies, quotas and compatibility. The optional
 trainer lives in `src/qi/learning/`; checkpoint-backed inference

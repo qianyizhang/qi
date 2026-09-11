@@ -2,7 +2,7 @@
 description: Local app, player selection, replay, saved sessions and experiment interfaces.
 scope: local lab interfaces
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-11
 document_class: coordination
 ---
 
@@ -111,6 +111,7 @@ a native reader; other formats are visibly unsupported. Invalid entries remain
 isolated. Discovery skips source/dependency folders and symlinked directories.
 Selected evidence is validated before derived data is returned. IDs resolve only
 inside configured roots; referenced artifacts must stay inside their run.
+Artifact folders supply data only; readers do not load executable plugins.
 
 Report overview responses omit large unit histories and trace events. Separate
 unit and paginated trace endpoints load those on demand. Native and standalone
@@ -126,11 +127,13 @@ before launch and in the worker. `GET /api/trace-jobs` reports status; the cance
 endpoint terminates the owned worker. Browser navigation/closure does not cancel
 an explicit trace job. Server shutdown terminates it; restart marks unfinished
 metadata interrupted without resuming work.
+An incompatible request never checks out historical code or reruns its benchmark.
 
 `QI_TRACE_SECONDS` sets the finite server deadline (default 120, maximum 3600).
 Recording defaults to 100000 events and accepts at most 1000000. Successful
 parity-validated traces publish atomically under the run's traces directory.
 Capacity-limited recordings retain their incomplete flag; killed or failed
-computations publish nothing. Job metadata is bounded to 32 recent entries in
+computations publish nothing. Cancellation and success races resolve to one
+terminal job state. Job metadata is bounded to 32 recent entries in
 `QI_LAB_STATE` (default `artifacts/lab`) and kept separate from evidence. No queue,
 experiment launcher, training launcher or background game execution is included.
