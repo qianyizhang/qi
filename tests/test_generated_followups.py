@@ -89,3 +89,27 @@ def test_trial_reuse_and_decision_rules():
             t["primary"] = 0.09
     result = assess(trials, "scaling")
     assert not result["curves"]["passes"]["mixed"]["supported"]
+
+
+def test_trial_dataset_locations_and_prior_attempt_charges(tmp_path):
+    pytest.importorskip("torch")
+    from scripts.run_generated_followups import locations, prior_attempts
+
+    cfg = {"parent": "artifacts/parent"}
+    trial = {"case": "enriched", "name": "block-0-enriched-updates-200-seed-7", "dataset": "block-0-enriched"}
+    snapshot, cache = locations(cfg, tmp_path, "semantic", trial)
+    assert snapshot == tmp_path / "semantic/snapshots/block-0-enriched"
+    assert cache == tmp_path / "semantic/tensors/block-0-enriched"
+    trial.update(case="mixed", name="mixed-16000-updates-50-seed-7", dataset="mixed-16000")
+    assert locations(cfg, tmp_path, "scaling", trial)[0] == tmp_path / "scaling/snapshots/mixed-16000"
+    for name, elapsed in (("study", 100), ("study-retry-1", 50)):
+        path = tmp_path / "semantic" / name
+        path.mkdir(parents=True)
+        (path / "summary.json").write_text(
+            json.dumps({"status": "failed", "elapsed_seconds": elapsed, "prior_attempt_seconds": 900, "trials": []})
+        )
+    assert sum(a["elapsed_seconds"] for a in prior_attempts(tmp_path, "semantic")) == 150
+    path = tmp_path / "semantic/study-retry-1/summary.json"
+    path.write_text(json.dumps({"status": "running", "elapsed_seconds": 50, "trials": []}))
+    with pytest.raises(ValueError, match="not terminal"):
+        prior_attempts(tmp_path, "semantic")

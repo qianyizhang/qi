@@ -469,3 +469,7 @@ Scaling runs 30 unique fits: its six 4k/200-update fits are shared by the fixed-
 and fixed-presentation views. Its plan uses natural tag frequencies independently
 of the semantic result. The two owning work items fix the decision rules and
 shared budget; these study scripts do not change general trainer defaults.
+For a repaired failed execution, `--attempt study-retry-1` selects a fresh
+operational output directory. It does not resume weights or replace the earlier
+attempt. Earlier terminal-attempt durations are charged to the original shared
+allowance; a nonterminal attempt prevents another writer from starting.

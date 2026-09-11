@@ -66,6 +66,9 @@ def summarize(root, study):
         "groups": groups,
         "elapsed_seconds": result["elapsed_seconds"],
         "prior_stage_seconds": result["prior_stage_seconds"],
+        "prior_attempt_seconds": result["prior_attempt_seconds"],
+        "prior_attempts": result["prior_attempts"],
+        "execution_dir": result["execution_dir"],
         "source": result["source"],
         "raw_evidence": str(stage.resolve()),
         "receipts": {

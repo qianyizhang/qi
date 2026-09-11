@@ -107,6 +107,21 @@ union enrichment, not the causal contribution of each tag.
   scaling resource pilot or scientific scaling fits.
 - Review: not-required; authorized execution of the frozen protocol.
 
+### 2026-09-11 — deviation: repair dataset lookup before the first enriched fit
+
+- Evidence: `artifacts/learning/generated-followups-v1/semantic/study/summary.json`
+  retains the failed first attempt, three complete block-0 natural controls and
+  100.062 seconds. Dataset lookup incorrectly included update/seed suffixes in
+  the snapshot directory. Failure occurred before an enriched fit was created.
+- Consequence: resolve datasets by their explicit dataset identity, add a
+  regression test for semantic and scaling trials, and retain the original
+  attempt in place. Restart all 18 fits under `study-retry-1`; source code,
+  checkpoints and the original traceback remain available. Scientific settings,
+  selection and decision rules are unchanged. Charge every earlier attempt's
+  elapsed time against the original shared 7200-second allowance.
+- Follow-up: rerun gates, then the full matrix and independent verification.
+- Review: not-required; routine authorized runner repair with evidence retention.
+
 
 ```experiment
 {

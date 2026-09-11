@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import shutil
 import statistics
 from collections import Counter
@@ -56,7 +57,8 @@ def locations(config, root, study, item):
         parent = ROOT / config["parent"]
         name = f"block-{item['block']}-both"
         return parent / "snapshots" / name, parent / "tensors" / name
-    return root / study / "snapshots" / item["name"], root / study / "tensors" / item["name"]
+    dataset = item.get("dataset", item["name"])
+    return root / study / "snapshots" / dataset, root / study / "tensors" / dataset
 
 
 def check_plan(config, root, study):
@@ -229,20 +231,42 @@ def primary(stats):
     return statistics.mean(values)
 
 
-def run(config, root, study):
+def prior_attempts(root, study):
+    attempts = []
+    for path in sorted((root / study).glob("study*/summary.json")):
+        previous = read(path)
+        if previous["status"] not in ("complete", "failed", "interrupted"):
+            raise ValueError("An earlier attempt is not terminal; reconcile its writer before starting another.")
+        attempts.append(
+            {
+                "path": str(path.relative_to(root)),
+                "sha256": digest(path),
+                "elapsed_seconds": previous["elapsed_seconds"],
+                "status": previous["status"],
+                "completed_fits": len(previous["trials"]),
+            }
+        )
+    return attempts
+
+
+def run(config, root, study, *, attempt="study"):
     check_frozen(config, root)
     plan = check_plan(config, root, study)
     if read(root / study / "preparation.json")["status"] != "complete":
         raise ValueError("Preparation incomplete.")
-    out = root / study / "study"
+    out = root / study / attempt
     if out.exists():
         raise ValueError("Retain existing scientific execution; do not overwrite or silently resume.")
+    if (root / study / "verification.json").exists():
+        raise ValueError("This study already has an assessed execution.")
+    earlier = prior_attempts(root, study)
+    earlier_seconds = sum(a["elapsed_seconds"] for a in earlier)
     previous_seconds = 0.0
     if study == "scaling":
         previous = read(root / "semantic/verification.json")
         if previous["status"] != "verified":
             raise ValueError("Complete and verify semantic screen before scaling fits.")
-        previous_seconds = read(root / "semantic/study/summary.json")["elapsed_seconds"]
+        previous_seconds = previous["elapsed_seconds"] + previous.get("prior_attempt_seconds", 0)
     out.mkdir()
     source = out / "source"
     shutil.copytree(ROOT / "src/qi", source / "src/qi", ignore=shutil.ignore_patterns("__pycache__"))
@@ -260,6 +284,9 @@ def run(config, root, study):
         "trials": [],
         "source": source_identity(),
         "prior_stage_seconds": previous_seconds,
+        "prior_attempt_seconds": earlier_seconds,
+        "prior_attempts": earlier,
+        "attempt": attempt,
     }
     started = perf_counter()
 
@@ -268,7 +295,9 @@ def run(config, root, study):
         write_json(out / "summary.json", status, indent=2)
 
     def fit(item, path):
-        remaining = config["execution"]["total_seconds"] - previous_seconds - (perf_counter() - started)
+        remaining = (
+            config["execution"]["total_seconds"] - previous_seconds - earlier_seconds - (perf_counter() - started)
+        )
         if remaining <= 0:
             raise ValueError("Combined study allowance exhausted.")
         snapshot, _, data = checked_data(config, root, study, item)
@@ -361,10 +390,10 @@ def assess(trials, study):
     }
 
 
-def verify(config, root, study):
+def verify(config, root, study, *, attempt="study"):
     check_frozen(config, root)
     plan = check_plan(config, root, study)
-    out = root / study / "study"
+    out = root / study / attempt
     summary = read(out / "summary.json")
     trials = trial_plan(config, plan, study)
     if (
@@ -376,6 +405,9 @@ def verify(config, root, study):
     for name, sha in read(out / "source-files.json").items():
         if digest(out / "source" / name) != sha:
             raise ValueError("Source archive changed.")
+    for earlier in summary["prior_attempts"]:
+        if digest(root / earlier["path"]) != earlier["sha256"]:
+            raise ValueError("A charged prior attempt changed after execution started.")
     torch.set_num_threads(1)
     common, results, receipts = None, [], {}
     verify_dir = out / "independent-verification"
@@ -471,6 +503,10 @@ def verify(config, root, study):
         for p in pilot.iterdir():
             if p.is_file():
                 receipts[str(p.relative_to(root))] = digest(p)
+    for earlier in summary["prior_attempts"]:
+        for p in (root / earlier["path"]).parent.rglob("*"):
+            if p.is_file():
+                receipts[str(p.relative_to(root))] = digest(p)
     result = {
         "status": "verified",
         "study": study,
@@ -482,6 +518,9 @@ def verify(config, root, study):
         "source": summary["source"],
         "elapsed_seconds": summary["elapsed_seconds"],
         "prior_stage_seconds": summary["prior_stage_seconds"],
+        "prior_attempt_seconds": summary["prior_attempt_seconds"],
+        "prior_attempts": summary["prior_attempts"],
+        "execution_dir": str(out.relative_to(root)),
     }
     write_json(root / study / "verification.json", result, indent=2)
     write_json(root / study / "receipts.json", receipts, indent=2)
@@ -494,9 +533,18 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--study", choices=("semantic", "scaling"), required=True)
     parser.add_argument("--stage", choices=("prepare", "run", "verify"), required=True)
+    parser.add_argument(
+        "--attempt", default="study", help="Fresh operational attempt name; earlier attempts stay in place."
+    )
     args = parser.parse_args()
+    if not re.fullmatch(r"study(?:-[a-z0-9]+)*", args.attempt):
+        parser.error("Attempt names must be study or study- followed by lowercase words/numbers.")
     config = read(args.config)
-    result = {"prepare": prepare, "run": run, "verify": verify}[args.stage](config, args.output.resolve(), args.study)
+    result = (
+        prepare(config, args.output.resolve(), args.study)
+        if args.stage == "prepare"
+        else {"run": run, "verify": verify}[args.stage](config, args.output.resolve(), args.study, attempt=args.attempt)
+    )
     print(json.dumps({k: v for k, v in result.items() if k not in ("datasets", "trials")}, indent=2), flush=True)
 
 
