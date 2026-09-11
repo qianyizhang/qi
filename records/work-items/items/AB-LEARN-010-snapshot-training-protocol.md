@@ -5,7 +5,7 @@ status: experimental
 last_update: 2026-09-11
 document_class: work_record
 work_id: AB-LEARN-010
-work_status: wip
+work_status: done
 work_kind: build
 added: 2026-09-10
 tags: domain
@@ -47,6 +47,7 @@ owns executable training semantics.
 | --- | --- | --- | --- | --- |
 | 2026-09-10 | Codex | — | deferred | User accepted separate production optimizer integration when locking AB-DATA-007 completion. |
 | 2026-09-11 | Codex | deferred | wip | User accepted bounded full-batch Adam and authorized implementation with the generated-source study. |
+| 2026-09-11 | Codex | wip | done | Objective/gradient/update parity, interruption, snapshot/cache and reload checks passed; representative 4000-input pilot completed all 200 updates. |
 
 ## Implementation Ledger
 
@@ -58,3 +59,25 @@ locks bounded gradient accumulation, fixed snapshot ordering, completed-pass
 accounting and checkpoint/report semantics. Implement under that decision and
 verify with objective/gradient/update parity and a representative resource pilot.
 Evidence: user decision and AB-LEARN-012; review not-required.
+
+### 2026-09-11 — verification: bounded training delivered
+
+- Evidence: implementation `b01a564`; `make check` passed 594 Python tests with
+  one MPS skip, five browser tests, lint/docs/catalog/type checks and production
+  build. The focused tests cover an uneven final chunk across three Adam updates,
+  losses/gradients/parameters within tolerance, no update from an incomplete
+  pass, cache corruption and exact checkpoint prediction reload.
+- Representative evidence:
+  [pilot report](../../../artifacts/learning/generated-source-mixing-v1-run3/pilot/report.json)
+  and [resolved config](../../../artifacts/learning/generated-source-mixing-v1-run3/pilot/config.json).
+  CPU one thread, 4000 training and 373 validation inputs, 256-row chunks:
+  200/200 updates in 25.073 seconds including measured setup/finalization;
+  optimization 24.313 seconds; process lifetime peak RSS 429457408 bytes.
+  Snapshot hash checking precedes this timer; preparation is separate.
+- Consequence: `qi learn snapshot` consumes verified, frozen Parquet evidence
+  through bounded disk-backed tensor batches and records the explicit protocol,
+  consumed data identity, teacher identity and terminal checkpoint. The matrix
+  under AB-LEARN-012 owns any scientific conclusion.
+- Follow-up: measure memory/compute again at larger sizes before scale claims;
+  optimizer-state resume remains outside the accepted terminal-checkpoint contract.
+- Review: not-required; accepted behavior and representative verification complete.
