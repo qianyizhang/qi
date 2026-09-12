@@ -1,13 +1,13 @@
 ---
 name: next-slice
-version: "1.4.0"
+version: "1.5.0"
 description: >-
   Verify live repository state, briefly rank backlog items, and recommend one
   independently testable next slice. Use when asked what to build next or to
   reassess planning readiness and priority.
 scope: repository next-slice recommendation
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: artifact
 ---
 
@@ -18,11 +18,12 @@ for explaining existing behavior.
 
 ## Ground and rank
 
-1. Read the repository SSOT and navigator; inspect git status, recent commits,
-   active work items, specs, and any relevant Campaign frontier.
-2. Verify candidates against implementation/tests and their full work-item
-   histories. Check completed, canceled, rejected, and blocked work before
-   proposing more. Mark unverified facts explicitly.
+1. Inspect current repository state and the authorities relevant to the requested
+   planning scope. Use the navigator to locate owners and any relevant Campaign.
+2. Verify serious candidates against implementation, tests, and acceptance evidence.
+   Search related completed, canceled, rejected, or blocked work; read deeper
+   histories when they explain a constraint or conflicting claim. Mark unverified
+   facts explicitly.
 3. Rank by current value, dependencies/readiness, and smallest independent
    proof within a clear authority boundary. Prefer the active Campaign frontier
    unless evidence favors another move; Campaigns do not override authority.

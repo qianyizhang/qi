@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -32,7 +32,9 @@ project direction and constraints.
 
 ## Authority map
 
-`docs/index.md` routes authority by concern and owns the human-facing flow map.
+Use `docs/index.md` to find the authorities relevant to the task; it owns the
+human-facing flow map. Read other areas when their contracts or evidence affect
+the work.
 Name repository-specific contracts, schemas, ADRs, and module authorities here
 or link them from that index. `README.md` owns human setup and usage.
 
@@ -48,8 +50,12 @@ or link them from that index. `README.md` owns human setup and usage.
   deliberate recall practice when requested. Ordinary work needs no quiz.
 - **Full means full.** When asked to complete, extend, or verify coverage, do the
   actual work — never relabel a partial run as "full".
-- **Before claiming done, verify.** Run the repository checks below and
-  re-derive numeric claims from current evidence.
+- Complete the requested deliverable, applicable verification, and necessary
+  documentation within the authorized scope. Reuse authorization already given;
+  ask again only for material unresolved choices or actions outside that scope.
+- Choose verification by changed surface under `docs/rules/testing.md` and the
+  commands below. Preserve required gates and re-derive numeric claims from
+  current evidence.
 - **Symlinks are load-bearing** (see below). Before `rm` or bulk file ops near
   symlinks, verify their targets.
 
@@ -62,15 +68,10 @@ created by `scripts/bootstrap_agents.py`. Edit skills only under
 
 ## Experiment recall
 
-Before recommending, grilling or executing an experiment, use the local
-[`experiment` skill](.codex/skills/experiment/SKILL.md). Search the shared catalog
-with `qi experiment search "<question/topics>"`, then read the matching owners and
-evidence. State what is already known, what overlaps, and the proposed contribution.
-An empty catalog search is not proof of novelty: check owner prose and the historical
-index. After authorized work, record findings, limits, evidence, decision and revisit
-trigger in the owning record and validate the catalog. The shared dashboard's
-Experiments page reads this same catalog. [ADR-0007](docs/adr/0007-experiment-recall-and-evidence.md)
-fixes ownership; [method](docs/experiments.md) owns the workflow.
+For experiment ideas, previous-result questions, and authorized trials, use the
+local [`experiment` skill](.codex/skills/experiment/SKILL.md) for catalog recall
+and evidence recording. [ADR-0007](docs/adr/0007-experiment-recall-and-evidence.md)
+fixes ownership; [the method](docs/experiments.md) owns the workflow.
 
 ## Commands
 
@@ -124,6 +125,18 @@ installation. Browser builds, type checks, and request-lifecycle unit tests run
 in `make check`. The optional `npm run test:e2e --prefix web` lane starts a local
 server and Chromium; see README for setup.
 
+For prose and skill guidance, run `.venv/bin/python scripts/check_docs.py`; check
+changed skill references and invocation metadata as applicable. For a standalone
+explainer, use its binding and validator plus visual inspection. For runnable
+Python behavior, run affected tests with `uv run pytest <paths>`; include shared
+consumers when contracts change. Use `make check` for cross-cutting application or
+build changes and required integration gates. Optional engine, learning, MPS, and
+browser E2E lanes apply when the requested scope needs them.
+
+Local tests use disposable fixtures and require no external service by default.
+Run the applicable checks, fix failures caused by this change, and rerun affected
+checks within the authorized task. Preserve failures outside that scope separately.
+
 ## Skills
 
 Portable doctrine: `docs/rules/skill.md`. `docs/index.md` §Main flows is the
@@ -136,10 +149,10 @@ Invocation policy:
   for Claude and Codex. An agent may suggest either, but does not invoke it.
 - **Shared grill loop:** model-invoked `grilling` (composed by
   `grill-with-docs`, `show-gap`, and any local planner that needs the loop).
-- **Bounded automatic audit:** `show-gap` may be selected for an ambiguous
-  readiness/fit question because its first phase is read-only repo grounding.
-  Extending it into a decision interview or writing a specification requires
-  clear user intent.
+- **Bounded automatic audit:** `show-gap` answers feature-fit questions or
+  grounds a larger authorized change. Use `next-slice` for readiness and priority.
+  Return to the parent task after a supporting audit; preserve explicit review-only
+  requests. Decision interviews and durable specifications need matching user intent.
 
 ## Housekeeping (after a task)
 

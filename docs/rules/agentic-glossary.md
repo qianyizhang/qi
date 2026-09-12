@@ -2,7 +2,7 @@
 description: Portable agent-collaboration vocabulary — the register for directing an agent through work (control loop, coordination, epistemic honesty, craft).
 scope: agent-collaboration glossary
 status: stable
-last_update: 2026-08-17
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -27,7 +27,7 @@ How a single task is driven from ask to committed change.
 
 | Term | Meaning (why it exists) | How to invoke | _Avoid_ |
 | --- | --- | --- | --- |
-| **Lock** / **numbered lock** | A decision the user has **frozen**, referenced by number so later work can cite it. Turns direction into commitment. | Restate the current decision, take a numbered reply, then freeze it. A first answer is *direction*, not a lock. | Treating an initial "sounds good" as a lock without restating. |
+| **Lock** / **numbered lock** | A decision the user has **frozen**, optionally numbered for later reference. Turns direction into commitment. | Follow the acceptance and clarification rule in [grilling](../../.codex/skills/grilling/SKILL.md#frontier-batch-loop-default). | Confusing a decision lock with authorization for a separate action. |
 | **Grill** | A decision-interview: stress-test a plan with pointed questions *before* implementing. The `grilling` primitive. | User says "grill me", or a plan has ≥1 unresolved decision. Ground every question in the tree first. | Grilling from priors instead of from the actual repo state. |
 | **Slice** | One **verifiable unit** of work carved from a larger goal, sized to land and check independently. The `next-slice` skill picks one. | "What's the next slice?" → rank value, propose one testable slice. | Shipping a whole epic as one unreviewable change. |
 | **Checkpoint** | A mid-task **save of state** when you can't finish — the honest alternative to faking completion. Pairs with *full means full*. | Can't finish → write what's done, what's left, where you stopped. | Relabeling a partial run as done instead of checkpointing. |
@@ -40,12 +40,12 @@ Carrying work across sessions and across agents.
 
 | Term | Meaning (why it exists) | How to invoke | _Avoid_ |
 | --- | --- | --- | --- |
-| **Handoff** | A durable transfer that lets another session/agent continue **without chat memory**. The `handoff` skill; modes: *session*, *parallel*. | Near degraded context, a tool switch, or before an IMPLEMENT hand to a fresh window. | Continuing past a degraded window instead of cutting a handoff. |
+| **Handoff** | A durable transfer that lets another session/agent continue **without chat memory**. The `handoff` skill; modes: *session*, *parallel*. | When transferring work to another session or agent, or when continuity is at risk. | Continuing past a degraded window instead of cutting a handoff. |
 | **Packet** | The self-contained **payload** of a handoff (session packet) or a claim (parallel). Minimal exported context — enough to resume, no more. | Assemble the packet at the stop point; keep it minimal and grounded. | Fat packets that re-export the whole conversation. |
 | **Ledger** | An **append-only** record on a work item (Implementation Ledger) or claims (claim ledger). Findings/decisions/deviations go here, not only chat. | Append at each material step; set terminal status at the stop condition. | Overwriting history, or leaving findings only in chat. |
 | **Integrator** | The **single session that merges** parallel writers' output. One owner merges; the rest only claim and write. | Multiple writers on shared paths → name one integrator up front. | Two sessions merging the same tree. |
 | **Single-writer** | The invariant: **one owner per claimed surface** at a time. What makes parallel work safe. | Parallel mode → one claim ledger, one owner per surface. | Two agents editing one file/surface concurrently. |
-| **Field-notes** | Short post-task notes proposing improvements to a **skill** you just used (the skill field-notes loop). | After grinding with a project skill, note what to sharpen. | Silent frustration with a skill; drift instead of upstream fix. |
+| **Field-notes** | Short post-task notes proposing improvements to a **skill** you just used (the skill field-notes loop). | Record a demonstrated reusable defect or material unresolved issue in its existing owner. | Silent frustration with a skill; drift instead of upstream fix. |
 
 ## Epistemic honesty
 

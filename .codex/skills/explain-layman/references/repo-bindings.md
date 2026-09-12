@@ -1,12 +1,12 @@
 ---
 binding_schema: "1"
 profile: "qi"
-profile_version: "1.0.0"
+profile_version: "1.1.0"
 artifact_language: "English with Chinese domain terms"
 output_dir: "docs/background"
 index_file: "docs/index.md"
 canonical_repo_url: "file:///Users/zhangqy/pkgs/qi"
-verification_command: "make check"
+verification_command: ".venv/bin/python scripts/check_docs.py"
 agent_instructions: "CLAUDE.md"
 ---
 
@@ -42,5 +42,8 @@ local-only; replace the canonical local URL when a remote is configured.
 
 ## Verification
 
-Run make check and the explainer validator. Visually inspect any generated
-artifact, including narrow layouts and interaction controls.
+Run the documentation check above and the explainer validator for changed HTML
+artifacts. Inspect affected layouts and interaction controls, including narrow
+layouts. If the change also touches application behavior or build configuration,
+run the relevant tests and integration gates from CLAUDE.md. A standalone
+explainer edit does not require unrelated application tests.

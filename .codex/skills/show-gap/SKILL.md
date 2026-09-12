@@ -1,13 +1,13 @@
 ---
 name: show-gap
-version: "0.12.0"
+version: "0.13.0"
 description: >-
-  Assess feature intent against built, planned, rejected, and deferred repository
-  evidence. Use for feature-fit questions; the initial audit is read-only.
-  Discussion and durable specifications require clear user intent.
+  Assess a proposed feature against built, planned, rejected, and deferred
+  repository evidence. Use for feature-fit questions or a fit check needed by
+  an authorized change.
 scope: repo feature gap analysis skill
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: artifact
 ---
 
@@ -73,7 +73,8 @@ existing capability → desired outcome. Distinguish reused behavior, prototype,
 and work still needed. Compare options only for a real choice, with a preferred
 option and its trade-off. Omit empty fields and repeated summaries.
 
-Stop at the fit report unless further discussion or writing is requested.
+For a fit-only request, finish with the report. When this audit supports a larger
+authorized task, return the findings to that task and continue within its scope.
 
 ## Continue when requested
 
@@ -85,5 +86,6 @@ Stop at the fit report unless further discussion or writing is requested.
   [deliverables](references/deliverables.md) and choose the appropriate artifact.
   Discussion alone does not require a new document.
 
-This skill does not implement features. Continue into implementation only when
-user authorization covers it; preserve named human gates and existing approvals.
+This skill contributes fit analysis. An implementation request can already
+authorize the next step; do not require a new approval merely because the fit
+analysis ended. Preserve named human gates and explicit review-only requests.
