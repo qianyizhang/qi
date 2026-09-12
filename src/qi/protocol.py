@@ -3,11 +3,10 @@
 from math import isfinite
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, model_validator
 
 from qi.game import START_FEN, Game, in_check, legal_moves, replay
 from qi.players import Choice, PlayerConfig
-from qi.players.catalog import get_player
 from qi.players.validation import validate_decision
 
 
@@ -62,25 +61,13 @@ def inspect(game: Game) -> Position:
     )
 
 
-class OpponentRequest(InspectRequest):
-    model_config = ConfigDict(extra="forbid")
-    expected_state_hash: str = Field(min_length=64, max_length=64)
-    player: str = "alphabeta"
-    seed: int = Field(default=0, ge=0, le=2_147_483_647, strict=True)
-    depth: int = Field(default=2, ge=1, le=4, strict=True)
-    nodes: int = Field(default=128, ge=1, le=512, strict=True)
-    rollout_plies: int = Field(default=8, ge=0, le=64, strict=True)
-
-    @field_validator("player")
-    @classmethod
-    def registered_player(cls, value: str) -> str:
-        get_player(value)
-        return value
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
 
 
-class OpponentResult(BaseModel):
-    position: Position
-    choice: Choice
+class ErrorResponse(BaseModel):
+    error: ErrorDetail
 
 
 class Controller(BaseModel):
@@ -112,7 +99,9 @@ class PlayRequest(InspectRequest):
     controller: Controller
 
 
-class PlayResult(OpponentResult):
+class PlayResult(BaseModel):
+    position: Position
+    choice: Choice
     config: PlayerConfig
 
 

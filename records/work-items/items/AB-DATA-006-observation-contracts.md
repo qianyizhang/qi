@@ -2,7 +2,7 @@
 description: Clarify observation identity and representation boundaries when a second consumer needs them.
 scope: backlog item
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: work_record
 work_id: AB-DATA-006
 work_status: deferred
@@ -47,8 +47,6 @@ and is not an automatic prerequisite for an LLM feasibility run.
 | 2026-09-10 | Codex | — | deferred | Preserve the review proposal until a concrete second representation needs it. |
 
 ## Implementation Ledger
-
-No implementation events yet.
 
 ### 2026-09-10 — verification: canonical collection board identity
 

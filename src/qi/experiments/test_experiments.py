@@ -197,6 +197,7 @@ def test_only_complete_color_pairs_contribute_outcomes():
 
 def test_mcts_and_search_round_trip_without_player_execution(tmp_path, monkeypatch):
     from qi import players
+    from qi.players import catalog
 
     directory = tmp_path / "diagnostics"
     specification = plan().model_copy(update={"players": ["mcts", "mcts-quiescence", "alphabeta-enhanced"]})
@@ -206,8 +207,9 @@ def test_mcts_and_search_round_trip_without_player_execution(tmp_path, monkeypat
         pytest.fail("Saved evidence validation must not execute players or bind checkpoints.")
 
     monkeypatch.setattr(runner, "choose", forbidden)
-    monkeypatch.setattr(players, "get_player", forbidden)
+    monkeypatch.setattr(catalog, "get_player", forbidden)
     monkeypatch.setattr(players, "bind_config", forbidden)
+    monkeypatch.setattr(players, "resolve_player", forbidden)
     checked = load_run(directory)
     assert checked["completed"] == checked["planned"] == 3
     assert checked["units"][0]["turns"][0]["choice"]["mcts"] is not None

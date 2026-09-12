@@ -2,7 +2,7 @@
 description: Strengthen experiment data isolation at generation and evaluation boundaries.
 scope: backlog item
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: work_record
 work_id: AB-DATA-005
 work_status: deferred
@@ -52,8 +52,6 @@ Resolve diagnostic-mode behavior and compatibility when this item is selected.
 | 2026-09-10 | Codex | — | deferred | User grouped generation and evaluation sanity checks and explicitly deferred their priority. |
 
 ## Implementation Ledger
-
-No implementation events yet.
 
 ### 2026-09-10 — verification: collection generation-side isolation
 

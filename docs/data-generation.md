@@ -2,7 +2,7 @@
 description: Configurable generation policies, incremental SQLite execution and bounded engineering pilots.
 scope: training data generation module guide
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -139,8 +139,9 @@ pending evidence when they are unavailable. Generation export recipes must set
 audits could be eligible when their analysis settings match the desired label.
 Snapshots use explicit analysis-spec identity, first committed success (or a
 pinned override), source/input isolation and immutable Parquet plus replay evidence.
-`SnapshotReader.batches()` provides bounded reads. Production optimizer migration
-remains [AB-LEARN-010](../records/work-items/items/AB-LEARN-010-snapshot-training-protocol.md).
+`SnapshotReader.batches()` provides bounded reads. The implemented
+[snapshot trainer](../src/qi/learning/README.md#bounded-snapshot-training) verifies
+the frozen selection and trains through this reader.
 
 The [integration tests](../src/qi/training_data/test_generation_runner.py) exercise actual SQLite and
 Parquet with hermetic teachers. The [policy tests](../src/qi/training_data/test_generation_policies.py)
@@ -157,12 +158,10 @@ readiness or optimal data-mixture weights.
 
 ## Resource-calibrated overnight profile
 
-The latest [operator handoff](../records/reports/session-handoff-overnight-generation-20260911.md)
-authorizes the next session to run sequential roughly one-hour batches until the
-user stops it or a safety boundary requires a decision. It derives numbered
-1,000-game recipes from the profile below and accounts writes across all batches
-and resumes. The original 9,000-game file remains frozen calibration evidence;
-do not launch it as one monolithic job for that newer request.
+This profile retains calibration evidence and reusable preview commands. Current
+execution ownership, batch limits and recovery decisions belong to
+[AB-DATA-008](../records/work-items/items/AB-DATA-008-generation-scaling-pilot.md)
+and its operator handoffs; this guide does not authorize a run.
 
 The [resource pilot evidence](../data/experiments/learning/history/generation-resource-v1.json)
 covers 512 games in seven fresh SQLite collections, including 300-ply trajectories.

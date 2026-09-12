@@ -34,7 +34,8 @@ type Service = SessionState & {
   step: () => Promise<void>;
   move: (move: string) => Promise<void>;
   configure: (side: "red" | "black", controller: Controller) => Promise<void>;
-  replace: (data?: unknown) => Promise<void>;
+  startNew: () => Promise<void>;
+  importData: (data: unknown) => Promise<void>;
   restore: () => Promise<void>;
   recover: () => Promise<void>;
 };
@@ -80,7 +81,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             "Another tab saved a newer session. Load its saved session before continuing.",
           conflict: true,
         });
-        return;
+        throw new Error(
+          "Another tab saved a newer session. Load its saved session before continuing.",
+        );
       }
       await work();
     });
@@ -308,13 +311,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "busy", busy: false });
     }
   };
-  const replace = async (data?: unknown) => {
+  const replace = async (
+    operation: { kind: "new" } | { kind: "import"; data: unknown },
+  ) => {
     pause();
     dispatch({ type: "busy", busy: true });
     const ticket = gate.current.start();
     try {
+      if (
+        operation.kind === "import" &&
+        (!operation.data ||
+          typeof operation.data !== "object" ||
+          Array.isArray(operation.data))
+      )
+        throw new Error(
+          "Import must be a session or game snapshot JSON object.",
+        );
       await lock(async () => {
         let session: GameSession, position: Position;
+        const data = operation.kind === "import" ? operation.data : undefined;
         if (data && typeof data === "object" && "format" in data) {
           const result = await request<Schema<"SessionResult">>(
             "play/session/inspect",
@@ -324,17 +339,22 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           session = result.session as GameSession;
           position = result.position;
         } else {
-          position = data
-            ? await request("inspect", { snapshot: data }, ticket.signal)
-            : await request("new", undefined, ticket.signal);
+          position =
+            operation.kind === "import"
+              ? await request("inspect", { snapshot: data }, ticket.signal)
+              : await request("new", undefined, ticket.signal);
           session = newSession(position);
         }
-        if (!gate.current.isCurrent(ticket)) return;
+        if (!gate.current.isCurrent(ticket))
+          throw new Error(
+            "Import was interrupted. The saved session is unchanged.",
+          );
         persist(session, position);
         dispatch({ type: "loaded", session, position });
       });
     } catch (error) {
       if (gate.current.isCurrent(ticket)) fail(error);
+      if (operation.kind === "import") throw error;
     } finally {
       if (gate.current.isCurrent(ticket))
         dispatch({ type: "busy", busy: false });
@@ -350,7 +370,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         step: () => advance(),
         move: (move) => advance(move),
         configure,
-        replace,
+        startNew: () => replace({ kind: "new" }),
+        importData: (data) => replace({ kind: "import", data }),
         restore,
         recover,
       }}

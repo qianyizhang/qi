@@ -2,7 +2,7 @@
 description: How the first checkpoint-backed move policy encodes positions and chooses legal actions.
 scope: learned policy player
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -23,7 +23,8 @@ never consults a teacher during play. Ties use ascending action ID.
 - `runtime.py`: a 64-unit ReLU hidden layer, output logits, legal-action selection,
   and validated CPU checkpoint loading. Logits are preferences, not position values.
 - `__init__.py`: the shared player descriptor and explicit local configuration.
-- [Trainer](../../learning/README.md): dataset construction, loss, experiments.
+- [Training Data](../../training_data/README.md): example selection and supervision provenance.
+- [Trainer](../../learning/README.md): model inputs, loss, weight updates and experiments.
 
 The input deliberately omits history. Identical boards with the same side to move
 produce the same preferences even when their repetition histories differ. The
@@ -51,12 +52,16 @@ there is no fallback to random weights. Checkpoints are local experiment artifac
 Named entries cache each verified path and content digest. Replacing bytes rejects
 an existing selection; explicitly selecting the new identity loads the new model.
 The convenience environment default stays pinned for the process lifetime;
-restart the process to adopt replacement weights for that default. Arena configurations pin the
+the catalog reports its loaded identity and marks it unavailable for controller
+selection if the file changes or disappears. Restart the process to adopt replacement
+weights for that default. Catalog reads never load the optional inference runtime.
+Arena configurations pin the
 SHA-256 before play; every choice reports it with `model_calls: 1`. Search nodes
 and depth are zero; search budgets and seed do not change this greedy policy.
 For named entries, the first choice can include dependency/model loading in its
-latency; subsequent choices reuse the model. The convenience default loads while
-binding, before the choice timer. Training reports separately measure warm
+latency; subsequent choices reuse the model. Direct Python and arena binding load
+the convenience default before the choice timer. HTTP selection validates metadata
+without loading, so its first choice can include model loading. Training reports separately measure warm
 inference with legal masking; do not compare cold and warm timings as equivalent.
 
 Checkpoints contain versioned metadata and this architecture's state dictionary.

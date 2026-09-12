@@ -10,7 +10,7 @@
     "format": "prettier --write src tests e2e index.html vite.config.ts playwright.config.ts",
     "test": "tsc src/request-gate.ts --target ES2022 --module ESNext --skipLibCheck --outDir .test-build && node --test tests/request-gate.test.mjs",
     "test:e2e": "playwright test",
-    "generate:api": "../.venv/bin/python ../scripts/export_openapi.py && openapi-typescript openapi.json -o src/generated-api.ts"
+    "generate:api": "../.venv/bin/python ../scripts/export_openapi.py && openapi-typescript openapi.json -o src/generated-api.ts && prettier --write src/generated-api.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

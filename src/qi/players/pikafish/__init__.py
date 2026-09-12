@@ -1,21 +1,19 @@
 """Explicit external-engine participant; importing its descriptor launches nothing."""
 
-from qi.game import Game, GameError
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from qi.game import Game
 from qi.players.core import Decision, EngineScore, EngineWork, Player, PlayerConfig, PlayerInfo
 
+if TYPE_CHECKING:
+    from qi.players.bindings import ResolvedBinding
 
-def select(game: Game, config: PlayerConfig) -> Decision:
-    from qi.players.bindings import binding_for, resolve
+
+def select(game: Game, config: PlayerConfig, resource: "ResolvedBinding") -> Decision:
     from qi.teacher import TeacherConfig, TeacherIdentity, TeacherSession
 
-    binding = binding_for(config.kind)
-    if binding is None or binding.implementation != "pikafish":
-        raise GameError("missing_binding", "Select a configured Pikafish player binding.")
-    resource = resolve(binding)
-    if resource.sha256 != config.binding_sha256:
-        raise GameError("binding_mismatch", "Engine resources changed after selection.")
-    from pathlib import Path
-
+    binding = resource.binding
     engine, network = Path(binding.engine), Path(binding.network)
     settings = TeacherConfig(
         engine, network, config.nodes, config.depth, config.timeout_seconds, threads=binding.threads
@@ -50,6 +48,7 @@ PLAYER = Player(
         default_nodes=10000,
         default_depth=6,
     ),
-    select,
+    None,
     available=lambda: False,
+    select_bound=select,
 )

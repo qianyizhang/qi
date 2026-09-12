@@ -1,41 +1,43 @@
 """Public player boundary: select by catalog ID, validate, and attach provenance."""
 
-from dataclasses import replace
 from time import perf_counter
 
 from qi.game import Game, GameError
-from qi.players.catalog import get_player, list_players
+from qi.players.bindings import ResolvedPlayer, resolve_player, resolve_selection
+from qi.players.catalog import list_players
 from qi.players.core import Choice, Decision, Player, PlayerConfig, PlayerInfo
 from qi.players.validation import validate_decision
 
-__all__ = ["Choice", "Decision", "Player", "PlayerConfig", "PlayerInfo", "bind_config", "choose", "list_players"]
+__all__ = [
+    "Choice",
+    "Decision",
+    "Player",
+    "PlayerConfig",
+    "PlayerInfo",
+    "ResolvedPlayer",
+    "bind_config",
+    "choose",
+    "list_players",
+    "resolve_selection",
+]
 
 
 def bind_config(config: PlayerConfig) -> PlayerConfig:
-    """Pin the configured checkpoint before an arena batch starts."""
-    from qi.players.bindings import binding_for, pin
-
-    config = pin(config)
-    player = get_player(config.kind)
-    if binding_for(config.kind) is not None:
-        return config
-    if player.checkpoint is not None:
-        digest = player.checkpoint()
-        if config.checkpoint_sha256 is not None and config.checkpoint_sha256 != digest:
-            raise GameError("checkpoint_mismatch", "Configured policy differs from the pinned player checkpoint.")
-        return replace(config, checkpoint_sha256=digest)
-    if config.checkpoint_sha256 is not None:
-        raise GameError("invalid_player", "This player does not use a checkpoint.")
-    return config
+    """Pin participant identities; each later decision verifies its own resources."""
+    return resolve_player(config).config
 
 
-def choose(game: Game, config: PlayerConfig) -> Choice:
-    player = get_player(config.kind)
+def choose(game: Game, config: PlayerConfig | ResolvedPlayer) -> Choice:
     if game.outcome:
         raise GameError("game_over", "Cannot select a move after the game ends.")
-    config = bind_config(config)
+    resolved = config if isinstance(config, ResolvedPlayer) else resolve_player(config)
+    player, config = resolved.player, resolved.config
     started = perf_counter()
-    decision = player.select(game, config)
+    if resolved.resource is not None and player.select_bound is not None:
+        decision = player.select_bound(game, config, resolved.resource)
+    else:
+        assert player.select is not None
+        decision = player.select(game, config)
     try:
         validate_decision(decision, config, game)
     except ValueError as exc:

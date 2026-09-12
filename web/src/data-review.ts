@@ -10,6 +10,28 @@ export type Review = {
 };
 export const reviewPrefix = (collection: string) =>
   `qi.collection-review.v1:${collection}:`;
+export function parseReview(
+  raw: string | null,
+  attempt: string,
+): Review | undefined {
+  if (raw === null) return undefined;
+  const value = JSON.parse(raw);
+  if (
+    !value ||
+    value.attempt !== attempt ||
+    !Number.isInteger(value.game_id) ||
+    typeof value.trajectory !== "string" ||
+    !["keep", "inspect", "exclude"].includes(value.status) ||
+    typeof value.note !== "string" ||
+    value.note.length > 4000 ||
+    !Number.isInteger(value.ply) ||
+    value.ply < 0 ||
+    value.ply > 300 ||
+    typeof value.updated !== "string"
+  )
+    throw new Error("Invalid stored review");
+  return value as Review;
+}
 export function readReviews(collection: string): {
   reviews: Review[];
   error: string;
@@ -20,23 +42,11 @@ export function readReviews(collection: string): {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (!key?.startsWith(prefix)) continue;
-      const value = JSON.parse(localStorage.getItem(key)!);
-      if (
-        !value ||
-        typeof value.attempt !== "string" ||
-        key !== prefix + value.attempt ||
-        !Number.isInteger(value.game_id) ||
-        typeof value.trajectory !== "string" ||
-        !["keep", "inspect", "exclude"].includes(value.status) ||
-        typeof value.note !== "string" ||
-        value.note.length > 4000 ||
-        !Number.isInteger(value.ply) ||
-        value.ply < 0 ||
-        value.ply > 300 ||
-        typeof value.updated !== "string"
-      )
-        throw new Error("Invalid stored review");
-      reviews.push(value as Review);
+      const review = parseReview(
+        localStorage.getItem(key),
+        key.slice(prefix.length),
+      );
+      if (review) reviews.push(review);
     }
     return { reviews, error: "" };
   } catch {

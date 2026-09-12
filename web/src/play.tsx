@@ -229,6 +229,8 @@ export function PlayPage() {
   });
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState("");
+  const [importPending, setImportPending] = useState(false);
   const replayGate = useRef(new RequestGate());
   useEffect(
     () => () => {
@@ -347,7 +349,7 @@ export function PlayPage() {
           </span>
           <Button
             disabled={game.busy && !game.thinking}
-            onClick={() => void game.replace()}
+            onClick={() => void game.startNew()}
           >
             New game
           </Button>
@@ -513,7 +515,9 @@ export function PlayPage() {
             <Dialog.Root
               open={importOpen}
               onOpenChange={(open) => {
+                if (importPending) return;
                 game.pause();
+                if (open) setImportError("");
                 setImportOpen(open);
               }}
             >
@@ -531,24 +535,51 @@ export function PlayPage() {
                   <textarea
                     aria-label="Imported JSON"
                     value={importText}
+                    disabled={importPending}
                     onChange={(event) => setImportText(event.target.value)}
                     rows={10}
                   />
+                  {importError && (
+                    <p role="alert" className="error">
+                      {importError}
+                    </p>
+                  )}
+                  {importPending && (
+                    <p role="status">
+                      Validating and saving the imported game…
+                    </p>
+                  )}
                   <div className="toolbar">
                     <Button
-                      onClick={() => {
+                      disabled={importPending}
+                      onClick={async () => {
+                        setImportError("");
+                        let data: unknown;
                         try {
-                          void game.replace(JSON.parse(importText));
-                          setImportOpen(false);
+                          data = JSON.parse(importText);
                         } catch {
-                          setViewError("Import must be valid JSON.");
+                          setImportError("Import must be valid JSON.");
+                          return;
+                        }
+                        setImportPending(true);
+                        try {
+                          await game.importData(data);
+                          setImportOpen(false);
+                        } catch (error) {
+                          setImportError(
+                            error instanceof Error
+                              ? error.message
+                              : String(error),
+                          );
+                        } finally {
+                          setImportPending(false);
                         }
                       }}
                     >
                       Load JSON
                     </Button>
                     <Dialog.Close asChild>
-                      <Button>Close</Button>
+                      <Button disabled={importPending}>Close</Button>
                     </Dialog.Close>
                   </div>
                 </Dialog.Content>

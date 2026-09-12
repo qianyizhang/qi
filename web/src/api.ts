@@ -31,10 +31,19 @@ export async function request<T = Position>(
       headers: { "Content-Type": "application/json" },
       body: data === undefined ? undefined : JSON.stringify(data),
     });
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      throw new Error(
+        `The server returned ${response.status} ${response.statusText || "response"} without valid JSON. Check that the local server is running and try again.`,
+      );
+    }
     if (!response.ok)
       throw new Error(
-        result.error?.message ?? "The request failed. Please try again.",
+        result?.error?.message ??
+          `The request failed (HTTP ${response.status}). Please try again.`,
       );
     return result as T;
   })();

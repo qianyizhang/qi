@@ -2,9 +2,12 @@
 
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from qi.game import Game, GameError
+
+if TYPE_CHECKING:
+    from qi.players.bindings import ResolvedBinding
 
 
 @dataclass(frozen=True)
@@ -176,6 +179,7 @@ class PlayerInfo:
 @dataclass(frozen=True)
 class Player:
     info: PlayerInfo
-    select: Callable[[Game, PlayerConfig], Decision]
+    select: Callable[[Game, PlayerConfig], Decision] | None
     checkpoint: Callable[[], str] | None = None
     available: Callable[[], bool] | None = None
+    select_bound: Callable[[Game, PlayerConfig, "ResolvedBinding"], Decision] | None = None

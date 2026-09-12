@@ -19,8 +19,7 @@ from qi.experiments.runner import run
 from qi.experiments.test_experiments import plan
 from qi.game import GameError
 from qi.lab import TraceJobs, TraceRequest, discover
-from qi.players import PlayerConfig, bind_config, choose, list_players
-from qi.players.bindings import selection_config
+from qi.players import PlayerConfig, bind_config, choose, list_players, resolve_selection
 from qi.protocol import ConfigurationChange, Controller, Controllers, GameSession, SessionMove, Snapshot
 
 
@@ -185,6 +184,156 @@ def test_trace_success_duplicate_and_restart_state(lab_run, tmp_path):
     jobs.close()
 
 
+def test_cached_owners_refresh_and_append_without_losing_completed_jobs(lab_run, tmp_path):
+    state = tmp_path / "shared-jobs"
+    first, second = TraceJobs(state), TraceJobs(state)
+    try:
+        assert first.list() == second.list() == []
+        first.start(trace_request(lab_run))
+        first_result = await_job(first)
+        assert first_result.status == "succeeded", first_result.message
+        assert second.list() == [first_result]
+
+        second.start(trace_request(lab_run).model_copy(update={"limit": 3}))
+        second_result = await_job(second)
+        assert second_result.status == "succeeded", second_result.message
+        assert first.list() == second.list() == [second_result, first_result]
+        assert TraceJobs(state).list() == [second_result, first_result]
+        assert len(list((lab_run / "traces").glob("ui-*.json"))) == 2
+    finally:
+        first.close()
+        second.close()
+
+
+def test_request_id_replay_and_conflict_are_reconciled_across_cached_owners(lab_run, tmp_path):
+    state = tmp_path / "shared-jobs"
+    first, second = TraceJobs(state), TraceJobs(state)
+    request = trace_request(lab_run)
+    try:
+        assert second.list() == []
+        first.start(request)
+        completed = await_job(first)
+        assert completed.status == "succeeded", completed.message
+        assert second.start(request) == completed
+        assert len(list((lab_run / "traces").glob("ui-*.json"))) == 1
+        with pytest.raises(GameError, match="Request ID already belongs"):
+            second.start(request.model_copy(update={"limit": 3}))
+        assert second.list() == [completed]
+
+        # Neither the replay nor the conflict may retain the shared lease.
+        first.start(request.model_copy(update={"request_id": uuid4().hex}))
+        newer = await_job(first)
+        assert newer.status == "succeeded", newer.message
+        assert second.list() == [newer, completed]
+    finally:
+        first.close()
+        second.close()
+
+
+def test_cached_observer_cannot_reconcile_or_replace_another_active_owner(lab_run, tmp_path, monkeypatch):
+    state = tmp_path / "shared-jobs"
+    first, second = TraceJobs(state), TraceJobs(state)
+    popen = subprocess.Popen
+    monkeypatch.setattr(
+        "qi.lab.subprocess.Popen",
+        lambda args, **kwargs: popen(
+            [sys.executable, "-c", "import time; time.sleep(30)"] if "qi.trace_worker" in args else args, **kwargs
+        ),
+    )
+    request = trace_request(lab_run)
+    try:
+        assert first.list() == second.list() == []
+        started = first.start(request)
+        with pytest.raises(GameError, match="Another server owns"):
+            second.list()
+        with pytest.raises(GameError, match="Another server owns"):
+            second.start(request)
+        assert first.list()[0].status == "running"
+        first.cancel(started.id)
+        final = await_job(first)
+        assert final.status == "cancelled"
+        assert second.list() == [final]
+    finally:
+        first.close()
+        second.close()
+
+
+@pytest.mark.parametrize("failure", ["stale-evidence", "incompatible", "launch", "thread"])
+def test_failed_start_releases_the_lease_for_another_cached_owner(lab_run, tmp_path, monkeypatch, failure):
+    state = tmp_path / "shared-jobs"
+    first, second = TraceJobs(state), TraceJobs(state)
+    request = trace_request(lab_run)
+
+    def fail_launch(*_args, **_kwargs):
+        raise OSError("launch unavailable")
+
+    def fail_thread(*_args, **_kwargs):
+        raise RuntimeError("thread unavailable")
+
+    try:
+        assert first.list() == second.list() == []
+        with monkeypatch.context() as patch:
+            attempted = request
+            if failure == "stale-evidence":
+                attempted = request.model_copy(update={"unit_sha256": "0" * 64})
+            elif failure == "incompatible":
+                patch.setattr("qi.lab.trace_compatibility", lambda _: "Runtime changed")
+            elif failure == "launch":
+                patch.setattr("qi.lab.subprocess.Popen", fail_launch)
+            else:
+                patch.setattr("qi.lab.threading.Thread.start", fail_thread)
+            with pytest.raises(GameError):
+                first.start(attempted)
+
+        second.start(request.model_copy(update={"request_id": uuid4().hex}))
+        completed = await_job(second)
+        assert completed.status == "succeeded", completed.message
+        observed = first.list()
+        assert observed == second.list()
+        assert observed[0] == completed
+        if failure in {"launch", "thread"}:
+            assert len(observed) == 2 and observed[1].status == "failed"
+        else:
+            assert observed == [completed]
+    finally:
+        first.close()
+        second.close()
+
+
+def test_failed_launch_keeps_ownership_until_failure_is_persisted(lab_run, tmp_path, monkeypatch):
+    from qi.lab import write_json
+
+    state = tmp_path / "shared-jobs"
+    first, second = TraceJobs(state), TraceJobs(state)
+    blocked = []
+
+    def observe_failure_write(path, rows):
+        if path.name == "jobs.json" and any(row["status"] == "failed" for row in rows):
+            try:
+                second.list()
+            except GameError as error:
+                assert error.code == "trace_busy"
+                blocked.append(True)
+            else:
+                blocked.append(False)
+        write_json(path, rows)
+
+    def fail_launch(*_args, **_kwargs):
+        raise OSError("launch unavailable")
+
+    try:
+        assert second.list() == []
+        monkeypatch.setattr("qi.lab.write_json", observe_failure_write)
+        monkeypatch.setattr("qi.lab.subprocess.Popen", fail_launch)
+        with pytest.raises(GameError, match="launch unavailable"):
+            first.start(trace_request(lab_run))
+        assert blocked == [True]
+        assert second.list()[0].status == "failed"
+    finally:
+        first.close()
+        second.close()
+
+
 def test_trace_mismatch_never_launches(lab_run, monkeypatch, tmp_path):
     request = trace_request(lab_run)
     monkeypatch.setattr("qi.lab.trace_compatibility", lambda _: "Code or runtime changed")
@@ -279,7 +428,7 @@ def test_capability_settings_and_pinned_catalog_without_model_load(tmp_path, mon
     with pytest.raises(GameError, match="differ"):
         bind_config(pinned)
     with pytest.raises(GameError, match="not supported"):
-        selection_config("trained-a", {"nodes": 8}, entry.binding_sha256)
+        resolve_selection("trained-a", {"nodes": 8}, entry.binding_sha256)
     with TestClient(create_app()) as client:
         bad = client.post(
             "/api/play/choose",

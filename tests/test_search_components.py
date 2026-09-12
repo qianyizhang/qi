@@ -31,12 +31,11 @@ def test_recipe_cli_and_http_use_the_same_composition(name, tmp_path):
     expected = json.loads(json.dumps(asdict(choose(Game(), PlayerConfig(name, nodes=128)))))
     with TestClient(create_app()) as client:
         response = client.post(
-            "/api/opponent",
+            "/api/play/choose",
             json={
                 "snapshot": Snapshot().model_dump(),
                 "expected_state_hash": Game().state_hash,
-                "player": name,
-                "nodes": 128,
+                "controller": {"player": name, "settings": {"nodes": 128}},
             },
         )
         assert response.status_code == 200

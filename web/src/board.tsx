@@ -1,3 +1,4 @@
+import { useId, useRef, useState } from "react";
 import type { Position } from "./api";
 
 const symbols: Record<string, string> = {
@@ -37,9 +38,9 @@ type BoardProps = {
   };
   flipped: boolean;
   selected: string | null;
-  keyboardDisabled: boolean;
-  disabled: boolean;
-  onChoose: (index: number) => void;
+  keyboardDisabled?: boolean;
+  disabled?: boolean;
+  onChoose?: (index: number) => void;
 };
 
 export function Board({
@@ -51,13 +52,25 @@ export function Board({
   disabled,
   onChoose,
 }: BoardProps) {
+  const [cursor, setCursor] = useState(0);
+  const squares = useRef<(SVGGElement | null)[]>([]);
+  const helpId = useId();
+  const interactive = !!onChoose;
+  const enabled = interactive && !disabled && !keyboardDisabled;
   return (
     <svg
       viewBox="0 0 540 600"
       role="group"
       aria-label="Chinese chess board"
+      aria-describedby={interactive ? helpId : undefined}
       className="board"
     >
+      {interactive && (
+        <desc id={helpId}>
+          Use arrow keys to explore squares. Enter or Space selects a piece or
+          legal destination. Tab leaves the board.
+        </desc>
+      )}
       <rect x="0" y="0" width="540" height="600" rx="8" fill="#e9d6ae" />
       <g stroke="#81694b" strokeWidth="1" fill="none">
         {Array.from({ length: 10 }, (_, y) => (
@@ -119,18 +132,48 @@ export function Board({
         return (
           <g
             key={i}
+            ref={(element) => {
+              squares.current[i] = element;
+            }}
             transform={`translate(${x},${y})`}
-            role="button"
-            tabIndex={keyboardDisabled || disabled ? -1 : 0}
-            aria-disabled={disabled}
+            role={interactive ? "button" : undefined}
+            tabIndex={
+              interactive ? (enabled && cursor === i ? 0 : -1) : undefined
+            }
+            aria-disabled={interactive ? disabled : undefined}
             aria-label={label}
-            aria-pressed={active}
-            onClick={() => void onChoose(i)}
+            aria-pressed={interactive ? active : undefined}
+            onFocus={() => setCursor(i)}
+            onClick={() => {
+              if (!enabled) return;
+              setCursor(i);
+              onChoose(i);
+            }}
             onKeyDown={(e) => {
+              if (!enabled) return;
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                void onChoose(i);
+                onChoose(i);
+                return;
               }
+              const direction: Record<string, [number, number]> = {
+                ArrowLeft: [-1, 0],
+                ArrowRight: [1, 0],
+                ArrowUp: [0, 1],
+                ArrowDown: [0, -1],
+              };
+              const step = direction[e.key];
+              if (!step) return;
+              e.preventDefault();
+              const sign = flipped ? -1 : 1;
+              const file = Math.max(0, Math.min(8, (i % 9) + step[0] * sign));
+              const rank = Math.max(
+                0,
+                Math.min(9, Math.floor(i / 9) + step[1] * sign),
+              );
+              const next = rank * 9 + file;
+              setCursor(next);
+              squares.current[next]?.focus();
             }}
             className="square"
           >

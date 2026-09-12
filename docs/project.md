@@ -2,7 +2,7 @@
 description: Project scope, architecture direction, and learning milestones.
 scope: project direction
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -24,7 +24,8 @@ freshly verified third-party capabilities.
 [ADR-0001](adr/0001-own-referee-and-search-use-external-teachers.md) records the
 accepted ownership and teacher-bootstrapping boundary.
 
-The local frontend now brings Home, Play, Experiments and Reference together.
+The local frontend connects play, generated-data review, learning walkthroughs,
+experiment reports, benchmarks and reference material.
 Both humans can share one browser in pass-and-play, or either side can select a
 built-in player, a configured checkpoint or Pikafish. The same Python operations
 remain available through the CLI. [ADR-0005](adr/0005-shared-local-frontend.md)
@@ -58,7 +59,7 @@ slice; do not turn them into fixed interface contracts now.
 | Neural learning | PyTorch policy/value model and an educational PUCT implementation | After replay and arena |
 | LLM learning | Transformers, Datasets, PEFT, TRL; SFT before RL | Independent track after arena |
 | UI | FastAPI, React, TypeScript, Vite, SVG board | First playable milestone, sharing referee operations |
-| Data | JSONL trajectories; add Parquet/SQLite when justified | Replay, then experiments |
+| Data | SQLite collections, frozen Parquet snapshots and retained JSON datasets/records | Replay, selection, then training and experiments |
 
 Referee, CLI/API, and browser dependencies are installed and locked.
 The optional local learning extra pins PyTorch for a small teacher-imitation

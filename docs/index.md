@@ -2,15 +2,15 @@
 description: Compact navigator over authority areas, rules, glossary, and agent flows in qi.
 scope: documentation navigator index
 status: stable
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
 # Docs index
 
 This is a **navigator, not an authority**: it routes authority areas, structural
-docs, and main human-facing flows. Complete file discovery belongs to generated
-Human View. When the index and a target disagree, identify the concern, fix the
+docs, and main human-facing flows. Use repository file search for complete discovery.
+When the index and a target disagree, identify the concern, fix the
 stale route, and preserve the owning authority. Doctrine:
 `docs/rules/governance.md` "Scoped authority and core models".
 
@@ -103,5 +103,4 @@ these flows; they are not a menu the user must memorize.
 | **Change** | Advance a bounded destination through verifiable work; use a Campaign at the threshold in `docs/rules/governance.md`. | `next-slice`, work items, `handoff` |
 | **Maintain** | Preserve documentation and kit/consumer ownership. | `doc-hygiene-audit`, `governance-sync` |
 
-<!-- Keep this a compact task/concept router. Configure area routes in
-     pyproject.toml; generated Human View owns complete discovery. -->
+<!-- Keep this a compact task/concept router; configure area routes in pyproject.toml. -->

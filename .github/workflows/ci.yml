@@ -28,6 +28,19 @@ jobs:
         env:
           UV_OFFLINE: "true"
 
+  data:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked --extra data --extra learning
+      - run: make test-data
+        env:
+          UV_OFFLINE: "true"
+
   learning-package:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

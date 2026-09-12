@@ -241,37 +241,113 @@ def _game(row) -> GeneratedGame:
     )
 
 
-def _stats(games: list[GeneratedGame]) -> CollectionStats:
-    accepted = [g for g in games if g.disposition == "accepted"]
-    rejected = sum(g.disposition == "rejected" for g in games)
-    actual, requested = Counter(), Counter()
-    for game in accepted:
-        actual.update(game.actual)
-        requested.update(game.requested)
-    return CollectionStats(
-        attempts=len(games),
-        accepted=len(accepted),
-        rejected=rejected,
-        other=len(games) - len(accepted) - rejected,
-        selected=sum(g.selected for g in accepted),
-        sampling_games=sum(bool(g.requested) for g in accepted),
-        shortfall_games=sum(g.shortfall > 0 for g in accepted),
-        unique_trajectories=len({g.trajectory for g in accepted}),
-        mean_plies=sum(g.plies - g.start_ply for g in accepted) / len(accepted) if accepted else None,
-        policies=dict(Counter(g.policy for g in accepted)),
-        splits=dict(Counter(g.split for g in accepted)),
-        outcomes=dict(Counter(g.outcome if g.outcome != "draw" else f"draw · {g.outcome_reason}" for g in accepted)),
-        lengths=dict(
-            Counter(
-                f"{min((g.plies - g.start_ply) // 50, 5) * 50}-{min((g.plies - g.start_ply) // 50, 5) * 50 + 49}"
-                if g.plies - g.start_ply < 300
-                else "300"
-                for g in accepted
-            )
-        ),
-        actual=dict(actual),
-        requested=dict(requested),
+# Shared projection keeps cohort predicates and aggregate denominators identical.
+PAGE_SQL = f"""
+WITH base AS ({GAME_SQL}), projected AS (
+ SELECT *,
+  CASE WHEN status='complete' THEN 'accepted'
+       WHEN status='failed' AND (stop_reason='rejected-trajectory' OR
+         (stop_reason='error' AND failure='Exact trajectory crosses splits.'))
+       THEN 'rejected' ELSE status END disposition,
+  CASE WHEN outcome IS NULL OR outcome='null' THEN 'unfinished'
+       ELSE coalesce(json_extract(outcome,'$.winner'),'draw') END result,
+  json_extract(outcome,'$.reason') reason,
+  coalesce(json_array_length(sampling,'$.selected'),0) selected,
+  coalesce(json_extract(sampling,'$.actual'),'{{}}') actual,
+  coalesce(json_extract(sampling,'$.requested'),'{{}}') requested,
+  coalesce((SELECT sum(value) FROM json_each(sampling,'$.shortfall')),0) shortfall,
+  plies-start_ply length
+ FROM base
+), cohort AS (
+ SELECT * FROM projected WHERE {{where}}
+)
+"""
+
+
+def _cohort_predicate(*, run, policy, split, disposition, outcome, q, lens, phase, attempts):
+    predicates, params = [], {}
+    for column, value in (("run_id", run), ("policy", policy), ("split", split), ("disposition", disposition)):
+        if value:
+            predicates.append(f"{column}=:{column}")
+            params[column] = value
+    if outcome:
+        predicates.append("(result=:outcome OR result || ' · ' || coalesce(reason,'None')=:outcome)")
+        params["outcome"] = outcome
+    if q:
+        # SQLite lower() is ASCII-only; preserve the existing Unicode substring search.
+        predicates.append("instr(text_lower(id || ' ' || source || ' ' || attempt),:q)>0")
+        params["q"] = q.lower()
+    if lens == "shortfall":
+        predicates.append("disposition='accepted' AND shortfall>0")
+    if lens == "long":
+        predicates.append("length>=250")
+    if phase:
+        actual = "coalesce((SELECT value FROM json_each(actual) WHERE key=:phase),0)"
+        predicates.append(
+            f"coalesce((SELECT value FROM json_each(requested) WHERE key=:phase),0)>{actual}"
+            if lens == "shortfall"
+            else f"{actual}>0"
+        )
+        params["phase"] = phase
+    if attempts:
+        predicates.append("attempt IN (SELECT value FROM json_each(:attempts))")
+        params["attempts"] = json.dumps(attempts.split(","))
+    return " AND ".join(predicates) or "1", params
+
+
+def _page_stats(db, cte: str, params: dict, runs: list[GeneratedRun]):
+    scopes = """, scopes AS MATERIALIZED (
+      SELECT 'overall' scope,* FROM projected
+      UNION ALL SELECT 'run:' || run_id,* FROM projected
+      UNION ALL SELECT 'filtered',* FROM cohort
+    ) """
+    counts = """
+    SELECT scope,'counts' category,'' key,json_object(
+      'attempts',count(*),
+      'accepted',sum(disposition='accepted'),
+      'rejected',sum(disposition='rejected'),
+      'other',sum(disposition NOT IN ('accepted','rejected')),
+      'selected',sum(CASE WHEN disposition='accepted' THEN selected ELSE 0 END),
+      'sampling_games',sum(disposition='accepted' AND EXISTS(SELECT 1 FROM json_each(requested))),
+      'shortfall_games',sum(disposition='accepted' AND shortfall>0),
+      'unique_trajectories',count(DISTINCT CASE WHEN disposition='accepted' THEN trajectory END),
+      'mean_plies',avg(CASE WHEN disposition='accepted' THEN length END)) value
+    FROM scopes GROUP BY scope
+    """
+    histograms = {
+        "policies": "policy",
+        "splits": "split",
+        "outcomes": "CASE WHEN result='draw' THEN result || ' · ' || reason ELSE result END",
+        "lengths": "CASE WHEN length>=300 THEN '300' ELSE printf('%d-%d',(length/50)*50,(length/50)*50+49) END",
+    }
+    queries = [counts]
+    for category, expression in histograms.items():
+        queries.append(f"""SELECT scope,'{category}',{expression} key,count(*) FROM scopes
+          WHERE disposition='accepted' GROUP BY scope,key""")
+    for category in ("actual", "requested"):
+        queries.append(f"""SELECT scope,'{category}',j.key,sum(j.value) FROM scopes,json_each({category}) j
+          WHERE disposition='accepted' GROUP BY scope,j.key""")
+    empty = dict(
+        attempts=0,
+        accepted=0,
+        rejected=0,
+        other=0,
+        selected=0,
+        sampling_games=0,
+        shortfall_games=0,
+        unique_trajectories=0,
+        mean_plies=None,
     )
+    values = {
+        key: {**empty, **{name: {} for name in (*histograms, "actual", "requested")}}
+        for key in ("overall", "filtered", *(f"run:{r.id}" for r in runs))
+    }
+    for row in db.execute(cte + scopes + " UNION ALL ".join(queries), params):
+        if row["category"] == "counts":
+            values[row["scope"]].update(json.loads(row["value"]))
+        else:
+            values[row["scope"]][row["category"]][row["key"]] = row["value"]
+    return {key: CollectionStats(**value) for key, value in values.items()}
 
 
 def collection_page(
@@ -291,8 +367,22 @@ def collection_page(
     attempts: str = "",
 ) -> CollectionPage:
     path = collection_path(identity)
+    where, params = _cohort_predicate(
+        run=run,
+        policy=policy,
+        split=split,
+        disposition=disposition,
+        outcome=outcome,
+        q=q,
+        lens=lens,
+        phase=phase,
+        attempts=attempts,
+    )
+    cte = PAGE_SQL.replace("{where}", where)
+    order = {"longest": "length", "shortfall": "shortfall"}.get(sort, "id")
     with _read(path) as store:
         as_of = time()
+        store.db.create_function("text_lower", 1, str.lower, deterministic=True)
         runs = [
             GeneratedRun(
                 id=r["id"],
@@ -304,51 +394,30 @@ def collection_page(
                 created=r["created"],
             )
             for r in store.db.execute("""SELECT id,identity,status,created,
-         json_extract(payload,'$.config.recipe.name') name, json_extract(payload,'$.planned_games') planned,
-         json_extract(payload,'$.config.continued_from_run') continued_from FROM generation_runs ORDER BY id DESC""")
+              json_extract(payload,'$.config.recipe.name') name, json_extract(payload,'$.planned_games') planned,
+              json_extract(payload,'$.config.continued_from_run') continued_from
+              FROM generation_runs ORDER BY id DESC""")
         ]
-        games = [_game(r) for r in store.db.execute(GAME_SQL)]
-    wanted = set(attempts.split(",")) if attempts else None
-    filtered = [
-        g
-        for g in games
-        if (not run or g.run_id == run)
-        and (not policy or g.policy == policy)
-        and (not split or g.split == split)
-        and (not disposition or g.disposition == disposition)
-        and (not outcome or g.outcome == outcome or f"{g.outcome} · {g.outcome_reason}" == outcome)
-        and (not q or q.lower() in f"{g.id} {g.source} {g.attempt}".lower())
-        and (lens != "shortfall" or (g.disposition == "accepted" and g.shortfall > 0))
-        and (
-            not phase
-            or (
-                g.requested.get(phase, 0) > g.actual.get(phase, 0)
-                if lens == "shortfall"
-                else g.actual.get(phase, 0) > 0
+        stats = _page_stats(store.db, cte, params, runs)
+        games = [
+            _game(row)
+            for row in store.db.execute(
+                cte + f"SELECT * FROM cohort ORDER BY {order} DESC,id DESC LIMIT :limit OFFSET :offset",
+                {**params, "limit": limit, "offset": offset},
             )
+        ]
+        return CollectionPage(
+            collection=_entry(path),
+            as_of=as_of,
+            runs=runs,
+            overall=stats["overall"],
+            run_stats={str(r.id): stats[f"run:{r.id}"] for r in runs},
+            filtered=stats["filtered"],
+            games=games,
+            total=stats["filtered"].attempts,
+            offset=offset,
+            limit=limit,
         )
-        and (lens != "long" or g.plies - g.start_ply >= 250)
-        and (wanted is None or g.attempt in wanted)
-    ]
-    filtered.sort(
-        key=lambda g: (
-            g.plies - g.start_ply if sort == "longest" else g.shortfall if sort == "shortfall" else g.id,
-            g.id,
-        ),
-        reverse=True,
-    )
-    return CollectionPage(
-        collection=_entry(path),
-        as_of=as_of,
-        runs=runs,
-        overall=_stats(games),
-        run_stats={str(r.id): _stats([g for g in games if g.run_id == r.id]) for r in runs},
-        filtered=_stats(filtered),
-        games=filtered[offset : offset + limit],
-        total=len(filtered),
-        offset=offset,
-        limit=limit,
-    )
 
 
 def game_detail(identity: str, game_id: int) -> GeneratedGameDetail:

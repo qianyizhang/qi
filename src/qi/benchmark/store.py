@@ -87,11 +87,26 @@ def validate_attempt(attempt: Attempt, slot: GameSlot, spec: BenchmarkSpec) -> N
 
 def load_manifest(directory: Path) -> Manifest:
     manifest = Manifest.model_validate_json((directory / "manifest.json").read_text())
+    validate_manifest(manifest)
+    return manifest
+
+
+def validate_manifest(manifest: Manifest) -> None:
     if manifest.spec_sha256 != manifest.spec.sha256:
         raise ValueError("Benchmark spec digest mismatch.")
     if any(not p.player_version for p in manifest.spec.entrants.values()):
         raise ValueError("The saved benchmark has unpinned entrant versions.")
-    return manifest
+
+
+def validate_attempts(manifest: Manifest, attempts: dict[str, list[Attempt]]) -> None:
+    slots = {s.id: s for s in manifest.spec.slots()}
+    if attempts.keys() != slots.keys():
+        raise ValueError("Attempt inventory must contain exactly every planned game slot.")
+    for id, entries in attempts.items():
+        for number, attempt in enumerate(entries, start=1):
+            validate_attempt(attempt, slots[id], manifest.spec)
+            if attempt.number != number or (attempt.status == "complete" and number != len(entries)):
+                raise ValueError("Attempt sequence contains a gap or retries a completed game.")
 
 
 def read_attempts(directory: Path, manifest: Manifest) -> dict[str, list[Attempt]]:
@@ -106,11 +121,8 @@ def read_attempts(directory: Path, manifest: Manifest) -> dict[str, list[Attempt
         attempt = Attempt.model_validate_json(path.read_text())
         if attempt.slot_id not in slots or path.parent.name != attempt.slot_id or path.stem != f"{attempt.number:06d}":
             raise ValueError("Attempt filename does not match a planned game slot.")
-        validate_attempt(attempt, slots[attempt.slot_id], manifest.spec)
-        previous = result[attempt.slot_id]
-        if attempt.number != len(previous) + 1 or any(a.status == "complete" for a in previous):
-            raise ValueError("Attempt sequence contains a gap or retries a completed game.")
-        previous.append(attempt)
+        result[attempt.slot_id].append(attempt)
+    validate_attempts(manifest, result)
     return result
 
 

@@ -10,7 +10,7 @@ from pydantic import Field
 from qi.artifacts import digest
 from qi.benchmark.models import Record
 from qi.benchmark.store import load_manifest, pool_state
-from qi.benchmark.summary import BenchmarkSummary, summarize_benchmark
+from qi.benchmark.summary import BenchmarkSummary, read_snapshot, summarize_benchmark
 
 
 class BenchmarkEntry(Record):
@@ -113,7 +113,4 @@ def register_benchmarks(app: FastAPI) -> None:
         file = path / "reports" / f"{snapshot}.json"
         if not file.resolve().is_relative_to(path.resolve()) or not file.is_file():
             raise HTTPException(404, "Unknown snapshot.")
-        result = BenchmarkSummary.model_validate_json(file.read_text())
-        if result.evidence_sha256 != snapshot or result.spec_sha256 != load_manifest(path).spec_sha256:
-            raise ValueError("Rating snapshot identity mismatch.")
-        return result
+        return read_snapshot(path, snapshot)

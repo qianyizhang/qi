@@ -44,8 +44,7 @@ authority_globs = ["docs/glossary/*.md"]
 skills_dirs = [".codex/skills", ".agents/skills"]
 deprecated_dir = "docs/deprecated"
 index_file = "docs/index.md"
-# Area routes required in the compact navigator. Complete file discovery belongs
-# to generated Human View, not docs/index.md.
+# Area routes required in the compact navigator.
 index_route_areas = [
     "docs/", "docs/adr/", "docs/glossary/", "docs/rules/", "records/work-items/", "records/campaigns/", "records/reports/",
 ]

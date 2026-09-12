@@ -529,9 +529,6 @@ export function ReportView({
                     }}
                     selected={null}
                     flipped={false}
-                    disabled
-                    keyboardDisabled
-                    onChoose={() => {}}
                   />
                 )}
                 <div className="toolbar">
@@ -723,9 +720,6 @@ export function ReportView({
                       }}
                       selected={null}
                       flipped={false}
-                      disabled
-                      keyboardDisabled
-                      onChoose={() => {}}
                     />
                   )}
                   <pre>

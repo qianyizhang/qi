@@ -2,7 +2,7 @@
 description: Run a bounded local teacher-imitation experiment and interpret its evidence.
 scope: supervised policy learning
 status: stable
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -19,11 +19,19 @@ v1 dataset commands below retain their existing generator and artifact format.
 There is no value head, engine-score regression, self-play improvement loop,
 PUCT, or GPU requirement.
 
+Choose the entry point for the retained input:
+
+| Input | Command | Contract |
+| --- | --- | --- |
+| Prepared JSON dataset | `qi learn run` | [Declarative experiments](#declarative-experiments) |
+| Frozen Parquet snapshot | `qi learn snapshot` | [Bounded snapshot training](#bounded-snapshot-training) |
+| Synthetic reference fixture | `qi learn reference` | [Reference reproduction](#reference-reproduction) |
+
 ## Declarative experiments
 
 Use `qi learn run --config <recipe.json> --preview` before a single fit or comparison.
 Execution adds `--output <fresh-directory>`; scientific settings cannot be
-overridden on this command line. This is the general training entry point.
+overridden on this command line. This runner consumes prepared JSON datasets.
 The flag-based `qi learn train` and `qi learn experiment` commands were removed
 under [AB-LEARN-011](../../../records/work-items/items/AB-LEARN-011-curve-adapter-retirement.md).
 Migrate single fits with `data.selection: "source-order"`; use `data.train_size`

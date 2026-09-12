@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from qi.artifacts import digest
 from qi.game import GameError
-from qi.players.core import PlayerConfig, PlayerInfo, Setting
+from qi.players.core import Player, PlayerConfig, PlayerInfo, Setting
 
 
 class Binding(BaseModel):
@@ -71,15 +71,6 @@ def configured_bindings() -> dict[str, Binding]:
         raise GameError("invalid_bindings", f"Cannot read player configuration: {exc}") from exc
 
 
-def binding_for(kind: str) -> Binding | None:
-    return configured_bindings().get(kind)
-
-
-def implementation_id(kind: str) -> str:
-    binding = binding_for(kind)
-    return binding.implementation if binding else kind
-
-
 def file_identity(path: str, *, maximum: int = 512 * 1024 * 1024) -> str:
     resource = Path(path)
     try:
@@ -120,23 +111,53 @@ def resolve(binding: Binding) -> ResolvedBinding:
     return ResolvedBinding(binding, identity, checkpoint, engine, network)
 
 
-def pin(config: PlayerConfig) -> PlayerConfig:
-    binding = binding_for(config.kind)
-    if binding is None:
+@dataclass(frozen=True)
+class ResolvedPlayer:
+    """One operation's implementation, pinned configuration and verified resources."""
+
+    config: PlayerConfig
+    player: Player
+    resource: ResolvedBinding | None
+
+
+def _requested_player(kind: str) -> tuple[Player, ResolvedBinding | None]:
+    from qi.players.catalog import get_player
+
+    bindings = configured_bindings()
+    player = get_player(kind, bindings=bindings)
+    binding = bindings.get(kind)
+    if binding is None and player.select is None:
+        raise GameError("missing_binding", "Select a configured player binding with its required resources.")
+    return player, resolve(binding) if binding is not None else None
+
+
+def _pin(config: PlayerConfig, player: Player, resource: ResolvedBinding | None) -> PlayerConfig:
+    if resource is None:
         if config.binding_sha256 is not None:
             raise GameError("binding_mismatch", "The saved player binding is no longer configured.")
+        if player.checkpoint is not None:
+            checkpoint = player.checkpoint()
+            if config.checkpoint_sha256 is not None and config.checkpoint_sha256 != checkpoint:
+                raise GameError("checkpoint_mismatch", "Configured policy differs from the pinned player checkpoint.")
+            return replace(config, checkpoint_sha256=checkpoint)
+        if config.checkpoint_sha256 is not None:
+            raise GameError("invalid_player", "This player does not use a checkpoint.")
         return config
-    resolved = resolve(binding)
-    if config.binding_sha256 is not None and config.binding_sha256 != resolved.sha256:
+    if config.binding_sha256 is not None and config.binding_sha256 != resource.sha256:
         raise GameError("binding_mismatch", "Configured resources differ from the pinned player binding.")
-    if config.checkpoint_sha256 is not None and config.checkpoint_sha256 != resolved.checkpoint_sha256:
+    if config.checkpoint_sha256 is not None and config.checkpoint_sha256 != resource.checkpoint_sha256:
         raise GameError("checkpoint_mismatch", "Configured policy differs from the pinned checkpoint.")
     return replace(
         config,
-        binding_sha256=resolved.sha256,
-        checkpoint_sha256=resolved.checkpoint_sha256,
-        work_semantics="engine_native" if binding.implementation == "pikafish" else "qi",
+        binding_sha256=resource.sha256,
+        checkpoint_sha256=resource.checkpoint_sha256,
+        work_semantics="engine_native" if resource.binding.implementation == "pikafish" else "qi",
     )
+
+
+def resolve_player(config: PlayerConfig) -> ResolvedPlayer:
+    player, resource = _requested_player(config.kind)
+    return ResolvedPlayer(_pin(config, player, resource), player, resource)
 
 
 def settings_for(info: PlayerInfo) -> dict[str, Setting]:
@@ -163,10 +184,10 @@ def settings_for(info: PlayerInfo) -> dict[str, Setting]:
     return settings
 
 
-def configured_info(binding: Binding, info: PlayerInfo) -> PlayerInfo:
+def configured_info(binding: Binding, info: PlayerInfo, *, resource: ResolvedBinding | None = None) -> PlayerInfo:
     info = replace(info, id=binding.id, label=binding.label, implementation_id=binding.implementation)
     try:
-        resource = resolve(binding)
+        resource = resource or resolve(binding)
         return replace(
             info,
             binding_sha256=resource.sha256,
@@ -177,14 +198,27 @@ def configured_info(binding: Binding, info: PlayerInfo) -> PlayerInfo:
         return replace(info, available=False, unavailable_reason=str(exc), settings=settings_for(info))
 
 
-def selection_config(
-    player: str, settings: dict[str, float], expected_binding: str | None, expected_checkpoint: str | None = None
-) -> PlayerConfig:
-    from qi.players import list_players
+def resolve_selection(
+    player: str,
+    settings: dict[str, float],
+    expected_binding: str | None,
+    expected_checkpoint: str | None = None,
+    *,
+    ply: int = 0,
+) -> ResolvedPlayer:
+    descriptor, resource = _requested_player(player)
+    if resource is not None:
+        info = configured_info(resource.binding, descriptor.info, resource=resource)
+    else:
+        info = replace(descriptor.info, implementation_id=player, settings=settings_for(descriptor.info))
+        if descriptor.available is not None and not descriptor.available():
+            raise GameError("unavailable_player", "Player is not available.")
+        if player == "policy":
+            from qi.players.policy import configured_info as policy_info
 
-    info = next((entry for entry in list_players() if entry.id == player), None)
-    if info is None or not info.available:
-        raise GameError("unavailable_player", info.unavailable_reason if info else "Player is not available.")
+            info = policy_info(info)
+    if not info.available:
+        raise GameError("unavailable_player", info.unavailable_reason or "Player is not available.")
     if set(settings) - info.settings.keys():
         raise GameError("invalid_settings", "A submitted setting is not supported by this player.")
     values = {key: spec.default for key, spec in info.settings.items()}
@@ -201,7 +235,7 @@ def selection_config(
         values[key] = value
     config = PlayerConfig(
         player,
-        seed=int(values.get("seed", 0)),
+        seed=int(values.get("seed", 0)) + ply,
         depth=int(values.get("depth", 2)),
         nodes=int(values.get("nodes", 128)),
         rollout_plies=int(values.get("rollout_plies", 8)),
@@ -213,4 +247,4 @@ def selection_config(
         raise GameError("checkpoint_mismatch", "Select the current checkpoint identity explicitly.")
     if expected_binding != info.binding_sha256:
         raise GameError("binding_mismatch", "Select the current binding explicitly before playing.")
-    return config
+    return ResolvedPlayer(_pin(config, descriptor, resource) if resource else config, descriptor, resource)

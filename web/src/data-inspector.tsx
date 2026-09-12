@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Bookmark,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -12,7 +11,8 @@ import {
 import { read, download, type Schema, type Position } from "./api";
 import { Board } from "./board";
 import { Button } from "./components/ui/button";
-import { reviewPrefix, type Review, type ReviewStatus } from "./data-review";
+import type { Review } from "./data-review";
+import { ReviewEditor } from "./review-editor";
 import {
   number,
   outcomeName,
@@ -22,116 +22,6 @@ import {
   type Detail,
   type Occurrence,
 } from "./data-format";
-function ReviewEditor({
-  collection,
-  game,
-  ply,
-  saved,
-  blocked,
-  onSave,
-}: {
-  collection: string;
-  game: Game;
-  ply: number;
-  saved?: Review;
-  blocked: boolean;
-  onSave: () => void;
-}) {
-  const [status, setStatus] = useState<ReviewStatus>(
-      saved?.status ?? "inspect",
-    ),
-    [note, setNote] = useState(saved?.note ?? ""),
-    [message, setMessage] = useState("");
-  const save = () => {
-    try {
-      const review: Review = {
-        attempt: game.attempt,
-        game_id: game.id,
-        trajectory: game.trajectory,
-        status,
-        note,
-        ply,
-        updated: new Date().toISOString(),
-      };
-      localStorage.setItem(
-        reviewPrefix(collection) + game.attempt,
-        JSON.stringify(review),
-      );
-      setMessage("Review saved in this browser.");
-      onSave();
-    } catch {
-      setMessage(
-        "Could not save. Browser storage may be unavailable or full; your note remains here.",
-      );
-    }
-  };
-  return (
-    <div className="review-editor">
-      <h3>
-        <Bookmark size={15} /> Review this game
-      </h3>
-      <div className="review-options">
-        {(["keep", "inspect", "exclude"] as const).map((v) => (
-          <button
-            key={v}
-            className={`review-${v}`}
-            aria-pressed={status === v}
-            onClick={() => setStatus(v)}
-          >
-            {v === "keep"
-              ? "Keep example"
-              : v === "inspect"
-                ? "Inspect later"
-                : "Exclude candidate"}
-          </button>
-        ))}
-      </div>
-      <label>
-        Review note
-        <textarea
-          rows={3}
-          maxLength={4000}
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="What makes this game useful, unusual, or unsuitable?"
-        />
-      </label>
-      <div className="toolbar">
-        <Button onClick={save} disabled={blocked || game.status === "running"}>
-          Save review at ply {ply}
-        </Button>
-        {saved && (
-          <Button
-            variant="ghost"
-            disabled={blocked}
-            onClick={() => {
-              try {
-                localStorage.removeItem(
-                  reviewPrefix(collection) + game.attempt,
-                );
-                setMessage("Review removed.");
-                onSave();
-              } catch {
-                setMessage("Could not remove review.");
-              }
-            }}
-          >
-            Clear review
-          </Button>
-        )}
-      </div>
-      <p className="muted">
-        Browser shortlist only. Exclude is a review suggestion; training
-        selection and source evidence are unchanged.
-      </p>
-      {game.status === "running" && (
-        <p className="muted">Review after this attempt is finalized.</p>
-      )}
-      {message && <p role="status">{message}</p>}
-    </div>
-  );
-}
-
 function ScorePlot({
   occurrences,
   maxPly,
@@ -399,9 +289,6 @@ export function GameInspector({
                 view={position.data}
                 flipped={flipped}
                 selected={null}
-                keyboardDisabled
-                disabled
-                onChoose={() => {}}
                 arrows={
                   move
                     ? [
@@ -598,7 +485,7 @@ export function GameInspector({
             choose={onPly}
           />
           <ReviewEditor
-            key={`${gameId}-${saved?.updated ?? "unsaved"}`}
+            key={`${collection}-${value.game.attempt}-${value.game.trajectory}`}
             collection={collection}
             game={value.game}
             ply={cursor}

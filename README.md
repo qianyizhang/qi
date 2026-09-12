@@ -146,14 +146,16 @@ uv run qi data prepare --config data/experiments/learning/preparation-two-mode-v
 The [Training Data guide](src/qi/training_data/README.md#commands-and-partial-work)
 owns generation modes, teacher supervision, pinned inputs and partial-work behavior.
 To train a local policy, follow the [teacher-imitation walkthrough](src/qi/learning/README.md).
-For single fits and repeatable comparisons, use `qi learn run --config <recipe.json> --preview`,
+For prepared JSON datasets, use `qi learn run --config <recipe.json> --preview`,
 then add `--output <fresh-directory>` to execute. Saved configs can be copied and
 edited; the [recipe and evidence guide](data/experiments/learning/README.md) links retained inputs.
 Use the shared [experiment catalog](#experiment-recall) to recall findings.
 It covers a bounded CPU run, checkpoint reload, held-out agreement, and arena
 comparison. Set `QI_POLICY_CHECKPOINT` to expose the trained player in CLI and
 browser play. The walkthrough also covers fixed-split data-size experiments and
-explicit `--device mps` training. `make test-learning` runs CPU learning checks;
+training with `execution.device: "mps"`. Frozen Parquet inputs use the separate
+[snapshot trainer](src/qi/learning/README.md#bounded-snapshot-training).
+`make test-learning` runs CPU learning checks;
 `make test-learning-mps` explicitly checks Metal training and CPU checkpoint reload.
 
 ## Rules and verification
@@ -202,6 +204,9 @@ Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` recor
 its full-kit baseline. The retention rules (`doc`, `governance`, `python`) and
 `doc-hygiene-audit`, `handoff`, and `governance-sync` skill cores were selectively
 synced from repo-kit `0a51b52`; the backlog lifecycle was reconciled locally.
+The explicit glossary replacement contract, its checkers and glossary-format
+reference were selectively synced from `c60fb19`; domain-modeling received only
+the related wording and a local patch bump, preserving its existing differences.
 Shared rules and skills remain kit-managed. Use `governance-sync` when updating;
 project bindings and application code belong to qi.
 

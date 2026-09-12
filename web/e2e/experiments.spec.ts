@@ -74,6 +74,20 @@ test("native reports share summaries, URL filters and exports; trace jobs refres
   await expect(page).toHaveURL(/player=mcts/);
   await page.reload();
   await expect(page.getByLabel("Player", { exact: true })).toHaveValue("mcts");
+  const nextPosition = page.getByRole("button", {
+    name: "Next report position",
+    exact: true,
+  });
+  await nextPosition.scrollIntoViewIfNeeded();
+  const previousScroll = await page.evaluate(() => window.scrollY);
+  await nextPosition.click();
+  await expect(
+    page.getByText("Recorded position 1/1", { exact: false }),
+  ).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBe(previousScroll);
+  await expect(page.locator('.board [role="button"]')).toHaveCount(0);
   const data = await (
     await page.request.get(`/api/experiments/${run.id}`)
   ).json();

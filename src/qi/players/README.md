@@ -2,7 +2,7 @@
 description: The pluggable player contract and a reading guide to the engine modules.
 scope: player architecture and extension
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -36,7 +36,9 @@ SDK dependency, class hierarchy requirement, or arbitrary executable loading.
 The training teacher remains a separate role. The explicit Pikafish player
 reuses its bounded UCI transport; selecting other players never adds teacher access.
 
-Descriptors can expose an availability predicate and legacy checkpoint hook.
+Descriptors can expose an availability predicate and a checkpoint identity hook.
+Resource-backed implementations use `select_bound(game, config, resource)` to
+receive verified resources; `select` can be `None` when a named binding is required.
 Named bindings resolve resources separately from algorithm registration. Catalog
 metadata hashes configured bytes without loading models or starting engines.
 
@@ -71,6 +73,12 @@ not when constructing the transport-neutral `PlayerConfig` record.
 `choose()` is the public boundary: it rejects terminal games, dispatches the
 player, validates move legality and budget diagnostics, then attaches full-state
 hash, player version, seed, and measured elapsed time.
+With a `PlayerConfig`, it resolves the selected implementation and resources once.
+HTTP selection uses `resolve_selection()` to validate advertised settings and
+identities, then passes its `ResolvedPlayer` directly to `choose()`. That record
+holds one operation's implementation, pinned configuration and verified resources;
+it is not a reusable resource cache. `bind_config()` pins participant identities
+before a match or evaluation, and later choices check those identities again.
 [`validation.py`](validation.py) owns pure legality, common budget, MCTS accounting,
 root-visit/value, and search-counter checks for both `Decision` and `Choice`.
 Live selection, arena evaluation and search evidence call it directly. It raises
@@ -118,10 +126,16 @@ For example (replace paths with your local resources):
 
 The catalog exposes each binding's implementation/version, label, resource
 fingerprints and settings. A checkpoint selector is a named entry, not a browser
-file picker. `bindings.py` hashes and pins resource bytes before each execution;
-changed or missing resources fail explicitly. `policy/runtime.py` caches named
-models by path and verified digest. The `QI_POLICY_CHECKPOINT` convenience entry
-retains its existing process-pinned default behavior.
+file picker. `bindings.py` reads the configuration once and hashes only the requested
+binding's resources for an operation. Validation and dispatch share that resolution;
+changed or missing resources fail the next operation explicitly. `policy/runtime.py`
+caches named models by path and verified digest.
+
+The `QI_POLICY_CHECKPOINT` convenience entry keeps its loaded model for the process
+lifetime. The catalog advertises that actual loaded identity. If its file changes
+or disappears, the entry becomes unavailable for controller selection and explains
+that the server needs a restart to adopt replacement weights. Restoring identical
+bytes restores availability; direct in-process inference retains the pinned model.
 
 CLI `--player`, arena participant IDs, evaluation PlayerConfig kinds and HTTP
 all use the same binding boundary. Two policy IDs may therefore use different

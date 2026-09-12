@@ -559,3 +559,159 @@ test("cancelling a stalled response body releases the session lock", async ({
   await humanMove(page);
   expect((await stored(page)).history[0].controller.player).toBe("human");
 });
+
+test("invalid imports preserve the session and keep errors inside the dialog", async ({
+  page,
+}) => {
+  await start(page);
+  await humanMove(page);
+  const before = await page.evaluate(() =>
+    localStorage.getItem("qi.active-session.v1"),
+  );
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  for (const input of [
+    "{bad",
+    "null",
+    "false",
+    "0",
+    '""',
+    "[]",
+    '{"moves":["invalid"]}',
+    '{"format":"invalid"}',
+  ]) {
+    await dialog.getByLabel("Imported JSON").fill(input);
+    await dialog.getByRole("button", { name: "Load JSON" }).click();
+    await expect(dialog.getByRole("alert")).toBeVisible();
+    await expect(dialog.getByLabel("Imported JSON")).toHaveValue(input);
+    expect(
+      await page.evaluate(() => localStorage.getItem("qi.active-session.v1")),
+    ).toBe(before);
+    await expect(page.locator(".board-status")).toContainText("Ply 1");
+  }
+});
+
+test("import closes only after validation and a successful storage write", async ({
+  page,
+}) => {
+  await start(page);
+  await humanMove(page);
+  const before = await page.evaluate(() =>
+    localStorage.getItem("qi.active-session.v1"),
+  );
+  const initial = await (await page.request.post("/api/new")).json();
+  const entered = deferred(),
+    released = deferred();
+  await page.route("**/api/inspect", async (route) => {
+    const response = await route.fetch();
+    entered.resolve();
+    await released.promise;
+    await route.fulfill({ response });
+  });
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog
+    .getByLabel("Imported JSON")
+    .fill(JSON.stringify(initial.snapshot));
+  await dialog.getByRole("button", { name: "Load JSON" }).click();
+  await entered.promise;
+  await expect(dialog.getByRole("status")).toContainText(
+    "Validating and saving",
+  );
+  await expect(
+    dialog.getByRole("button", { name: "Close", exact: true }),
+  ).toBeDisabled();
+  expect(
+    await page.evaluate(() => localStorage.getItem("qi.active-session.v1")),
+  ).toBe(before);
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (key === "qi.active-session.v1")
+        throw new Error("Storage quota exceeded");
+      return original.call(this, key, value);
+    };
+    (window as unknown as { restoreStorage: () => void }).restoreStorage =
+      () => {
+        Storage.prototype.setItem = original;
+      };
+  });
+  released.resolve();
+  await expect(dialog.getByRole("alert")).toContainText(
+    "Storage quota exceeded",
+  );
+  await expect(dialog.getByLabel("Imported JSON")).toHaveValue(
+    JSON.stringify(initial.snapshot),
+  );
+  expect(
+    await page.evaluate(() => localStorage.getItem("qi.active-session.v1")),
+  ).toBe(before);
+  await page.evaluate(() =>
+    (window as unknown as { restoreStorage: () => void }).restoreStorage(),
+  );
+  await dialog.getByRole("button", { name: "Load JSON" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.locator(".board-status")).toContainText("Ply 0");
+  expect((await stored(page)).snapshot.moves).toHaveLength(0);
+});
+
+test("board has one Tab stop and arrow movement follows its orientation", async ({
+  page,
+}) => {
+  await start(page);
+  const board = page.getByRole("group", { name: "Chinese chess board" });
+  await expect(board.locator('[tabindex="0"]')).toHaveCount(1);
+  const square = (name: string) =>
+    board.getByRole("button", { name: new RegExp(`^${name} `) });
+  await square("a0").focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(square("a0")).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowUp");
+  await expect(square("b1")).toBeFocused();
+  await expect(square("b1")).toHaveCSS("outline-style", "solid");
+  await page.getByRole("button", { name: "Flip board" }).click();
+  await square("b1").focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(square("b0")).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowLeft");
+  await expect(square("c1")).toBeFocused();
+  await page.getByRole("button", { name: "Flip board" }).click();
+  await square("b2").focus();
+  await page.keyboard.press("Enter");
+  for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowRight");
+  await expect(square("e2")).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(page.locator(".board-status")).toContainText("Ply 1");
+  await expect(board.locator('[tabindex="0"]')).toHaveCount(1);
+  await page.keyboard.press("Tab");
+  expect(
+    await board.evaluate((element) => element.contains(document.activeElement)),
+  ).toBe(false);
+  const nav = page.getByRole("navigation", { name: "Main navigation" });
+  await expect(nav.getByRole("link")).toHaveCount(7);
+  for (const link of await nav.getByRole("link").all())
+    await expect(link).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("non-JSON server failures explain the transport problem", async ({
+  page,
+}) => {
+  await page.route("**/api/players", (route) =>
+    route.fulfill({
+      status: 502,
+      contentType: "text/html",
+      body: "<h1>Bad gateway</h1>",
+    }),
+  );
+  await start(page);
+  await expect(page.getByRole("alert")).toContainText("502");
+  await expect(page.getByRole("alert")).toContainText("without valid JSON");
+  await humanMove(page);
+});

@@ -71,7 +71,7 @@ def test_cli_api_parity_and_clean_error_streams(tmp_path, client) -> None:
 
 
 @pytest.mark.parametrize("player", ["random", "alphabeta", "quiescence"])
-def test_opponent_choice_matches_python_and_replays(client, player) -> None:
+def test_player_choice_matches_python_and_replays(client, player) -> None:
     from dataclasses import asdict
 
     from qi.players import PlayerConfig, choose
@@ -79,20 +79,20 @@ def test_opponent_choice_matches_python_and_replays(client, player) -> None:
     snapshot = Snapshot(moves=["b2e2"])
     game = snapshot.game()
     response = client.post(
-        "/api/opponent",
+        "/api/play/choose",
         json={
             "snapshot": snapshot.model_dump(),
             "expected_state_hash": game.state_hash,
-            "player": player,
-            "seed": 7,
-            "nodes": 64,
-            "depth": 2,
+            "controller": {
+                "player": player,
+                "settings": {"seed": 7} if player == "random" else {"nodes": 64, "depth": 2},
+            },
         },
     )
     assert response.status_code == 200
     data = response.json()
     actual = data["choice"]
-    expected = asdict(choose(game, PlayerConfig(player, seed=8, depth=2, nodes=64)))
+    expected = asdict(choose(game, PlayerConfig(player, seed=8 if player == "random" else 1, depth=2, nodes=64)))
     actual.pop("elapsed_ms")
     expected.pop("elapsed_ms")
     assert actual == expected
@@ -102,41 +102,64 @@ def test_opponent_choice_matches_python_and_replays(client, player) -> None:
     assert snapshot.moves == ["b2e2"]
 
 
-def test_opponent_stale_guard_precedes_search(client, monkeypatch) -> None:
+def test_player_stale_guard_precedes_search(client, monkeypatch) -> None:
     def forbidden(*args):
         pytest.fail("Stale requests must not start search")
 
     monkeypatch.setattr("qi.api.choose", forbidden)
-    response = client.post("/api/opponent", json={"snapshot": Snapshot().model_dump(), "expected_state_hash": "0" * 64})
+    response = client.post(
+        "/api/play/choose",
+        json={
+            "snapshot": Snapshot().model_dump(),
+            "expected_state_hash": "0" * 64,
+            "controller": {"player": "alphabeta"},
+        },
+    )
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "stale_state"
 
 
 @pytest.mark.parametrize(
     "settings",
-    [{"nodes": 513}, {"depth": 5}, {"seed": -1}, {"seed": True}, {"player": "teacher"}, {"engine": "/tmp/anything"}],
+    [{"nodes": 100001}, {"depth": 9}, {"seed": -1}, {"seed": True}, {"player": "teacher"}, {"engine": "/tmp/anything"}],
 )
-def test_browser_opponent_rejects_unbounded_or_external_settings(client, settings) -> None:
+def test_browser_player_rejects_unbounded_or_external_settings(client, settings) -> None:
     initial = client.post("/api/new").json()
     response = client.post(
-        "/api/opponent",
+        "/api/play/choose",
         json={
             "snapshot": initial["snapshot"],
             "expected_state_hash": initial["state_hash"],
-            **settings,
+            "controller": {"player": "alphabeta", "settings": settings},
         },
     )
-    assert response.status_code == 422
+    assert response.status_code in (409, 422)
 
 
-def test_browser_opponent_rejects_terminal_game(client) -> None:
+def test_browser_player_rejects_terminal_game(client) -> None:
     snapshot = Snapshot(moves=["b0c2", "b9c7", "c2b0", "c7b9"] * 2)
     response = client.post(
-        "/api/opponent",
+        "/api/play/choose",
         json={
             "snapshot": snapshot.model_dump(),
             "expected_state_hash": snapshot.game().state_hash,
+            "controller": {"player": "alphabeta"},
         },
     )
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "game_over"
+
+
+def test_retired_opponent_endpoint_is_absent(client):
+    assert "/api/opponent" not in client.get("/openapi.json").json()["paths"]
+    assert client.post("/api/opponent", json={}).status_code == 405
+
+
+def test_http_errors_preserve_messages_and_status(client):
+    response = client.get("/api/benchmarks/missing")
+    assert response.status_code == 404
+    assert response.json() == {"error": {"code": "not_found", "message": "Unknown benchmark."}}
+    response = client.put("/api/new")
+    assert response.status_code == 405
+    assert response.json()["error"]["code"] == "method_not_allowed"
+    assert "POST" in response.headers["allow"]

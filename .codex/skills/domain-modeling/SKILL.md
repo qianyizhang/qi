@@ -1,6 +1,6 @@
 ---
 name: domain-modeling
-version: "1.4.1"
+version: "1.4.2"
 description: >-
   Build and deliberately evolve the project's core models, ubiquitous language,
   and ADRs. Use when work changes cross-cutting concepts or relationships,
@@ -8,7 +8,7 @@ description: >-
   model-grounded decision interview.
 scope: domain modeling skill
 status: stable
-last_update: 2026-08-17
+last_update: 2026-09-12
 document_class: artifact
 ---
 
@@ -53,7 +53,8 @@ the same change after its meaning is accepted.
 3. Follow `references/GLOSSARY-FORMAT.md`.
 4. Use the code-facing English name plus the reader-audience translation and
    explanation.
-5. Record confusing synonyms in the `_Avoid_` column.
+5. Record misconceptions in `_Avoid_`; put deliberately superseded forms in the
+   optional `Replaced terms` column.
 
 During a decision interview:
 

@@ -1,10 +1,19 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { read, type Schema } from "./api";
 import { Button } from "./components/ui/button";
 import "./benchmarks.css";
 
 type Summary = Schema<"BenchmarkSummary">;
+export type BenchmarkFilters = { run?: string; snapshot?: string };
+export function parseBenchmarkFilters(
+  search: Record<string, unknown>,
+): BenchmarkFilters {
+  const text = (value: unknown) =>
+    typeof value === "string" && value.length > 0 && value.length <= 128
+      ? value
+      : undefined;
+  return { run: text(search.run), snapshot: text(search.snapshot) };
+}
 const number = (value: number | null | undefined, digits = 0) =>
   value == null
     ? "—"
@@ -17,6 +26,19 @@ function Results({ data }: { data: Summary }) {
   );
   return (
     <>
+      {data.verification && (
+        <p
+          className={
+            data.verification.status === "verified" ? "muted" : "card error"
+          }
+          role="status"
+        >
+          {data.verification.status === "verified"
+            ? "Verified evidence"
+            : "Unverified historical snapshot"}
+          : {data.verification.reason}
+        </p>
+      )}
       <div className="benchmark-metrics" aria-label="Benchmark progress">
         <div className="card">
           <small>Games complete</small>
@@ -213,30 +235,49 @@ function Results({ data }: { data: Summary }) {
   );
 }
 
-export function BenchmarksPage() {
-  const [selected, setSelected] = useState("");
-  const [snapshot, setSnapshot] = useState("");
+export function BenchmarksPage({
+  filters,
+  onFilters,
+}: {
+  filters: BenchmarkFilters;
+  onFilters: (filters: BenchmarkFilters) => void;
+}) {
+  const snapshot = filters.snapshot ?? "";
   const catalog = useQuery({
     queryKey: ["benchmarks"],
     queryFn: ({ signal }) =>
       read<Schema<"BenchmarkCatalog">>("benchmarks", signal),
-    refetchInterval: 15000,
+    refetchOnWindowFocus: false,
   });
-  const id = selected || catalog.data?.entries?.[0]?.id || "";
+  const id = filters.run || catalog.data?.entries?.[0]?.id || "";
   const report = useQuery({
     queryKey: ["benchmark", id],
     queryFn: ({ signal }) =>
-      read<Schema<"BenchmarkReport">>(`benchmarks/${id}`, signal),
+      read<Schema<"BenchmarkReport">>(
+        `benchmarks/${encodeURIComponent(id)}`,
+        signal,
+      ),
     enabled: !!id,
     retry: false,
-    refetchInterval: 15000,
+    refetchOnWindowFocus: false,
+    refetchInterval: (query) =>
+      !snapshot &&
+      query.state.data &&
+      query.state.data.summary.status !== "complete"
+        ? 15000
+        : false,
   });
   const saved = useQuery({
     queryKey: ["benchmark-snapshot", id, snapshot],
     queryFn: ({ signal }) =>
-      read<Summary>(`benchmarks/${id}/snapshots/${snapshot}`, signal),
+      read<Summary>(
+        `benchmarks/${encodeURIComponent(id)}/snapshots/${encodeURIComponent(snapshot)}`,
+        signal,
+      ),
     enabled: !!id && !!snapshot,
     retry: false,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
   const data = snapshot ? saved.data : report.data?.summary;
   return (
@@ -254,6 +295,7 @@ export function BenchmarksPage() {
           onClick={() => {
             void catalog.refetch();
             void report.refetch();
+            if (snapshot) void saved.refetch();
           }}
         >
           Refresh results
@@ -288,8 +330,7 @@ export function BenchmarksPage() {
                 aria-label="Benchmark run"
                 value={id}
                 onChange={(e) => {
-                  setSelected(e.target.value);
-                  setSnapshot("");
+                  onFilters({ run: e.target.value });
                 }}
               >
                 {catalog.data?.entries?.map((entry) => (
@@ -306,7 +347,12 @@ export function BenchmarksPage() {
                 <select
                   aria-label="Rating snapshot"
                   value={snapshot}
-                  onChange={(e) => setSnapshot(e.target.value)}
+                  onChange={(e) =>
+                    onFilters({
+                      run: id,
+                      snapshot: e.target.value || undefined,
+                    })
+                  }
                 >
                   <option value="">Current evidence</option>
                   {report.data?.snapshots.map((sha) => (

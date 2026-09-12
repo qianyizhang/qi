@@ -47,12 +47,9 @@ def test_cli_http_parity_including_rollout_budget_and_root_statistics(tmp_path):
         payload = {
             "snapshot": snapshot.model_dump(),
             "expected_state_hash": snapshot.game().state_hash,
-            "player": "mcts",
-            "seed": 7,
-            "nodes": 128,
-            "rollout_plies": 3,
+            "controller": {"player": "mcts", "settings": {"seed": 7, "nodes": 128, "rollout_plies": 3}},
         }
-        response = client.post("/api/opponent", json=payload)
+        response = client.post("/api/play/choose", json=payload)
         assert response.status_code == 200
         actual = response.json()["choice"]
         actual.pop("elapsed_ms")
@@ -62,7 +59,10 @@ def test_cli_http_parity_including_rollout_budget_and_root_statistics(tmp_path):
             actual["move"]
         )
         for limit in (-1, 65, True):
-            assert client.post("/api/opponent", json={**payload, "rollout_plies": limit}).status_code == 422
+            assert client.post(
+                "/api/play/choose",
+                json={**payload, "controller": {"player": "mcts", "settings": {"rollout_plies": limit}}},
+            ).status_code in (409, 422)
 
 
 def test_paired_arena_records_replay_and_summarize_mcts_work():

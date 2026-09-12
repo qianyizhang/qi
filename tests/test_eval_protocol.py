@@ -13,7 +13,7 @@ from qi.cli import app
 from qi.evaluation import EvalRun, EvalSpec, run_evaluation, summarize_evaluation
 from qi.experiments.evidence import check_choice
 from qi.game import GameError, legal_moves
-from qi.players import Decision, PlayerConfig
+from qi.players import Decision, PlayerConfig, catalog
 from qi.players.core import MctsStats, RootMove, SearchStats
 from qi.protocol import Snapshot
 
@@ -233,7 +233,7 @@ def test_diagnostics_have_same_meaning_at_all_boundaries(evidence, monkeypatch, 
     monkeypatch.setattr(evaluation, "play_match", forbidden)
     monkeypatch.setattr(evaluation, "bind_config", forbidden)
     monkeypatch.setattr(evaluation, "get_player", forbidden)
-    monkeypatch.setattr(players, "get_player", forbidden)
+    monkeypatch.setattr(catalog, "get_player", forbidden)
     config = entry.match.red
     raw = evidence.model_dump(mode="json")
     raw["games"][0]["match"]["turns"][0]["choice"] = asdict(choice)
@@ -264,7 +264,7 @@ def test_diagnostics_have_same_meaning_at_all_boundaries(evidence, monkeypatch, 
     player = players.Player(
         players.PlayerInfo(config.kind, original.player_version, "Fixture", "Fixture", False), lambda *_: decision
     )
-    monkeypatch.setattr(players, "get_player", lambda *_: player)
+    monkeypatch.setattr(catalog, "get_player", lambda *args, **kwargs: player)
     if reason:
         with pytest.raises(GameError, match=reason) as error:
             players.choose(game, config)

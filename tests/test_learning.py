@@ -43,14 +43,22 @@ def test_overfit_reload_and_teacher_free_adapters(fitted, monkeypatch, tmp_path)
         metadata = client.get("/api/players").json()[-1]
         assert metadata["id"] == "policy" and metadata["checkpoint_sha256"] == choice.checkpoint_sha256
         response = client.post(
-            "/api/opponent",
-            json={"snapshot": Snapshot().model_dump(), "expected_state_hash": Game().state_hash, "player": "policy"},
+            "/api/play/choose",
+            json={
+                "snapshot": Snapshot().model_dump(),
+                "expected_state_hash": Game().state_hash,
+                "controller": {"player": "policy", "checkpoint_sha256": choice.checkpoint_sha256},
+            },
         )
         assert response.status_code == 200
         assert response.json()["choice"]["move"] == choice.move
         stale = client.post(
-            "/api/opponent",
-            json={"snapshot": Snapshot().model_dump(), "expected_state_hash": "0" * 64, "player": "policy"},
+            "/api/play/choose",
+            json={
+                "snapshot": Snapshot().model_dump(),
+                "expected_state_hash": "0" * 64,
+                "controller": {"player": "policy", "checkpoint_sha256": choice.checkpoint_sha256},
+            },
         )
         assert stale.status_code == 409
     match = play_match(PlayerConfig("policy"), PlayerConfig("random", seed=9))

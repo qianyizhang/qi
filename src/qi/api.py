@@ -1,13 +1,13 @@
 """Local app adapter; referee operations and owned trace jobs have separate lifecycles."""
 
 from contextlib import asynccontextmanager
-from dataclasses import replace
 from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException
 
 from qi.benchmark.api import register_benchmarks
 from qi.collection_api import register_collections
@@ -15,15 +15,13 @@ from qi.experiment_api import register
 from qi.game import Game, GameError
 from qi.generation_lesson import register_generation_lesson
 from qi.lab import TraceJobs
-from qi.players import PlayerConfig, PlayerInfo, bind_config, choose, list_players
-from qi.players.bindings import selection_config
+from qi.players import PlayerInfo, choose, list_players, resolve_selection
 from qi.protocol import (
     ApplyRequest,
     Controller,
+    ErrorResponse,
     GameSession,
     InspectRequest,
-    OpponentRequest,
-    OpponentResult,
     PlayRequest,
     PlayResult,
     Position,
@@ -40,11 +38,25 @@ def create_app() -> FastAPI:
         yield
         jobs.close()
 
-    app = FastAPI(title="Qi local laboratory", version="0.2.0", lifespan=lifespan)
+    app = FastAPI(
+        title="Qi local laboratory",
+        version="0.2.0",
+        lifespan=lifespan,
+        responses={code: {"model": ErrorResponse} for code in (404, 405, 409, 422)},
+    )
     register(app, jobs)
     register_collections(app)
     register_generation_lesson(app)
     register_benchmarks(app)
+
+    @app.exception_handler(HTTPException)
+    async def http_error(request: Request, exc: HTTPException) -> JSONResponse:
+        code = {404: "not_found", 405: "method_not_allowed", 409: "conflict"}.get(exc.status_code, "http_error")
+        return JSONResponse(
+            status_code=exc.status_code,
+            headers=exc.headers,
+            content={"error": {"code": code, "message": str(exc.detail)}},
+        )
 
     @app.exception_handler(ValueError)
     async def invalid_evidence(request: Request, exc: ValueError):
@@ -77,27 +89,10 @@ def create_app() -> FastAPI:
     def apply(request: ApplyRequest) -> Position:
         return inspect(request.snapshot.game().apply(request.move, request.expected_state_hash))
 
-    @app.post("/api/opponent", response_model=OpponentResult)
-    def opponent(request: OpponentRequest) -> OpponentResult:
-        game = request.snapshot.game()
-        if game.state_hash != request.expected_state_hash:
-            raise GameError("stale_state", "The position changed before the opponent request.")
-        choice = choose(
-            game,
-            PlayerConfig(
-                request.player,
-                request.seed + len(game.moves),
-                request.depth,
-                request.nodes,
-                rollout_plies=request.rollout_plies,
-            ),
-        )
-        return OpponentResult(position=inspect(game.apply(choice.move, choice.state_hash)), choice=choice)
-
     @app.post("/api/play/controller/inspect", response_model=Controller)
     def controller(request: Controller):
         if request.player != "human":
-            selection_config(request.player, request.settings, request.binding_sha256, request.checkpoint_sha256)
+            resolve_selection(request.player, request.settings, request.binding_sha256, request.checkpoint_sha256)
         return request
 
     @app.post("/api/play/choose", response_model=PlayResult)
@@ -106,12 +101,17 @@ def create_app() -> FastAPI:
         if game.state_hash != request.expected_state_hash:
             raise GameError("stale_state", "The position changed before the player request.")
         selection = request.controller
-        config = selection_config(
-            selection.player, selection.settings, selection.binding_sha256, selection.checkpoint_sha256
+        resolved = resolve_selection(
+            selection.player,
+            selection.settings,
+            selection.binding_sha256,
+            selection.checkpoint_sha256,
+            ply=len(game.moves),
         )
-        config = bind_config(replace(config, seed=config.seed + len(game.moves)))
-        choice = choose(game, config)
-        return PlayResult(position=inspect(game.apply(choice.move, choice.state_hash)), choice=choice, config=config)
+        choice = choose(game, resolved)
+        return PlayResult(
+            position=inspect(game.apply(choice.move, choice.state_hash)), choice=choice, config=resolved.config
+        )
 
     @app.post("/api/play/session/inspect", response_model=SessionResult)
     def session(request: GameSession):

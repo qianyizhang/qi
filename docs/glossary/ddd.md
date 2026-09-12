@@ -2,7 +2,7 @@
 description: Canonical domain and technical vocabulary, including beginner explanations used by the experiment report.
 scope: domain vocabulary
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -11,7 +11,9 @@ document_class: coordination
 These definitions are the vocabulary authority for qi. The HTML report embeds
 this glossary at generation time: its tooltips and searchable reference are
 projections of these entries. Aliases connect visible labels and saved field names
-to a canonical term; they do not introduce different meanings.
+to a canonical term; they do not introduce different meanings. `_Avoid_` records
+human misconceptions. Only an explicit optional `Replaced terms` column declares
+deprecated spellings for the authoring checker; aliases and misconceptions do not.
 
 ## Game and rules
 

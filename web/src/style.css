@@ -310,9 +310,8 @@
   color: #4d654f;
   font-size: 14px;
 }
-.square {
+.square[role="button"] {
   cursor: pointer;
-  outline: none;
 }
 .square[aria-disabled="true"] {
   cursor: default;
@@ -550,6 +549,7 @@ footer {
   .app-header nav {
     order: 3;
     width: 100%;
+    flex-wrap: wrap;
     justify-content: space-between;
   }
   .app-header nav a {
@@ -581,7 +581,7 @@ footer {
 @media (max-width: 550px) {
   .app-header nav {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
     flex-basis: 100%;
     min-width: 0;
     gap: 2px;

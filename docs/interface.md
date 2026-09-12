@@ -2,7 +2,7 @@
 description: Local app, player selection, replay, saved sessions and experiment interfaces.
 scope: local lab interfaces
 status: stable
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -21,14 +21,16 @@ The snapshot is portable data, not a server session identifier.
 Python owns referee operations. JSON CLI and HTTP are adapters. HTTP exposes
 `POST /api/new`, `/api/inspect`, and `/api/apply`; API schemas are available at
 `/docs`. Apply requires `expected_state_hash`, snapshot, and move. The hash covers
-ruleset and full history, not just the board. Invalid actions return structured
-errors and cannot change the input snapshot. Referee move operations are stateless.
+ruleset and full history, not just the board. Invalid actions return
+`{"error":{"code":"...","message":"..."}}`, including HTTP routing errors,
+and cannot change the input snapshot. Referee move operations are stateless.
 Trace jobs have a separate server-owned
 lifecycle; remote multiplayer is not implemented.
 
 CLI stdout contains one JSON object; errors use a structured stderr object and
 nonzero exit status. Save stdout to a different file from the input snapshot.
-Browser exports use the same snapshot and import validates it before replacement.
+Browser exports use the same snapshot. Import validates and persists the replacement
+before closing the dialog; errors retain its text and the active session.
 Replay navigation is read-only; return to the last move to continue playing.
 
 ## Unified local app
@@ -38,12 +40,14 @@ share a React/TypeScript/Vite frontend and FastAPI server. TanStack Router owns
 navigation and report URL filters; TanStack Query owns server reads. Source-owned
 shadcn/ui controls and Tailwind styles are shared with the offline report build.
 `web/src/session.tsx` owns the active game through a reducer/context. The board
-renders legal moves supplied by Python; it does not implement rules.
+renders legal moves supplied by Python; it does not implement rules. Play boards
+have one Tab stop; arrow keys follow the displayed orientation and Enter/Space
+select a square. Report navigation preserves scroll while changing URL filters.
 
 `web/openapi.json` and `web/src/generated-api.ts` derive from Python HTTP models.
 Run `npm run generate:api --prefix web` after changing an API contract, then build.
-The legacy `POST /api/opponent` remains available with depth 1–4 and nodes 1–512.
-The new app uses `POST /api/play/choose` with an explicit controller selection.
+`make lint` checks both generated files against Python without rewriting them.
+Player requests use `POST /api/play/choose` with an explicit controller selection.
 
 ## Players and settings
 
@@ -127,6 +131,8 @@ before launch and in the worker. `GET /api/trace-jobs` reports status; the cance
 endpoint terminates the owned worker. Browser navigation/closure does not cancel
 an explicit trace job. Server shutdown terminates it; restart marks unfinished
 metadata interrupted without resuming work.
+Each metadata update holds the state lease and refreshes records from disk;
+separate app owners cannot overwrite one another's completed jobs from stale caches.
 An incompatible request never checks out historical code or reruns its benchmark.
 
 `QI_TRACE_SECONDS` sets the finite server deadline (default 120, maximum 3600).
@@ -148,6 +154,8 @@ Python replays retained evidence before deriving progress, ratings and matchups.
 
 The page shows complete color pairs, failures, immutable report snapshots,
 uncertainty or its unavailability reason, configurations and observed resources.
+Run and snapshot selection live in the URL. Only current unfinished results poll;
+historical results display whether their original scoring evidence was verified.
 Standard-start diagnostics are displayed separately from varied-opening ratings.
 Locked tests show progress while results remain hidden until explicit CLI reveal
 after completion. The [benchmark contract](benchmark.md) owns scheduling, rating
@@ -193,7 +201,10 @@ nor generated outcomes establish player strength.
 Keep/inspect/exclude reviews and notes are browser-owned suggestions. Explicit Save
 stores one record per collection/game-attempt under `qi.collection-review.v1`, with
 trajectory identity, current ply and timestamp. They do not write to the collection
-or change training eligibility. Corrupt/unavailable browser storage blocks overwrite
+or change training eligibility. Unsaved drafts survive game and route changes in
+the current tab until reload. Web Locks serialize saves; changed saved revisions
+require an explicit reload or overwrite choice, with another revision check before
+overwrite. Corrupt/unavailable browser storage blocks overwrite
 and preserves the existing bytes. Review JSON and referee-snapshot exports are
 separate formats. Reviews are local to this browser/origin; retain exports for a
 portable copy. Filters, game and ply live in the URL. Refresh reads current evidence;

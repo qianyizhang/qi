@@ -2,7 +2,7 @@
 description: Accepted ownership and identity model for game learning and training data.
 scope: core domain model
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -107,8 +107,9 @@ view is not a frozen selection.
 The collection, SQL recipe selection, frozen Parquet and bounded reader are implemented
 under [AB-DATA-007](../records/work-items/items/AB-DATA-007-sqlite-training-data-store.md).
 The [Training Data guide](../src/qi/training_data/README.md#incremental-collection-and-parquet-snapshots)
-owns executable contracts and explicit JSON compatibility. Production optimizer
-integration remains separate; existing training formats below retain their meanings.
+owns executable contracts and explicit JSON compatibility. The implemented
+[snapshot trainer](../src/qi/learning/README.md#bounded-snapshot-training) consumes
+the frozen selection; existing training formats below retain their meanings.
 
 ### Selection rules
 

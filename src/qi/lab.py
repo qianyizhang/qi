@@ -146,6 +146,7 @@ class TraceJobs:
         self.process: subprocess.Popen | None = None
         self.lease = None
         self.jobs: list[TraceJob] | None = None
+        self.revision: str | None = None
         self.worker_thread: threading.Thread | None = None
 
     def _acquire(self):
@@ -158,27 +159,39 @@ class TraceJobs:
             raise GameError("trace_busy", "Another server owns the trace job state.") from None
         return handle
 
-    def _load(self):
-        if self.jobs is not None:
+    def _load(self, lease=None):
+        if self.process is not None:
             return
-        lease = self._acquire()
+        acquired = lease is None
+        lease = lease or self._acquire()
         try:
             path = self.state / "jobs.json"
             require(not path.exists() or path.stat().st_size <= 1024 * 1024, "Job metadata exceeds 1 MiB.")
-            self.jobs = [TraceJob.model_validate(row) for row in json.loads(path.read_text())] if path.exists() else []
+            rows = json.loads(path.read_text()) if path.exists() else []
+            revision = digest(rows)
+            if self.jobs is not None and revision == self.revision:
+                return
+            self.jobs = [TraceJob.model_validate(row) for row in rows]
+            self.revision = revision
+            interrupted = False
             for job in self.jobs:
                 if job.status == "running":
+                    interrupted = True
                     job.status, job.finished, job.message = (
                         "interrupted",
                         time.time(),
                         "Server stopped; job was not resumed.",
                     )
-            self._save()
+            if interrupted:
+                self._save()
         finally:
-            lease.close()
+            if acquired:
+                lease.close()
 
     def _save(self):
-        write_json(self.state / "jobs.json", [job.model_dump() for job in self.jobs[-32:]])
+        rows = [job.model_dump() for job in self.jobs[-32:]]
+        write_json(self.state / "jobs.json", rows)
+        self.revision = digest(rows)
 
     def list(self) -> list[TraceJob]:
         with self.lock:
@@ -187,72 +200,84 @@ class TraceJobs:
 
     def start(self, request: TraceRequest) -> TraceJob:
         with self.lock:
-            self._load()
-            duplicate = next((job for job in self.jobs if job.request.request_id == request.request_id), None)
-            if duplicate:
-                if duplicate.request != request:
-                    raise GameError("request_conflict", "Request ID already belongs to a different trace request.")
-                return duplicate.model_copy(deep=True)
             if self.process is not None:
+                duplicate = next((job for job in self.jobs if job.request.request_id == request.request_id), None)
+                if duplicate:
+                    if duplicate.request != request:
+                        raise GameError("request_conflict", "Request ID already belongs to a different trace request.")
+                    return duplicate.model_copy(deep=True)
                 raise GameError("trace_busy", "A trace is already running; cancel it or wait for completion.")
-            directory = run_path(request.run_id)
-            run = load_run(directory)
-            reason = trace_compatibility(run)
-            if reason:
-                raise GameError("trace_incompatible", reason)
-            unit = next((unit for unit in run["units"] if unit["job"]["id"] == request.unit_id), None)
-            if unit is None or unit["sha256"] != request.unit_sha256 or request.turn_index >= len(unit["turns"]):
-                raise GameError("stale_evidence", "Selected decision or unit identity changed.")
             self.lease = self._acquire()
-            job = TraceJob(
-                id=uuid4().hex,
-                request=request,
-                status="running",
-                started=time.time(),
-                message="Computing and recording the selected decision.",
-                deadline_seconds=self.deadline,
+            try:
+                return self._start(request)
+            finally:
+                if self.process is None and self.lease is not None:
+                    self.lease.close()
+                    self.lease = None
+
+    def _start(self, request: TraceRequest) -> TraceJob:
+        self._load(self.lease)
+        duplicate = next((job for job in self.jobs if job.request.request_id == request.request_id), None)
+        if duplicate:
+            if duplicate.request != request:
+                raise GameError("request_conflict", "Request ID already belongs to a different trace request.")
+            return duplicate.model_copy(deep=True)
+        directory = run_path(request.run_id)
+        run = load_run(directory)
+        reason = trace_compatibility(run)
+        if reason:
+            raise GameError("trace_incompatible", reason)
+        unit = next((unit for unit in run["units"] if unit["job"]["id"] == request.unit_id), None)
+        if unit is None or unit["sha256"] != request.unit_sha256 or request.turn_index >= len(unit["turns"]):
+            raise GameError("stale_evidence", "Selected decision or unit identity changed.")
+        job = TraceJob(
+            id=uuid4().hex,
+            request=request,
+            status="running",
+            started=time.time(),
+            message="Computing and recording the selected decision.",
+            deadline_seconds=self.deadline,
+        )
+        pending = self.state / f"{job.id}.pending.json"
+        self.jobs = [*self.jobs[-31:], job]
+        try:
+            self._save()
+            self.process = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-m",
+                    "qi.trace_worker",
+                    str(directory),
+                    request.unit_id,
+                    str(request.turn_index),
+                    str(pending.resolve()),
+                    str(request.limit),
+                    str(self.deadline + 5),
+                    str(os.getpid()),
+                ],
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
             )
-            pending = self.state / f"{job.id}.pending.json"
-            self.jobs = [*self.jobs[-31:], job]
+            self.worker_thread = threading.Thread(
+                target=self._finish, args=(job, directory, pending, self.process), daemon=True
+            )
+            self.worker_thread.start()
+        except (OSError, RuntimeError) as exc:
+            self.worker_thread = None
+            if self.process is not None:
+                self.process.kill()
+                self.process.wait(timeout=5)
+                self.process = None
+            job.status, job.finished, job.message = "failed", time.time(), f"Cannot start trace: {exc}"
+            # Persist under the same lease; start() releases ownership after this write.
             try:
                 self._save()
-                self.process = subprocess.Popen(
-                    [
-                        sys.executable,
-                        "-m",
-                        "qi.trace_worker",
-                        str(directory),
-                        request.unit_id,
-                        str(request.turn_index),
-                        str(pending.resolve()),
-                        str(request.limit),
-                        str(self.deadline + 5),
-                        str(os.getpid()),
-                    ],
-                    cwd=ROOT,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    start_new_session=True,
-                )
-                self.worker_thread = threading.Thread(
-                    target=self._finish, args=(job, directory, pending, self.process), daemon=True
-                )
-                self.worker_thread.start()
-            except (OSError, RuntimeError) as exc:
-                if self.process is not None:
-                    self.process.kill()
-                    self.process.wait(timeout=5)
-                    self.process = None
-                job.status, job.finished, job.message = "failed", time.time(), f"Cannot start trace: {exc}"
-                self.lease.close()
-                self.lease = None
-                # Preserve the failure when storage is available; worker ownership is already released.
-                try:
-                    self._save()
-                except OSError:
-                    pass
-                raise GameError("trace_start_failed", job.message) from exc
-            return job.model_copy(deep=True)
+            except OSError:
+                pass
+            raise GameError("trace_start_failed", job.message) from exc
+        return job.model_copy(deep=True)
 
     def _finish(self, job, directory, pending, process):
         try:
@@ -303,7 +328,6 @@ class TraceJobs:
         if self.process and self.process.poll() is None:
             self.process.kill()
             self.process.wait(timeout=5)
-        self._save()
 
     def cancel(self, job_id: str) -> TraceJob:
         with self.lock:
@@ -313,6 +337,7 @@ class TraceJobs:
                 raise GameError("unknown_job", "Trace job not found.")
             if job.status == "running":
                 self._stop(job, "cancelled", "Cancelled; no trace published.")
+                self._save()
             return job.model_copy(deep=True)
 
     def close(self):

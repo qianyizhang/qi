@@ -191,3 +191,146 @@ test("late game reads cannot replace the current selection", async ({
     page.getByRole("heading", { name: "Game #2", exact: true }),
   ).toBeVisible();
 });
+
+test("review drafts survive selection and cross-tab conflicts require an explicit choice", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/data");
+  await page
+    .getByRole("button", { name: "Inspect game 1", exact: true })
+    .click();
+  const note = page.getByLabel("Review note");
+  await note.fill("My unsaved first game note");
+  await page.getByRole("button", { name: "Keep example", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Inspect game 2", exact: true })
+    .click();
+  await expect(note).toHaveValue("");
+  await note.fill("Another game draft");
+  await page
+    .getByRole("button", { name: "Inspect game 1", exact: true })
+    .click();
+  await expect(note).toHaveValue("My unsaved first game note");
+  await expect(
+    page.getByRole("button", { name: "Keep example", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('.board [role="button"]')).toHaveCount(0);
+  await expect(page.locator('.board [tabindex="0"]')).toHaveCount(0);
+  const other = await context.newPage();
+  await other.goto(page.url());
+  await other.getByLabel("Review note").fill("Saved by the other tab");
+  await other.getByRole("button", { name: "Save review at ply 0" }).click();
+  await expect(page.locator(".review-editor").getByRole("alert")).toContainText(
+    "Your draft is preserved",
+  );
+  await expect(note).toHaveValue("My unsaved first game note");
+  await expect(
+    page.getByRole("button", { name: "Save review at ply 0" }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Overwrite with my draft" }).click();
+  await expect(page.locator(".review-editor").getByRole("alert")).toHaveCount(
+    0,
+  );
+  await expect(
+    other.locator(".review-editor").getByRole("alert"),
+  ).toBeVisible();
+  await other.getByRole("button", { name: "Load saved review" }).click();
+  await expect(other.getByLabel("Review note")).toHaveValue(
+    "My unsaved first game note",
+  );
+  await note.fill("Still unsaved");
+  await other
+    .getByRole("button", { name: "Clear review", exact: true })
+    .click();
+  await expect(page.locator(".review-editor").getByRole("alert")).toBeVisible();
+  await expect(note).toHaveValue("Still unsaved");
+  await page.getByRole("button", { name: "Load saved review" }).click();
+  await expect(note).toHaveValue("");
+  await expect(page.locator(".review-editor").getByRole("alert")).toHaveCount(
+    0,
+  );
+});
+
+test("an overwrite cannot pass a newer review revision while waiting for its lock", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/data");
+  await page
+    .getByRole("button", { name: "Inspect game 1", exact: true })
+    .click();
+  await page.getByLabel("Review note").fill("Original saved review");
+  await page.getByRole("button", { name: "Save review at ply 0" }).click();
+  await expect(
+    page.locator(".review-editor").getByRole("status"),
+  ).toContainText("Review saved");
+  const other = await context.newPage();
+  await other.goto(page.url());
+  await other.getByLabel("Review note").fill("First concurrent revision");
+  await page.getByLabel("Review note").fill("My local draft");
+  await other.getByRole("button", { name: "Save review at ply 0" }).click();
+  await expect(page.locator(".review-editor").getByRole("alert")).toBeVisible();
+  await other.evaluate(() => {
+    const key = Object.keys(localStorage).find((key) =>
+      key.startsWith("qi.collection-review.v1:"),
+    )!;
+    const control = window as unknown as {
+      lockHeld: boolean;
+      releaseReview: () => void;
+    };
+    void navigator.locks.request(
+      key,
+      () =>
+        new Promise<void>((resolve) => {
+          control.lockHeld = true;
+          control.releaseReview = () => {
+            const review = JSON.parse(localStorage.getItem(key)!);
+            localStorage.setItem(
+              key,
+              JSON.stringify({
+                ...review,
+                note: "A newer revision while waiting",
+                updated: "newer",
+              }),
+            );
+            resolve();
+          };
+        }),
+    );
+  });
+  await expect
+    .poll(() =>
+      other.evaluate(
+        () => (window as unknown as { lockHeld: boolean }).lockHeld,
+      ),
+    )
+    .toBe(true);
+  await page.getByRole("button", { name: "Overwrite with my draft" }).click();
+  await expect(
+    page.locator(".review-editor").getByRole("status"),
+  ).toContainText("Saving review");
+  await other.evaluate(() =>
+    (window as unknown as { releaseReview: () => void }).releaseReview(),
+  );
+  await expect(
+    page.getByRole("button", { name: "Overwrite with my draft" }),
+  ).toBeEnabled();
+  await expect(page.getByLabel("Review note")).toHaveValue("My local draft");
+  expect(
+    await other.evaluate(
+      () =>
+        JSON.parse(
+          localStorage.getItem(
+            Object.keys(localStorage).find((key) =>
+              key.startsWith("qi.collection-review.v1:"),
+            )!,
+          )!,
+        ).note,
+    ),
+  ).toBe("A newer revision while waiting");
+  await page.getByRole("button", { name: "Load saved review" }).click();
+  await expect(page.getByLabel("Review note")).toHaveValue(
+    "A newer revision while waiting",
+  );
+});

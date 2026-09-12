@@ -35,7 +35,7 @@ import { catalogQuery, jobsQuery, playersQuery, runsQuery } from "./queries";
 import { SessionProvider, useSession } from "./session";
 import { PlayPage } from "./play";
 import { ExperimentCatalogView } from "./experiment-catalog";
-import { BenchmarksPage } from "./benchmarks";
+import { BenchmarksPage, parseBenchmarkFilters } from "./benchmarks";
 import { parseDataFilters } from "./data-review";
 import { ReferencePage } from "./reference";
 import { GenerationLessonPage, parseLessonSearch } from "./generation-lesson";
@@ -329,8 +329,19 @@ const referenceRoute = createRoute({
 const benchmarksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/benchmarks",
-  component: BenchmarksPage,
+  validateSearch: parseBenchmarkFilters,
+  component: BenchmarkWorkspace,
 });
+function BenchmarkWorkspace() {
+  const filters = benchmarksRoute.useSearch(),
+    navigate = benchmarksRoute.useNavigate();
+  return (
+    <BenchmarksPage
+      filters={filters}
+      onFilters={(search) => void navigate({ search, resetScroll: false })}
+    />
+  );
+}
 const lessonRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/learn/generation",
@@ -433,7 +444,9 @@ function ExperimentDetail() {
             data={query.data}
             source={source}
             filters={filters}
-            onFilters={(search) => void navigate({ search })}
+            onFilters={(search) =>
+              void navigate({ search, resetScroll: false })
+            }
           />
         </Suspense>
       ) : (

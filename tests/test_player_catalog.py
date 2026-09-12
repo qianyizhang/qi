@@ -32,11 +32,11 @@ def test_registered_player_is_discovered_and_runs_a_replayable_match(monkeypatch
         assert "test-player" in [p["id"] for p in client.get("/api/players").json()]
         initial = client.post("/api/new").json()
         response = client.post(
-            "/api/opponent",
+            "/api/play/choose",
             json={
                 "snapshot": initial["snapshot"],
                 "expected_state_hash": initial["state_hash"],
-                "player": "test-player",
+                "controller": {"player": "test-player"},
             },
         )
         assert response.status_code == 200

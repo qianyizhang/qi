@@ -2,7 +2,7 @@
 description: Frozen local Elo benchmark conditions, durable matches, rating interpretation and test-pool lifecycle.
 scope: playing-strength benchmark contract
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -144,6 +144,22 @@ Open `/benchmarks` in Qi Lab. `QI_BENCHMARK_ROOTS` is an OS-path-separated list 
 directories containing run folders (default `artifacts/benchmarks`). The API is
 read-only and discovers opaque IDs; it never accepts arbitrary filesystem paths.
 Current summaries revalidate raw evidence; saved snapshots are dated projections.
+New snapshots use a version-2 envelope containing the summary and version-1 frozen
+evidence: the manifest and an explicit attempt list for every planned slot, including
+empty lists. Full attempt contents preserve running observations that later finish
+in place. The reader validates identities, the complete inventory and replayed games,
+checks the evidence digest, and recomputes ratings, counts and costs from those exact
+inputs. Existing snapshots are never overwritten. [ADR-0011](adr/0011-verifiable-rating-snapshots.md)
+owns this historical-input decision.
+
+Each summary reports its verification status and source: live evidence, frozen
+evidence or reconstructed evidence. Legacy version-1 snapshots remain unchanged.
+They can be verified when the current manifest and attempts reproduce their exact
+evidence digest; otherwise the API returns their original projection with an explicit
+unverified status and reason. Altered projections with reconstructable inputs and
+malformed version-2 evidence are rejected. Verification establishes consistency
+with retained inputs, not external authenticity. Every snapshot read still checks
+the current locked-test reveal guard and never loads or executes players.
 Settings, source attribution, uncertainty reasons and diagnostic results remain
 available alongside the rating table. No execution starts from the results page.
 
