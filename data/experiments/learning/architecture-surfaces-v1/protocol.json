@@ -1,0 +1,64 @@
+{
+  "version": "architecture-surfaces-v1",
+  "produced_by": "experiment@1.0.0 \u00b7 agent=GPT-6 \u00b7 effort=unspecified \u00b7 2026-09-12",
+  "data": {
+    "cache": "artifacts/learning/generated-followups-v1/scaling/tensors/mixed-4000",
+    "manifest_sha256": "5a4cd8d7edf66f914e4ac4712b84a12247dc87bb05e4bd1b17380fe3a3170400",
+    "sealed_inputs": "artifacts/learning/generated-source-mixing-v1-run3/plan/sealed-test-inputs.json",
+    "sealed_sha256": "bd5c0bdb7966b4519dc6fa0415138c549ed6fdb64e4367b878fa17f7f6bacf0b"
+  },
+  "cases": [
+    "absolute_mlp64",
+    "absolute_mlp128",
+    "canonical_mlp64",
+    "canonical_pair64",
+    "canonical_conv32"
+  ],
+  "seeds": [
+    7,
+    17,
+    27
+  ],
+  "checkpoints": [
+    50,
+    200
+  ],
+  "optimizer": {
+    "learning_rate": 0.01
+  },
+  "training": {
+    "chunk_size": 256,
+    "precision": "float32",
+    "batching": "snapshot-full-batch-v1"
+  },
+  "execution": {
+    "fit_seconds": 600,
+    "total_seconds": 1800,
+    "threads": 1,
+    "max_rss_bytes": 1500000000
+  },
+  "teacher": {
+    "engine": "artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon",
+    "network": "artifacts/teachers/pikafish-2026-01-02/pikafish.nnue",
+    "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+    "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+    "per_cell": 8,
+    "selection_salt": "architecture-surfaces-v1:",
+    "nodes": [
+      100000,
+      1000000
+    ],
+    "multipv_nodes": 1000000,
+    "threads": 1,
+    "timeout_seconds": 20,
+    "total_seconds": 900
+  },
+  "interpretation": "Exploratory mechanism screen; one pool and inspected development. No playing strength or architecture default selection.",
+  "evaluation": {
+    "temperatures": [
+      1.0,
+      2.0
+    ],
+    "meaning": "Fixed confidence diagnostic; both temperatures have identical argmax decisions. No fitted temperature or selection."
+  }
+}

@@ -8,6 +8,11 @@ document_class: artifact
 
 # Learning recipes and retained evidence
 
+The [architecture surface screen](../../../records/work-items/items/AB-LEARN-016-architecture-surfaces.md)
+uses study-only models and diagnostic scripts under `architecture-surfaces-v1/`.
+Its frozen protocol reuses generated-data snapshots; these alternative weights
+are not production policy checkpoints. The owner records execution and findings.
+
 Cross-kind discovery: `qi experiment search "<question/topics>"` or the shared
 dashboard at `/experiments`. Findings remain in the linked owning work items and
 reports; this guide retains recipe and historical-format navigation.
