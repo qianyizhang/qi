@@ -115,10 +115,14 @@ def audit(cache_path, sealed, output):
     cache = SnapshotTensors(cache_path)
     snapshot = Path(cache.manifest["snapshot"])
     snapshot_manifest = json.loads((snapshot / "manifest.json").read_text())
+    if snapshot_manifest["fingerprint"] != cache.manifest["snapshot_fingerprint"]:
+        raise ValueError("Snapshot manifest does not match the frozen tensor cache identity.")
     reserved = reserved_inputs(Corpus.model_validate(snapshot_manifest["recipe"]["reserved_corpus"]))
     identity_paths = [cache_path / name for name in ("manifest.json", *cache.manifest["files"])]
     identity_paths += [snapshot / "manifest.json", snapshot / "evidence.sqlite"]
     before = {str(path.resolve()): digest(path) for path in identity_paths}
+    if before[str((snapshot / "evidence.sqlite").resolve())] != snapshot_manifest["files"]["evidence.sqlite"]:
+        raise ValueError("Snapshot evidence database does not match its manifest hash.")
     rows = []
     for row in cache.rows():
         game = Game(board=row["board"], turn=row["turn"])

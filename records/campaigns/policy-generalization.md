@@ -31,6 +31,7 @@ player chooses legal actions; the referee owns outcomes. See the [core model](..
 | Intervention mixtures improved balanced longer-game imitation, with source-specific losses | [Generated-source screen](../work-items/items/AB-LEARN-012-generated-source-mixing.md): 4000 inputs, fixed one-thread 100k labels, 36 fits; 80/10/10 improved six-cell macro agreement from 14.998% to 16.020%, positive in every training block. Random alone reduced agreement. Plausible endgame agreement fell; all cases fit training labels completely | Semantic enrichment and nested scaling under frozen source/phase ratios, followed by sealed confirmation; one generation seed and shared development set do not establish general superiority |
 | Matched immediate-tag enrichment did not improve the primary metric | [Semantic enrichment](../work-items/items/AB-LEARN-013-semantic-enrichment.md): +10 pp union-tag coverage at identical trajectory contributions; 18 verified fits, 16.020% → 15.771%, two of three blocks declined. Capture and checking-move slices improved | Separately locked tag-specific hypothesis and fresh evaluation; retain natural frequencies |
 | More generated inputs helped at fixed passes and fixed example presentations | [Generated-data scaling](../work-items/items/AB-LEARN-014-generated-data-scaling.md): 30 verified fits, nested 1k/4k/16k; both source cases pass both scaling rules. At 16k/50 updates, balanced agreement is 17.210% plausible-only and 18.151% mixed; the mixture loses on plausible endgames. More updates fit training labels completely but increase development cross-entropy | Sealed confirmation with source/phase slices and declared update budget; one nested pool and initialization seeds remain exploratory |
+| Architecture contrasts expose action-support and optimization limits | [Architecture screen](../work-items/items/AB-LEARN-016-architecture-surfaces.md): 15 verified fits; dense heads get zero unseen-target agreement, spatial pair model transfers but has late instability and source losses. Teacher and metric probes show budget sensitivity and WDL saturation | Matched positive-support intervention with stable optimization and fresh sources; no architecture default selected |
 
 ## Unknowns
 
@@ -40,25 +41,27 @@ Different inspected test sets cannot be compared as if they were one benchmark.
 
 ## Frontier
 
-The next requested decision interview concerns evaluation: compare Pikafish's
-estimated loss from the selected move with top-1 agreement, including whether
-the metrics rank saved models differently and what evidence would establish
-effectiveness. The [session closeout](../reports/generated-data-session-closeout-20260912.md)
-retains the model inventory: 84 comparison fits contain 75 distinct weight
-states, with nine repeated controls. Resolve the evaluation scope and resource
-allowance in [AB-LEARN-015](../work-items/items/AB-LEARN-015-evaluation-metric-comparison.md)
-before a separately registered experiment. Keep previous primary
-outcomes and the sealed-input boundary intact; no new run is scheduled here.
+The [architecture report](../reports/2026-09-12-architecture-surfaces.md) recommends
+[AB-LEARN-017](../work-items/items/AB-LEARN-017-action-support-transfer.md): separate
+positive action coverage from transferable representation using matched support
+conditions and fresh evaluation sources. Keep canonical dense and spatial models
+as prespecified comparators; freeze matching, optimization/stopping controls and
+budget before execution. A higher development score can coincide with unstable
+training, so another unconstrained width/update sweep would explain less.
 
-The generated-data follow-ups retain natural tag frequencies and support more
-distinct inputs under both compute views. The 80/10/10 mixture leads at 4k and
-16k on the balanced objective, but loses at 1k and retains a plausible-endgame
-loss at 16k. Its 16k/50-update mean exceeds the 200-update mean, while the
-update-count direction varies across seeds; this does not establish an optimal
-stopping rule. Preserve plausible-only as a comparator. The 3900 sealed inputs
-remain unscored; the next confirmation needs a separately fixed protocol and
-source/phase reporting. The [scaling owner](../work-items/items/AB-LEARN-014-generated-data-scaling.md)
-retains the full curves, training gap and resource evidence.
+[AB-LEARN-015](../work-items/items/AB-LEARN-015-evaluation-metric-comparison.md)
+retains the broader metric-validity frontier. The architecture screen's 48-input
+probe demonstrates preference changes with search allocation and heavily saturated
+WDL; it does not validate severity rankings against game outcomes. Use a small
+prespecified panel and explicit reference-stability/paired-game evidence when
+that protocol is settled. Preserve all earlier primary outcomes and the sealed
+boundary. Neither follow-up is launched by this synthesis.
+
+The earlier generated-data follow-ups still support natural-tag scaling under
+both compute views. Preserve plausible-only as a source comparator: the mixture
+loses in some source/phase cells. The same caution applies to the spatial model's
+large random-middlegame gain and plausible-endgame loss. All 3900 sealed inputs
+remain unscored; this inspected development pool cannot support confirmation.
 
 Use broader source coverage as the working choice for the next comparable
 fixed-label dataset. The [fresh confirmation](../work-items/items/AB-LEARN-007-fresh-source-confirmation.md)
@@ -72,6 +75,10 @@ own curriculum vocabulary and composition.
 
 ## Work
 
+- [Architecture mechanism screen](../work-items/items/AB-LEARN-016-architecture-surfaces.md).
+- [Positive action support and transfer](../work-items/items/AB-LEARN-017-action-support-transfer.md).
+- [Evaluation metric validity](../work-items/items/AB-LEARN-015-evaluation-metric-comparison.md).
+
 - [Config scaffold and retrospective migration](../work-items/items/AB-LEARN-005-experiment-configs.md).
 - [Teacher-quality training comparison](../work-items/items/AB-LEARN-009-teacher-quality.md).
 - [Generated-source mixture screen](../work-items/items/AB-LEARN-012-generated-source-mixing.md).
@@ -82,6 +89,15 @@ own curriculum vocabulary and composition.
 Work-item records own execution status; this page owns only the synthesis.
 
 ## Learning ledger
+
+2026-09-12: the architecture screen completed 15 fits and independently reloaded
+30 checkpoints; all three baseline weight states exactly match the earlier
+scaling controls. Dense heads fail the unseen-positive-action slice; spatial
+sharing transfers to some combinations but exposes optimizer instability and
+confidence growth. The 144-query teacher probe reproduces 48/48 original100k
+choices, changes ten at1M, and finds substantial WDL saturation. Prioritize a
+matched support intervention with stability controls; keep metric validity
+separate and all3900 sealed inputs unscored. No player defaults changed.
 
 2026-09-11: completed 18 matched enrichment and 30 nested scaling fits, each
 independently verified. Enrichment fails its all-block-positive rule; retain

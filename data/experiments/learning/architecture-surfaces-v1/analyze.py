@@ -9,6 +9,10 @@ from pathlib import Path
 
 import numpy as np
 
+from qi.game import square
+from qi.learning.teacher_quality_scores import disadvantage
+from qi.players.policy.encoding import action_id
+
 
 def read(path):
     return json.loads(Path(path).read_text())
@@ -51,6 +55,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--study", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--teacher", type=Path)
     args = parser.parse_args()
     config = read(args.study / "submitted-config.json")
     cache = Path(config["data"]["cache"])
@@ -68,7 +73,37 @@ def main():
             if r["split"] == "train"
         )
     baselines = {}
+    action_support = {}
     for coordinate in frequency:
+        legal_exposure = np.zeros(8100, dtype=np.int64)
+        for row in source_rows:
+            if row["split"] == "train":
+                mask = masks[row["ordinal"]]
+                if coordinate == "canonical" and row["turn"] == "black":
+                    mask = mask[::-1]
+                legal_exposure += mask
+        unseen_exposures = []
+        unseen_actions = set()
+        for row in source_rows:
+            if row["split"] != "validation":
+                continue
+            target = int(targets[row["ordinal"]])
+            if coordinate == "canonical" and row["turn"] == "black":
+                target = 8099 - target
+            if not frequency[coordinate][target]:
+                unseen_exposures.append(int(legal_exposure[target]))
+                unseen_actions.add(target)
+        action_support[coordinate] = {
+            "distinct_training_targets": len(frequency[coordinate]),
+            "unseen_development_targets": len(unseen_exposures),
+            "distinct_unseen_development_actions": len(unseen_actions),
+            "unseen_with_legal_training_exposure": sum(v > 0 for v in unseen_exposures),
+            "unseen_target_legal_training_exposure_min_median_max": [
+                min(unseen_exposures),
+                statistics.median(unseen_exposures),
+                max(unseen_exposures),
+            ],
+        }
         cells = defaultdict(list)
         for row in source_rows:
             if row["split"] != "validation":
@@ -85,6 +120,7 @@ def main():
             "cells": {k: {"positions": len(v), "agreement": mean(v)} for k, v in cells.items()},
         }
     observations = []
+    teacher = {r["input_hash"]: r for r in read(args.teacher / "assessments.json")} if args.teacher else {}
     receipts = {}
     for path in sorted((args.study / "fits").glob("*/checkpoint-*/observation.json")):
         observation = read(path)
@@ -119,6 +155,24 @@ def main():
             for name in names:
                 groups[name].append(row)
         summary = {name: metrics(values) for name, values in groups.items()}
+        teacher_rows = []
+        for row in rows:
+            if row["input_hash"] not in teacher:
+                continue
+            assessment = teacher[row["input_hash"]]
+            choice = square(row["prediction"] // 90) + square(row["prediction"] % 90)
+            estimate = disadvantage(assessment["candidate_reference"], choice)
+            stronger = assessment["search"].get("single-1m")
+            teacher_rows.append(
+                {
+                    "input_hash": row["input_hash"],
+                    "forced": row["legal_count"] == 1,
+                    "original_correct": row["prediction"] == row["target"],
+                    "stronger_correct": row["prediction"] == action_id(stronger["move"]) if stronger else None,
+                    "label_stable": assessment["agreement"]["original_vs_single1m"],
+                    **estimate,
+                }
+            )
         macro = mean(value["agreement"] for name, value in summary.items() if name.startswith("cell:"))
         observations.append(
             {
@@ -128,6 +182,7 @@ def main():
                 "macro_agreement": macro,
                 "train": observation["stats"]["train"],
                 "slices": summary,
+                "teacher_rows": teacher_rows,
             }
         )
         receipts[str(path)] = digest(path)
@@ -183,11 +238,41 @@ def main():
         "version": "architecture-surfaces-analysis-v1",
         "scope": "Exploratory; initialization seeds share one dataset and development pool.",
         "baselines": baselines,
+        "action_support": action_support,
         "observations": observations,
         "aggregates": aggregates,
         "contrasts": contrasts,
         "receipts": receipts,
     }
+    teacher_aggregates = []
+    for (case, update), entries in grouped.items():
+        rows = [row for entry in entries for row in entry["teacher_rows"]]
+        if not rows:
+            continue
+        known = [r for r in rows if r["expected_score_loss"] is not None]
+        mistakes = [r for r in known if not r["original_correct"]]
+        teacher_aggregates.append(
+            {
+                "case": case,
+                "update": update,
+                "positions_per_seed": len(entries[0]["teacher_rows"]),
+                "seeds": len(entries),
+                "original_agreement": mean(r["original_correct"] for r in rows),
+                "stronger_agreement": mean(r["stronger_correct"] for r in rows if r["stronger_correct"] is not None),
+                "candidate_known_model_positions": len(known),
+                "mean_expected_score_loss": mean(r["expected_score_loss"] for r in known),
+                "severity_gt_0_1": mean(r["expected_score_loss"] > 0.1 for r in known),
+                "severity_gt_0_5": mean(r["expected_score_loss"] > 0.5 for r in known),
+                "original_disagreements": len(mistakes),
+                "disagreement_loss_le_0_01": mean(r["expected_score_loss"] <= 0.01 + 1e-12 for r in mistakes),
+                "stable_label_agreement": mean(r["original_correct"] for r in rows if r["label_stable"]),
+                "unstable_label_agreement": mean(r["original_correct"] for r in rows if r["label_stable"] is False),
+            }
+        )
+    result["teacher_aggregates"] = teacher_aggregates
+    if args.teacher:
+        result["receipts"][str(args.teacher / "assessments.json")] = digest(args.teacher / "assessments.json")
+    result["analysis_script_sha256"] = digest(Path(__file__))
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:
         json.dump(result, stream, indent=2, allow_nan=False)
