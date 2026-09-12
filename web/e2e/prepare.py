@@ -75,3 +75,77 @@ locked = spec.model_copy(deep=True)
 locked.series.label = "Locked benchmark fixture"
 locked.series.book.use = "locked-test"
 run_benchmark(locked, root / "benchmarks/locked")
+
+# Authored research is a read-only presentation of tiny pinned fixture evidence.
+import base64
+import hashlib
+from qi.experiments.research import present
+
+research = root / "research"
+research.mkdir()
+research_owner = research / "report.md"
+research_owner.write_text(
+    "---\ndescription: A synthetic study for offline reading checks.\n"
+    "last_update: 2026-09-12\nreport_outcome: inconclusive\n---\n\n"
+    "# Research presentation fixture\n\n"
+    "The original preamble stays available.\n\n"
+    "## Observations and limits\n\n"
+    "A controlled comparison does not establish playing strength.\n\n"
+    "| Observation | Limitation |\n| --- | --- |\n"
+    "| Shared inputs | Correlated outcomes |\n\n"
+    "[Recorded values](results.json), [Earlier interpretation](previous.md), "
+    "and [Missing source](missing.json).\n\n"
+    "![Fixture diagram](diagram.png)\n\n"
+    "![External illustration](https://example.invalid/should-not-load.png)\n\n"
+    "<script>alert('narrative should be inert')</script>\n\n"
+    "## Next focus\n\nSeparate coverage from representation under stable optimization.\n"
+)
+(research / "previous.md").write_text(
+    "# Earlier interpretation\n\nA retained, inconclusive fixture finding.\n\n"
+    "| Evidence | Scope |\n| --- | --- |\n| One pool | Exploratory |\n"
+)
+(research / "diagram.png").write_bytes(base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII="
+))
+research_results = research / "results.json"
+research_results.write_text(json.dumps({
+    "fits": 6,
+    "rows": [
+        {"case": case, "update": update, "agreement": agreement,
+         "loss": loss, "n": n}
+        for update, observations in (
+            (50, (("b", 0.25, 2.5, 12), ("a", 0, 1.5, 12), ("c", None, None, 0))),
+            (200, (("b", 0.5, 3.5, 12), ("a", 0.125, 2.0, 12), ("c", None, None, 0))),
+        )
+        for case, agreement, loss, n in observations
+    ],
+}))
+research_view = research / "view.json"
+research_view.write_text(json.dumps({
+    "version": "research-view-v1",
+    "summary": "Investigate coverage and optimization together.",
+    "section_notes": {"observations-and-limits": "Presentation note: original interpretation retained for review."},
+    "data_sources": {"findings": {
+        "path": "research/results.json",
+        "sha256": hashlib.sha256(research_results.read_bytes()).hexdigest(),
+    }},
+    "stats": [{"label": "Recorded fits", "value": {"source": "findings", "pointer": "/fits"},
+               "note": "Synthetic fixture observations"}],
+    "takeaways": [{"title": "Check the denominator", "body": "Unknown is different from observed zero."}],
+    "explorers": [{
+        "id": "recorded-models", "title": "Recorded model contrasts",
+        "description": "Synthetic fixed-order observations.",
+        "caveat": "Imitation agreement does not establish playing strength.",
+        "source": "findings", "rows_pointer": "/rows", "label_pointer": "/case",
+        "labels": {"a": "Model A", "b": "Model B", "c": "Model C"},
+        "facets": [{"key": "update", "label": "Training updates", "pointer": "/update", "initial": 200}],
+        "metrics": [
+            {"key": "agreement", "label": "Target agreement", "pointer": "/agreement", "format": "percent",
+             "note": "Same inspected target pool; unknown remains unknown.", "denominator_pointer": "/n"},
+            {"key": "loss", "label": "Cross-entropy", "pointer": "/loss", "format": "decimal", "unit": "nats", "precision": 3,
+             "note": "Micro mean; lower values need their stated conditions.", "denominator_pointer": "/n"},
+        ],
+    }],
+}))
+present(research_owner, research / "enhanced.html", research_view, root=root)
+present(research_owner, research / "plain.html", root=root)

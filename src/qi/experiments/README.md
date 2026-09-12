@@ -2,7 +2,7 @@
 description: Recall and record experiments across kinds, and execute or inspect bounded search runs.
 scope: shared experiment catalog and search evidence
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-12
 document_class: coordination
 ---
 
@@ -42,6 +42,74 @@ uv run qi experiment report --run artifacts/experiments/search-v1 \
 Runs and traces require fresh paths; reports may be regenerated. There is no
 resume, scheduling, database, or publication. A deadline is an incomplete result;
 errors/interrupts save available evidence and produce a nonzero CLI exit.
+
+## Present authored research reports
+
+`qi experiment present` builds a single offline HTML file from an existing
+Markdown report. It retains the full narrative, adds section navigation and
+embedded evidence previews, and supports print/save PDF. Use it for previous
+reports without preparing chart data:
+
+```bash
+npm run build --prefix web
+uv run qi experiment present \
+  --owner records/reports/2026-09-09-teacher-generation-advisory.md \
+  --output artifacts/reports/teacher-generation-advisory.html
+```
+
+For a report with comparisons, pass a presentation specification. The
+[architecture example](../../../data/experiments/learning/architecture-surfaces-v1/report-view.json)
+adds authored takeaways and two interactive tables to the
+[source report](../../../records/reports/2026-09-12-architecture-surfaces.md):
+
+```bash
+uv run qi experiment present \
+  --owner records/reports/2026-09-12-architecture-surfaces.md \
+  --view data/experiments/learning/architecture-surfaces-v1/report-view.json \
+  --output artifacts/reports/architecture-surfaces-v1.html
+```
+
+For the next report, write Markdown with an H1 title and H2 sections. Frontmatter
+`description`, `last_update` and `report_outcome` supply the masthead; ordinary
+Markdown also works. An optional view uses `version: "research-view-v1"` and:
+
+| Field | Purpose |
+| --- | --- |
+| `summary`, `takeaways` | Authored reading guidance; never inferred from the largest metric |
+| `data_sources` | Named repository-relative JSON paths with exact SHA-256 identities |
+| `stats` | Label, value reference (`source` + JSON `pointer`), display format and context |
+| `explorers` | Named source, `rows_pointer`, `label_pointer`, optional label mapping, facets and metrics |
+| `section_notes` | Explicit presentation annotations keyed by generated section ID; source prose stays intact |
+
+Each explorer metric selects a JSON Pointer, display format (`percent`, `decimal`
+or `integer`), unit, explanatory note and optional `denominator_pointer` with
+`denominator_unit` (default: positions). `precision` sets decimal places (default
+2, up to 6); use enough precision to preserve meaningful measured differences.
+Percentages are stored as fractions, so `0.2` displays as `20.00%`. Facets select
+recorded rows, such as checkpoint 50 or 200; they do not recompute statistics.
+Label-map insertion order controls the display order. Explicit null displays as
+unknown, zero remains zero, and absent pointers, non-finite measurements, duplicate
+row/facet identities and changed source hashes fail the build. The schema lives
+in `research.py` (`ResearchView`); the example contains the complete supported
+shape. Prepare or recompute statistics in the experiment's evidence-owning code,
+then pin that output in the view.
+
+Inputs resolve against the repository (or `QI_WORKSPACE`). The export embeds
+first-level local Markdown, JSON, text and Python references plus raster figures;
+each text preview retains its source path and hash. Text is limited to 2 MiB per
+file, images to 8 MiB, and attachments to 16 MiB total. Missing, oversized,
+unsupported or outside-workspace files have explicit unavailable receipts.
+Nested evidence graphs are not recursively bundled. External images become
+links, and raw HTML is not executed. The generated HTML can move outside the
+checkout and requires no server, fonts, network or additional files to read its
+embedded content. JavaScript must be enabled for this viewer.
+
+The CLI prints the source and HTML hashes, section/explorer counts and attachment
+availability. Exporting reads only these presentation inputs; it does not run a
+teacher, train a model, validate scientific conclusions or change the catalog.
+Keep source Markdown, the view specification and pinned measurements in version
+control. HTML under `artifacts/` is a regeneratable local projection. Rebuild after
+viewer changes. Search-run reports continue to use `qi experiment report --run`.
 
 ## Plans and persistence
 

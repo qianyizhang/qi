@@ -54,6 +54,18 @@ def render(directory: Annotated[Path, typer.Option("--run")], output: Annotated[
     typer.echo(json.dumps(report(directory, output)))
 
 
+@app.command("present")
+def present_report(
+    owner: Annotated[Path, typer.Option()],
+    output: Annotated[Path, typer.Option()],
+    view: Annotated[Path | None, typer.Option()] = None,
+):
+    """Present authored Markdown, optionally with pinned JSON comparisons, as offline HTML."""
+    from qi.experiments.research import present
+
+    typer.echo(json.dumps(present(owner, output, view)))
+
+
 @app.command("inspect")
 def inspect_saved(
     directory: Annotated[Path, typer.Option("--run")],

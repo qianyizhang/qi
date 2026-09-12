@@ -1,0 +1,231 @@
+{
+  "version": "research-view-v1",
+  "summary": "Focus next on positive action coverage and transfer, with an optimizer-stability control. The spatial model transfers to some unsupported action combinations, but its training is unstable. Teacher agreement, confidence and estimated move severity tell different stories.",
+  "data_sources": {
+    "findings": {
+      "path": "data/experiments/learning/history/architecture-surfaces-v1.json",
+      "sha256": "78c797b65e3b3321a9d87e073d801d4d1e22b95630f68f05b13f1ea04cda7bae"
+    }
+  },
+  "stats": [
+    {
+      "label": "Training fits",
+      "value": {
+        "source": "findings",
+        "pointer": "/counts/fits"
+      },
+      "format": "integer",
+      "note": "Five architectures × three seeds"
+    },
+    {
+      "label": "Development inputs",
+      "value": {
+        "source": "findings",
+        "pointer": "/resources/development_inputs"
+      },
+      "format": "integer",
+      "note": "Previously inspected; 131 trajectories"
+    },
+    {
+      "label": "Teacher queries",
+      "value": {
+        "source": "findings",
+        "pointer": "/counts/teacher_queries"
+      },
+      "format": "integer",
+      "note": "Three query conditions on 48 inputs"
+    },
+    {
+      "label": "Sealed inputs scored",
+      "value": {
+        "source": "findings",
+        "pointer": "/counts/sealed_scored"
+      },
+      "format": "integer",
+      "note": "All 3,900 sealed inputs remain untouched"
+    }
+  ],
+  "takeaways": [
+    {
+      "title": "Data: missing positive action support",
+      "body": "The reference dense MLPs memorize the training labels but score zero on development actions never used as positive targets. More examples also expand action support, so data volume and coverage are confounded."
+    },
+    {
+      "title": "Architecture: a transfer signal, with instability",
+      "body": "The spatial model reaches some unsupported action combinations. Its optimization is unstable, and its gains vary by source and phase. That supports a controlled follow-up, not adoption."
+    },
+    {
+      "title": "Teacher: repeatability has a narrow meaning",
+      "body": "All 48 repeated 100k move choices agree, yet more nodes and all-legal candidate search change preferences. Saturated win/draw/loss estimates can hide differences between moves."
+    },
+    {
+      "title": "Metrics: ask what each number rewards",
+      "body": "Top-one imitation, teacher-label cross-entropy and confidence, and estimated move severity disagree. A high development score can coincide with training collapse. No aggregate establishes playing strength."
+    }
+  ],
+  "explorers": [
+    {
+      "id": "architecture-explorer",
+      "title": "Architecture across checkpoints",
+      "description": "Read the same five models through different questions. Values are recorded three-seed means; changing the control only changes the view.",
+      "caveat": "Same 4,000 training inputs, 373 inspected development inputs, 100k-node labels and Adam .01. The two checkpoints belong to the same fits. Fixed optimizer settings do not guarantee equally stable optimization; source and phase slices can reverse the aggregate story.",
+      "source": "findings",
+      "rows_pointer": "/architecture_aggregates",
+      "label_pointer": "/case",
+      "labels": {
+        "absolute_mlp64": "Absolute MLP · 64",
+        "absolute_mlp128": "Absolute MLP · 128",
+        "canonical_mlp64": "Mover-relative MLP · 64",
+        "canonical_pair64": "Mover-relative pair MLP · 64",
+        "canonical_conv32": "Spatial pair CNN · 32"
+      },
+      "facets": [
+        {
+          "key": "update",
+          "label": "Training updates",
+          "pointer": "/update",
+          "initial": 50
+        }
+      ],
+      "metrics": [
+        {
+          "key": "agreement",
+          "label": "Development agreement · six-cell macro",
+          "pointer": "/macro_agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "Higher means closer imitation of the original teacher. Each source × phase cell has equal weight: five cells have 64 inputs and one has 53. This is not playing strength."
+        },
+        {
+          "key": "train",
+          "label": "Training agreement",
+          "pointer": "/train_agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "Higher means better fit to 4,000 training labels. Memorization can coexist with poor transfer."
+        },
+        {
+          "key": "unseen",
+          "label": "Agreement on unsupported action labels",
+          "pointer": "/slices/coordinate_unseen/agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "The teacher action never appears as a positive training target in that model’s coordinate system. The absolute subset has 50 inputs; the mover-relative subset has 54, so these are different subsets.",
+          "denominator_pointer": "/slices/coordinate_unseen/positions"
+        },
+        {
+          "key": "nonforced",
+          "label": "Agreement excluding forced moves",
+          "pointer": "/slices/nonforced/agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "Micro average over inputs with more than one legal move. Removing 14 forced decisions changes the denominator; do not compare this directly with the six-cell macro.",
+          "denominator_pointer": "/slices/nonforced/positions"
+        },
+        {
+          "key": "ce",
+          "label": "Development cross-entropy",
+          "pointer": "/slices/all/cross_entropy",
+          "format": "decimal",
+          "unit": "nats",
+          "note": "Lower means more probability assigned to the original teacher label, after legal masking. It penalizes confident disagreement, even when multiple moves may be acceptable.",
+          "denominator_pointer": "/slices/all/positions"
+        },
+        {
+          "key": "temperature",
+          "label": "Cross-entropy after temperature 2",
+          "pointer": "/slices/all/cross_entropy_temperature2",
+          "format": "decimal",
+          "unit": "nats",
+          "note": "Lower is better for this teacher-label likelihood. This diagnostic rescales logits without changing top-one moves; it is not an independently validated calibration recipe.",
+          "denominator_pointer": "/slices/all/positions"
+        },
+        {
+          "key": "random-mid",
+          "label": "Agreement · random middlegame",
+          "pointer": "/slices/cell:development-random-middlegame/agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "Three-seed mean in one development cell. Source-specific differences can disappear inside an aggregate.",
+          "denominator_pointer": "/slices/cell:development-random-middlegame/positions"
+        },
+        {
+          "key": "plausible-end",
+          "label": "Agreement · plausible endgame",
+          "pointer": "/slices/cell:development-plausible-endgame/agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "Three-seed mean in one development cell. A spatial model’s aggregate gain does not imply improvement in every condition.",
+          "denominator_pointer": "/slices/cell:development-plausible-endgame/positions"
+        }
+      ]
+    },
+    {
+      "id": "teacher-explorer",
+      "title": "Teacher agreement and estimated severity",
+      "description": "A separate fixed panel of 48 inputs, eight per source × phase cell. This diagnostic panel is not the full development set.",
+      "caveat": "All-legal candidate queries divide a fixed node budget among many moves and search less deeply than single-PV queries. WDL saturation and near-ties limit severity resolution. These references are estimates, not ground truth or game outcomes.",
+      "source": "findings",
+      "rows_pointer": "/teacher_model_comparisons",
+      "label_pointer": "/case",
+      "labels": {
+        "absolute_mlp64": "Absolute MLP · 64",
+        "absolute_mlp128": "Absolute MLP · 128",
+        "canonical_mlp64": "Mover-relative MLP · 64",
+        "canonical_pair64": "Mover-relative pair MLP · 64",
+        "canonical_conv32": "Spatial pair CNN · 32"
+      },
+      "facets": [
+        {
+          "key": "update",
+          "label": "Training updates",
+          "pointer": "/update",
+          "initial": 50
+        }
+      ],
+      "metrics": [
+        {
+          "key": "original",
+          "label": "Agreement with the original 100k teacher",
+          "pointer": "/original_agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "Three-seed mean on the 48-input diagnostic panel. Compare against the next metric to see sensitivity to the teacher budget.",
+          "denominator_pointer": "/positions_per_seed"
+        },
+        {
+          "key": "stronger",
+          "label": "Agreement with the 1M single-PV teacher",
+          "pointer": "/stronger_agreement",
+          "format": "percent",
+          "unit": "",
+          "note": "The same models and 48 inputs, with a higher-budget single-PV reference. Ten of 48 original labels change under this query.",
+          "denominator_pointer": "/positions_per_seed"
+        },
+        {
+          "key": "severity",
+          "label": "Estimated expected-score loss",
+          "pointer": "/mean_expected_score_loss",
+          "format": "decimal",
+          "unit": "",
+          "note": "Lower means closer to the best candidate Q in the 1M all-legal query. Q = (W + 0.5 × D) / 1000, where W and D are the engine’s per-mille WDL counts. Saturation can make different moves look equal.",
+          "denominator_pointer": "/positions_per_seed",
+          "precision": 4
+        },
+        {
+          "key": "near-tie",
+          "label": "Original-label disagreements with Q loss ≤ .01",
+          "pointer": "/disagreement_loss_le_0_01",
+          "format": "percent",
+          "unit": "",
+          "note": "Fraction of disagreements with the original 100k label, pooled across three seeds, whose estimated Q loss is at most .01. The denominator is the model-specific disagreement count; a high fraction does not prove equivalence.",
+          "denominator_pointer": "/original_disagreements",
+          "denominator_unit": "disagreements (3 seeds)"
+        }
+      ]
+    }
+  ],
+  "section_notes": {
+    "architecture-observations-and-competing-explanations": "Presentation correction · 2026-09-12: the original table below reports mover-relative MLP64 at 200 updates as 15.52%. Its retained value is 15.525091719077569%, which rounds to 15.53% in the interactive table. The source report is preserved verbatim; no measured result or scientific conclusion changed."
+  }
+}

@@ -2,6 +2,7 @@
 
 import json
 from collections import defaultdict
+from html import escape
 from pathlib import Path
 from statistics import mean
 
@@ -134,15 +135,25 @@ def render_export(bundle, format: str) -> str:
         lines += ["", "```json", json.dumps(data.provenance, indent=2), "```", ""]
         return "\n".join(lines)
     require(format == "html", "Supported report formats are html and md.")
+    return portable_html(bundle.model_dump(), "Qi · Search experiments")
+
+
+def portable_html(bundle: dict, title: str) -> str:
+    """Package either report projection with the same offline viewer assets."""
     assets = Path(__file__).parent.parent / "static-report"
     require((assets / "viewer.js").exists(), "Build report assets first: npm run build --prefix web.")
-    payload = bundle.model_dump_json().replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
+    payload = (
+        json.dumps(bundle, ensure_ascii=False, allow_nan=False)
+        .replace("<", "\\u003c")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
     css = (assets / "viewer.css").read_text() if (assets / "viewer.css").exists() else ""
     script = (assets / "viewer.js").read_text().replace("</script", "<\\/script")
     return (
         '<!doctype html><html lang="en"><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        "<title>Qi · Search experiments</title><style>" + css + "</style>"
+        "<title>" + escape(title) + "</title><style>" + css + "</style>"
         '<div id="root"></div><script type="application/json" id="data">'
         + payload
         + "</script><script>"
