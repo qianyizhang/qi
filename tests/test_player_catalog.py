@@ -75,6 +75,8 @@ def test_catalog_cli_and_api_have_identical_metadata() -> None:
         "alphabeta-checks",
         "alphabeta-tt",
         "alphabeta-enhanced",
+        "alphabeta-lean",
+        "alphabeta-pvs",
         "mcts-quiescence",
     }
 

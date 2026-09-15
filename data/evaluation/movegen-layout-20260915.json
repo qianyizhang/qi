@@ -1,0 +1,255 @@
+{
+  "study": "movegen-layout-20260915",
+  "produced_by": "experiment@1.0.0 \u00b7 agent=GPT-6 \u00b7 effort=unspecified \u00b7 2026-09-15",
+  "baseline": "Already optimized AB-EVAL-007 referee, frozen before this study",
+  "equivalence": {
+    "board_side_queries": 7292,
+    "ordered_moves_equal": true,
+    "checks_equal": true,
+    "evaluation_breakdowns_equal": true,
+    "arbitrary_target_queries": 180000,
+    "arbitrary_target_attacks_equal": true,
+    "complete_games_replayed": 112,
+    "terminal_outcomes_equal": true,
+    "perft_depth_three": {
+      "before": 79666,
+      "after": 79666
+    }
+  },
+  "screen": {
+    "numpy_version": "2.5.3",
+    "numpy_import_ms": 45.74083299667109,
+    "prototype_setup_ms": {
+      "numpy": 0.36862499837297946,
+      "mask": 0.6655420002061874
+    },
+    "equivalent_queries_per_prototype": 7292,
+    "mean_legal_ms": {
+      "baseline": 0.03956250547313781,
+      "numpy": 0.043106596981109156,
+      "mask": 0.015335864607853486
+    }
+  },
+  "setup": {
+    "before": {
+      "median_ms": 0.553979494725354,
+      "table_python_bytes": 309000
+    },
+    "after": {
+      "median_ms": 1.183313004730735,
+      "table_python_bytes": 1227760
+    }
+  },
+  "pooled_mean_ms": {
+    "legal": {
+      "before": 0.045525037118447166,
+      "masks-only": 0.01811367469410167,
+      "after": 0.017576946485557226,
+      "final_speedup": 2.5900424260752324
+    },
+    "1024": {
+      "before": 170.14917363808814,
+      "masks-only": 121.25243399875924,
+      "after": 64.14663663882594,
+      "final_speedup": 2.6525034289187066
+    },
+    "4096": {
+      "before": 627.1931111934666,
+      "masks-only": 476.00308791637264,
+      "after": 254.24767341650698,
+      "final_speedup": 2.466858802542522
+    }
+  },
+  "rounds": [
+    {
+      "legal": {
+        "before": {
+          "mean_ms": 0.04860743746348817,
+          "median_ms": 0.04624999564839527,
+          "observations": 512,
+          "total_speedup": 1.0
+        },
+        "masks-only": {
+          "mean_ms": 0.017917516203169725,
+          "median_ms": 0.016833495465107262,
+          "observations": 512,
+          "total_speedup": 2.7128446215602806
+        },
+        "after": {
+          "mean_ms": 0.017998627072302043,
+          "median_ms": 0.016958503692876548,
+          "observations": 512,
+          "total_speedup": 2.7006191787977984
+        }
+      },
+      "1024": {
+        "before": {
+          "mean_ms": 179.91072916508224,
+          "median_ms": 181.84416700387374,
+          "observations": 12,
+          "total_speedup": 1.0
+        },
+        "masks-only": {
+          "mean_ms": 124.44028808143533,
+          "median_ms": 123.39895799232181,
+          "observations": 12,
+          "total_speedup": 1.4457595039264644
+        },
+        "after": {
+          "mean_ms": 65.91571866617112,
+          "median_ms": 64.2238959990209,
+          "observations": 12,
+          "total_speedup": 2.729405562218576
+        }
+      },
+      "4096": {
+        "before": {
+          "mean_ms": 669.9724029980038,
+          "median_ms": 671.2088545027655,
+          "observations": 12,
+          "total_speedup": 1.0
+        },
+        "masks-only": {
+          "mean_ms": 489.4121354154777,
+          "median_ms": 492.4361039957148,
+          "observations": 12,
+          "total_speedup": 1.3689329595990558
+        },
+        "after": {
+          "mean_ms": 259.835124831928,
+          "median_ms": 256.80952049879124,
+          "observations": 12,
+          "total_speedup": 2.578452021955728
+        }
+      }
+    },
+    {
+      "legal": {
+        "after": {
+          "mean_ms": 0.017530081720451562,
+          "median_ms": 0.01647900353418663,
+          "observations": 512,
+          "total_speedup": 2.667447925501966
+        },
+        "masks-only": {
+          "mean_ms": 0.019223435543835876,
+          "median_ms": 0.01591700129210949,
+          "observations": 512,
+          "total_speedup": 2.432477795785704
+        },
+        "before": {
+          "mean_ms": 0.04676058011909845,
+          "median_ms": 0.043937499867752194,
+          "observations": 512,
+          "total_speedup": 1.0
+        }
+      },
+      "1024": {
+        "after": {
+          "mean_ms": 66.41200366721023,
+          "median_ms": 64.34854200779228,
+          "observations": 12,
+          "total_speedup": 2.637349478650689
+        },
+        "masks-only": {
+          "mean_ms": 130.05746191750708,
+          "median_ms": 130.43235449731583,
+          "observations": 12,
+          "total_speedup": 1.3467252141131267
+        },
+        "before": {
+          "mean_ms": 175.15166324786455,
+          "median_ms": 173.19977099396056,
+          "observations": 12,
+          "total_speedup": 1.0
+        }
+      },
+      "4096": {
+        "after": {
+          "mean_ms": 261.5538748335287,
+          "median_ms": 260.8421245095087,
+          "observations": 12,
+          "total_speedup": 2.3982251068384737
+        },
+        "masks-only": {
+          "mean_ms": 498.3110485833701,
+          "median_ms": 495.22787499881815,
+          "observations": 12,
+          "total_speedup": 1.2587821827348293
+        },
+        "before": {
+          "mean_ms": 627.2650694166563,
+          "median_ms": 629.1904784957296,
+          "observations": 12,
+          "total_speedup": 1.0
+        }
+      }
+    },
+    {
+      "legal": {
+        "before": {
+          "mean_ms": 0.04120709377275489,
+          "median_ms": 0.04118800279684365,
+          "observations": 512,
+          "total_speedup": 1.0
+        },
+        "masks-only": {
+          "mean_ms": 0.01720007233529941,
+          "median_ms": 0.015604491636622697,
+          "observations": 512,
+          "total_speedup": 2.3957511904287916
+        },
+        "after": {
+          "mean_ms": 0.01720213066391807,
+          "median_ms": 0.015520497981924564,
+          "observations": 512,
+          "total_speedup": 2.3954645257513287
+        }
+      },
+      "1024": {
+        "before": {
+          "mean_ms": 155.3851285013176,
+          "median_ms": 153.33404149714625,
+          "observations": 12,
+          "total_speedup": 1.0
+        },
+        "masks-only": {
+          "mean_ms": 109.25955199733532,
+          "median_ms": 110.079375001078,
+          "observations": 12,
+          "total_speedup": 1.4221651623201534
+        },
+        "after": {
+          "mean_ms": 60.11218758309648,
+          "median_ms": 59.71004150342196,
+          "observations": 12,
+          "total_speedup": 2.5849188783309534
+        }
+      },
+      "4096": {
+        "before": {
+          "mean_ms": 584.3418611657398,
+          "median_ms": 593.4229789927485,
+          "observations": 12,
+          "total_speedup": 1.0
+        },
+        "masks-only": {
+          "mean_ms": 440.2860797502702,
+          "median_ms": 440.2463544975035,
+          "observations": 12,
+          "total_speedup": 1.32718677251204
+        },
+        "after": {
+          "mean_ms": 241.35402058406422,
+          "median_ms": 238.03954150207574,
+          "observations": 12,
+          "total_speedup": 2.421098516410304
+        }
+      }
+    }
+  ],
+  "fixed_budget_equivalent_start_budget_cases": 24,
+  "adoption_criterion_passed": true,
+  "limitations": "Repeated fixed local development workloads; no new playing-strength evidence.",
+  "decision": "Adopt occupancy-mask legal generation and shared arbitrary-target attack lookup for identical positional evaluation. No new game-strength claim."
+}

@@ -2,7 +2,7 @@
 description: Transparent handcrafted positional score terms.
 scope: positional evaluation
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-15
 document_class: coordination
 ---
 
@@ -21,6 +21,9 @@ signed terms; `evaluate(game)` sums them. Positive favors the side to move.
 Placement uses simple formulas in `placement()` rather than an opaque table.
 Mobility asks the referee about each side's legal moves. The king-zone term uses
 geometric attacks, including pinned attackers; it is a rough pressure estimate.
+The shared referee's `is_attacked` lookup handles these queries, including empty
+zone squares where cannons require zero intervening pieces. The independent
+`reaches` geometry remains the regression reference.
 All coefficients are hand-set and untuned. Terminal values come from the referee
 before this evaluator runs in search.
 

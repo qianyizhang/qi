@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "id": "movegen-20260915",
+  "performance": {
+    "equivalence": {
+      "prior_games_replayed": 72,
+      "distinct_prior_boards": 2646,
+      "arbitrary_boards": 1000,
+      "board_side_queries": 7292,
+      "ordered_moves_equal": true,
+      "checks_equal": true,
+      "terminal_outcomes_equal": true,
+      "initial_perft_depth_3": {
+        "before": 79666,
+        "after": 79666
+      }
+    },
+    "fixed_budget_equivalent_start_budget_cases": 24,
+    "rounds": [
+      {
+        "round": 0,
+        "legal": {
+          "before_mean_ms": 0.40850317796525815,
+          "after_mean_ms": 0.03991728732444244,
+          "before_median_ms": 0.4194790017209016,
+          "after_median_ms": 0.04014550358988345,
+          "median_speedup": 10.448965991464338,
+          "total_speedup": 10.233740951508008,
+          "observations_per_implementation": 512
+        },
+        "search": {
+          "before_mean_ms": 777.115024334004,
+          "after_mean_ms": 140.4033437514348,
+          "before_median_ms": 768.4592084988253,
+          "after_median_ms": 139.3787085035001,
+          "median_speedup": 5.513461968113499,
+          "total_speedup": 5.534875477821822,
+          "observations_per_implementation": 12
+        }
+      },
+      {
+        "round": 1,
+        "legal": {
+          "before_mean_ms": 0.4144872069957728,
+          "after_mean_ms": 0.03950040840550173,
+          "before_median_ms": 0.42791650048457086,
+          "after_median_ms": 0.04041649663122371,
+          "median_speedup": 10.587669297243952,
+          "total_speedup": 10.493238518972928,
+          "observations_per_implementation": 512
+        },
+        "search": {
+          "before_mean_ms": 785.383843833794,
+          "after_mean_ms": 140.0301804181557,
+          "before_median_ms": 774.9594789929688,
+          "after_median_ms": 139.03608299733605,
+          "median_speedup": 5.573801147776992,
+          "total_speedup": 5.608675511868188,
+          "observations_per_implementation": 12
+        }
+      },
+      {
+        "round": 2,
+        "legal": {
+          "before_mean_ms": 0.4170032912611532,
+          "after_mean_ms": 0.04002179665008043,
+          "before_median_ms": 0.429833002272062,
+          "after_median_ms": 0.04129149601794779,
+          "median_speedup": 10.409722187959247,
+          "total_speedup": 10.419404578637655,
+          "observations_per_implementation": 512
+        },
+        "search": {
+          "before_mean_ms": 786.1023332491944,
+          "after_mean_ms": 142.20131925443033,
+          "before_median_ms": 776.4148540009046,
+          "after_median_ms": 140.76197900430998,
+          "median_speedup": 5.5157995041909125,
+          "total_speedup": 5.528094516779268,
+          "observations_per_implementation": 12
+        }
+      }
+    ],
+    "calibration": {
+      "2048": {
+        "mean_ms": 285.2934166949126,
+        "median_ms": 287.8502710009343,
+        "mean_completed_depth": 1.4166666666666667,
+        "fallbacks": 0,
+        "observations": 36
+      },
+      "4096": {
+        "mean_ms": 573.7087035567027,
+        "median_ms": 581.5757914970163,
+        "mean_completed_depth": 2,
+        "fallbacks": 0,
+        "observations": 36
+      },
+      "8192": {
+        "mean_ms": 1181.5253183061334,
+        "median_ms": 1172.44004150416,
+        "mean_completed_depth": 2.75,
+        "fallbacks": 0,
+        "observations": 36
+      }
+    },
+    "baseline_mean_ms": 782.8670671389975,
+    "selected_nodes": 4096,
+    "adoption_speed_criterion_passed": true,
+    "limitations": "Paired isolated-process timings, three repeats; calibration on 12 development starts, not clock-controlled play."
+  },
+  "games": {
+    "id": "movegen-20260915",
+    "planned_games": 40,
+    "completed_games": 40,
+    "failed_games": 0,
+    "selected_nodes": 4096,
+    "game_elapsed_seconds": 697.1834939170076,
+    "runs": {
+      "small": {
+        "summary": {
+          "schema_version": 1,
+          "protocol": "paired-games-v1",
+          "spec_sha256": "3c39dde54a332e733a4baacf52563a8f78bab562ceea588e60a4db079c8883e6",
+          "status": "complete",
+          "players": {
+            "a": {
+              "scorer": "game-score-v1",
+              "planned_pairs": 8,
+              "completed_pairs": 8,
+              "completed_games": 16,
+              "failed_games": 0,
+              "incomplete_games": 0,
+              "unpaired_completed_games": 0,
+              "wins": 0,
+              "draws": 3,
+              "losses": 13,
+              "score_rate": 0.09375,
+              "decisions": 386,
+              "mean_elapsed_ms": 480.1792080469346
+            },
+            "b": {
+              "scorer": "game-score-v1",
+              "planned_pairs": 8,
+              "completed_pairs": 8,
+              "completed_games": 16,
+              "failed_games": 0,
+              "incomplete_games": 0,
+              "unpaired_completed_games": 0,
+              "wins": 13,
+              "draws": 3,
+              "losses": 0,
+              "score_rate": 0.90625,
+              "decisions": 391,
+              "mean_elapsed_ms": 137.11109828355615
+            }
+          }
+        },
+        "costs": {
+          "a": {
+            "decisions": 386,
+            "mean_move_ms": 480.1792080469346,
+            "mean_completed_depth": 2.800518134715026,
+            "fallbacks": 1,
+            "qi_nodes": 1478256,
+            "engine_nodes": 0
+          },
+          "b": {
+            "decisions": 391,
+            "mean_move_ms": 137.11109828355615,
+            "mean_completed_depth": 0.0,
+            "fallbacks": 0,
+            "qi_nodes": 0,
+            "engine_nodes": 80840
+          }
+        },
+        "terminations": {
+          "checkmate": 13,
+          "repetition": 3
+        },
+        "sha256": "096af0e323758a969fba77a7860ae354c93073129c80423760035b07ba06067c"
+      },
+      "large": {
+        "summary": {
+          "schema_version": 1,
+          "protocol": "paired-games-v1",
+          "spec_sha256": "95d31dbad9faa83fd9c3ca65ef73234d266670b7cbacaea9db6d49796004a271",
+          "status": "complete",
+          "players": {
+            "a": {
+              "scorer": "game-score-v1",
+              "planned_pairs": 8,
+              "completed_pairs": 8,
+              "completed_games": 16,
+              "failed_games": 0,
+              "incomplete_games": 0,
+              "unpaired_completed_games": 0,
+              "wins": 0,
+              "draws": 0,
+              "losses": 16,
+              "score_rate": 0.0,
+              "decisions": 465,
+              "mean_elapsed_ms": 446.20328121577637
+            },
+            "b": {
+              "scorer": "game-score-v1",
+              "planned_pairs": 8,
+              "completed_pairs": 8,
+              "completed_games": 16,
+              "failed_games": 0,
+              "incomplete_games": 0,
+              "unpaired_completed_games": 0,
+              "wins": 16,
+              "draws": 0,
+              "losses": 0,
+              "score_rate": 1.0,
+              "decisions": 473,
+              "mean_elapsed_ms": 143.31406811425137
+            }
+          }
+        },
+        "costs": {
+          "a": {
+            "decisions": 465,
+            "mean_move_ms": 446.20328121577637,
+            "mean_completed_depth": 2.8989247311827957,
+            "fallbacks": 0,
+            "qi_nodes": 1670315,
+            "engine_nodes": 0
+          },
+          "b": {
+            "decisions": 473,
+            "mean_move_ms": 143.31406811425137,
+            "mean_completed_depth": 0.0,
+            "fallbacks": 0,
+            "qi_nodes": 0,
+            "engine_nodes": 1181828
+          }
+        },
+        "terminations": {
+          "checkmate": 16
+        },
+        "sha256": "604d6fdef46051e8c34e7f95a2aab4ab98cc01bd08ead4471500b2b0ea871ca5"
+      },
+      "control": {
+        "summary": {
+          "schema_version": 1,
+          "protocol": "paired-games-v1",
+          "spec_sha256": "dba36105d491b4f3c4ee451024a8cd497daff48fcf319091065759b13443c991",
+          "status": "complete",
+          "players": {
+            "a": {
+              "scorer": "game-score-v1",
+              "planned_pairs": 4,
+              "completed_pairs": 4,
+              "completed_games": 8,
+              "failed_games": 0,
+              "incomplete_games": 0,
+              "unpaired_completed_games": 0,
+              "wins": 8,
+              "draws": 0,
+              "losses": 0,
+              "score_rate": 1.0,
+              "decisions": 289,
+              "mean_elapsed_ms": 469.6844080307966
+            },
+            "b": {
+              "scorer": "game-score-v1",
+              "planned_pairs": 4,
+              "completed_pairs": 4,
+              "completed_games": 8,
+              "failed_games": 0,
+              "incomplete_games": 0,
+              "unpaired_completed_games": 0,
+              "wins": 0,
+              "draws": 0,
+              "losses": 8,
+              "score_rate": 0.0,
+              "decisions": 285,
+              "mean_elapsed_ms": 100.59016653696042
+            }
+          }
+        },
+        "costs": {
+          "a": {
+            "decisions": 289,
+            "mean_move_ms": 469.6844080307966,
+            "mean_completed_depth": 2.6643598615916955,
+            "fallbacks": 0,
+            "qi_nodes": 1169457,
+            "engine_nodes": 0
+          },
+          "b": {
+            "decisions": 285,
+            "mean_move_ms": 100.59016653696042,
+            "mean_completed_depth": 2.031578947368421,
+            "fallbacks": 6,
+            "qi_nodes": 291353,
+            "engine_nodes": 0
+          }
+        },
+        "terminations": {
+          "checkmate": 7,
+          "stalemate": 1
+        },
+        "sha256": "1a67d77713a5366441794c5c065313b2673077cd0d67eb045b871c44974c78ae"
+      }
+    },
+    "verified": true,
+    "manifest_sha256": "fa277841626794bf9aeb7bc72d5b5db31e4ef28016184ff86d096b93491d314a"
+  },
+  "verification": {
+    "make_check": "passed",
+    "python_passed": 745,
+    "python_skipped": 1,
+    "browser_tests_passed": 5,
+    "new_games_replayed_by_frozen_old_referee": 40,
+    "current_files_match_measured_snapshot": 132,
+    "checks_log_sha256": "e8e2592740f6df95bc2ff8405f5cd019b13db90504a4bb308377fb81eaf834e0",
+    "timing_aggregates_and_selection_recomputed_from_raw": true
+  },
+  "artifacts_sha256": {
+    "artifacts/experiments/movegen-20260915/performance.json": "fc960ccbe2266ae6a94f22922ead29abc2fc62c99779850cb4fa0b264b30e4d2",
+    "artifacts/experiments/movegen-20260915/equivalence.json": "2a1d4a856f2ebf2d0d460e4d19124db703f66b6a2844eebd102d7c601125568b",
+    "artifacts/experiments/movegen-20260915/games-manifest.json": "fa277841626794bf9aeb7bc72d5b5db31e4ef28016184ff86d096b93491d314a",
+    "artifacts/experiments/movegen-20260915/games-summary.json": "977dcbe19c66b7921d1d608295c97f71931148278d1e5ad4068ee1f6bda5cf4f",
+    "artifacts/experiments/movegen-20260915/verification.json": "c9288d64ae44cbe0451f3bb318add45a0cbf0a48bb412881c19c6296da21ed39",
+    "artifacts/experiments/movegen-20260915/before-hashes.json": "7b875f965f09166a9974d5e586d76358674901098a3df52e39c6ac7f5769746b",
+    "artifacts/experiments/movegen-20260915/after-hashes.json": "5c28eccca4ecdeefbf26fb28388bcd9f872788932d1a16f3c827bd6e5838ecee",
+    "artifacts/experiments/movegen-20260915/movegen_optimization.py": "0ed7b29cee6fe04dd5a99f94ffe20a9705139c6fd8111a6ba3f9aac9c5312106",
+    "artifacts/experiments/movegen-20260915/movegen_games.py": "4a33432d459a5021d6564b43a0fb71d9da28fac0e30b199df4930edc38921a63",
+    "artifacts/experiments/movegen-20260915/positions.json": "204eb9cbfac75b42bae061ec8ba23e57c40d92b01b108b92cd094279fab9b248",
+    "artifacts/experiments/movegen-20260915/probe-starts.json": "313808ded4de543e033ed6f4f7c96e504d8545f5faab2d433ba49767eb592e1b",
+    "artifacts/experiments/movegen-20260915/timing-boards.json": "ee3b6b44a8e83510341adf4850496c26f90cc246d61186f9f0cadfbedc28acf1",
+    "artifacts/experiments/movegen-20260915/checks.log": "e8e2592740f6df95bc2ff8405f5cd019b13db90504a4bb308377fb81eaf834e0",
+    "artifacts/experiments/movegen-20260915/timing.log": "f085cc5d1de97f573b3f1350d6091108b8cf0d819680687f617c8964bc6c08c5",
+    "artifacts/experiments/movegen-20260915/games.log": "ae32282322426214f5eccdfc04af6b4fcd90ad1f846cbfab9da5f1ca6be9aa93"
+  },
+  "decision": "Adopt the equivalent move generator. Keep fixed default node budgets; expose the 4096-node PVS setting as an explicitly measured option, without a Pikafish-parity claim.",
+  "limitations": [
+    "Equivalence checked on finite controls, not formally proved for all possible boards.",
+    "Three local timing rounds on fixed workloads, not cross-machine/general speed guarantees.",
+    "4096 visits chosen by development timing, not a per-move clock or exact matched game latency.",
+    "New-to-selection development families; no certified held-out or external Elo claim.",
+    "Native Pikafish nodes and Qi visits are distinct; both engine profiles remain capped."
+  ]
+}

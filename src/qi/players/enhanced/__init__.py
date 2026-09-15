@@ -30,6 +30,18 @@ PLAYERS = (
     recipe("alphabeta-checks", "Alpha-beta · check extensions", SearchOptions(extensions=CheckExtensions(2))),
     recipe("alphabeta-tt", "Alpha-beta · transpositions", SearchOptions(table_capacity=2048)),
     recipe(
+        "alphabeta-lean",
+        "Alpha-beta · lean",
+        SearchOptions(evaluator=evaluate, ordering=True, table_capacity=2048),
+        quiescence=True,
+    ),
+    recipe(
+        "alphabeta-pvs",
+        "Alpha-beta · principal variation",
+        SearchOptions(evaluator=evaluate, ordering=True, table_capacity=2048, pvs=True),
+        quiescence=True,
+    ),
+    recipe(
         "alphabeta-enhanced",
         "Alpha-beta · combined",
         SearchOptions(

@@ -2,7 +2,7 @@
 description: An educational guide to the original material alpha-beta player.
 scope: alpha-beta player
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-15
 document_class: coordination
 ---
 
@@ -39,7 +39,9 @@ uv run qi choose --state game.json --player alphabeta --depth 2 --nodes 128
 ```
 
 `SearchOptions` optionally composes an evaluator, move ordering, SEE, bounded
-check extensions, and a transposition table. Defaults keep this baseline intact.
+check extensions, a transposition table, and principal variation search (`pvs`).
+PVS uses narrow-window probes and full re-searches for promising later moves;
+all work counts toward the same budget. Defaults keep this baseline intact.
 See [components and composition](../components/README.md) and the separately
 registered [recipes](../enhanced/README.md).
 

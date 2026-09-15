@@ -1,0 +1,22 @@
+{
+  "id": "enhanced-potential-20260915",
+  "book": "data/evaluation/human-openings-v1/development.json",
+  "seed": 7,
+  "screen_families": 4,
+  "followup_families": 8,
+  "control_families": 4,
+  "game_seconds": 1800,
+  "profiles": {
+    "original": {"kind": "alphabeta-enhanced", "nodes": 128, "depth": 2},
+    "scaled": {"kind": "alphabeta-enhanced", "nodes": 1024, "depth": 4},
+    "lean": {"kind": "alphabeta-lean", "nodes": 1024, "depth": 4},
+    "pvs": {"kind": "alphabeta-pvs", "nodes": 1024, "depth": 4}
+  },
+  "opponents": {
+    "small": {"kind": "pikafish-benchmark", "nodes": 1000, "depth": 3, "work_semantics": "engine_native"},
+    "large": {"kind": "pikafish-benchmark", "nodes": 100000, "depth": 8, "work_semantics": "engine_native"}
+  },
+  "probes": {"alphabeta-enhanced": [128, 512, 2048], "alphabeta-lean": [512, 2048], "alphabeta-pvs": [512, 2048]},
+  "selection": "Highest complete screening paired score among scaled/lean/pvs; ties by lower mean move latency, then ID.",
+  "stop": "Check 1800-second game deadline before every game; finish current game; retain all pending/failed slots."
+}

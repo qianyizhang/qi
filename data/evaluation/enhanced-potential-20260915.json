@@ -1,0 +1,745 @@
+{
+  "id": "enhanced-potential-20260915",
+  "planned_games": 72,
+  "completed_games": 72,
+  "failed_games": 0,
+  "selected": "pvs",
+  "runs": {
+    "screen-original": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "36d96fd788de122c5d8423767f5f687728841d74b2074a9e817e99606edb0756",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 8,
+            "score_rate": 0.0,
+            "decisions": 154,
+            "mean_elapsed_ms": 83.72716288346504
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 8,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 158,
+            "mean_elapsed_ms": 136.105018449598
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 154,
+          "mean_move_ms": 83.72716288346504,
+          "mean_completed_depth": 0.5194805194805194,
+          "fallback_decisions": 78,
+          "qi_nodes": 19610,
+          "qnodes": 17604,
+          "see_nodes": 1144,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 158,
+          "mean_move_ms": 136.105018449598,
+          "mean_completed_depth": 0.0,
+          "fallback_decisions": 158,
+          "qi_nodes": 0,
+          "qnodes": 0,
+          "see_nodes": 0,
+          "engine_nodes": 30200
+        }
+      },
+      "terminations": {
+        "checkmate": 8
+      },
+      "sha256": "fd8f3d92cff550486553c96c7862fa51bc6d43add5fa330cd6b5f60552ec6530"
+    },
+    "screen-scaled": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "b473dbe99462d2c0a74f4a7d958eff0668af22ec29c692caf986b1e52debe078",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 8,
+            "score_rate": 0.0,
+            "decisions": 155,
+            "mean_elapsed_ms": 634.186408580694
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 8,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 159,
+            "mean_elapsed_ms": 136.04977273593843
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 155,
+          "mean_move_ms": 634.186408580694,
+          "mean_completed_depth": 1.3419354838709678,
+          "fallback_decisions": 14,
+          "qi_nodes": 158720,
+          "qnodes": 128582,
+          "see_nodes": 23207,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 159,
+          "mean_move_ms": 136.04977273593843,
+          "mean_completed_depth": 0.0,
+          "fallback_decisions": 159,
+          "qi_nodes": 0,
+          "qnodes": 0,
+          "see_nodes": 0,
+          "engine_nodes": 30531
+        }
+      },
+      "terminations": {
+        "checkmate": 8
+      },
+      "sha256": "e749a5e26d41621f741253fdb91eb3a58b2f11fea40a9e8db74d32c7c967091c"
+    },
+    "screen-lean": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "a33f6f4f619dd265b5a52416657387c8e000fceeb9d67c38fbc0eec5e4c6084c",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 8,
+            "score_rate": 0.0,
+            "decisions": 180,
+            "mean_elapsed_ms": 616.5947926114313
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 8,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 184,
+            "mean_elapsed_ms": 135.71127555998987
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 180,
+          "mean_move_ms": 616.5947926114313,
+          "mean_completed_depth": 1.6166666666666667,
+          "fallback_decisions": 12,
+          "qi_nodes": 184320,
+          "qnodes": 175919,
+          "see_nodes": 0,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 184,
+          "mean_move_ms": 135.71127555998987,
+          "mean_completed_depth": 0.0,
+          "fallback_decisions": 184,
+          "qi_nodes": 0,
+          "qnodes": 0,
+          "see_nodes": 0,
+          "engine_nodes": 38520
+        }
+      },
+      "terminations": {
+        "checkmate": 8
+      },
+      "sha256": "6ec5726c4813045ec35d1683184ea806d7d49a5d646f96f76af6fb74cd907edc"
+    },
+    "screen-pvs": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "b95a644030c18d32f318187c303afadb0bcb838e9f09b1545b62ca6bbe5399d0",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 8,
+            "score_rate": 0.0,
+            "decisions": 165,
+            "mean_elapsed_ms": 605.5195015943327
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 8,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 169,
+            "mean_elapsed_ms": 135.21901455119917
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 165,
+          "mean_move_ms": 605.5195015943327,
+          "mean_completed_depth": 1.5757575757575757,
+          "fallback_decisions": 14,
+          "qi_nodes": 168960,
+          "qnodes": 158293,
+          "see_nodes": 0,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 169,
+          "mean_move_ms": 135.21901455119917,
+          "mean_completed_depth": 0.0,
+          "fallback_decisions": 169,
+          "qi_nodes": 0,
+          "qnodes": 0,
+          "see_nodes": 0,
+          "engine_nodes": 33125
+        }
+      },
+      "terminations": {
+        "checkmate": 8
+      },
+      "sha256": "b939b4ef9ae48f0ce9a43a86d69a52e3fb1c580ae55feeb184df82d0320c01a6"
+    },
+    "followup-small": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "7814954f87d58eb7bcfc60bf7dc85112b0dcd23f750d32b35728dce09daad06a",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 8,
+            "completed_pairs": 8,
+            "completed_games": 16,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 16,
+            "score_rate": 0.0,
+            "decisions": 367,
+            "mean_elapsed_ms": 593.7844705830181
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 8,
+            "completed_pairs": 8,
+            "completed_games": 16,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 16,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 375,
+            "mean_elapsed_ms": 141.13598467188422
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 367,
+          "mean_move_ms": 593.7844705830181,
+          "mean_completed_depth": 1.762942779291553,
+          "fallback_decisions": 17,
+          "qi_nodes": 374495,
+          "qnodes": 349936,
+          "see_nodes": 0,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 375,
+          "mean_move_ms": 141.13598467188422,
+          "mean_completed_depth": 0.0,
+          "fallback_decisions": 375,
+          "qi_nodes": 0,
+          "qnodes": 0,
+          "see_nodes": 0,
+          "engine_nodes": 78138
+        }
+      },
+      "terminations": {
+        "checkmate": 16
+      },
+      "sha256": "2360d9b5897bc1fad138b4c6483cf42557557697ecf2934110569151fb4d9ee1"
+    },
+    "followup-large": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "24485db2153dae5579cfaa3860efb12cc35242662fb2aaf6525faada875413c2",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 8,
+            "completed_pairs": 8,
+            "completed_games": 16,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 16,
+            "score_rate": 0.0,
+            "decisions": 328,
+            "mean_elapsed_ms": 603.2035330277367
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 8,
+            "completed_pairs": 8,
+            "completed_games": 16,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 16,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 336,
+            "mean_elapsed_ms": 143.57384150553983
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 328,
+          "mean_move_ms": 603.2035330277367,
+          "mean_completed_depth": 1.920731707317073,
+          "fallback_decisions": 11,
+          "qi_nodes": 335636,
+          "qnodes": 310005,
+          "see_nodes": 0,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 336,
+          "mean_move_ms": 143.57384150553983,
+          "mean_completed_depth": 0.0,
+          "fallback_decisions": 336,
+          "qi_nodes": 0,
+          "qnodes": 0,
+          "see_nodes": 0,
+          "engine_nodes": 917254
+        }
+      },
+      "terminations": {
+        "checkmate": 16
+      },
+      "sha256": "0f6450a28b2e3eac688c8f79a5777e780cad61ddfa6e9d1ad77031666c435f0e"
+    },
+    "followup-control": {
+      "summary": {
+        "schema_version": 1,
+        "protocol": "paired-games-v1",
+        "spec_sha256": "3589ab4fd99fa29fc58765e1615753e4b5c724fa4c929b94d3a1740f477c6934",
+        "status": "complete",
+        "players": {
+          "a": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 8,
+            "draws": 0,
+            "losses": 0,
+            "score_rate": 1.0,
+            "decisions": 245,
+            "mean_elapsed_ms": 484.9075941959923
+          },
+          "b": {
+            "scorer": "game-score-v1",
+            "planned_pairs": 4,
+            "completed_pairs": 4,
+            "completed_games": 8,
+            "failed_games": 0,
+            "incomplete_games": 0,
+            "unpaired_completed_games": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 8,
+            "score_rate": 0.0,
+            "decisions": 241,
+            "mean_elapsed_ms": 19.61517621973419
+          }
+        }
+      },
+      "costs": {
+        "a": {
+          "decisions": 245,
+          "mean_move_ms": 484.9075941959923,
+          "mean_completed_depth": 2.012244897959184,
+          "fallback_decisions": 1,
+          "qi_nodes": 250472,
+          "qnodes": 223583,
+          "see_nodes": 0,
+          "engine_nodes": 0
+        },
+        "b": {
+          "decisions": 241,
+          "mean_move_ms": 19.61517621973419,
+          "mean_completed_depth": 0.8921161825726142,
+          "fallback_decisions": 59,
+          "qi_nodes": 29652,
+          "qnodes": 26016,
+          "see_nodes": 2003,
+          "engine_nodes": 0
+        }
+      },
+      "terminations": {
+        "checkmate": 6,
+        "stalemate": 2
+      },
+      "sha256": "40c9ca7af17a3d8462ebf70210b3054c0513e23b0da6762dfb5815019e5a879f"
+    }
+  },
+  "manifest_sha256": "72be21833a4151d5a68975df129cc017e574c8e59658949b920f88f6bdf84cdd",
+  "verified": true,
+  "verification": "Every retained game replayed; identities, choices, hard budgets and terminal outcomes validated. Source/config archive hashes checked.",
+  "probes": [
+    {
+      "player": "alphabeta-enhanced",
+      "budget": 128,
+      "decisions": 12,
+      "mean_completed_depth": 0.5833333333333334,
+      "fallbacks": 5,
+      "mean_move_ms": 115.18162158608902,
+      "see_nodes": 146,
+      "qi_nodes": 1536
+    },
+    {
+      "player": "alphabeta-enhanced",
+      "budget": 512,
+      "decisions": 12,
+      "mean_completed_depth": 1,
+      "fallbacks": 0,
+      "mean_move_ms": 428.83022208479815,
+      "see_nodes": 426,
+      "qi_nodes": 6144
+    },
+    {
+      "player": "alphabeta-enhanced",
+      "budget": 2048,
+      "decisions": 12,
+      "mean_completed_depth": 1.4166666666666667,
+      "fallbacks": 0,
+      "mean_move_ms": 1618.9426803321112,
+      "see_nodes": 1902,
+      "qi_nodes": 24576
+    },
+    {
+      "player": "alphabeta-lean",
+      "budget": 512,
+      "decisions": 12,
+      "mean_completed_depth": 1,
+      "fallbacks": 0,
+      "mean_move_ms": 430.99517716958263,
+      "see_nodes": 0,
+      "qi_nodes": 6144
+    },
+    {
+      "player": "alphabeta-lean",
+      "budget": 2048,
+      "decisions": 12,
+      "mean_completed_depth": 1.4166666666666667,
+      "fallbacks": 0,
+      "mean_move_ms": 1681.2545034129773,
+      "see_nodes": 0,
+      "qi_nodes": 24576
+    },
+    {
+      "player": "alphabeta-pvs",
+      "budget": 512,
+      "decisions": 12,
+      "mean_completed_depth": 1,
+      "fallbacks": 0,
+      "mean_move_ms": 389.3650693316886,
+      "see_nodes": 0,
+      "qi_nodes": 6144
+    },
+    {
+      "player": "alphabeta-pvs",
+      "budget": 2048,
+      "decisions": 12,
+      "mean_completed_depth": 1.4166666666666667,
+      "fallbacks": 0,
+      "mean_move_ms": 1572.4947363341926,
+      "see_nodes": 0,
+      "qi_nodes": 24576
+    }
+  ],
+  "engine_work": {
+    "followup-small": {
+      "decisions": 375,
+      "mean_reported_nodes": 208.368,
+      "reported_depths": {
+        "3": 375
+      },
+      "engine_identity": {
+        "engine_name": "Pikafish 2026-01-02",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "threads": 1,
+        "hash_mb": 16,
+        "requested_nodes": 1000,
+        "requested_depth": 3
+      }
+    },
+    "followup-large": {
+      "decisions": 336,
+      "mean_reported_nodes": 2729.9226190476193,
+      "reported_depths": {
+        "8": 336
+      },
+      "engine_identity": {
+        "engine_name": "Pikafish 2026-01-02",
+        "engine_sha256": "58e859f6adb67c45b86a4a25388c521e3d69492911042a9aa500b2e6935baf63",
+        "network_sha256": "c4026370d7516d9b0f668447f9ca1931241538bdc689cde6fec6a991ac4d5f77",
+        "threads": 1,
+        "hash_mb": 16,
+        "requested_nodes": 100000,
+        "requested_depth": 8
+      }
+    }
+  },
+  "game_elapsed_seconds": 1084.7079912089976,
+  "baseline_equivalent_starts": 12,
+  "profile": {
+    "start": "opening-13748fbae3390a93",
+    "total_seconds": 3.3287001889999996,
+    "top_cumulative": [
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/__init__.py",
+        "line": 30,
+        "name": "choose",
+        "primitive_calls": 1,
+        "calls": 1,
+        "self_seconds": 2.4916e-05,
+        "cumulative_seconds": 3.3298099170000004
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/enhanced/__init__.py",
+        "line": 16,
+        "name": "select",
+        "primitive_calls": 1,
+        "calls": 1,
+        "self_seconds": 6.5293e-05,
+        "cumulative_seconds": 3.327389584
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/alphabeta/__init__.py",
+        "line": 132,
+        "name": "search",
+        "primitive_calls": 1,
+        "calls": 1,
+        "self_seconds": 8.1549e-05,
+        "cumulative_seconds": 3.3242982910000003
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/alphabeta/__init__.py",
+        "line": 75,
+        "name": "child",
+        "primitive_calls": 43,
+        "calls": 116,
+        "self_seconds": 9.595400000000001e-05,
+        "cumulative_seconds": 3.323655038
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/trace.py",
+        "line": 94,
+        "name": "call",
+        "primitive_calls": 45,
+        "calls": 1140,
+        "self_seconds": 0.000764489,
+        "cumulative_seconds": 3.3236169550000003
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/alphabeta/__init__.py",
+        "line": 83,
+        "name": "visit",
+        "primitive_calls": 45,
+        "calls": 122,
+        "self_seconds": 0.000428397,
+        "cumulative_seconds": 3.323591416
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/quiescence/__init__.py",
+        "line": 12,
+        "name": "quiesce",
+        "primitive_calls": 118,
+        "calls": 1018,
+        "self_seconds": 0.003952195,
+        "cumulative_seconds": 3.068329421
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/game.py",
+        "line": 99,
+        "name": "legal_moves",
+        "primitive_calls": 1439,
+        "calls": 1439,
+        "self_seconds": 0.310538961,
+        "cumulative_seconds": 2.973706258
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/game.py",
+        "line": 44,
+        "name": "reaches",
+        "primitive_calls": 2781549,
+        "calls": 2781549,
+        "self_seconds": 1.0479349310000001,
+        "cumulative_seconds": 1.860131997
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/components/positional/__init__.py",
+        "line": 46,
+        "name": "breakdown",
+        "primitive_calls": 895,
+        "calls": 895,
+        "self_seconds": 0.0023820900000000003,
+        "cumulative_seconds": 1.727278324
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/components/positional/__init__.py",
+        "line": 57,
+        "name": "evaluate",
+        "primitive_calls": 894,
+        "calls": 894,
+        "self_seconds": 0.00037475700000000003,
+        "cumulative_seconds": 1.724778477
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "name": "<built-in method builtins.any>",
+        "primitive_calls": 75638,
+        "calls": 75638,
+        "self_seconds": 0.20846757400000002,
+        "cumulative_seconds": 1.7085965730000001
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/game.py",
+        "line": 127,
+        "name": "outcome",
+        "primitive_calls": 2157,
+        "calls": 2157,
+        "self_seconds": 0.001479019,
+        "cumulative_seconds": 1.539476528
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/players/common.py",
+        "line": 33,
+        "name": "terminal_score",
+        "primitive_calls": 1140,
+        "calls": 1140,
+        "self_seconds": 0.000223737,
+        "cumulative_seconds": 1.536574334
+      },
+      {
+        "file": "/Users/zhangqy/pkgs/qi/src/qi/game.py",
+        "line": 85,
+        "name": "in_check",
+        "primitive_calls": 64879,
+        "calls": 64879,
+        "self_seconds": 0.020288868,
+        "cumulative_seconds": 1.515887911
+      }
+    ]
+  },
+  "artifacts_sha256": {
+    "artifacts/experiments/enhanced-potential-20260915/manifest.json": "72be21833a4151d5a68975df129cc017e574c8e59658949b920f88f6bdf84cdd",
+    "artifacts/experiments/enhanced-potential-20260915/summary.json": "7d05c5310d23eecf7482af9120d41fa1bcc6e994b0a8a6c71f8983fe34536684",
+    "artifacts/experiments/enhanced-potential-20260915/starts.json": "313808ded4de543e033ed6f4f7c96e504d8545f5faab2d433ba49767eb592e1b",
+    "artifacts/experiments/enhanced-potential-20260915/probes.json": "6ebe66b81ecd9b0241387e93342dd95e5b32672d58a1ae8cfb7889bd600a6bfa",
+    "artifacts/experiments/enhanced-potential-20260915/source.tar.gz": "2049e309792d073dae27327e4d8dd98c56787a6d0854b3bc6bbf1179c2c55c1b",
+    "artifacts/experiments/enhanced-potential-20260915/diagnostics.json": "399b569a7c00f077d445ac170574182dbd03fbef7d568397987298e271c22bc8",
+    "artifacts/experiments/enhanced-potential-20260915/profile.pstats": "88e3816ac43219aabf1edc4a9ffd96a8928c3f6fc3f03d833b0b0e281e9abc7c",
+    "artifacts/experiments/enhanced-potential-20260915/profile.txt": "4b19f044214cd503df7e9a2d801b25019a271f590f1e8f8b6ecc4c6b5f2c5f64",
+    "artifacts/experiments/enhanced-potential-20260915/baseline-alphabeta.py": "9ba098888f506f5cfcfce80b1fde7b15be4de931a778b0c5de98c5baccaa2e6b",
+    "artifacts/experiments/enhanced-potential-20260915/verification.json": "b0eb06cee400262ac8fee68305a9c7848b9326a49c213ca11833596ea79b3d8e"
+  },
+  "verification_receipt": "artifacts/experiments/enhanced-potential-20260915/verification.json",
+  "decision": "No evidence of approaching either capped Pikafish profile through these small changes. Retain explicit experimental variants; next investigate faster legal move generation with equivalence checks and a new matched-time game study.",
+  "limitations": [
+    "Budget and recipe both change in the 8-0 control; no isolated PVS strength gain.",
+    "Exploratory latency tie-break; new-to-selection families from an already-used development book.",
+    "Different native and Qi work units; no equal-compute or unrestricted-Pikafish claim.",
+    "Small paired sample; no Elo or certified held-out estimate.",
+    "Single instrumented decision diagnoses CPU cost, not global speed or causal strength limitations."
+  ]
+}

@@ -1,5 +1,7 @@
 """Ablations preserve minimax semantics; composed features obey one work budget."""
 
+from dataclasses import replace
+from functools import partial
 from itertools import product
 
 import pytest
@@ -9,6 +11,9 @@ from qi.players import PlayerConfig, choose
 from qi.players.alphabeta import Search, SearchOptions, search
 from qi.players.common import MATE, BudgetExhausted, NodeBudget, evaluate, terminal_score
 from qi.players.components.extensions import CheckExtensions
+from qi.players.components.positional import evaluate as positional
+from qi.players.quiescence import quiesce
+from qi.players.trace import Recorder, recording
 from qi.test_game import board_at
 
 
@@ -22,14 +27,14 @@ def minimax(game, depth, extra=0, ply=0):
     return max(-minimax(game.apply(move), depth - 1, extra, ply + 1) for move in legal_moves(game.board, game.turn))
 
 
-@pytest.mark.parametrize("ordering,exchange,table", list(product((False, True), repeat=3)))
-def test_ordering_exchange_and_table_preserve_fixed_depth_score(ordering, exchange, table):
+@pytest.mark.parametrize("ordering,exchange,table,pvs", list(product((False, True), repeat=4)))
+def test_ordering_exchange_and_table_preserve_fixed_depth_score(ordering, exchange, table, pvs):
     board = board_at(e0="K", d9="k", a0="R", a5="r")
     game = Game(board=board, positions=(board + "red",))
     result = search(
         game,
         PlayerConfig(depth=2, nodes=100_000),
-        options=SearchOptions(ordering=ordering, exchange=exchange, table_capacity=128 if table else 0),
+        options=SearchOptions(ordering=ordering, exchange=exchange, table_capacity=128 if table else 0, pvs=pvs),
     )
     assert result.completed_depth == 2
     assert result.score == minimax(game, 2)
@@ -65,6 +70,8 @@ def test_table_reuse_is_charged_and_unfinished_root_is_never_stored():
         "alphabeta-checks",
         "alphabeta-tt",
         "alphabeta-enhanced",
+        "alphabeta-lean",
+        "alphabeta-pvs",
     ],
 )
 @pytest.mark.parametrize("nodes", [1, 32, 512])
@@ -81,6 +88,26 @@ def test_cutoff_memory_is_recreated_for_each_decision():
     config = PlayerConfig("alphabeta-enhanced", nodes=512)
     a, b = choose(Game(), config), choose(Game(), config)
     assert (a.move, a.score, a.nodes, a.search_stats) == (b.move, b.score, b.nodes, b.search_stats)
+
+
+@pytest.mark.parametrize("table", [0, 128])
+def test_pvs_quiescence_scores_and_interrupted_iteration(table):
+    board = board_at(e0="K", d9="k", a0="R", a5="r", c2="N", e5="P")
+    game = Game(board=board, positions=(board + "red",))
+    options = SearchOptions(evaluator=positional, ordering=True, table_capacity=table)
+    leaf = partial(quiesce, evaluator=positional)
+    config = PlayerConfig(depth=2, nodes=100_000)
+    expected = search(game, config, leaf, options=options)
+    recorder = Recorder()
+    with recording(recorder):
+        actual = search(game, config, leaf, options=replace(options, pvs=True))
+    assert expected.completed_depth == actual.completed_depth == 2
+    assert expected.score == actual.score
+    assert any(item["kind"] == "pvs-research" for item in recorder.events)
+    shallow = search(game, replace(config, depth=1), leaf, options=replace(options, pvs=True))
+    interrupted = search(game, replace(config, nodes=shallow.nodes + 1), leaf, options=replace(options, pvs=True))
+    assert interrupted.completed_depth == 1
+    assert (interrupted.move, interrupted.score) == (shallow.move, shallow.score)
 
 
 def test_table_cannot_override_a_history_dependent_terminal_result():

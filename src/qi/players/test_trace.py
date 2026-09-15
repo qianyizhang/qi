@@ -17,6 +17,8 @@ PLAYERS = [
     "alphabeta-checks",
     "alphabeta-tt",
     "alphabeta-enhanced",
+    "alphabeta-lean",
+    "alphabeta-pvs",
     "mcts",
     "mcts-quiescence",
 ]

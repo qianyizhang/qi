@@ -1,6 +1,6 @@
 """Transparent handcrafted material, placement, mobility, and king-safety terms."""
 
-from qi.game import Game, legal_moves, other, owner, palace, reaches
+from qi.game import Game, is_attacked, legal_moves, other, owner, palace
 from qi.players.common import evaluate as material
 from qi.players.core import EvaluationBreakdown
 
@@ -34,9 +34,7 @@ def king_safety(board: str, side: str) -> int:
         for f in range(max(0, x - 1), min(9, x + 2))
         if palace(f, r, side)
     ]
-    attacks = sum(
-        any(p != "." and owner(p) != side and reaches(board, i, target) for i, p in enumerate(board)) for target in zone
-    )
+    attacks = sum(is_attacked(board, target, other(side)) for target in zone)
     guards = sum(
         p != "." and owner(p) == side and p.upper() in "AB" and abs(i // 9 - y) <= 2 for i, p in enumerate(board)
     )
