@@ -1,11 +1,12 @@
 """Xiangqi exchange geometry and explicit heuristic-work accounting."""
 
 import pytest
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves
+from qi_game.test_game import board_at
 
-from qi.game import Game, GameError, legal_moves
 from qi.players.common import BudgetExhausted, NodeBudget
 from qi.players.components.exchange import estimate
-from qi.test_game import board_at
 
 
 def test_poisoned_opening_capture_accounts_for_recapture():

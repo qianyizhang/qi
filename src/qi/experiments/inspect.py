@@ -4,13 +4,15 @@ import json
 from dataclasses import asdict, replace
 from pathlib import Path
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
+
 from qi.experiments.evidence import check_choice, comparable_choice, load_run, require
 from qi.experiments.model import digest, provenance
 from qi.experiments.runner import write_json
 from qi.players import PlayerConfig, choose
 from qi.players.core import config_data
 from qi.players.trace import Recorder, recording
-from qi.protocol import Snapshot
 
 
 def inspect_decision(directory: Path, unit_id: str, turn_index: int, output: Path, limit: int = 100_000) -> dict:
@@ -27,7 +29,7 @@ def inspect_decision(directory: Path, unit_id: str, turn_index: int, output: Pat
     require(unit is not None and 0 <= turn_index < len(unit["turns"]), "Unknown unit or decision index.")
     job = unit["job"]
     turn = unit["turns"][turn_index]
-    game = Snapshot(moves=unit["snapshot"]["moves"][: turn["ply"] - 1]).game()
+    game = restore(Snapshot(moves=unit["snapshot"]["moves"][: turn["ply"] - 1]))
     who = "a" if job["kind"] == "probe" or game.turn == job["a_side"] else "b"
     config = PlayerConfig(**job[who])
     if job["kind"] == "game":
@@ -74,8 +76,10 @@ def validate_trace(trace: dict, unit: dict, manifest: dict) -> None:
     index = trace["turn_index"]
     require(0 <= index < len(unit["turns"]), "Trace decision index is invalid.")
     turn = unit["turns"][index]
-    game = Snapshot(moves=unit["snapshot"]["moves"][: turn["ply"] - 1]).game()
-    require(Snapshot.model_validate(trace["snapshot"]).game() == game, "Trace snapshot differs from selected position.")
+    game = restore(Snapshot(moves=unit["snapshot"]["moves"][: turn["ply"] - 1]))
+    require(
+        restore(Snapshot.model_validate(trace["snapshot"])) == game, "Trace snapshot differs from selected position."
+    )
     job = unit["job"]
     who = "a" if job["kind"] == "probe" or game.turn == job["a_side"] else "b"
     config = dict(job[who])

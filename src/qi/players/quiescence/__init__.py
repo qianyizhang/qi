@@ -2,7 +2,8 @@
 
 from collections.abc import Callable
 
-from qi.game import Game, in_check, parse_move
+from qi_game.reference import Game, in_check, parse_move
+
 from qi.players.alphabeta import search
 from qi.players.common import MATE, NodeBudget, evaluate, ordered_moves, terminal_score
 from qi.players.core import Decision, Player, PlayerConfig, PlayerInfo

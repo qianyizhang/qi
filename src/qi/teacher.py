@@ -10,9 +10,9 @@ from time import monotonic, perf_counter
 from typing import Literal
 
 from pydantic import BaseModel, model_validator
-
-from qi.game import Game, GameError, legal_moves
-from qi.protocol import Snapshot
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
 
 @dataclass(frozen=True)
@@ -242,7 +242,7 @@ class TeacherSession:
         if game.outcome:
             raise GameError("game_over", "Cannot query a teacher after the game ends.")
         snapshot = Snapshot(moves=list(game.moves))
-        if snapshot.game() != game:
+        if restore(snapshot) != game:
             raise GameError("invalid_state", "Teacher input must replay from the standard initial position.")
         if self.identity is None:
             self.identity = TeacherIdentity.read(config)

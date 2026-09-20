@@ -51,7 +51,7 @@ that discussion made no repository changes.
 
 | Current evidence | Implication |
 | --- | --- |
-| [game.py](../../../src/qi/game.py) has no imports from other qi modules, but `Game` owns a concrete string board, immutable history, transition and hashing implementation. Search directly calls `Game.apply`. | Preserve the strong rules boundary; decouple callers from its representation before replacing execution. |
+| At survey time, `src/qi/game.py` had no imports from other qi modules, but `Game` owned a concrete string board, immutable history, transition and hashing implementation. Search directly called `Game.apply`. Its implementation now lives in [the reference module](../../../packages/qi-game/src/qi_game/reference.py) after AB-ARCH-002. | Preserve the strong rules boundary; decouple callers from its representation before replacing execution. |
 | [protocol.py](../../../src/qi/protocol.py) combines Snapshot with player/session and HTTP-facing records; it imports the player package. Arena, teacher and data use Snapshot. | Extract small game interchange records from application/session contracts. A domain snapshot should not import all players. |
 | [player core](../../../src/qi/players/core.py) includes MCTS, alpha-beta, heuristic breakdown and engine-specific fields; [bindings](../../../src/qi/players/bindings.py) branches on `policy` and `pikafish`. | Keep a small decision envelope and let each implementation own validated configuration, resources and diagnostics. |
 | [search](../../../src/qi/players/alphabeta/__init__.py) already accepts evaluator/leaf callables and reusable components. | Retain this productive experimental seam; changing language must not require a universal Engine class. |

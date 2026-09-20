@@ -4,7 +4,8 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Literal
 
-from qi.game import Game, GameError
+from qi_game.core import GameError
+from qi_game.reference import Game
 
 if TYPE_CHECKING:
     from qi.players.bindings import ResolvedBinding

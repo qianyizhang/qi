@@ -1,20 +1,16 @@
 """Immutable Xiangqi referee; no transport or training dependencies."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import lru_cache
 from hashlib import sha256
-from typing import Literal
+from typing import TYPE_CHECKING
 
-Side = Literal["red", "black"]
-RULESET = "xiangqi-training-v1"
-START_FEN = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w"
-START_BOARD = "RNBAKABNR..........C.....C.P.P.P.P.P..................p.p.p.p.p.c.....c..........rnbakabnr"
+from qi_game.core import RULESET, START_BOARD, START_FEN, GameError, Outcome, Side
 
-
-class GameError(ValueError):
-    def __init__(self, code: str, message: str):
-        self.code = code
-        super().__init__(message)
+if TYPE_CHECKING:
+    from qi_game.contracts import Position, Snapshot
 
 
 def other(side: Side) -> Side:
@@ -258,12 +254,6 @@ def legal_moves(board: str, side: Side) -> tuple[str, ...]:
 
 
 @dataclass(frozen=True)
-class Outcome:
-    winner: Side | None
-    reason: Literal["checkmate", "stalemate", "repetition", "ply_limit"]
-
-
-@dataclass(frozen=True)
 class Game:
     board: str = START_BOARD
     turn: Side = "red"
@@ -304,3 +294,34 @@ def replay(moves: tuple[str, ...]) -> Game:
     if not moves:
         return Game()
     return replay(moves[:-1]).apply(moves[-1])
+
+
+def inspect(game: Game) -> Position:
+    from qi_game.contracts import Position, Result, Snapshot
+
+    outcome = game.outcome
+    return Position(
+        snapshot=Snapshot(moves=list(game.moves)),
+        board=game.board,
+        turn=game.turn,
+        ply=len(game.moves),
+        state_hash=game.state_hash,
+        legal_moves=[] if outcome else list(legal_moves(game.board, game.turn)),
+        in_check=in_check(game.board, game.turn),
+        outcome=Result(winner=outcome.winner, reason=outcome.reason) if outcome else None,
+    )
+
+
+def restore(snapshot: Snapshot) -> Game:
+    """Reconstruct a Python game from validated replay data."""
+    return replay(tuple(snapshot.moves))
+
+
+class PythonReferee:
+    """Stateless reference backend for snapshot operations."""
+
+    def inspect(self, snapshot: Snapshot) -> Position:
+        return inspect(restore(snapshot))
+
+    def apply(self, snapshot: Snapshot, move: str, expected_hash: str) -> Position:
+        return inspect(restore(snapshot).apply(move, expected_hash))

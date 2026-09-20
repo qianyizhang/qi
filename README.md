@@ -2,7 +2,7 @@
 description: Setup and usage for the local qi Xiangqi game.
 scope: project setup
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -47,6 +47,12 @@ Reference contains the shared bilingual glossary. See the
 The server binds to localhost. Remote multiplayer is outside this slice.
 
 ## CLI
+
+The repository is a uv workspace: the application depends on the independently
+installable [game package](packages/qi-game/README.md). `make test-game` builds
+and tests that package in isolation. Contracts import without loading a referee,
+players or ML libraries; the readable Python implementation remains available
+for experiments. Native execution is a later slice.
 
 To check a small teacher-free CPU training run after installing the learning extra:
 

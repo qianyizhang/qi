@@ -12,6 +12,7 @@ from typing import Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
+from qi_game.core import GameError
 
 from qi.artifacts import ROOT, digest
 from qi.experiments.evidence import load_run, require
@@ -19,7 +20,6 @@ from qi.experiments.inspect import validate_trace
 from qi.experiments.model import Plan
 from qi.experiments.presentation import check_files, contained, trace_compatibility
 from qi.experiments.runner import write_json
-from qi.game import GameError
 
 EXCLUDED = {".git", ".venv", "node_modules", "source", "sources", "snapshot", "snapshots", "traces", "units", "lab"}
 

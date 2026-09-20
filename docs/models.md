@@ -26,7 +26,9 @@ reference and conformance fixtures while allowing reused or locally authored
 accelerated implementations. Python experiments and coarse native execution
 share semantic contracts without requiring identical internal composition.
 [ADR-0012](adr/0012-replaceable-game-execution.md) owns this accepted evolution;
-the current implementation remains Python.
+the current implementation remains Python. The independent
+[game package](../packages/qi-game/README.md) owns replay data and the implemented
+referee protocol; application/player-session records remain in `qi.protocol`.
 
 ```mermaid
 flowchart LR
@@ -89,7 +91,7 @@ session/resource ownership and trial evidence through those changes; multiple
 clients do not imply shared mutable player/game state. No detailed server contract
 or service implementation is fixed by this decision. See
 [AB-ARCH-001](../records/work-items/items/AB-ARCH-001-modular-runtime.md).
-The runtime redesign is not yet implemented.
+Player session ownership and server execution are not yet implemented.
 
 ## Execution reproducibility
 

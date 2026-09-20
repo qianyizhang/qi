@@ -2,7 +2,9 @@
 
 from time import perf_counter
 
-from qi.game import Game, GameError
+from qi_game.core import GameError
+from qi_game.reference import Game
+
 from qi.players.bindings import ResolvedPlayer, resolve_player, resolve_selection
 from qi.players.catalog import list_players
 from qi.players.core import Choice, Decision, Player, PlayerConfig, PlayerInfo

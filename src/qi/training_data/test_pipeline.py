@@ -5,9 +5,10 @@ from random import Random
 
 import pytest
 from pydantic import ValidationError
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
-from qi.game import Game, GameError, legal_moves
-from qi.protocol import Snapshot
 from qi.training_data.assembly import Bucket, MixtureRecipe, TrainingDataset, assemble
 from qi.training_data.contracts import (
     GenerationRecipe,
@@ -66,7 +67,7 @@ def test_semantic_fingerprints_ignore_telemetry_but_pin_targets_and_recipe(libra
     target_changed = example.model_copy(deep=True)
     target_changed.analysis.move = next(
         m
-        for m in legal_moves(example.analysis.snapshot.game().board, example.analysis.snapshot.game().turn)
+        for m in legal_moves(restore(example.analysis.snapshot).board, restore(example.analysis.snapshot).turn)
         if m != example.analysis.move
     )
     assert target_changed.fingerprint != example.fingerprint
@@ -79,7 +80,7 @@ def test_state_and_observation_are_distinct_identities():
     first = Snapshot()
     repeated = Snapshot(moves=["b0c2", "b9c7", "c2b0", "c7b9"])
     assert state_fingerprint(first) != state_fingerprint(repeated)
-    assert observation_fingerprint(first.game()) == observation_fingerprint(repeated.game())
+    assert observation_fingerprint(restore(first)) == observation_fingerprint(restore(repeated))
 
 
 def test_incomplete_quota_does_not_redistribute_or_train(library):
@@ -159,7 +160,7 @@ def test_family_and_repeated_start_isolation_reject_before_assembly(data_setup, 
 
 def test_ambiguous_observation_targets_rejected_but_library_can_retain_alternatives(library):
     alternate = library.examples[0].model_copy(deep=True)
-    game = alternate.analysis.snapshot.game()
+    game = restore(alternate.analysis.snapshot)
     alternate.analysis.move = next(
         move for move in sorted(legal_moves(game.board, game.turn)) if move != alternate.analysis.move
     )
@@ -183,7 +184,7 @@ def test_shared_observation_across_independent_families_rejected(data_setup):
 
 def test_phase_policy_and_sampling_ply_are_independent():
     assert classify_phase(Game()) == "opening"
-    developed = Snapshot(moves=["b0c2", "b9c7", "h0g2", "h9g7"]).game()
+    developed = restore(Snapshot(moves=["b0c2", "b9c7", "h0g2", "h9g7"]))
     assert classify_phase(developed) == "middlegame"
     # A reachable endgame fixture found with deterministic legal play; no imported diagram.
     rng, game = Random(0), Game()
@@ -225,7 +226,7 @@ def test_reserved_history_prefixes_are_excluded_before_quota_accounting(library)
     )
     dataset = assemble(library, mixture(library))
     reserved = reserved_inputs(library.reserved_corpus)
-    assert input_key(example.analysis.snapshot.game()) in reserved
+    assert input_key(restore(example.analysis.snapshot)) in reserved
     assert all(label.input_sha256 not in reserved for label in dataset.labels)
 
 
@@ -265,7 +266,7 @@ def test_deadline_keeps_an_explicit_unfinished_source(data_setup, monkeypatch):
     library = generate_library(recipe, corpus, teacher, labeler=labeler)
     assert library.status == "incomplete"
     assert library.sources[0].stop_reason == "deadline"
-    assert library.sources[0].snapshot.game().outcome is None
+    assert restore(library.sources[0].snapshot).outcome is None
     assert not library.examples
 
 

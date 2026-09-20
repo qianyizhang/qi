@@ -1,11 +1,12 @@
 """Tactical leaf work is budgeted and incomplete values never enter the MCTS tree."""
 
-from qi.game import Game
+from qi_game.reference import Game
+from qi_game.test_game import board_at
+
 from qi.players import PlayerConfig, choose
 from qi.players.common import NodeBudget
 from qi.players.mcts import material_value, search
 from qi.players.mcts_quiescence import tactical_value
-from qi.test_game import board_at
 
 
 def test_tactical_leaf_sees_a_poisoned_capture_recapture():

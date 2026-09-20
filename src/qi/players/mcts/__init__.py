@@ -6,7 +6,9 @@ from dataclasses import dataclass, field
 from math import isfinite, log, sqrt
 from random import Random
 
-from qi.game import Game, GameError, legal_moves
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves
+
 from qi.players.common import BudgetExhausted, NodeBudget, evaluate
 from qi.players.core import Decision, MctsStats, Player, PlayerConfig, PlayerInfo, RootMove
 from qi.players.trace import enabled, event, note, span, traced

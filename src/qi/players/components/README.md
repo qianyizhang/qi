@@ -28,7 +28,7 @@ first five with quiescence. Start with one change and compare before stacking th
 
 ```python
 from functools import partial
-from qi.game import Game
+from qi_game.reference import Game
 from qi.players import PlayerConfig
 from qi.players.alphabeta import SearchOptions, search
 from qi.players.components.extensions import CheckExtensions

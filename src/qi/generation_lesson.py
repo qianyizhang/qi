@@ -6,9 +6,10 @@ from random import Random
 
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
+from qi_game.contracts import Position, Snapshot
+from qi_game.core import START_BOARD
+from qi_game.reference import Game, inspect, restore
 
-from qi.game import START_BOARD, Game
-from qi.protocol import Position, Snapshot, inspect
 from qi.teacher import TeacherScore
 from qi.training_data.contracts import PHASE_POLICY, Phase, classify_phase
 from qi.training_data.generation_policies import ActorPolicy, SamplingPolicy, SamplingResult, sample_positions
@@ -85,7 +86,7 @@ def practice_sampling(spacing: int, seed: int) -> SamplingResult:
     lesson = generation_lesson()
     policy = lesson.example.sampling_policy.model_copy(update={"min_spacing": spacing})
     # Use the same Python sampler as generation, on this fixed replay only.
-    games = [frame.position.snapshot.game() for frame in lesson.frames]
+    games = [restore(frame.position.snapshot) for frame in lesson.frames]
     return sample_positions(games, policy, Random(seed))
 
 

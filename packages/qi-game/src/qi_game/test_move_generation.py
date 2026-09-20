@@ -4,8 +4,8 @@ import random
 
 import pytest
 
-from qi.game import Game, in_check, is_attacked, legal_moves, moved, other, owner, reaches, square
-from qi.test_game import board_at
+from qi_game.reference import Game, in_check, is_attacked, legal_moves, moved, other, owner, reaches, square
+from qi_game.test_game import board_at
 
 
 def exhaustive_check(board, side):

@@ -3,7 +3,8 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from qi.game import Game
+from qi_game.reference import Game
+
 from qi.players.core import Decision, EngineScore, EngineWork, Player, PlayerConfig, PlayerInfo
 
 if TYPE_CHECKING:

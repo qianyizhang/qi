@@ -6,11 +6,13 @@ from pathlib import Path
 from random import Random
 from time import monotonic, perf_counter
 
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import legal_moves, restore
+
 from qi.artifacts import provenance
 from qi.evaluation import Corpus
-from qi.game import GameError, legal_moves
 from qi.players.policy.encoding import input_key
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity, TeacherSession, analyze
 from qi.training_data.config import PreparationConfig
 from qi.training_data.contracts import Example, fingerprint, satisfies_objective
@@ -31,7 +33,7 @@ def analyze_occurrence(
     attempt = store.begin_analysis(occurrence, spec_id)
     answer = None
     try:
-        answer = labeler(store.snapshot(occurrence).game(), config)
+        answer = labeler(restore(store.snapshot(occurrence)), config)
         store.finish_analysis(attempt, answer)
         return answer
     except BaseException as exc:
@@ -104,7 +106,7 @@ def generate_collection(store: Collection, config: PreparationConfig, *, labeler
                     if game_id is not None:
                         active_game = game_id
                         rng = Random(fingerprint("continuation-actor-v2", actor_identity))
-                        game = plan.start.snapshot.game()
+                        game = restore(plan.start.snapshot)
                         for _ in range(plan.additional_plies):
                             if monotonic() >= deadline:
                                 raise GameError("dataset_timeout", "Collection generation deadline reached.")
@@ -163,7 +165,7 @@ def generate_collection(store: Collection, config: PreparationConfig, *, labeler
                     for row in store.db.execute(
                         "SELECT id,phase FROM position_occurrences WHERE game_id=? ORDER BY ply_count", (game_id,)
                     ):
-                        game = store.snapshot(row[0]).game()
+                        game = restore(store.snapshot(row[0]))
                         if not game.outcome and plan.window.matches(game, row[1]) and input_key(game) not in reserved:
                             candidates.append((row[0], game))
                     Random(fingerprint("position-sampler-v2", actor_identity)).shuffle(candidates)

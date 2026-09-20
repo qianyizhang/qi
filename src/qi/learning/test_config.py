@@ -62,7 +62,7 @@ def test_curve_input_order_matches_pre_migration_selection(tiny_dataset, seed, i
 
 
 def test_source_order_and_insufficient_data_preserve_recipe_contract(tiny_dataset):
-    from qi.game import GameError
+    from qi_game.core import GameError
 
     recipe = Recipe.model_validate({"data": {"dataset": "dataset.json", "selection": "source-order", "train_size": 3}})
     assert recipe.training_inputs(tiny_dataset) == [

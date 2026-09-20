@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 
-from qi.game import Game, GameError, in_check
+from qi_game.core import GameError
+from qi_game.reference import Game, in_check
 
 
 @dataclass(frozen=True)

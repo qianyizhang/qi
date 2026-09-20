@@ -6,13 +6,13 @@ from dataclasses import asdict
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.reference import Game, restore
 
 from qi.api import create_app
 from qi.arena import play_match
-from qi.game import Game
 from qi.players import PlayerConfig, choose
 from qi.players.enhanced import PLAYERS
-from qi.protocol import Snapshot
 
 RECIPES = [player.info.id for player in PLAYERS] + ["mcts-quiescence"]
 
@@ -50,7 +50,7 @@ def test_recipe_plays_both_colors_and_every_result_replays(name):
     config, opponent = PlayerConfig(name, seed=7, nodes=16), PlayerConfig("random", seed=8)
     for red, black in ((config, opponent), (opponent, config)):
         match = play_match(red, black)
-        assert (match.snapshot.game().outcome.winner, match.snapshot.game().outcome.reason) == (
+        assert (restore(match.snapshot).outcome.winner, restore(match.snapshot).outcome.reason) == (
             match.winner,
             match.reason,
         )

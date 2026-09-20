@@ -6,14 +6,64 @@ import subprocess
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
 from qi.api import create_app
-from qi.protocol import Snapshot
 
 
 @pytest.fixture
 def client():
     return TestClient(create_app())
+
+
+def test_http_uses_injected_referee_without_owning_its_representation(monkeypatch):
+    from qi_game.reference import PythonReferee
+
+    initial = PythonReferee().inspect(Snapshot())
+    child = PythonReferee().apply(Snapshot(), "b2e2", initial.state_hash)
+    calls = []
+
+    class Backend:
+        def inspect(self, snapshot):
+            calls.append(("inspect", snapshot.model_dump()))
+            return child if snapshot.moves else initial
+
+        def apply(self, snapshot, move, expected_hash):
+            calls.append(("apply", snapshot.model_dump(), move, expected_hash))
+            return child
+
+    def forbidden(*args):
+        pytest.fail("The transport must delegate game operations to the injected referee")
+
+    monkeypatch.setattr("qi.api.restore", forbidden)
+    with TestClient(create_app(referee=Backend())) as client:
+        assert client.post("/api/new").json() == initial.model_dump()
+        assert client.post("/api/inspect", json={"snapshot": child.snapshot.model_dump()}).json() == child.model_dump()
+        response = client.post(
+            "/api/apply",
+            json={
+                "snapshot": initial.snapshot.model_dump(),
+                "move": "b2e2",
+                "expected_state_hash": initial.state_hash,
+            },
+        )
+        assert response.json() == child.model_dump()
+    assert calls == [
+        ("inspect", initial.snapshot.model_dump()),
+        ("inspect", child.snapshot.model_dump()),
+        ("apply", initial.snapshot.model_dump(), "b2e2", initial.state_hash),
+    ]
+
+
+def test_game_types_have_one_owner_without_legacy_reexports():
+    from importlib.util import find_spec
+
+    from qi import protocol
+
+    assert find_spec("qi.game") is None
+    for name in ("Snapshot", "Position", "Result", "inspect"):
+        assert not hasattr(protocol, name)
 
 
 def test_api_move_save_replay_and_stale_guard(client) -> None:
@@ -77,7 +127,7 @@ def test_player_choice_matches_python_and_replays(client, player) -> None:
     from qi.players import PlayerConfig, choose
 
     snapshot = Snapshot(moves=["b2e2"])
-    game = snapshot.game()
+    game = restore(snapshot)
     response = client.post(
         "/api/play/choose",
         json={
@@ -142,7 +192,7 @@ def test_browser_player_rejects_terminal_game(client) -> None:
         "/api/play/choose",
         json={
             "snapshot": snapshot.model_dump(),
-            "expected_state_hash": snapshot.game().state_hash,
+            "expected_state_hash": restore(snapshot).state_hash,
             "controller": {"player": "alphabeta"},
         },
     )

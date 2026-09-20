@@ -8,7 +8,7 @@ document_class: coordination
 
 # xiangqi-training-v1
 
-This contract is implemented by `src/qi/game.py` and verified by its colocated
+This contract is implemented by `packages/qi-game/src/qi_game/reference.py` and verified by its colocated
 tests. [ADR-0002](adr/0002-version-simplified-training-adjudication.md)
 owns the trade-off rationale.
 

@@ -5,8 +5,9 @@ import math
 from hashlib import sha256
 from pathlib import Path
 
+from qi_game.core import GameError
+
 from qi.artifacts import digest, provenance, write_json
-from qi.game import GameError
 from qi.learning.config import Recipe, load_recipe
 from qi.learning.runs import preview_recipe, run_recipe
 from qi.training_data.loading import load_dataset

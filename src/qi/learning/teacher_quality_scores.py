@@ -1,11 +1,12 @@
 """Read common-depth all-move reference estimates; missing evidence stays unknown."""
 
-from qi.game import legal_moves
+from qi_game.reference import legal_moves, restore
+
 from qi.teacher import TeacherAnalysis, TeacherScore
 
 
 def candidates(analysis: TeacherAnalysis) -> dict:
-    legal = set(legal_moves(analysis.snapshot.game().board, analysis.snapshot.game().turn))
+    legal = set(legal_moves(restore(analysis.snapshot).board, restore(analysis.snapshot).turn))
     if analysis.settings.get("MultiPV") != str(len(legal)) or analysis.settings.get("UCI_ShowWDL") != "true":
         raise ValueError("Candidate assessment requires all legal moves and WDL output.")
     tables: dict[int, dict[int, dict]] = {}

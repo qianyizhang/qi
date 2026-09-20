@@ -4,9 +4,11 @@ from dataclasses import dataclass, replace
 from importlib.metadata import version
 from platform import platform, python_version
 
-from qi.game import Game, GameError, Side
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError, Side
+from qi_game.reference import Game, restore
+
 from qi.players import Choice, PlayerConfig, bind_config, choose
-from qi.protocol import Snapshot
 
 
 @dataclass(frozen=True)
@@ -34,7 +36,7 @@ class MatchRecord:
 def play_match(red: PlayerConfig, black: PlayerConfig, opening: Game | None = None) -> MatchRecord:
     game = opening if opening is not None else Game()
     initial = Snapshot(moves=list(game.moves))
-    if initial.game() != game:
+    if restore(initial) != game:
         raise GameError("invalid_opening", "Opening must replay from the standard initial position.")
     if game.outcome:
         raise GameError("game_over", "The opening is already terminal.")

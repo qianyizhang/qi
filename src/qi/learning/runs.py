@@ -4,8 +4,9 @@ from pathlib import Path
 from statistics import mean, pstdev
 from time import perf_counter
 
+from qi_game.core import GameError
+
 from qi.artifacts import write_json
-from qi.game import GameError
 from qi.learning.config import Recipe
 from qi.learning.provenance import source_identity
 from qi.training_data.assembly import TrainingDataset

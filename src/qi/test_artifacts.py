@@ -75,7 +75,7 @@ def test_source_hash_profiles_preserve_their_existing_coverage(source_tree, monk
     assert search["source_sha256"] == hashlib.sha256(assets_bytes).hexdigest()
     assert learning["git_revision"] == search["commit"] == "revision"
     assert learning["git_dirty"] is False and search["working_tree"] == ""
-    assert commands[1][-6:] == ["status", "--porcelain", "--", "src/qi", "pyproject.toml", "uv.lock"]
+    assert commands[1][-7:] == ["status", "--porcelain", "--", "src/qi", "packages", "pyproject.toml", "uv.lock"]
     assert commands[3][-2:] == ["status", "--porcelain"]
 
 
@@ -87,6 +87,21 @@ def test_missing_git_retains_available_source_identity(source_tree, monkeypatch)
     source = artifacts.source_provenance()
     assert source["source_sha256"] is not None
     assert source["commit"] is source["working_tree"] is None
+
+
+def test_game_package_code_and_dependencies_change_execution_identity(source_tree):
+    previous = artifacts.source_provenance()["source_sha256"]
+    for name in ("packages/qi-game/pyproject.toml", "packages/qi-game/src/qi_game/reference.py"):
+        path = source_tree / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("initial")
+        added = artifacts.source_provenance()["source_sha256"]
+        assert added != previous
+        path.write_text("modified")
+        changed = artifacts.source_provenance()["source_sha256"]
+        assert changed != added
+        assert source_identity()["source_sha256"] != previous
+        previous = changed
 
 
 def test_installed_layout_records_unknown_checkout_without_searching_parent_git(tmp_path, monkeypatch):

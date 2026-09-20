@@ -1,6 +1,8 @@
 """Static same-square exchanges with legal, least-valuable recaptures."""
 
-from qi.game import GameError, legal_moves, moved, other, parse_move
+from qi_game.core import GameError
+from qi_game.reference import legal_moves, moved, other, parse_move
+
 from qi.players.common import VALUES, NodeBudget
 from qi.players.trace import event, traced
 

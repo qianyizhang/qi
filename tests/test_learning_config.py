@@ -10,8 +10,9 @@ from typer.testing import CliRunner
 
 pytest.importorskip("torch")
 
+from qi_game.core import GameError
+
 from qi.cli import app
-from qi.game import GameError
 from qi.learning.config import Recipe, load_recipe
 from qi.learning.runs import run_recipe
 from qi.learning.train import train
@@ -172,8 +173,9 @@ def test_recipe_deadline_cli_exits_nonzero_and_retains_status(tiny_dataset, tmp_
 
 
 def test_configured_run_accepts_complete_frozen_data_and_rejects_shortfalls(tiny_dataset, tmp_path):
-    from qi.game import legal_moves
-    from qi.protocol import Snapshot
+    from qi_game.contracts import Snapshot
+    from qi_game.reference import legal_moves
+
     from qi.teacher import TeacherConfig
     from qi.training_data.assembly import Bucket, MixtureRecipe, assemble
     from qi.training_data.contracts import GenerationRecipe, SourcePlan, StartingPosition

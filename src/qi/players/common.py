@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 
-from qi.game import Game, legal_moves, owner, parse_move
+from qi_game.reference import Game, legal_moves, owner, parse_move
+
 from qi.players.trace import event
 
 MATE = 100_000

@@ -3,6 +3,8 @@
 from pathlib import Path
 from time import perf_counter
 
+from qi_game.reference import restore
+
 from qi.arena import play_match
 from qi.artifacts import provenance, write_json
 from qi.benchmark.models import BenchmarkSpec
@@ -112,7 +114,7 @@ def run_benchmark(spec: BenchmarkSpec, directory: Path, *, resume: bool = False,
             interrupted = False
             try:
                 red, black = (slot.config_a, slot.config_b) if slot.a_side == "red" else (slot.config_b, slot.config_a)
-                match = play_match(red, black, slot.start.snapshot.game())
+                match = play_match(red, black, restore(slot.start.snapshot))
                 attempt.match, attempt.status, attempt.finished_at = match, "complete", now()
                 validate_attempt(attempt, slot, spec)
             except (Exception, KeyboardInterrupt) as exc:

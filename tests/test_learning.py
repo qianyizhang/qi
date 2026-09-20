@@ -5,12 +5,13 @@ import subprocess
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
 from qi.api import create_app
 from qi.arena import play_match
-from qi.game import Game, GameError, legal_moves
 from qi.players import PlayerConfig, choose
-from qi.protocol import Snapshot
 
 torch = pytest.importorskip("torch", reason="Install the learning extra to run policy integration tests.")
 from qi.learning.train import train  # noqa: E402
@@ -62,7 +63,7 @@ def test_overfit_reload_and_teacher_free_adapters(fitted, monkeypatch, tmp_path)
         )
         assert stale.status_code == 409
     match = play_match(PlayerConfig("policy"), PlayerConfig("random", seed=9))
-    assert match.snapshot.game().outcome.reason == match.reason
+    assert restore(match.snapshot).outcome.reason == match.reason
     assert match.red.checkpoint_sha256 == choice.checkpoint_sha256
 
 

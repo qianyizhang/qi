@@ -3,7 +3,7 @@
 import random
 import re
 
-from qi.game import Game, legal_moves
+from qi_game.reference import Game, legal_moves
 
 
 def main() -> None:

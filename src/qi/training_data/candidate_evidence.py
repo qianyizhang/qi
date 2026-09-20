@@ -1,8 +1,8 @@
 """Typed, partial UCI candidate observations; absent coverage is never a zero target."""
 
 from pydantic import Field
+from qi_game.reference import legal_moves, restore
 
-from qi.game import legal_moves
 from qi.teacher import TeacherAnalysis, TeacherScore
 from qi.training_data.contracts import Contract
 
@@ -17,7 +17,7 @@ class CandidateEvidence(Contract):
 
 
 def parse_candidates(answer: TeacherAnalysis) -> list[CandidateEvidence]:
-    game = answer.snapshot.game()
+    game = restore(answer.snapshot)
     legal = set(legal_moves(game.board, game.turn))
     result = []
     for line in answer.search_info:

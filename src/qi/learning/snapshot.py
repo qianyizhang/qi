@@ -11,10 +11,11 @@ from typing import Literal
 import numpy as np
 import torch
 from pydantic import Field
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves
 from torch import nn
 
 from qi.artifacts import write_json
-from qi.game import Game, GameError, legal_moves
 from qi.learning.config import ModelSettings, ObjectiveSettings, OptimizerSettings, Settings
 from qi.learning.provenance import source_identity
 from qi.learning.train import synchronize, validate_device

@@ -5,7 +5,7 @@ from contextvars import ContextVar
 from functools import wraps
 from inspect import signature
 
-from qi.game import Game
+from qi_game.reference import Game
 
 _current: ContextVar["Recorder | None"] = ContextVar("search_recorder", default=None)
 

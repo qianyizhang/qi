@@ -1,10 +1,10 @@
 """Small hermetic fixtures shared by data-contract and optional learning tests."""
 
 import pytest
+from qi_game.contracts import Snapshot
+from qi_game.reference import legal_moves
 
 from qi.evaluation import Corpus, Opening
-from qi.game import legal_moves
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig
 from qi.training_data.contracts import GenerationRecipe, SourcePlan, StartingPosition
 from qi.training_data.generation import generate_library, teacher_spec

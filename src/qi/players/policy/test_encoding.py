@@ -4,8 +4,9 @@ import subprocess
 import sys
 
 import pytest
+from qi_game.core import GameError
+from qi_game.reference import Game
 
-from qi.game import Game, GameError
 from qi.players import PlayerConfig, choose, list_players
 from qi.players.policy.encoding import action_id, encode
 

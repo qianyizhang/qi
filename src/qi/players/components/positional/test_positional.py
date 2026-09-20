@@ -2,7 +2,8 @@
 
 from dataclasses import replace
 
-from qi.game import Game
+from qi_game.reference import Game
+
 from qi.players.components.positional import breakdown, evaluate, placement
 
 

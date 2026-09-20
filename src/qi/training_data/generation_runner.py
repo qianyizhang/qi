@@ -11,11 +11,12 @@ from time import monotonic
 from typing import Literal, Self
 
 from pydantic import Field, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
 from qi.artifacts import provenance
 from qi.evaluation import Corpus
-from qi.game import Game, GameError, legal_moves
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity, TeacherSession
 from qi.training_data.candidate_evidence import parse_candidates
 from qi.training_data.contracts import Contract, Example, StartingPosition, fingerprint, state_fingerprint
@@ -320,7 +321,7 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
                 rng = Random(fingerprint("policy-moves-v1", actor_identity))
                 sampler = Random(fingerprint("policy-sampling-v1", actor_identity))
                 intervention_rng = Random(fingerprint("policy-intervention-v1", actor_identity))
-                game = source.start.snapshot.game()
+                game = restore(source.start.snapshot)
                 intervention_at = None
                 if source.actor.mode == "intervention":
                     lo = max(len(game.moves), source.actor.intervention_min_ply)

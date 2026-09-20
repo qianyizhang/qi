@@ -7,12 +7,15 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from qi_game.contracts import Position, Snapshot
+from qi_game.core import GameError
+from qi_game.referee import Referee
+from qi_game.reference import PythonReferee, restore
 from starlette.exceptions import HTTPException
 
 from qi.benchmark.api import register_benchmarks
 from qi.collection_api import register_collections
 from qi.experiment_api import register
-from qi.game import Game, GameError
 from qi.generation_lesson import register_generation_lesson
 from qi.lab import TraceJobs
 from qi.players import PlayerInfo, choose, list_players, resolve_selection
@@ -24,13 +27,12 @@ from qi.protocol import (
     InspectRequest,
     PlayRequest,
     PlayResult,
-    Position,
     SessionResult,
-    inspect,
 )
 
 
-def create_app() -> FastAPI:
+def create_app(*, referee: Referee | None = None) -> FastAPI:
+    backend = PythonReferee() if referee is None else referee
     jobs = TraceJobs()
 
     @asynccontextmanager
@@ -79,15 +81,15 @@ def create_app() -> FastAPI:
 
     @app.post("/api/new", response_model=Position)
     def new() -> Position:
-        return inspect(Game())
+        return backend.inspect(Snapshot())
 
     @app.post("/api/inspect", response_model=Position)
     def position(request: InspectRequest) -> Position:
-        return inspect(request.snapshot.game())
+        return backend.inspect(request.snapshot)
 
     @app.post("/api/apply", response_model=Position)
     def apply(request: ApplyRequest) -> Position:
-        return inspect(request.snapshot.game().apply(request.move, request.expected_state_hash))
+        return backend.apply(request.snapshot, request.move, request.expected_state_hash)
 
     @app.post("/api/play/controller/inspect", response_model=Controller)
     def controller(request: Controller):
@@ -97,7 +99,7 @@ def create_app() -> FastAPI:
 
     @app.post("/api/play/choose", response_model=PlayResult)
     def play(request: PlayRequest):
-        game = request.snapshot.game()
+        game = restore(request.snapshot)
         if game.state_hash != request.expected_state_hash:
             raise GameError("stale_state", "The position changed before the player request.")
         selection = request.controller
@@ -110,12 +112,14 @@ def create_app() -> FastAPI:
         )
         choice = choose(game, resolved)
         return PlayResult(
-            position=inspect(game.apply(choice.move, choice.state_hash)), choice=choice, config=resolved.config
+            position=backend.apply(request.snapshot, choice.move, choice.state_hash),
+            choice=choice,
+            config=resolved.config,
         )
 
     @app.post("/api/play/session/inspect", response_model=SessionResult)
     def session(request: GameSession):
-        return SessionResult(session=request, position=inspect(request.snapshot.game()))
+        return SessionResult(session=request, position=backend.inspect(request.snapshot))
 
     static = Path(__file__).parent / "static"
     if static.is_dir():

@@ -5,6 +5,8 @@ from dataclasses import replace
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
 from qi.api import create_app
 from qi.artifacts import write_json
@@ -14,7 +16,6 @@ from qi.benchmark.runner import run_benchmark
 from qi.benchmark.store import load_manifest, read_attempts, writer_lock
 from qi.benchmark.summary import read_snapshot, summarize_benchmark
 from qi.players import Decision, Player, PlayerConfig, PlayerInfo
-from qi.protocol import Snapshot
 
 LOOP = ["b0c2", "b9c7", "c2b0", "c7b9"]
 
@@ -68,7 +69,7 @@ def test_run_replays_both_colors_separates_diagnostic_and_resummarizes_offline(p
     attempts = read_attempts(output, manifest)
     for slot in manifest.spec.slots():
         game = attempts[slot.id][0].match
-        assert game.snapshot.game().outcome.reason == game.reason
+        assert restore(game.snapshot).outcome.reason == game.reason
         assert (game.red, game.black) == (
             (slot.config_a, slot.config_b) if slot.a_side == "red" else (slot.config_b, slot.config_a)
         )

@@ -5,12 +5,13 @@ from itertools import combinations
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
 from qi.artifacts import digest
 from qi.evaluation import Corpus, EvalSpec, Opening
 from qi.players import PlayerConfig, bind_config
 from qi.players.catalog import get_player
-from qi.protocol import Snapshot
 
 Identifier = Annotated[str, Field(pattern=r"^[a-z0-9][a-z0-9-]{0,79}$")]
 
@@ -44,7 +45,7 @@ class Book(Record):
     def valid_starts(self) -> Self:
         ids, boards = set(), set()
         for start in self.starts:
-            game = start.snapshot.game()
+            game = restore(start.snapshot)
             board = (game.board, game.turn)
             if game.outcome or start.id in ids or board in boards:
                 raise ValueError("Book starts must be nonterminal with unique IDs and board/turn states.")

@@ -6,12 +6,12 @@ from math import isfinite
 from pathlib import Path
 
 from pydantic import TypeAdapter
+from qi_game.contracts import Snapshot
+from qi_game.reference import Game, restore
 
 from qi.experiments.model import Plan, digest
-from qi.game import Game
 from qi.players.core import Choice, PlayerConfig
 from qi.players.validation import validate_decision
-from qi.protocol import Snapshot
 
 
 def require(condition: bool, message: str) -> None:
@@ -49,7 +49,7 @@ def load_run(directory: Path) -> dict:
         job = unit["job"]
         require(path.stem in jobs and job == jobs[path.stem], "Unit differs from planned job.")
         require(unit["status"] in ("running", "complete", "incomplete", "failed"), "Unknown unit status.")
-        game = openings[job["opening"]].snapshot.game()
+        game = restore(openings[job["opening"]].snapshot)
         frames = [{"board": game.board, "side": game.turn}]
         for turn in unit["turns"]:
             require(
@@ -63,7 +63,7 @@ def load_run(directory: Path) -> dict:
             )
             game = game.apply(choice.move, choice.state_hash)
             frames.append({"board": game.board, "side": game.turn})
-        require(Snapshot.model_validate(unit["snapshot"]).game() == game, "Saved final snapshot differs from replay.")
+        require(restore(Snapshot.model_validate(unit["snapshot"])) == game, "Saved final snapshot differs from replay.")
         if job["kind"] == "probe":
             require(
                 len(unit["turns"]) <= 1 and (unit["status"] != "complete" or len(unit["turns"]) == 1),

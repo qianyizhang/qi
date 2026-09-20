@@ -1,6 +1,7 @@
 """Transparent handcrafted material, placement, mobility, and king-safety terms."""
 
-from qi.game import Game, is_attacked, legal_moves, other, owner, palace
+from qi_game.reference import Game, is_attacked, legal_moves, other, owner, palace
+
 from qi.players.common import evaluate as material
 from qi.players.core import EvaluationBreakdown
 

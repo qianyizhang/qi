@@ -1,8 +1,9 @@
 """Extensions are path-local allowances, including checks at the root."""
 
-from qi.game import Game
+from qi_game.reference import Game
+from qi_game.test_game import board_at
+
 from qi.players.components.extensions import CheckExtensions
-from qi.test_game import board_at
 
 
 def test_check_consumes_one_allowance_and_siblings_keep_their_own_copy():

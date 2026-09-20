@@ -5,7 +5,7 @@ status: experimental
 last_update: 2026-09-21
 document_class: work_record
 work_id: AB-ARCH-002
-work_status: ready
+work_status: wip
 work_kind: build
 added: 2026-09-21
 tags: domain, architecture, packaging
@@ -21,8 +21,8 @@ residual_items: none
 Deliver the first useful slice of the accepted
 [modular redesign](AB-ARCH-001-modular-runtime.md): a uv-managed game package with
 independent dependency ownership and a replaceable referee seam backed by the
-current Python implementation. This is prepared implementation scope; no runtime
-work has started.
+current Python implementation. Native execution and other package boundaries
+remain subsequent slices.
 
 ## Acceptance Criteria
 
@@ -68,7 +68,25 @@ within the accepted ownership constraints.
 | Date | Actor | From | To | Reason / evidence |
 | --- | --- | --- | --- | --- |
 | 2026-09-21 | GPT-6 | — | ready | Architecture interview settled the governing boundaries; first build slice prepared without starting runtime changes. |
+| 2026-09-21 | GPT-6 | ready | wip | User authorized implementation, milestone commits and a final independent review; baseline make check passed. |
 
 ## Implementation Ledger
 
-No implementation events yet.
+- **2026-09-21 — decision:** Extract `qi-game` with pure game DTOs, shared identity
+  types, a two-operation structural referee protocol and the explicit Python
+  reference. CLI/HTTP game operations use the seam; Python search/data consumers
+  reconstruct reference state explicitly. No legacy paths or Snapshot method
+  remain. Detailed serving/native design stays deferred. **Review:** pending.
+- **2026-09-21 — verification:** Before runtime changes, `make check` passed
+  752 Python tests (one optional skip), five browser unit tests and lint/type/build
+  checks. Commit `58e6143` captures approved architecture and scope. Frozen referee
+  fixtures record that commit and source hashes; follow-up verification compares
+  against those values without regenerating expectations. **Review:** not-required.
+- **2026-09-21 — verification:** Extracted-package milestone: `make check` passed
+  779 Python tests (one optional MPS skip), five browser tests, Ruff, 134-document
+  hygiene, experiment catalog, OpenAPI/TypeScript agreement and production builds.
+  `scripts/check_game_package.py` built an sdist then wheel, installed only the
+  game package's declared dependencies outside the checkout, verified application
+  and ML dependencies absent, and passed 67 package tests. A structural comparison
+  to `58e6143` found all 16 original game function/class ASTs unchanged. Independent
+  review and the installed learning-package integration remain next. **Review:** pending.

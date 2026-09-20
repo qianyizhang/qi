@@ -7,9 +7,10 @@ from time import perf_counter
 from typing import Literal
 
 import torch
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 from torch import nn
 
-from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import ACTIONS, action_id, encode
 from qi.players.policy.runtime import CheckpointMetadata, LoadedPolicy, load_checkpoint, make_model
 from qi.training_data.assembly import TrainingDataset
@@ -19,7 +20,7 @@ from qi.training_data.v1 import Label
 
 def tensors(labels: list[Label], games: list[Game] | None = None) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     if games is None:
-        games = [label.analysis.snapshot.game() for label in labels]
+        games = [restore(label.analysis.snapshot) for label in labels]
     features = torch.tensor([encode(game) for game in games], dtype=torch.float32)
     mask = torch.zeros((len(games), ACTIONS), dtype=torch.bool)
     for index, game in enumerate(games):
@@ -30,7 +31,7 @@ def tensors(labels: list[Label], games: list[Game] | None = None) -> tuple[torch
 
 def measure(policy: LoadedPolicy, labels: list[Label], games: list[Game] | None = None) -> tuple[dict, list[str]]:
     if games is None:
-        games = [label.analysis.snapshot.game() for label in labels]
+        games = [restore(label.analysis.snapshot) for label in labels]
     predictions, timings = [], []
     for game in games:
         started = perf_counter()
@@ -111,7 +112,7 @@ def train(
     # Nested subsets interleave sources; replaying that order repeatedly thrashes caches.
     selected = {label.input_sha256 for label in train_labels + validation_labels}
     games = {
-        label.input_sha256: label.analysis.snapshot.game()
+        label.input_sha256: restore(label.analysis.snapshot)
         for label in sorted(dataset.labels, key=lambda label: label.source_id)
         if label.input_sha256 in selected
     }

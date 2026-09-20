@@ -11,9 +11,11 @@ import re
 import unicodedata
 from pathlib import Path
 
+from qi_game.core import START_FEN
+from qi_game.reference import Game, legal_moves, parse_move
+
 from qi.artifacts import digest, write_json
 from qi.benchmark.books import SourceGame, build_books
-from qi.game import START_FEN, Game, legal_moves, parse_move
 
 NUMBERS = {c: str(i) for i, c in enumerate("〇一二三四五六七八九")}
 PIECES = {

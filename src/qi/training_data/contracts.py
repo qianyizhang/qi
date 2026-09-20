@@ -5,11 +5,12 @@ from hashlib import sha256
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.core import START_BOARD, GameError
+from qi_game.reference import Game, legal_moves, restore
 
 from qi.evaluation import Corpus
-from qi.game import START_BOARD, Game, GameError, legal_moves
 from qi.players.policy.encoding import ENCODING, input_key
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis
 
 Phase = Literal["opening", "middlegame", "endgame", "unknown"]
@@ -73,7 +74,7 @@ class StartingPosition(Contract):
     def validate_start(self) -> Self:
         if len(set(self.themes)) != len(self.themes) or any(not theme.strip() for theme in self.themes):
             raise ValueError("Starting-position themes must be distinct and nonblank.")
-        if self.snapshot.game().outcome:
+        if restore(self.snapshot).outcome:
             raise ValueError("Starting positions must be replay-backed and nonterminal.")
         if self.snapshot.moves and not self.family_id:
             raise ValueError("A noninitial starting position requires its source family.")
@@ -159,7 +160,7 @@ class Example(Contract):
 
     @property
     def observation_fingerprint(self) -> str:
-        return observation_fingerprint(self.analysis.snapshot.game())
+        return observation_fingerprint(restore(self.analysis.snapshot))
 
     @property
     def supervision_fingerprint(self) -> str:
@@ -178,7 +179,7 @@ class Example(Contract):
 
     @model_validator(mode="after")
     def validate_example(self) -> Self:
-        game = self.analysis.snapshot.game()
+        game = restore(self.analysis.snapshot)
         if game.outcome or self.analysis.move not in legal_moves(game.board, game.turn):
             raise ValueError("Example requires a legal teacher move in a nonterminal state.")
         if self.analysis.state_hash != game.state_hash or len(set(self.source_ids)) != len(self.source_ids):
@@ -189,7 +190,7 @@ class Example(Contract):
 def example_phase(example: Example, plan: SourcePlan) -> Phase:
     if example.analysis.snapshot == plan.start.snapshot and plan.start.curated_phase is not None:
         return plan.start.curated_phase
-    return classify_phase(example.analysis.snapshot.game())
+    return classify_phase(restore(example.analysis.snapshot))
 
 
 def satisfies_objective(game: Game, move: str, objective: str | None) -> bool:
@@ -228,7 +229,7 @@ class Library(Contract):
             moves = source.snapshot.moves
             if moves[: len(plan.start.snapshot.moves)] != plan.start.snapshot.moves:
                 raise ValueError("Source must continue its declared starting position.")
-            game = source.snapshot.game()
+            game = restore(source.snapshot)
             if len(moves) - len(plan.start.snapshot.moves) > plan.additional_plies:
                 raise ValueError("Source exceeds its additional-ply budget.")
             if source.family_id != (plan.start.family_id or source.id):
@@ -266,7 +267,7 @@ class Library(Contract):
                     or source.snapshot.moves[: len(moves)] != moves
                 ):
                     raise ValueError("Example is outside its source continuation.")
-                game = example.analysis.snapshot.game()
+                game = restore(example.analysis.snapshot)
                 if not plan.window.matches(game, example_phase(example, plan)):
                     raise ValueError("Example does not satisfy its sampling window.")
                 if not satisfies_objective(game, example.analysis.move, plan.start.objective):
@@ -290,7 +291,7 @@ class Library(Contract):
                 "state": e.state_fingerprint,
                 "observation": e.observation_fingerprint,
                 "supervision": e.supervision_fingerprint,
-                "input_sha256": input_key(e.analysis.snapshot.game()),
+                "input_sha256": input_key(restore(e.analysis.snapshot)),
             }
             for e in self.examples
         ]

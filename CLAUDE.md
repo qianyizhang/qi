@@ -79,6 +79,7 @@ fixes ownership; [the method](docs/experiments.md) owns the workflow.
 make install   # sync Python/web deps and bootstrap agent symlinks
 make lint      # Ruff lint/format checks and docs (check_docs.py)
 make test      # test suite
+make test-game # isolated game sdist/wheel and declared-dependency checks
 make test-learning # optional CPU policy-training integration checks
 make test-learning-mps # opt-in Metal training and CPU checkpoint reload
 make check     # lint, tests, and production browser build
@@ -93,12 +94,15 @@ and [uv-managed packages with direct migration](docs/adr/0013-modular-packages-a
 Use lazy implementation/resource loading and package-owned dependencies. Refactor
 internal consumers directly, without default compatibility shims; preserve evidence
 and use explicit migrations/backfills when needed. The [decision work item](records/work-items/items/AB-ARCH-001-modular-runtime.md)
-routes the first migration slice and deferred workload choices. Paths below describe
-the current implementation until migrated. Possible server mode remains low fidelity;
+routes the migration slices and deferred workload choices. The first game package
+boundary is implemented. Possible server mode remains low fidelity;
 do not turn it into a detailed framework before a workload needs one.
 
-Keep `src/qi/game.py` independent of training, UI, and model SDKs.
-`src/qi/protocol.py` owns validated interchange; CLI and HTTP are adapters.
+Keep `packages/qi-game/` independent of application, player, training, UI and model
+SDKs. Its [guide](packages/qi-game/README.md) owns `qi_game` contracts, the referee
+protocol, explicit Python reference use and isolated package checks.
+`src/qi/protocol.py` owns application requests and player/session evidence;
+CLI and HTTP consume the game package. Supported packages share the root uv lock.
 The React board consumes legal moves; it does not implement rules. Boundary
 contracts arrive with behavior; avoid speculative packages. Vocabulary authority:
 `docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a
@@ -128,7 +132,7 @@ timing. See its README for run and trace completeness semantics.
 Portable doctrine: `docs/rules/testing.md`.
 
 `make test` covers referee rules, replay, and CLI/HTTP parity. Colocated rule
-tests live in `src/qi/test_game.py`; central `tests/` owns integration checks.
+tests live in `packages/qi-game/src/qi_game/`; central `tests/` owns integration checks.
 Default checks require no engine, GPU, network, or service after dependency
 installation. Browser builds, type checks, and request-lifecycle unit tests run
 in `make check`. The optional `npm run test:e2e --prefix web` lane starts a local

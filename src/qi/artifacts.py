@@ -44,6 +44,11 @@ def source_provenance(*, include_assets: bool = True, paths: tuple[str, ...] = (
         if path.suffix in suffixes and (not include_assets or not {"static", "static-report"}.intersection(path.parts))
     )
     files += dependencies
+    # Include the extracted referee in execution identity. Retained artifacts keep
+    # their original identity; new runs must not overlook workspace package edits.
+    for manifest in sorted((ROOT / "packages").glob("*/pyproject.toml")):
+        files.append(manifest)
+        files.extend(sorted(path for path in (manifest.parent / "src").rglob("*") if path.suffix in suffixes))
     source = hashlib.sha256()
     for path in files:
         source.update(str(path.relative_to(ROOT)).encode() + b"\0" + path.read_bytes() + b"\0")
@@ -67,7 +72,7 @@ def provenance() -> Provenance:
         **source_provenance(),
         "python": python_version(),
         "platform": platform(),
-        "packages": {name: version(name) for name in ("qi", "pydantic")},
+        "packages": {name: version(name) for name in ("qi", "qi-game", "pydantic")},
     }
 
 

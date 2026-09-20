@@ -8,6 +8,10 @@ from typing import Annotated
 
 import typer
 from pydantic import ValidationError
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.referee import Referee
+from qi_game.reference import Game, PythonReferee, restore
 from typer.exceptions import TyperException
 
 from qi.arena import play_match
@@ -15,10 +19,8 @@ from qi.benchmark.cli import app as benchmark_app
 from qi.evaluation import Corpus, evaluate_batch
 from qi.evaluation_cli import app as evaluation_app
 from qi.experiments.cli import app as experiments_app
-from qi.game import Game, GameError
 from qi.learning.cli import app as learning_app
 from qi.players import PlayerConfig, choose, list_players
-from qi.protocol import Snapshot, inspect
 from qi.teacher import TeacherConfig, analyze
 from qi.training_data.cli import app as training_data_app
 
@@ -28,6 +30,8 @@ app.add_typer(training_data_app, name="data")
 app.add_typer(experiments_app, name="experiment")
 app.add_typer(evaluation_app, name="eval")
 app.add_typer(benchmark_app, name="bench")
+
+referee: Referee = PythonReferee()
 
 
 def show_version(value: bool) -> None:
@@ -44,7 +48,11 @@ def options(
 
 
 def load(path: Path) -> Game:
-    return Snapshot.model_validate_json(path.read_text()).game()
+    return restore(load_snapshot(path))
+
+
+def load_snapshot(path: Path) -> Snapshot:
+    return Snapshot.model_validate_json(path.read_text())
 
 
 @app.command("new")
@@ -56,13 +64,13 @@ def new_game() -> None:
 @app.command("inspect")
 def inspect_game(state: Annotated[Path, typer.Option("--state")]) -> None:
     """Inspect a saved game's reconstructed position."""
-    typer.echo(inspect(load(state)).model_dump_json())
+    typer.echo(referee.inspect(load_snapshot(state)).model_dump_json())
 
 
 @app.command()
 def legal(state: Annotated[Path, typer.Option("--state")]) -> None:
     """Emit the current legal moves."""
-    position = inspect(load(state))
+    position = referee.inspect(load_snapshot(state))
     typer.echo(json.dumps({"state_hash": position.state_hash, "legal_moves": position.legal_moves}))
 
 
@@ -73,8 +81,8 @@ def apply(
     expected_state_hash: Annotated[str, typer.Option("--expected-state-hash")],
 ) -> None:
     """Apply one guarded move and emit a new snapshot."""
-    game = load(state).apply(move, expected_state_hash)
-    typer.echo(Snapshot(moves=list(game.moves)).model_dump_json())
+    position = referee.apply(load_snapshot(state), move, expected_state_hash)
+    typer.echo(position.snapshot.model_dump_json())
 
 
 @app.command()
@@ -83,12 +91,13 @@ def replay(
     ply: Annotated[int | None, typer.Option("--ply", min=0)] = None,
 ) -> None:
     """Validate a saved game, then inspect an optional historical ply."""
-    game = load(state)
+    snapshot = load_snapshot(state)
+    position = referee.inspect(snapshot)
     if ply is not None:
-        if ply > len(game.moves):
+        if ply > len(snapshot.moves):
             raise GameError("invalid_ply", "Requested ply is beyond this game's history.")
-        game = Snapshot(moves=list(game.moves[:ply])).game()
-    typer.echo(inspect(game).model_dump_json())
+        position = referee.inspect(Snapshot(moves=snapshot.moves[:ply]))
+    typer.echo(position.model_dump_json())
 
 
 @app.command()

@@ -1,13 +1,13 @@
 """Tactical continuations, check evasions, and bounded incomplete search."""
 
 import pytest
+from qi_game.reference import Game, in_check, legal_moves, replay
+from qi_game.test_game import board_at
 
-from qi.game import Game, in_check, legal_moves, replay
 from qi.players import PlayerConfig, choose
 from qi.players.alphabeta import Search
 from qi.players.common import MATE, BudgetExhausted, NodeBudget, evaluate
 from qi.players.quiescence import quiesce
-from qi.test_game import board_at
 
 
 def run_quiescence(game: Game, nodes: int = 1000, alpha: int = -2 * MATE, beta: int = 2 * MATE):

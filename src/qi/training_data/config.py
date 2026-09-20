@@ -7,9 +7,10 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic import Field
+from qi_game.core import GameError
+from qi_game.reference import Game
 
 from qi.evaluation import Corpus
-from qi.game import Game, GameError
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity, TeacherSession, analyze
 from qi.training_data.assembly import MixtureRecipe, assemble
 from qi.training_data.contracts import Contract, GenerationRecipe, Library, fingerprint

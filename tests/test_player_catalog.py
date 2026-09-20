@@ -7,10 +7,11 @@ from types import MappingProxyType
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
 from qi.api import create_app
 from qi.arena import play_match
-from qi.game import Game, GameError, legal_moves
 from qi.players import Decision, Player, PlayerConfig, PlayerInfo, catalog, choose, list_players
 
 
@@ -27,7 +28,7 @@ def test_registered_player_is_discovered_and_runs_a_replayable_match(monkeypatch
     config = PlayerConfig("test-player")
     assert choose(Game(), config).player_version == "test-v1"
     match = play_match(config, PlayerConfig("random"))
-    assert match.snapshot.game().outcome.reason == match.reason
+    assert restore(match.snapshot).outcome.reason == match.reason
     with TestClient(create_app()) as client:
         assert "test-player" in [p["id"] for p in client.get("/api/players").json()]
         initial = client.post("/api/new").json()

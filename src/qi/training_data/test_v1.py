@@ -2,10 +2,11 @@
 
 import pytest
 from pydantic import ValidationError
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves
 
-from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import input_key
-from qi.protocol import Snapshot
 from qi.teacher import TeacherConfig
 from qi.training_data.v1 import Dataset, generate, reserved_inputs
 

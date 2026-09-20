@@ -5,6 +5,9 @@ import sqlite3
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import restore
 
 from qi.api import create_app
 from qi.collection_view import (
@@ -15,8 +18,6 @@ from qi.collection_view import (
     game_detail,
     game_position,
 )
-from qi.game import GameError
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis
 from qi.training_data.generation_io import CollectionIO
 from qi.training_data.store import AnalysisSpec, Collection, GamePayload, RunPayload
@@ -87,7 +88,7 @@ def build_review_collection(path):
                     schema_version=2,
                     adapter_version="uci-teacher-v2",
                     snapshot=Snapshot(),
-                    state_hash=Snapshot().game().state_hash,
+                    state_hash=restore(Snapshot()).state_hash,
                     move="b0c2" if i == 0 else "c3c4",
                     engine_name="fixture",
                     engine_sha256="a" * 64,
@@ -153,7 +154,7 @@ def test_replay_analysis_resolution_and_evidence_are_readonly(collection):
     d = game_detail(identity, 1)
     assert d.snapshot.moves == ["b0c2", "b9c7"]
     assert [a.id for a in d.occurrences[0].analyses if a.resolved] == [1, 2]
-    assert game_position(identity, 1, 1).board == Snapshot(moves=["b0c2"]).game().board
+    assert game_position(identity, 1, 1).board == restore(Snapshot(moves=["b0c2"])).board
     assert analysis_evidence(identity, 1, 1).answer.move == "b0c2"
     assert game_detail(identity, 3).duplicate_games == [1]
     with pytest.raises(ValueError, match="beyond"):

@@ -5,6 +5,7 @@ from typing import Literal
 
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse, Response
+from qi_game.core import GameError
 
 from qi.experiments.catalog import CatalogEntry, ExperimentCatalog, catalog, evidence_path, get_entry, read_owner
 from qi.experiments.glossary import load_glossary
@@ -18,7 +19,6 @@ from qi.experiments.presentation import (
     read_bundle,
 )
 from qi.experiments.report import render_export
-from qi.game import GameError
 from qi.lab import RunEntry, TraceJob, TraceJobs, TraceRequest, discover, run_path
 
 

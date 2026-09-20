@@ -5,6 +5,7 @@ import subprocess
 
 import pytest
 from pydantic import ValidationError
+from qi_game.reference import restore
 
 from qi.evaluation import Corpus, EvaluationRecord, evaluate_batch
 from qi.players import PlayerConfig
@@ -37,8 +38,8 @@ def test_batch_pairs_colors_replays_and_recomputes_summary() -> None:
     assert sum(first.termination_reasons.values()) == 2
     for one, two in zip(first.games, second.games, strict=True):
         assert one.match.snapshot == two.match.snapshot
-        assert one.match.snapshot.game().outcome.winner == one.match.winner
-        assert one.match.snapshot.game().outcome.reason == one.match.reason
+        assert restore(one.match.snapshot).outcome.winner == one.match.winner
+        assert restore(one.match.snapshot).outcome.reason == one.match.reason
         for left, right in zip(one.match.turns, two.match.turns, strict=True):
             assert left.choice.move == right.choice.move
             assert left.choice.seed == right.choice.seed
@@ -48,7 +49,7 @@ def test_batch_pairs_colors_replays_and_recomputes_summary() -> None:
         choices = []
         for game in first.games:
             side = game.a_side if player == "a" else {"red": "black", "black": "red"}[game.a_side]
-            winner = game.match.snapshot.game().outcome.winner
+            winner = restore(game.match.snapshot).outcome.winner
             wins += winner == side
             draws += winner is None
             losses += winner is not None and winner != side

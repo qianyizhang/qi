@@ -7,10 +7,10 @@ from pathlib import Path
 from random import Random
 
 from investigate_source_coverage import match_plies, ply
+from qi_game.contracts import Snapshot
+from qi_game.reference import legal_moves
 
 from qi.evaluation import Corpus
-from qi.game import legal_moves
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig
 from qi.training_data.v1 import generate
 

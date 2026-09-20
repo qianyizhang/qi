@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass, field
 
-from qi.game import Game, parse_move
+from qi_game.reference import Game, parse_move
+
 from qi.players.common import VALUES, NodeBudget, ordered_moves
 from qi.players.components.exchange import estimate
 

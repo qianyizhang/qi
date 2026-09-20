@@ -19,8 +19,10 @@ def check_package(output: Path) -> None:
         subprocess.run(args, cwd=cwd, env=env, check=True, stdout=stdout)
 
     dist = output / "dist"
-    run("uv", "build", "--sdist", "--out-dir", str(dist))
-    run("uv", "build", "--wheel", str(next(dist.glob("*.tar.gz"))), "--out-dir", str(dist))
+    for package in ("qi-game", "qi"):
+        run("uv", "build", "--package", package, "--sdist", "--out-dir", str(dist))
+    for archive in sorted(dist.glob("*.tar.gz")):
+        run("uv", "build", "--wheel", str(archive), "--out-dir", str(dist))
     requirements = output / "requirements.txt"
     run(
         "uv",
@@ -29,7 +31,7 @@ def check_package(output: Path) -> None:
         "--extra",
         "learning",
         "--no-dev",
-        "--no-emit-project",
+        "--no-emit-workspace",
         "--output-file",
         str(requirements),
         stdout=subprocess.DEVNULL,
@@ -40,7 +42,16 @@ def check_package(output: Path) -> None:
         qi = work / "venv/bin/qi"
         run("uv", "venv", "--python", sys.executable, str(work / "venv"), cwd=work)
         run("uv", "pip", "install", "--python", str(python), "-r", str(requirements), cwd=work)
-        run("uv", "pip", "install", "--python", str(python), "--no-deps", str(next(dist.glob("*.whl"))), cwd=work)
+        run(
+            "uv",
+            "pip",
+            "install",
+            "--python",
+            str(python),
+            "--no-deps",
+            *map(str, sorted(dist.glob("*.whl"))),
+            cwd=work,
+        )
         env["UV_OFFLINE"] = "true"
         run(
             str(python),

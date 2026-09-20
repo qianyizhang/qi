@@ -7,7 +7,13 @@ name = "qi"
 version = "0.1.0"
 description = "A personal game-learning laboratory for Xiangqi and LLM post-training"
 requires-python = ">=3.12"
-dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "typer>=0.27,<0.28", "pydantic>=2.10,<3"]
+dependencies = ["qi-game==0.1.0", "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "typer>=0.27,<0.28", "pydantic>=2.10,<3"]
+
+[tool.uv.workspace]
+members = ["packages/qi-game"]
+
+[tool.uv.sources]
+qi-game = { workspace = true }
 
 [project.optional-dependencies]
 learning = ["torch==2.10.0", "numpy>=2.2,<3"]
@@ -20,7 +26,7 @@ dev = ["pytest>=8,<10", "hypothesis>=6,<7", "ruff==0.16.3", "httpx>=0.28,<1"]
 qi = "qi.cli:main"
 
 [tool.pytest.ini_options]
-testpaths = ["src", "tests"]
+testpaths = ["packages/qi-game/src", "src", "tests"]
 
 # `scripts/check_docs.py` and `scripts/bootstrap_agents.py` read these bindings;
 # the scripts stay portable, the repo-specific values live here.
@@ -35,7 +41,7 @@ exclude_dirs = [
 ]
 exclude_path_contains = ["/prompts"]
 # top-level dirs whose backticked paths in authority docs must resolve
-repo_path_dirs = ["src", "scripts", "tests", "docs", ".codex"]
+repo_path_dirs = ["src", "packages", "scripts", "tests", "docs", ".codex"]
 authority_files = [
     "CLAUDE.md", "readme.md", "README.md",
     "docs/index.md",
@@ -67,6 +73,7 @@ allowed_paths = [
     "src/qi/players/components/transpositions/README.md", "src/qi/players/enhanced/README.md",
     "src/qi/players/mcts_quiescence/README.md",
     "src/qi/experiments/README.md",
+    "packages/qi-game/README.md",
 ]
 
 [tool.doc_governance.document_classes.work_record]

@@ -9,6 +9,7 @@ from typing import Any, Literal
 from urllib.parse import unquote, urlsplit
 
 from pydantic import BaseModel, ConfigDict
+from qi_game.contracts import Snapshot
 
 from qi.artifacts import digest, provenance
 from qi.experiments.evidence import load_run, require
@@ -16,7 +17,6 @@ from qi.experiments.glossary import load_glossary
 from qi.experiments.inspect import validate_trace
 from qi.experiments.model import Plan
 from qi.players import Choice, PlayerConfig
-from qi.protocol import Snapshot
 from qi.scoring import PairedScore
 
 

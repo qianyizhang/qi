@@ -6,10 +6,11 @@ from pathlib import Path
 from random import Random
 from time import perf_counter
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import Game, legal_moves
+
 from qi.evaluation import Corpus
-from qi.game import Game, legal_moves
 from qi.learning.train import train
-from qi.protocol import Snapshot
 from qi.teacher import TeacherConfig
 from qi.training_data.assembly import Bucket, MixtureRecipe, assemble
 from qi.training_data.contracts import (

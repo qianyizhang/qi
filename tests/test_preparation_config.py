@@ -6,10 +6,10 @@ import sys
 from pathlib import Path
 
 import pytest
+from qi_game.core import GameError
 from typer.testing import CliRunner
 
 from qi.cli import app
-from qi.game import GameError
 from qi.teacher import digest
 from qi.training_data.assembly import Bucket, MixtureRecipe
 from qi.training_data.config import PreparationConfig, SupervisionSettings, load_preparation, prepare_dataset
@@ -144,7 +144,7 @@ def executable_preparation(preparation, tmp_path):
     engine.write_text(f"""#!{sys.executable}
 import os, sys
 from pathlib import Path
-from qi.game import replay, legal_moves
+from qi_game.reference import replay, legal_moves
 Path({str(tmp_path / "pid")!r}).write_text(str(os.getpid()))
 queries = 0
 for raw in sys.stdin:

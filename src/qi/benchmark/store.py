@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic import Field
+from qi_game.reference import restore
 
 from qi.arena import MatchRecord
 from qi.artifacts import Provenance, digest, write_json
@@ -151,7 +152,7 @@ def pool_keys(spec: BenchmarkSpec) -> list[str]:
     for start in spec.series.book.starts:
         keys.add(digest({"family": start.family}))
         keys.add(digest({"source_game": start.source_game}))
-        game = start.snapshot.game()
+        game = restore(start.snapshot)
         keys.add(digest({"board": game.board, "turn": game.turn}))
     return sorted(keys)
 

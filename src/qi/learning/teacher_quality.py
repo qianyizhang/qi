@@ -10,9 +10,9 @@ from statistics import mean
 from time import perf_counter
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.reference import legal_moves, restore
 
 from qi.artifacts import digest, write_json
-from qi.game import legal_moves
 from qi.learning.config import DataSettings, ExecutionSettings, Recipe, TrainingSettings
 from qi.learning.provenance import source_identity
 from qi.learning.teacher_quality_scores import candidates, disadvantage
@@ -259,7 +259,7 @@ def run(study: Study, output: Path) -> dict:
                 state["phase"] = phase
                 tick = perf_counter()
                 analysis = session.analyze(
-                    label.analysis.snapshot.game(), replace(settings, timeout_seconds=min(60, remaining()))
+                    restore(label.analysis.snapshot), replace(settings, timeout_seconds=min(60, remaining()))
                 )
                 log.write(
                     json.dumps(
@@ -297,7 +297,7 @@ def run(study: Study, output: Path) -> dict:
                     references.append(
                         label.model_copy(update={"analysis": query(label, block, "reference", ref_config)})
                     )
-                    game = label.analysis.snapshot.game()
+                    game = restore(label.analysis.snapshot)
                     multi = replace(ref_config, multipv=len(legal_moves(game.board, game.turn)), show_wdl=True)
                     assessments[label.input_sha256] = candidates(query(label, block, "candidate-reference", multi))
                 write_json(output / f"block-{block}-reference.json", [r.model_dump() for r in references], indent=2)
@@ -309,7 +309,7 @@ def run(study: Study, output: Path) -> dict:
         state["phase"] = "fitting"
         save()
         for block, (baseline, strong, references, assessments) in enumerate(prepared):
-            games = [label.analysis.snapshot.game() for label in references]
+            games = [restore(label.analysis.snapshot) for label in references]
             for seed_index, seed in enumerate(study.seeds):
                 # Alternate treatment order to avoid assigning all background drift to one case.
                 cases = [("baseline", baseline), ("strong", strong)]

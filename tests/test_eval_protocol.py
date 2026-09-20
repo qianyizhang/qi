@@ -6,16 +6,17 @@ import sys
 from dataclasses import asdict, fields, replace
 
 import pytest
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import legal_moves, restore
 from typer.testing import CliRunner
 
 from qi import evaluation, players
 from qi.cli import app
 from qi.evaluation import EvalRun, EvalSpec, run_evaluation, summarize_evaluation
 from qi.experiments.evidence import check_choice
-from qi.game import GameError, legal_moves
 from qi.players import Decision, PlayerConfig, catalog
 from qi.players.core import MctsStats, RootMove, SearchStats
-from qi.protocol import Snapshot
 
 
 @pytest.fixture(scope="module")
@@ -187,7 +188,7 @@ def test_diagnostics_have_same_meaning_at_all_boundaries(evidence, monkeypatch, 
     # Hand-counted evidence: two simulations charge two tree visits each.
     # Optional diagnostics have the same meaning regardless of player ID.
     entry = evidence.games[0]
-    game = entry.match.opening.game()
+    game = restore(entry.match.opening)
     original = entry.match.turns[0].choice
     roots = tuple(
         RootMove(move, 2 if move == original.move else 0, 0.5 if move == original.move else None)

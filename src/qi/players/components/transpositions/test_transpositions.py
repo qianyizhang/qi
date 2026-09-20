@@ -2,7 +2,8 @@
 
 from dataclasses import replace
 
-from qi.game import Game, replay
+from qi_game.reference import Game, replay
+
 from qi.players.common import MATE
 from qi.players.components.transpositions import Entry, TranspositionTable, mate_from_table, mate_to_table, position_key
 

@@ -6,7 +6,7 @@ from qi.artifacts import source_provenance
 
 
 def source_identity() -> dict:
-    source = source_provenance(include_assets=False, paths=("src/qi", "pyproject.toml", "uv.lock"))
+    source = source_provenance(include_assets=False, paths=("src/qi", "packages", "pyproject.toml", "uv.lock"))
     return {
         "source_sha256": source["source_sha256"],
         "python": sys.version,

@@ -4,6 +4,7 @@ from itertools import combinations
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.reference import restore
 
 from qi.api import create_app
 from qi.generation_lesson import generation_lesson, practice_sampling
@@ -45,7 +46,7 @@ def test_practice_respects_window_phase_spacing_and_keeps_recorded_evidence(spac
     assert result == practice_sampling(spacing, 7)
     assert all(1 <= p < 32 for p in result.selected)
     assert all(abs(a - b) >= spacing for a, b in combinations(result.selected, 2))
-    games = [lesson.frames[p].position.snapshot.game() for p in result.selected]
+    games = [restore(lesson.frames[p].position.snapshot) for p in result.selected]
     assert len({input_key(g) for g in games}) == len(games)
     for phase, quota in result.requested.items():
         assert result.actual[phase] == sum(classify_phase(g) == phase for g in games)

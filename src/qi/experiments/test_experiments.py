@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from qi_game.contracts import Snapshot
 
 from qi.experiments import runner
 from qi.experiments.evidence import load_run
@@ -10,7 +11,6 @@ from qi.experiments.glossary import load_glossary
 from qi.experiments.inspect import inspect_decision, load_traces
 from qi.experiments.model import Plan
 from qi.experiments.report import report, summarize
-from qi.protocol import Snapshot
 
 
 def plan(games=False):

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qi-game"
+version = "0.1.0"
+description = "Xiangqi replay contracts and Python reference referee"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.10,<3"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "hypothesis>=6,<7"]
+
+[tool.pytest.ini_options]
+testpaths = ["src"]
+
+[tool.ruff]
+extend = "../../ruff_base.toml"

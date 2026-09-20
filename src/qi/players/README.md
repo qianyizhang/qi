@@ -43,7 +43,7 @@ Named bindings resolve resources separately from algorithm registration. Catalog
 metadata hashes configured bytes without loading models or starting engines.
 
 ```python
-from qi.game import Game, legal_moves
+from qi_game.reference import Game, legal_moves
 from qi.players import Decision, Player, PlayerConfig, PlayerInfo
 
 

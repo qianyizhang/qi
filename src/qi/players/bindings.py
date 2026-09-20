@@ -7,9 +7,9 @@ from math import isclose
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.core import GameError
 
 from qi.artifacts import digest
-from qi.game import GameError
 from qi.players.core import Player, PlayerConfig, PlayerInfo, Setting
 
 

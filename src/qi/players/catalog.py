@@ -5,7 +5,8 @@ from dataclasses import replace
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from qi.game import GameError
+from qi_game.core import GameError
+
 from qi.players.alphabeta import PLAYER as ALPHABETA
 from qi.players.core import Player, PlayerInfo
 from qi.players.enhanced import PLAYERS as ENHANCED

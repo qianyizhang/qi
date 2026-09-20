@@ -1,6 +1,7 @@
 """Move hints never remove actions, and cutoff memory is local to one search."""
 
-from qi.game import Game, legal_moves
+from qi_game.reference import Game, legal_moves
+
 from qi.players.common import NodeBudget
 from qi.players.components.ordering import MoveOrdering
 

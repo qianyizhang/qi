@@ -6,11 +6,12 @@ from random import Random
 from time import monotonic
 
 from pydantic import ValidationError
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
 from qi.evaluation import Corpus
-from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import input_key
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity, analyze
 from qi.training_data.contracts import (
     Example,
@@ -107,7 +108,7 @@ def generate_library(
             actor_identity, source_id = source_identity(recipe, plan, index, actor_spec)
             rng = Random(fingerprint("continuation-actor-v2", actor_identity))
             sampler_rng = Random(fingerprint("position-sampler-v2", actor_identity))
-            game = plan.start.snapshot.game()
+            game = restore(plan.start.snapshot)
             candidates, cached = [], {}
             reason = "ply-budget"
             try:

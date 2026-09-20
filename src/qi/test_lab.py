@@ -10,6 +10,9 @@ from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import restore
 
 from qi.api import create_app
 from qi.experiments.inspect import inspect_decision
@@ -17,10 +20,9 @@ from qi.experiments.presentation import read_bundle
 from qi.experiments.report import render_export
 from qi.experiments.runner import run
 from qi.experiments.test_experiments import plan
-from qi.game import GameError
 from qi.lab import TraceJobs, TraceRequest, discover
 from qi.players import PlayerConfig, bind_config, choose, list_players, resolve_selection
-from qi.protocol import ConfigurationChange, Controller, Controllers, GameSession, SessionMove, Snapshot
+from qi.protocol import ConfigurationChange, Controller, Controllers, GameSession, SessionMove
 
 
 @pytest.fixture
@@ -387,7 +389,7 @@ def test_startup_marks_unfinished_state_interrupted(tmp_path):
 
 def test_session_round_trip_mixed_controllers_and_unknown_prefix():
     snapshot = Snapshot(moves=["b2e2"])
-    game = snapshot.game()
+    game = restore(snapshot)
     old = Controllers(red=Controller(), black=Controller(player="random", settings={"seed": 7}))
     config = PlayerConfig("random", seed=8)
     choice = choose(game, config)
@@ -434,7 +436,7 @@ def test_capability_settings_and_pinned_catalog_without_model_load(tmp_path, mon
             "/api/play/choose",
             json={
                 "snapshot": Snapshot().model_dump(),
-                "expected_state_hash": Snapshot().game().state_hash,
+                "expected_state_hash": restore(Snapshot()).state_hash,
                 "controller": {"player": "greedy", "settings": {"depth": 99}},
             },
         )

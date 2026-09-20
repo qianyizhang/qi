@@ -4,10 +4,12 @@ import json
 import subprocess
 from pathlib import Path
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
+
 from qi.benchmark.books import SourceGame, build_books
 from qi.benchmark.models import BenchmarkSeries, BenchmarkSpec, Book, BookStart, Entrant
 from qi.players import PlayerConfig
-from qi.protocol import Snapshot
 
 
 def test_benchmark_cli_run_and_offline_summary(tmp_path):
@@ -62,4 +64,4 @@ def test_sourced_books_reproduce_and_keep_families_games_and_starts_separate():
     assert audit["accepted"] == {"development": 170, "locked-test": 30}
     for field in ("family", "source_game"):
         assert not {getattr(s, field) for s in dev.starts} & {getattr(s, field) for s in locked.starts}
-    assert not {s.snapshot.game().board for s in dev.starts} & {s.snapshot.game().board for s in locked.starts}
+    assert not {restore(s.snapshot).board for s in dev.starts} & {restore(s.snapshot).board for s in locked.starts}

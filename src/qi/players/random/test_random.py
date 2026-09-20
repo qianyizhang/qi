@@ -1,6 +1,7 @@
 """Seeded random selection is legal, repeatable, and read-only."""
 
-from qi.game import Game, legal_moves
+from qi_game.reference import Game, legal_moves
+
 from qi.players import PlayerConfig, choose
 
 

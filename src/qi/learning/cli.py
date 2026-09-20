@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from qi_game.core import GameError
 
 from qi.evaluation import Corpus
-from qi.game import GameError
 from qi.teacher import TeacherConfig
 from qi.training_data.v1 import generate
 

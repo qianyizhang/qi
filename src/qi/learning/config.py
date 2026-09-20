@@ -5,8 +5,8 @@ from random import Random
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
+from qi_game.core import GameError
 
-from qi.game import GameError
 from qi.players.policy.encoding import ARCHITECTURE, ENCODING
 from qi.training_data.loading import PreparedDataset
 from qi.training_data.v1 import MAX_LABELS

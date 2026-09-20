@@ -9,8 +9,9 @@ from pathlib import Path
 from time import perf_counter
 from uuid import uuid4
 
+from qi_game.core import GameError
+
 from qi.artifacts import provenance, write_json
-from qi.game import GameError
 from qi.teacher import digest
 from qi.training_data.generation_runner import PolicyGenerationConfig, SessionProvider, generate_policies, pin_teachers
 from qi.training_data.resource_probe import ResourceProbe

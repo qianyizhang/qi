@@ -7,6 +7,8 @@ from collections import Counter
 from pathlib import Path
 from time import perf_counter
 
+from qi_game.reference import restore
+
 from qi.artifacts import provenance, write_json
 from qi.training_data.contracts import Example
 from qi.training_data.generation_runner import PolicyGenerationConfig, SessionProvider, generate_policies, pin_teachers
@@ -23,7 +25,7 @@ def verify(store: Collection, result: dict) -> dict:
     plies = 0
     for row in store.db.execute("SELECT id,stop_reason FROM games WHERE status='complete' ORDER BY id"):
         source = store.game(row[0])
-        replayed = source.snapshot.game()
+        replayed = restore(source.snapshot)
         referee[replayed.outcome.reason if replayed.outcome else "unfinished"] += 1
         generation = source.actor["generation_result"]
         count = len(source.snapshot.moves) - len(source.initial.moves)

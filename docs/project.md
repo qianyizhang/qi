@@ -25,7 +25,9 @@ freshly verified third-party capabilities.
 and replaceable-execution boundary, superseding ADR-0001's Python-only direction.
 [ADR-0013](adr/0013-modular-packages-and-direct-migration.md) accepts uv-managed
 package dependencies, lazy loading and direct consumer migration without default
-shims. These are accepted destinations; runtime restructuring is not yet implemented.
+shims. The [game package](../packages/qi-game/README.md) now owns replay contracts
+and a referee protocol used by CLI/HTTP. Player, learning, data and experiment
+package separation and native execution remain later slices.
 
 The local frontend connects play, generated-data review, learning walkthroughs,
 experiment reports, benchmarks and reference material.
@@ -55,8 +57,8 @@ slice; do not turn them into fixed interface contracts now.
 
 | Area | Direction | Adoption point |
 | :-- | :-- | :-- |
-| Tooling | Python 3.12, uv, Ruff, pytest, Hypothesis; package-owned dependencies | Single package implemented; package restructuring accepted |
-| Referee | Readable Python reference plus conforming replaceable execution | Python implemented; native backend and language remain unselected |
+| Tooling | Python 3.12, uv, Ruff, pytest, Hypothesis; package-owned dependencies | qi application and qi-game workspace packages with one lock and an isolated game test lane |
+| Referee | Readable Python reference plus conforming replaceable execution | Snapshot operations accept an injected backend; search/generation still use Python directly; native backend remains unselected |
 | CLI | Typer and Pydantic at external boundaries; JSON output | Game commands |
 | Reference | pyffish/Fairy-Stockfish for differential checks; Pikafish via UCI as teacher | Validate installation, rule coverage, and licensing before use |
 | Neural learning | PyTorch policy/value model and an educational PUCT implementation | After replay and arena |

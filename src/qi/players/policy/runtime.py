@@ -9,9 +9,10 @@ from typing import Literal
 
 import torch
 from pydantic import BaseModel, ConfigDict, Field
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves
 from torch import nn
 
-from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import ACTIONS, ARCHITECTURE, ENCODING, INPUTS, action_id, encode
 
 

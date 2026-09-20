@@ -40,6 +40,7 @@ Frontend rationale: [shared app ADR](adr/0005-shared-local-frontend.md),
 [independent bindings ADR](adr/0006-independent-player-bindings.md); delivery evidence:
 [consolidated lab work item](../records/work-items/items/AB-UI-002-consolidated-lab.md).
 Training adjudication: [xiangqi-training-v1](xiangqi-training-v1.md).
+Game contracts, referee substitution and isolated package checks: [Game package](../packages/qi-game/README.md).
 
 ## Authority by concern
 

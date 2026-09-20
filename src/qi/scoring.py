@@ -4,8 +4,7 @@ from collections import defaultdict
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-
-from qi.game import Side
+from qi_game.core import Side
 
 
 class GameScore(BaseModel):

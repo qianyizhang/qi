@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from qi_game.reference import restore
 
 from qi.training_data.compatibility import import_json
 from qi.training_data.contracts import fingerprint
@@ -39,7 +40,7 @@ def test_v2_explicit_selection_exclusions_and_tampered_predicate(tmp_path, tiny_
     assert verify_snapshot(tmp_path / "snapshot")["rows"] == 2
     path = tmp_path / "snapshot/manifest.json"
     manifest = json.loads(path.read_text())
-    game = wanted.analysis.snapshot.game()
+    game = restore(wanted.analysis.snapshot)
     absent = next(
         t
         for t in ["in-check", "teacher-capture", "teacher-gives-check"]

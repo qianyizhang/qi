@@ -5,15 +5,15 @@ from collections import Counter
 from hashlib import sha256
 
 import pytest
+from qi_game.reference import legal_moves, restore
 
-from qi.game import legal_moves
 from qi.learning.teacher_quality import Study, prepare_inputs, run, summarize
 from qi.learning.teacher_quality_scores import candidates, disadvantage
 from qi.teacher import TeacherAnalysis
 
 
 def reference(label):
-    game = label.analysis.snapshot.game()
+    game = restore(label.analysis.snapshot)
     moves = sorted(legal_moves(game.board, game.turn))
     lines = [
         f"info depth 5 multipv {rank} score cp {-rank} wdl {1000 - rank} 0 {rank} pv {move}"

@@ -5,8 +5,9 @@ from functools import partial
 from itertools import product
 
 import pytest
+from qi_game.reference import Game, in_check, legal_moves
+from qi_game.test_game import board_at
 
-from qi.game import Game, in_check, legal_moves
 from qi.players import PlayerConfig, choose
 from qi.players.alphabeta import Search, SearchOptions, search
 from qi.players.common import MATE, BudgetExhausted, NodeBudget, evaluate, terminal_score
@@ -14,7 +15,6 @@ from qi.players.components.extensions import CheckExtensions
 from qi.players.components.positional import evaluate as positional
 from qi.players.quiescence import quiesce
 from qi.players.trace import Recorder, recording
-from qi.test_game import board_at
 
 
 def minimax(game, depth, extra=0, ply=0):
@@ -111,7 +111,8 @@ def test_pvs_quiescence_scores_and_interrupted_iteration(table):
 
 
 def test_table_cannot_override_a_history_dependent_terminal_result():
-    from qi.game import replay
+    from qi_game.reference import replay
+
     from qi.players.components.transpositions import Entry
 
     cycle = ("b0c2", "b9c7", "c2b0", "c7b9")

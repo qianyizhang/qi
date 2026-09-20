@@ -4,7 +4,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from qi.game import Game, GameError
+from qi_game.core import GameError
+from qi_game.reference import Game
+
 from qi.players.core import Decision, Player, PlayerConfig, PlayerInfo
 
 if TYPE_CHECKING:

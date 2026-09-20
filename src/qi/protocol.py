@@ -1,64 +1,24 @@
-"""Validated replay interchange shared by CLI and HTTP."""
+"""Application requests and player session evidence; game interchange lives in qi_game."""
 
 from math import isfinite
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, StrictFloat, model_validator
+from qi_game import contracts as game_contracts
+from qi_game.reference import restore
 
-from qi.game import START_FEN, Game, in_check, legal_moves, replay
 from qi.players import Choice, PlayerConfig
 from qi.players.validation import validate_decision
 
 
-class Snapshot(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-    schema_version: Literal[1] = 1
-    ruleset: Literal["xiangqi-training-v1"] = "xiangqi-training-v1"
-    initial_fen: Literal[START_FEN] = START_FEN
-    moves: list[str] = Field(default_factory=list, max_length=300)
-
-    def game(self) -> Game:
-        return replay(tuple(self.moves))
-
-
 class InspectRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    snapshot: Snapshot
+    snapshot: game_contracts.Snapshot
 
 
 class ApplyRequest(InspectRequest):
     move: str = Field(min_length=4, max_length=4)
     expected_state_hash: str = Field(min_length=64, max_length=64)
-
-
-class Result(BaseModel):
-    winner: Literal["red", "black"] | None
-    reason: str
-
-
-class Position(BaseModel):
-    snapshot: Snapshot
-    board: str
-    turn: Literal["red", "black"]
-    ply: int
-    state_hash: str
-    legal_moves: list[str]
-    in_check: bool
-    outcome: Result | None
-
-
-def inspect(game: Game) -> Position:
-    outcome = game.outcome
-    return Position(
-        snapshot=Snapshot(moves=list(game.moves)),
-        board=game.board,
-        turn=game.turn,
-        ply=len(game.moves),
-        state_hash=game.state_hash,
-        legal_moves=[] if outcome else list(legal_moves(game.board, game.turn)),
-        in_check=in_check(game.board, game.turn),
-        outcome=Result(winner=outcome.winner, reason=outcome.reason) if outcome else None,
-    )
 
 
 class ErrorDetail(BaseModel):
@@ -100,7 +60,7 @@ class PlayRequest(InspectRequest):
 
 
 class PlayResult(BaseModel):
-    position: Position
+    position: game_contracts.Position
     choice: Choice
     config: PlayerConfig
 
@@ -126,7 +86,7 @@ class GameSession(BaseModel):
     model_config = ConfigDict(extra="forbid")
     format: Literal["qi-game-session"] = "qi-game-session"
     schema_version: Literal[1] = 1
-    snapshot: Snapshot
+    snapshot: game_contracts.Snapshot
     controllers: Controllers
     unknown_prefix: int = Field(default=0, ge=0, le=300)
     changes: list[ConfigurationChange] = Field(min_length=1, max_length=2000)
@@ -146,7 +106,7 @@ class GameSession(BaseModel):
             raise ValueError("Current controllers differ from the last configuration change.")
         if [entry.ply for entry in self.history] != list(range(self.unknown_prefix + 1, size + 1)):
             raise ValueError("Known move attribution must be contiguous.")
-        game = Snapshot(moves=self.snapshot.moves[: self.unknown_prefix]).game()
+        game = restore(game_contracts.Snapshot(moves=self.snapshot.moves[: self.unknown_prefix]))
         for entry in self.history:
             active = next(change for change in reversed(self.changes) if change.ply < entry.ply)
             controller = getattr(active.controllers, game.turn)
@@ -183,4 +143,4 @@ class GameSession(BaseModel):
 
 class SessionResult(BaseModel):
     session: GameSession
-    position: Position
+    position: game_contracts.Position

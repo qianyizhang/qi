@@ -11,9 +11,10 @@ from typing import Literal
 from uuid import uuid4
 
 from pydantic import Field, JsonValue, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
 from qi.players.policy.encoding import input_key
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis
 from qi.training_data.candidate_evidence import CandidateEvidence, parse_candidates
 from qi.training_data.contracts import (
@@ -107,7 +108,7 @@ class AnalysisPayload(Contract):
 
 
 def board_identity(snapshot: Snapshot) -> str:
-    game = snapshot.game()
+    game = restore(snapshot)
     return fingerprint("board-turn-v1", {"ruleset": snapshot.ruleset, "board": game.board, "turn": game.turn})
 
 
@@ -217,7 +218,7 @@ class Collection(AbstractContextManager):
 
     def recover(self):
         for row in self.db.execute("SELECT id FROM games WHERE status='running'"):
-            self.game(row[0]).snapshot.game()
+            restore(self.game(row[0]).snapshot)
             for occurrence in self.db.execute("SELECT id FROM position_occurrences WHERE game_id=?", (row[0],)):
                 self.snapshot(occurrence[0])
         with self.db:
@@ -284,7 +285,7 @@ class Collection(AbstractContextManager):
         payload = GamePayload.model_validate(payload.model_dump())
         if payload.snapshot != payload.initial:
             raise ValueError("New game must start at its declared initial prefix.")
-        payload.initial.game()
+        restore(payload.initial)
         if self.db.execute(
             "SELECT 1 FROM games WHERE run_id=? AND logical_key=? AND status='complete'", (run, key)
         ).fetchone():
@@ -333,7 +334,7 @@ class Collection(AbstractContextManager):
         before, after = previous.snapshot.moves, snapshot.moves
         if after[: len(before)] != before or len(after) > len(before) + 1 or len(after) < len(before):
             raise ValueError("Prefix mutation or nonincremental append rejected.")
-        snapshot.game()
+        restore(snapshot)
         previous.snapshot = snapshot
         previous.actor_nodes += actor_nodes
         previous.actor_ms += actor_ms
@@ -348,7 +349,7 @@ class Collection(AbstractContextManager):
 
     def finish_game(self, game_id: int, reason: str, failure: str | None = None):
         payload = self.game(game_id)
-        game = payload.snapshot.game()
+        game = restore(payload.snapshot)
         if reason not in {"terminal", "ply-budget", "error", "deadline", "interrupted", "rejected-trajectory"}:
             raise ValueError("Unknown stop reason.")
         if reason in {"terminal", "ply-budget"}:
@@ -406,7 +407,7 @@ class Collection(AbstractContextManager):
             or payload.snapshot.moves[:ply] != snapshot.moves
         ):
             raise ValueError("Occurrence must be an exact persisted prefix.")
-        game = snapshot.game()
+        game = restore(snapshot)
         attempt = self.db.execute("SELECT attempt FROM games WHERE id=?", (game_id,)).fetchone()[0]
         identity = fingerprint(
             "occurrence-v1", {"game_attempt": attempt, "ply": ply, "state": state_fingerprint(snapshot)}

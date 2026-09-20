@@ -3,10 +3,11 @@
 from collections import Counter
 
 from pydantic import Field
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
 from qi.artifacts import digest
 from qi.benchmark.models import Book, BookStart, Record
-from qi.protocol import Snapshot
 
 
 class SourceGame(Record):
@@ -32,8 +33,8 @@ def build_books(games: list[SourceGame], *, id: str, provenance: str, plies: int
             continue
         snapshot = Snapshot(moves=source.moves[:plies])
         try:
-            game = snapshot.game()
-            prefix = Snapshot(moves=source.moves[:6]).game()
+            game = restore(snapshot)
+            prefix = restore(Snapshot(moves=source.moves[:6]))
         except ValueError:
             rejected["illegal-prefix"] += 1
             continue

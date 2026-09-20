@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from qi.game import in_check, moved, other, parse_move
+from qi_game.reference import in_check, moved, other, parse_move
 
 SemanticTag = Literal["in-check", "teacher-capture", "teacher-gives-check"]
 SEMANTIC_VERSION = "immediate-position-label-v1"

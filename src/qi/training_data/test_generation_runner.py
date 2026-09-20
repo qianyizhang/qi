@@ -3,10 +3,11 @@
 import json
 
 import pytest
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import legal_moves, restore
 
 from qi.evaluation import Corpus, Opening
-from qi.game import GameError, legal_moves
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherIdentity, digest
 from qi.training_data.generation_io import CollectionIO, analysis_spec
 from qi.training_data.generation_policies import ActorPolicy, SamplingPolicy
@@ -138,7 +139,7 @@ def test_one_intervention_then_teacher_recovery(tmp_path, setup):
         assert result["intervention_applied"]
         assert sum(d["intervention"] for d in result["decisions"]) == 1
         for d in result["decisions"]:
-            before = Snapshot(moves=completed(store)[0].snapshot.moves[: d["ply"]]).game()
+            before = restore(Snapshot(moves=completed(store)[0].snapshot.moves[: d["ply"]]))
             best = sorted(legal_moves(before.board, before.turn))[0]
             assert (d["move"] != best) == (d["ply"] == 3)
 
@@ -249,7 +250,7 @@ def test_selected_sql_export_and_frozen_reader(tmp_path, setup):
         # Add a compatible audit-only analysis: a matching spec alone must not make it eligible.
         snapshot = Snapshot(moves=store.game(1).snapshot.moves[:2])
         audit = CollectionIO(store).occurrence(1, snapshot, {"actor_audit": True})
-        answer = provider(snapshot.game(), config.teachers["strong"].config())
+        answer = provider(restore(snapshot), config.teachers["strong"].config())
         CollectionIO(store).retain(audit, answer)
         recipe = SelectionRecipe(
             analysis_spec=AnalysisSpec.from_analysis(answer).identity,

@@ -7,7 +7,8 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from qi.game import Game, GameError, in_check, legal_moves, parse_move, reaches, replay
+from qi_game.core import GameError
+from qi_game.reference import Game, in_check, legal_moves, parse_move, reaches, replay
 
 
 def board_at(**pieces: str) -> str:

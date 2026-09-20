@@ -1,8 +1,8 @@
 """Frozen-input relabeling keeps source lineage and validates new supervision."""
 
 import pytest
+from qi_game.reference import legal_moves, restore
 
-from qi.game import legal_moves
 from qi.training_data.loading import load_dataset
 from qi.training_data.relabel import RelabeledDataset, relabel, select_validation
 
@@ -20,9 +20,9 @@ def test_relabel_roundtrip_preserves_inputs_and_parent(tiny_dataset, tmp_path):
                 "requested_depth": None,
                 "schema_version": 2,
                 "adapter_version": "uci-teacher-v2",
-                "move": sorted(legal_moves(label.analysis.snapshot.game().board, label.analysis.snapshot.game().turn))[
-                    -1
-                ],
+                "move": sorted(
+                    legal_moves(restore(label.analysis.snapshot).board, restore(label.analysis.snapshot).turn)
+                )[-1],
             }
         )
         for label in subset.labels

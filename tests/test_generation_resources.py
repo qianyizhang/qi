@@ -4,8 +4,7 @@ import importlib.util
 from pathlib import Path
 
 import pytest
-
-from qi.game import GameError
+from qi_game.core import GameError
 
 spec = importlib.util.spec_from_file_location(
     "generation_pilot_command", Path(__file__).parents[1] / "scripts/run_generation_pilot.py"

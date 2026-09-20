@@ -4,8 +4,9 @@ from random import Random
 from typing import Literal, Self
 
 from pydantic import Field, model_validator
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves
 
-from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import input_key
 from qi.teacher import TeacherAnalysis
 from qi.training_data.candidate_evidence import parse_candidates

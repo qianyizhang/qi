@@ -4,9 +4,10 @@ import argparse
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import legal_moves
+
 from qi.evaluation import Corpus, Opening
-from qi.game import legal_moves
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig
 from qi.training_data.assembly import Bucket, MixtureRecipe, assemble
 from qi.training_data.contracts import GenerationRecipe, SourcePlan, StartingPosition

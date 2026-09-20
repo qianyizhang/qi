@@ -5,8 +5,9 @@ import sqlite3
 from dataclasses import replace
 
 import pytest
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
-from qi.protocol import Snapshot
 from qi.training_data.compatibility import export_legacy, import_json
 from qi.training_data.snapshots import SelectionRecipe, SnapshotBucket, SnapshotReader, export_snapshot, verify_snapshot
 from qi.training_data.store import AnalysisSpec, Collection, GamePayload, RunPayload, board_identity
@@ -48,7 +49,7 @@ def test_recovery_prefixes_and_first_committed_success(tmp_path, data_setup):
             store.append(gid, Snapshot(moves=["h0g2"]))
         assert store.snapshot(initial) == Snapshot()
         oid = store.occurrence(gid, current)
-        answer = labeler(current.game(), teacher)
+        answer = labeler(restore(current), teacher)
         spec = store.spec(AnalysisSpec.from_analysis(answer))
         older = store.begin_analysis(oid, spec)
         newer = store.begin_analysis(oid, spec)
@@ -86,7 +87,7 @@ def test_same_board_different_histories_and_second_spec(tmp_path, data_setup):
         assert first != second and board_identity(Snapshot()) == board_identity(repeated)
         for oid in (first, second):
             for config in (teacher, replace(teacher, nodes=101)):
-                answer = labeler(store.snapshot(oid).game(), config)
+                answer = labeler(restore(store.snapshot(oid)), config)
                 spec = store.spec(AnalysisSpec.from_analysis(answer))
                 failed = store.begin_analysis(oid, spec)
                 store.finish_analysis(failed, failure="fixture")
@@ -195,11 +196,12 @@ def test_snapshot_attempt_override_and_default_are_stable(tmp_path, tiny_dataset
         analysis = store.db.execute(
             "SELECT occurrence_id,spec_id,json(payload) FROM analyses WHERE attempt=?", (row["analysis"],)
         ).fetchone()
-        from qi.game import legal_moves
+        from qi_game.reference import legal_moves
+
         from qi.training_data.store import AnalysisPayload
 
         answer = AnalysisPayload.model_validate_json(analysis[2]).answer
-        game = answer.snapshot.game()
+        game = restore(answer.snapshot)
         answer.move = next(m for m in legal_moves(game.board, game.turn) if m != answer.move)
         new_id = store.begin_analysis(analysis[0], analysis[1])
         store.finish_analysis(new_id, answer)
@@ -308,7 +310,7 @@ def test_label_failure_resume_keeps_completed_trajectory(tmp_path, data_setup):
         store.append(gid, snap)
         oid = store.occurrence(gid, snap)
         store.finish_game(gid, "ply-budget")
-        answer = labeler(snap.game(), teacher)
+        answer = labeler(restore(snap), teacher)
         spec = AnalysisSpec.from_analysis(answer)
 
         def failing(game, config):

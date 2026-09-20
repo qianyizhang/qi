@@ -9,13 +9,14 @@ from unittest.mock import Mock
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import restore
 from test_teacher import fake_teacher
 
 from qi.api import create_app
-from qi.game import GameError
 from qi.players import PlayerConfig, bind_config, bindings, choose, list_players, policy, resolve_selection
 from qi.players.validation import validate_decision
-from qi.protocol import Snapshot
 
 
 def test_pikafish_native_work_history_and_resource_pinning(tmp_path, monkeypatch):
@@ -42,7 +43,7 @@ def test_pikafish_native_work_history_and_resource_pinning(tmp_path, monkeypatch
     metadata = next(entry for entry in list_players() if entry.id == "pika")
     assert metadata.implementation_id == "pikafish" and metadata.settings["nodes"].unit == "native nodes"
     config = bind_config(PlayerConfig("pika", nodes=10, depth=2))
-    game = Snapshot(moves=["b2e2"]).game()
+    game = restore(Snapshot(moves=["b2e2"]))
     choice = choose(game, config)
     assert choice.nodes == 0 and choice.completed_depth == 0
     assert choice.engine.reported_nodes == 42 > config.nodes
@@ -93,7 +94,7 @@ def test_named_checkpoint_without_learning_extra_has_a_clear_error(tmp_path, mon
     monkeypatch.setenv("QI_PLAYERS_CONFIG", str(config))
     monkeypatch.setitem(sys.modules, "qi.players.policy.runtime", None)
     with pytest.raises(GameError, match="learning extra"):
-        choose(Snapshot().game(), PlayerConfig("trained"))
+        choose(restore(Snapshot()), PlayerConfig("trained"))
 
 
 @pytest.mark.parametrize("boundary", ["http", "python"])
@@ -129,7 +130,7 @@ def test_requested_resources_resolve_once_per_decision(tmp_path, monkeypatch, bo
     monkeypatch.setattr(bindings, "file_identity", resource_reads)
     monkeypatch.setattr("qi.teacher.digest", lambda *_: pytest.fail("Engine hashed after resolution"))
     snapshot = Snapshot(moves=["b2e2"])
-    game = snapshot.game()
+    game = restore(snapshot)
 
     for _ in range(2):
         configuration_reads.reset_mock()
@@ -175,7 +176,7 @@ def test_resolved_operation_keeps_implementation_and_next_operation_rechecks(tmp
     pinned = bind_config(PlayerConfig("selected"))
     resolved = resolve_selection("selected", {"seed": 5}, pinned.binding_sha256)
     configure("alphabeta")
-    game = Snapshot().game()
+    game = restore(Snapshot())
     choice = choose(game, resolved)
     expected = choose(game, PlayerConfig("random", seed=5))
     assert (choice.move, choice.player_version, choice.nodes) == (expected.move, expected.player_version, 0)
@@ -202,7 +203,7 @@ def test_named_checkpoint_replacement_is_checked_before_cached_inference(tmp_pat
     loaded = SimpleNamespace(sha256=pinned.checkpoint_sha256, predict=lambda _: "b2e2")
     load = Mock(return_value=loaded)
     monkeypatch.setattr(policy, "load_model", load)
-    game = Snapshot().game()
+    game = restore(Snapshot())
     assert choose(game, pinned).checkpoint_sha256 == pinned.checkpoint_sha256
     load.assert_called_once_with(str(checkpoint), pinned.checkpoint_sha256)
     checkpoint.write_bytes(b"replacement checkpoint")
@@ -234,7 +235,7 @@ def test_default_checkpoint_catalog_reports_process_pin_without_loading_runtime(
     loaded = SimpleNamespace(sha256=advertised.checkpoint_sha256, predict=lambda _: "b2e2")
     load = Mock(return_value=loaded)
     monkeypatch.setattr(policy, "load_model", load)
-    game = Snapshot().game()
+    game = restore(Snapshot())
     choice = choose(game, resolved)
     assert choice.checkpoint_sha256 == advertised.checkpoint_sha256
     assert load.call_count == 1

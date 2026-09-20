@@ -4,7 +4,9 @@ from collections import Counter, OrderedDict
 from dataclasses import dataclass
 from typing import Literal
 
-from qi.game import RULESET, Game
+from qi_game.core import RULESET
+from qi_game.reference import Game
+
 from qi.players.common import MATE
 
 

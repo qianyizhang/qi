@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from qi_game.core import GameError
 
 from qi.artifacts import write_json
 from qi.benchmark.books import SourceGame, build_books
@@ -11,7 +12,6 @@ from qi.benchmark.models import BenchmarkSeries, BenchmarkSpec, Book, Entrant
 from qi.benchmark.runner import run_benchmark
 from qi.benchmark.store import load_manifest
 from qi.benchmark.summary import summarize_benchmark
-from qi.game import GameError
 from qi.players import PlayerConfig
 
 app = typer.Typer(no_args_is_help=True, help="Local Elo benchmarks with frozen players and replayable paired games.")

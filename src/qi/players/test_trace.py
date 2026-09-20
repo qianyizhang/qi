@@ -3,8 +3,8 @@
 from dataclasses import asdict
 
 import pytest
+from qi_game.reference import Game
 
-from qi.game import Game
 from qi.players import PlayerConfig, choose
 from qi.players.trace import Recorder, recording
 

@@ -18,7 +18,8 @@ Saved JSON contains `schema_version: 1`, `ruleset: "xiangqi-training-v1"`,
 position only. Replay reconstructs all derived state and rejects invalid history.
 The snapshot is portable data, not a server session identifier.
 
-Python owns referee operations. JSON CLI and HTTP are adapters. HTTP exposes
+The [game package](../packages/qi-game/README.md) owns referee operations and
+replay data. JSON CLI and HTTP are adapters. HTTP exposes
 `POST /api/new`, `/api/inspect`, and `/api/apply`; API schemas are available at
 `/docs`. Apply requires `expected_state_hash`, snapshot, and move. The hash covers
 ruleset and full history, not just the board. Invalid actions return

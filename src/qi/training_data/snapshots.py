@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
 
 from qi.artifacts import write_json
 from qi.evaluation import Corpus
 from qi.players.policy.encoding import input_key
-from qi.protocol import Snapshot
 from qi.teacher import digest
 from qi.training_data.assembly import Bucket
 from qi.training_data.contracts import (
@@ -124,7 +125,7 @@ def select_sql(db, recipe: SelectionRecipe) -> tuple[str, dict]:
             return True
         snap = Snapshot.model_validate(source["snapshot"])
         snap.moves = snap.moves[:ply]
-        return satisfies_objective(snap.game(), move, source["objective"])
+        return satisfies_objective(restore(snap), move, source["objective"])
 
     db.create_function("objective_matches", 3, objective_matches, deterministic=True)
     db.create_function("semantic_tags", 3, lambda b, t, m: json.dumps(semantic_tags(b, t, m)), deterministic=True)
@@ -490,7 +491,7 @@ def verify_snapshot(path: Path) -> dict:
             answer = AnalysisPayload.model_validate_json(record["answer_json"]).answer
             Example(analysis=answer, source_ids=["verify"])
             snap = evidence.snapshot(record["occurrence_id"])
-            game = snap.game()
+            game = restore(snap)
             spec = AnalysisSpec.model_validate_json(record["spec_json"])
             if (
                 answer.snapshot != snap

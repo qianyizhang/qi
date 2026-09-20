@@ -4,8 +4,9 @@ import argparse
 import json
 from pathlib import Path
 
+from qi_game.reference import replay, restore
+
 from qi.evaluation import Corpus
-from qi.game import replay
 from qi.teacher import TeacherConfig, analyze
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,7 +20,7 @@ def main() -> None:
     lock = json.loads((ROOT / "data/teachers/pikafish-2026-01-02.json").read_text())
     config = TeacherConfig(args.engine, args.network, nodes=1000, depth=3)
     corpus = Corpus.model_validate_json((ROOT / "data/evaluation/openings-v1.json").read_text())
-    games = [opening.snapshot.game() for opening in corpus.openings]
+    games = [restore(opening.snapshot) for opening in corpus.openings]
     games += [replay(("b2e2",)), replay(("b0c2", "b9c7", "c2b0", "c7b9"))]
     records = []
     for game in games:

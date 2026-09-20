@@ -8,9 +8,10 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, replay, restore
 
-from qi.game import Game, GameError, replay
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherSession, analyze, digest, read_info
 
 
@@ -77,7 +78,7 @@ def test_teacher_full_history_identity_perspective_and_no_mutation(tmp_path) -> 
     result = analyze(game, config)
     assert result.move == "b9c7"
     assert game.state_hash == before == result.state_hash
-    assert result.snapshot.game() == game
+    assert restore(result.snapshot) == game
     assert result.engine_sha256 == digest(config.engine)
     assert result.network_sha256 == digest(config.network)
     assert result.engine_name == "Fake Teacher 1"

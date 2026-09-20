@@ -3,11 +3,11 @@
 from dataclasses import fields
 
 import pytest
+from qi_game.contracts import Snapshot
 
 from qi.experiments.glossary import load_glossary
 from qi.experiments.model import Plan
 from qi.players.core import Choice, EvaluationBreakdown, MctsStats, PlayerConfig, RootMove, SearchStats
-from qi.protocol import Snapshot
 
 
 def test_glossary_covers_report_diagnostic_and_plan_fields():

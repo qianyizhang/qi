@@ -5,6 +5,7 @@ from random import Random
 from typing import Literal, Self
 
 from pydantic import Field, model_validator
+from qi_game.reference import restore
 
 from qi.players.policy.encoding import input_key
 from qi.training_data.contracts import (
@@ -86,7 +87,7 @@ def select(library: Library, recipe: MixtureRecipe) -> tuple[list[Selection], di
     for example in sorted(library.examples, key=lambda e: e.fingerprint):
         if example.supervision_fingerprint != recipe.supervision_fingerprint:
             continue
-        key = input_key(example.analysis.snapshot.game())
+        key = input_key(restore(example.analysis.snapshot))
         if key in reserved:
             continue
         splits = {plans[sources[sid].plan_id].split for sid in example.source_ids}
@@ -187,7 +188,7 @@ class TrainingDataset(Contract):
         return [
             Label(
                 source_id=row.source_id,
-                input_sha256=input_key(examples[row.example].analysis.snapshot.game()),
+                input_sha256=input_key(restore(examples[row.example].analysis.snapshot)),
                 analysis=examples[row.example].analysis,
             )
             for row in self.manifest.selections
@@ -211,7 +212,7 @@ class TrainingDataset(Contract):
             if plan.start.objective:
                 slices.append(f"objective:{plan.start.objective}")
             for name in slices:
-                result.setdefault(f"{plan.split}/{name}", []).append(input_key(example.analysis.snapshot.game()))
+                result.setdefault(f"{plan.split}/{name}", []).append(input_key(restore(example.analysis.snapshot)))
         return result
 
 

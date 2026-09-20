@@ -10,9 +10,10 @@ from pathlib import Path
 from time import monotonic, time
 
 from pydantic import BaseModel
+from qi_game.contracts import Position, Snapshot
+from qi_game.core import GameError
+from qi_game.reference import inspect, restore
 
-from qi.game import GameError
-from qi.protocol import Position, Snapshot, inspect
 from qi.teacher import TeacherScore
 from qi.training_data.store import AnalysisPayload, AnalysisSpec, Collection
 
@@ -423,7 +424,7 @@ def collection_page(
 def game_detail(identity: str, game_id: int) -> GeneratedGameDetail:
     with _read(collection_path(identity)) as store:
         payload = store.game(game_id)
-        game = payload.snapshot.game()  # Python validates the entire saved trajectory.
+        game = restore(payload.snapshot)  # Python validates the entire saved trajectory.
         row = store.db.execute(GAME_SQL + " WHERE id=?", (game_id,)).fetchone()
         indexed_outcome = json.loads(row["outcome"] or "null")
         if row["status"] == "complete" and (
@@ -525,9 +526,9 @@ def analysis_evidence(identity: str, game_id: int, analysis_id: int) -> Analysis
             if (
                 answer is None
                 or answer.snapshot != snapshot
-                or answer.state_hash != snapshot.game().state_hash
+                or answer.state_hash != restore(snapshot).state_hash
                 or answer.move != row["move"]
-                or answer.move not in inspect(snapshot.game()).legal_moves
+                or answer.move not in inspect(restore(snapshot)).legal_moves
                 or AnalysisSpec.from_analysis(answer).identity != row["identity"]
             ):
                 raise ValueError("Analysis differs from its recorded position or specification.")
@@ -539,7 +540,7 @@ def game_position(identity: str, game_id: int, ply: int) -> Position:
         snapshot = store.game(game_id).snapshot
         if ply > len(snapshot.moves):
             raise ValueError("Ply is beyond the recorded game.")
-        return inspect(Snapshot(moves=snapshot.moves[:ply]).game())
+        return inspect(restore(Snapshot(moves=snapshot.moves[:ply])))
 
 
 class OverlapExample(BaseModel):

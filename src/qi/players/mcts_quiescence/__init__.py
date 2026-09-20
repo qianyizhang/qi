@@ -1,6 +1,7 @@
 """Plain UCT with a bounded tactical leaf sharing its work allowance."""
 
-from qi.game import Game
+from qi_game.reference import Game
+
 from qi.players.common import MATE, NodeBudget
 from qi.players.core import Player, PlayerConfig, PlayerInfo
 from qi.players.mcts import search

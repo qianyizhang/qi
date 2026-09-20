@@ -8,15 +8,16 @@ from math import isfinite
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError, Side
+from qi_game.reference import restore
 
 from qi.arena import MatchRecord, play_match
 from qi.artifacts import Provenance, digest, provenance
-from qi.game import GameError, Side
 from qi.players import PlayerConfig, bind_config
 from qi.players.catalog import get_player
 from qi.players.core import config_data
 from qi.players.validation import validate_decision
-from qi.protocol import Snapshot
 from qi.scoring import GameScore, PairedScore, score_pairs
 
 
@@ -39,7 +40,7 @@ class Corpus(BaseModel):
     def valid_openings(self) -> Self:
         ids, states = set(), set()
         for opening in self.openings:
-            game = opening.snapshot.game()
+            game = restore(opening.snapshot)
             if game.outcome:
                 raise ValueError(f"Terminal opening: {opening.id}")
             if opening.id in ids or game.state_hash in states:
@@ -134,7 +135,7 @@ class EvalRun(BaseModel):
             match.opening,
         ) != (red, black, opening):
             raise ValueError("Match configuration or opening differs from spec.")
-        game = opening.game()
+        game = restore(opening)
         for turn in match.turns:
             choice = turn.choice
             config = red if game.turn == "red" else black
@@ -307,7 +308,7 @@ def run_evaluation(spec: EvalSpec, *, save: Callable[[EvalRun], None] | None = N
             save(run)
         try:
             red, black = spec.configurations(index // 2, entry.a_side)
-            match = play_match(red, black, spec.corpus.openings[index // 2].snapshot.game())
+            match = play_match(red, black, restore(spec.corpus.openings[index // 2].snapshot))
             complete = EvalGame(opening_id=entry.opening_id, a_side=entry.a_side, status="complete", match=match)
             run.validate_match(index // 2, complete)
             run.games[index] = complete

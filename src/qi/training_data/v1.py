@@ -9,11 +9,12 @@ from time import monotonic
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, restore
 
 from qi.evaluation import Corpus
-from qi.game import Game, GameError, legal_moves
 from qi.players.policy.encoding import ENCODING, input_key
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, TeacherConfig, analyze
 
 MAX_SOURCES = 2048
@@ -74,7 +75,7 @@ class Dataset(BaseModel):
             raise ValueError("Source IDs must be unique.")
         histories = set()
         for source in self.sources:
-            game = source.snapshot.game()
+            game = restore(source.snapshot)
             if game.state_hash in histories:
                 raise ValueError("Source trajectories must be distinct.")
             histories.add(game.state_hash)
@@ -89,7 +90,7 @@ class Dataset(BaseModel):
             moves = analysis.snapshot.moves
             if source.snapshot.moves[: len(moves)] != moves or len(moves) > len(source.snapshot.moves):
                 raise ValueError("Label history must be a prefix of its source game.")
-            game = analysis.snapshot.game()
+            game = restore(analysis.snapshot)
             if game.outcome or analysis.move not in legal_moves(game.board, game.turn):
                 raise ValueError("Teacher label must be legal in a nonterminal position.")
             key = input_key(game)

@@ -5,11 +5,12 @@ import subprocess
 from dataclasses import asdict, replace
 
 import pytest
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, replay, restore
 
 from qi.arena import play_match
-from qi.game import Game, GameError, replay
 from qi.players import PlayerConfig
-from qi.protocol import Snapshot
 
 
 def test_seeded_match_repeats_except_measured_timing() -> None:
@@ -18,7 +19,7 @@ def test_seeded_match_repeats_except_measured_timing() -> None:
     assert first.snapshot == second.snapshot
     assert first.winner == second.winner
     assert first.reason == second.reason
-    final = first.snapshot.game()
+    final = restore(first.snapshot)
     assert final.outcome.winner == first.winner
     assert final.outcome.reason == first.reason
     for a, b in zip(first.turns, second.turns, strict=True):
@@ -61,7 +62,7 @@ def test_cli_choice_and_match(tmp_path) -> None:
     )
     assert not result.stderr
     record = json.loads(result.stdout)
-    game = Snapshot.model_validate(record["snapshot"]).game()
+    game = restore(Snapshot.model_validate(record["snapshot"]))
     assert record["reason"] == game.outcome.reason
     assert record["winner"] == game.outcome.winner
     assert record["red"]["seed"] == 7

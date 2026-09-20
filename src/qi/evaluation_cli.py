@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from qi_game.core import GameError
 
 from qi.artifacts import write_json
 from qi.evaluation import EvalRun, EvalSpec, run_evaluation, summarize_evaluation
-from qi.game import GameError
 
 app = typer.Typer(no_args_is_help=True, help="Versioned evaluation specs, evidence, and scores.")
 

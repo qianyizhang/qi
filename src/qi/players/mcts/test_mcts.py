@@ -4,12 +4,13 @@ from dataclasses import replace
 from random import Random
 
 import pytest
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, replay
+from qi_game.test_game import board_at
 
-from qi.game import Game, GameError, legal_moves, replay
 from qi.players import PlayerConfig, choose
 from qi.players.common import NodeBudget
 from qi.players.mcts import Node, Search, backup, search, value
-from qi.test_game import board_at
 
 
 @pytest.mark.parametrize("side", ["red", "black"])

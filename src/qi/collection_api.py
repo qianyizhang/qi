@@ -3,6 +3,7 @@
 from typing import Literal
 
 from fastapi import FastAPI, Query
+from qi_game.contracts import Position
 
 from qi.collection_view import (
     CollectionCatalog,
@@ -16,7 +17,6 @@ from qi.collection_view import (
     game_detail,
     game_position,
 )
-from qi.protocol import Position
 from qi.training_data.store import AnalysisPayload
 
 

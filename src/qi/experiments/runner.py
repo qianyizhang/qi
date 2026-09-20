@@ -5,11 +5,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from time import monotonic
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
+
 from qi.artifacts import write_json
 from qi.experiments.model import Plan, digest, provenance
 from qi.players import PlayerConfig, choose
 from qi.players.catalog import get_player
-from qi.protocol import Snapshot
 
 __all__ = ["run", "write_json"]
 
@@ -42,7 +44,7 @@ def run(plan: Plan, directory: Path, seconds: float = 600, *, clock=monotonic) -
             if clock() >= deadline:
                 state["status"] = "deadline"
                 break
-            game = openings[job["opening"]].game()
+            game = restore(openings[job["opening"]])
             active = {"job": job, "status": "running", "turns": [], "snapshot": openings[job["opening"]].model_dump()}
             path = directory / "units" / (job["id"] + ".json")
             write_json(path, active)

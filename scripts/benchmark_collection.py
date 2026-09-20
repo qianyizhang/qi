@@ -8,10 +8,11 @@ import sys
 from pathlib import Path
 from time import perf_counter
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import legal_moves
+
 from qi.artifacts import provenance, write_json
 from qi.evaluation import Corpus, Opening
-from qi.game import legal_moves
-from qi.protocol import Snapshot
 from qi.teacher import TeacherAnalysis, digest
 from qi.training_data.assembly import Bucket, MixtureRecipe
 from qi.training_data.collection_generation import generate_collection

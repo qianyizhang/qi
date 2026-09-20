@@ -3,12 +3,13 @@
 from dataclasses import replace
 
 import pytest
+from qi_game.core import GameError
+from qi_game.reference import Game, legal_moves, replay
+from qi_game.test_game import board_at
 
-from qi.game import Game, GameError, legal_moves, replay
 from qi.players import PlayerConfig, choose
 from qi.players.alphabeta import Search
 from qi.players.common import MATE, NodeBudget, evaluate
-from qi.test_game import board_at
 
 
 @pytest.mark.parametrize("nodes", [1, 10, 45, 60, 128])

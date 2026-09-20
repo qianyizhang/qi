@@ -7,13 +7,14 @@ from types import MappingProxyType
 
 import pytest
 from fastapi.testclient import TestClient
+from qi_game.contracts import Snapshot
+from qi_game.core import GameError
+from qi_game.reference import Game, restore
 
 from qi.api import create_app
 from qi.evaluation import Corpus, EvaluationRecord, Opening, evaluate_batch
-from qi.game import Game, GameError
 from qi.players import Player, PlayerConfig, PlayerInfo, catalog, choose
 from qi.players.mcts import search
-from qi.protocol import Snapshot
 
 
 def test_cli_http_parity_including_rollout_budget_and_root_statistics(tmp_path):
@@ -46,7 +47,7 @@ def test_cli_http_parity_including_rollout_budget_and_root_statistics(tmp_path):
         assert (metadata["default_nodes"], metadata["default_rollout_plies"]) == (512, 8)
         payload = {
             "snapshot": snapshot.model_dump(),
-            "expected_state_hash": snapshot.game().state_hash,
+            "expected_state_hash": restore(snapshot).state_hash,
             "controller": {"player": "mcts", "settings": {"seed": 7, "nodes": 128, "rollout_plies": 3}},
         }
         response = client.post("/api/play/choose", json=payload)
@@ -55,7 +56,7 @@ def test_cli_http_parity_including_rollout_budget_and_root_statistics(tmp_path):
         actual.pop("elapsed_ms")
         expected.pop("elapsed_ms")
         assert actual == expected
-        assert Snapshot.model_validate(response.json()["position"]["snapshot"]).game() == snapshot.game().apply(
+        assert restore(Snapshot.model_validate(response.json()["position"]["snapshot"])) == restore(snapshot).apply(
             actual["move"]
         )
         for limit in (-1, 65, True):
@@ -77,7 +78,7 @@ def test_paired_arena_records_replay_and_summarize_mcts_work():
     restored = EvaluationRecord.model_validate_json(record.model_dump_json())
     choices = []
     for game in restored.games:
-        assert game.match.snapshot.game().outcome.reason == game.match.reason
+        assert restore(game.match.snapshot).outcome.reason == game.match.reason
         choices.extend(turn.choice for turn in game.match.turns if turn.side == game.a_side)
     summary = restored.summary["a"]
     assert summary.simulations == sum(choice.mcts.simulations for choice in choices)

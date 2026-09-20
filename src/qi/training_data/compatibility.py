@@ -4,8 +4,10 @@ import json
 from hashlib import sha256
 from pathlib import Path
 
+from qi_game.contracts import Snapshot
+from qi_game.reference import restore
+
 from qi.artifacts import provenance
-from qi.protocol import Snapshot
 from qi.training_data.contracts import Library
 from qi.training_data.store import AnalysisSpec, Collection, GamePayload, RunPayload
 from qi.training_data.v1 import Dataset, SourceGame
@@ -76,7 +78,7 @@ def import_json(store: Collection, path: Path) -> dict:
             if game_id is None:
                 continue
             active_game = game_id
-            game = payload.initial.game()
+            game = restore(payload.initial)
             for move in source.snapshot.moves[len(game.moves) :]:
                 game = game.apply(move)
                 store.append(game_id, Snapshot(moves=list(game.moves)))

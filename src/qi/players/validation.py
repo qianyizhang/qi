@@ -2,8 +2,9 @@
 
 from math import isfinite
 
+from qi_game.reference import Game, legal_moves
+
 from qi.artifacts import digest
-from qi.game import Game, legal_moves
 from qi.players.core import Choice, Decision, PlayerConfig
 
 

@@ -3,7 +3,8 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-from qi.game import Game
+from qi_game.reference import Game
+
 from qi.players.common import MATE, BudgetExhausted, NodeBudget, evaluate, ordered_moves, terminal_score
 from qi.players.components.extensions import CheckExtensions
 from qi.players.components.ordering import MoveOrdering

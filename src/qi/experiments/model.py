@@ -3,10 +3,10 @@
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from qi_game.reference import legal_moves, restore
 
 from qi.artifacts import ROOT, digest, provenance
 from qi.evaluation import Corpus
-from qi.game import legal_moves
 from qi.players import PlayerConfig
 from qi.players.catalog import PLAYERS
 from qi.players.core import config_data
@@ -49,7 +49,7 @@ class Plan(BaseModel):
         if bool(self.pairs) != bool(self.game_openings):
             raise ValueError("Paired games need both pairs and game openings.")
         for key, expected in self.winning_moves.items():
-            game = openings[key].snapshot.game()
+            game = restore(openings[key].snapshot)
             actual = [
                 move
                 for move in legal_moves(game.board, game.turn)
