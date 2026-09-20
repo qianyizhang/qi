@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "experiment_id": "native-backends-20260921",
+  "raw_summary": "artifacts/native-backends-20260921/confirmation-01/summary.json",
+  "raw_summary_sha256": "262faab96ea7f2d46f9b65198bb23e44a6843abf4be356c09c15097ea1850070",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "games_per_worker": 128,
+  "plies_per_worker": 34491,
+  "completed_per_worker": 128,
+  "truncated_per_worker": 0,
+  "outcome_codes": {
+    "4": 94,
+    "1": 33,
+    "2": 1
+  },
+  "rounds": 3,
+  "worker_count": 21,
+  "all_trajectory_digests_equal": true,
+  "trajectory_sha256": "628257eb32376ab0a1b24d15067762c4fb8099f43a022c8fd798d1d4371ca4fc",
+  "arms": {
+    "python": {
+      "elapsed_seconds": [
+        0.6249482920102309,
+        0.6236172079807147,
+        0.620124292006949
+      ],
+      "median_seconds": 0.6236172079807147,
+      "median_plies_per_second": 55307.96706473602,
+      "paired_speedups": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "median_paired_speedup": 1.0,
+      "peak_rss_mib": [
+        46.921875,
+        46.859375,
+        46.9375
+      ],
+      "backend_startup_ms": [
+        0.00037500285543501377,
+        0.0002500019036233425,
+        0.00029199873097240925
+      ]
+    },
+    "import": {
+      "elapsed_seconds": [
+        79.64756566702272,
+        79.7213800830068,
+        79.16953495901544
+      ],
+      "median_seconds": 79.64756566702272,
+      "median_plies_per_second": 433.0452501736742,
+      "paired_speedups": [
+        0.00784642049981679,
+        0.007822458759888469,
+        0.007832865158649416
+      ],
+      "median_paired_speedup": 0.007832865158649416,
+      "peak_rss_mib": [
+        130.96875,
+        131.078125,
+        131.09375
+      ],
+      "backend_startup_ms": [
+        205.07783300126903,
+        209.36062501277775,
+        205.57383398409002
+      ]
+    },
+    "minimal-scalar": {
+      "elapsed_seconds": [
+        0.355890917009674,
+        0.34948916599387303,
+        0.36118633300065994
+      ],
+      "median_seconds": 0.355890917009674,
+      "median_plies_per_second": 96914.52732147825,
+      "paired_speedups": [
+        1.7560107947156272,
+        1.784367782066376,
+        1.7169096262726418
+      ],
+      "median_paired_speedup": 1.7560107947156272,
+      "peak_rss_mib": [
+        38.53125,
+        38.625,
+        38.875
+      ],
+      "backend_startup_ms": [
+        0.8885829884093255,
+        0.836874998640269,
+        0.8207079954445362
+      ]
+    },
+    "minimal-batch-1": {
+      "elapsed_seconds": [
+        0.15989358301158063,
+        0.15962470800150186,
+        0.16314704201067798
+      ],
+      "median_seconds": 0.15989358301158063,
+      "median_plies_per_second": 215712.22153112871,
+      "paired_speedups": [
+        3.9085264101247126,
+        3.906771174640754,
+        3.8010146207024813
+      ],
+      "median_paired_speedup": 3.906771174640754,
+      "peak_rss_mib": [
+        38.6875,
+        38.796875,
+        38.796875
+      ],
+      "backend_startup_ms": [
+        0.9500409942120314,
+        0.8264589996542782,
+        0.8530420018360019
+      ]
+    },
+    "minimal-batch-8": {
+      "elapsed_seconds": [
+        0.17018008398008533,
+        0.16930050001246855,
+        0.1717491669987794
+      ],
+      "median_seconds": 0.17018008398008533,
+      "median_plies_per_second": 202673.5396607054,
+      "paired_speedups": [
+        3.6722763169124018,
+        3.683493007609469,
+        3.6106392994113103
+      ],
+      "median_paired_speedup": 3.6722763169124018,
+      "peak_rss_mib": [
+        39.265625,
+        39.125,
+        39.3125
+      ],
+      "backend_startup_ms": [
+        0.7781249878462404,
+        0.9794170036911964,
+        0.891125004272908
+      ]
+    },
+    "minimal-batch-32": {
+      "elapsed_seconds": [
+        0.1783294589840807,
+        0.1796463750069961,
+        0.18005674998858012
+      ],
+      "median_seconds": 0.1796463750069961,
+      "median_plies_per_second": 191993.85458602654,
+      "paired_speedups": [
+        3.5044590813569365,
+        3.4713598198484594,
+        3.4440491236583997
+      ],
+      "median_paired_speedup": 3.4713598198484594,
+      "peak_rss_mib": [
+        40.1875,
+        40.171875,
+        40.234375
+      ],
+      "backend_startup_ms": [
+        0.8529589977115393,
+        0.7968749850988388,
+        0.833208003314212
+      ]
+    },
+    "minimal-batch-128": {
+      "elapsed_seconds": [
+        0.18554512498667464,
+        0.19745112501550466,
+        0.19243316698702984
+      ],
+      "median_seconds": 0.19243316698702984,
+      "median_plies_per_second": 179236.25402020602,
+      "paired_speedups": [
+        3.3681741412236677,
+        3.158337071676577,
+        3.2225437107146186
+      ],
+      "median_paired_speedup": 3.2225437107146186,
+      "peak_rss_mib": [
+        45.203125,
+        45.390625,
+        45.390625
+      ],
+      "backend_startup_ms": [
+        0.7804589986335486,
+        0.8113330113701522,
+        0.8479160023853183
+      ]
+    }
+  },
+  "validation": {
+    "passed": true,
+    "counts": {
+      "import frozen replays": 10,
+      "import terminal diagrams": 2,
+      "import guarded errors": 5,
+      "import isolation and history controls": 5,
+      "minimal-scalar frozen replays": 10,
+      "minimal-scalar terminal diagrams": 2,
+      "minimal-scalar guarded errors": 5,
+      "minimal-scalar isolation and history controls": 5,
+      "development positions": 6075,
+      "native batch matching trajectories": 256,
+      "native perft depth 3": 79666
+    },
+    "fixture_sha256": "bf6303e2d4225afe841eafa0345132b2860c9ed2ac4acf021d34c205423485ca",
+    "development_seeds": [
+      12345,
+      2654448106,
+      1013916571,
+      3668352332,
+      2027820797,
+      387289262,
+      3041725023,
+      1401193488,
+      4055629249,
+      2415097714,
+      774566179,
+      3429001940,
+      1788470405,
+      147938870,
+      2802374631,
+      1161843096,
+      3816278857,
+      2175747322,
+      535215787,
+      3189651548,
+      1549120013,
+      4203555774,
+      2563024239,
+      922492704,
+      3576928465,
+      1936396930,
+      295865395,
+      2950301156,
+      1309769621,
+      3964205382,
+      2323673847,
+      683142312,
+      3337578073,
+      1697046538,
+      56515003,
+      2710950764,
+      1070419229,
+      3724854990,
+      2084323455,
+      443791920,
+      3098227681,
+      1457696146,
+      4112131907,
+      2471600372,
+      831068837,
+      3485504598,
+      1844973063,
+      204441528,
+      2858877289,
+      1218345754,
+      3872781515,
+      2232249980,
+      591718445,
+      3246154206,
+      1605622671,
+      4260058432,
+      2619526897,
+      978995362,
+      3633431123,
+      1992899588,
+      352368053,
+      3006803814,
+      1366272279,
+      4020708040
+    ]
+  },
+  "diagnostic": {
+    "scope": "post-hoc 4 development games capped at 96 plies, cProfile; excludes startup",
+    "total_seconds": 0.9059544580000001,
+    "legal_and_fen_seconds": 0.8730745360000001,
+    "fraction_in_legal_and_fen": 0.9637068710135979
+  },
+  "verification": {
+    "focused_pytest": "5 passed; real HTTP injection, state atomicity, output overwrite guard",
+    "sanitizers": "AddressSanitizer + UndefinedBehaviorSanitizer standalone core passed",
+    "limitations": "Apple Silicon only; no production teacher, storage, learned actor, training or native search. No default promotion."
+  }
+}
