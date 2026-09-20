@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75,<82", "pybind11>=3,<4"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qi-game-native"
+version = "0.1.0"
+description = "Optional C++17 Xiangqi trajectory execution"
+requires-python = ">=3.12"
+dependencies = ["qi-game==0.1.0"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[tool.uv.sources]
+qi-game = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+qi_game_native = ["*.hpp", "*.cpp"]
+
+[tool.ruff]
+extend = "../../ruff_base.toml"

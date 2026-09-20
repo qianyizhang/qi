@@ -48,7 +48,11 @@ def source_provenance(*, include_assets: bool = True, paths: tuple[str, ...] = (
     # their original identity; new runs must not overlook workspace package edits.
     for manifest in sorted((ROOT / "packages").glob("*/pyproject.toml")):
         files.append(manifest)
-        files.extend(sorted(path for path in (manifest.parent / "src").rglob("*") if path.suffix in suffixes))
+        files.extend(
+            sorted(path for path in (manifest.parent / "src").rglob("*") if path.suffix in (*suffixes, ".cpp", ".hpp"))
+        )
+        if (manifest.parent / "setup.py").is_file():
+            files.append(manifest.parent / "setup.py")
     source = hashlib.sha256()
     for path in files:
         source.update(str(path.relative_to(ROOT)).encode() + b"\0" + path.read_bytes() + b"\0")

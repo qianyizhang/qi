@@ -19,6 +19,7 @@ dependencies.
 | `core.py` | Ruleset identity, sides, outcomes and `GameError`. |
 | `contracts.py` | Validated `Snapshot`, `Position` and `Result` data. |
 | `referee.py` | Structural `Referee` protocol: inspect a snapshot and apply a guarded action. |
+| `trajectory.py` | Persistent `Trajectory`/factory contracts and lazy `PythonTrajectory`. |
 | `reference.py` | Readable Python rules, immutable `Game`, replay, and `PythonReferee`. |
 
 Importing contracts or the protocol does not import the reference implementation,
@@ -48,8 +49,11 @@ new/inspect/apply, final player moves and session inspection. HTTP accepts an
 explicit backend through `create_app(referee=...)`; normal composition selects
 `PythonReferee`. Player search, match generation, data validation and session
 history validation still use the Python reference directly. Backend injection
-does **not** replace those loops. Native batched trajectories and player sessions
-remain later slices under [the architecture decisions](../../records/work-items/items/AB-ARCH-001-modular-runtime.md).
+does **not** replace those loops. Policy generation accepts an explicit persistent
+trajectory factory; the optional [native package](../qi-game-native/README.md)
+implements that boundary and caller-supplied batch stepping. Its integration
+keeps Python teacher/sampler values and collection replay validation. Player
+sessions remain later slices under [the architecture decisions](../../records/work-items/items/AB-ARCH-001-modular-runtime.md).
 
 Python research code that needs the reference representation explicitly uses
 `restore(snapshot)` or `replay(tuple_of_moves)` from `qi_game.reference`. Snapshot

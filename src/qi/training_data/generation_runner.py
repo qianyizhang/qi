@@ -7,13 +7,14 @@ from dataclasses import replace
 from pathlib import Path
 from random import Random
 from tempfile import TemporaryFile
-from time import monotonic
+from time import monotonic, perf_counter
 from typing import Literal, Self
 
 from pydantic import Field, model_validator
 from qi_game.contracts import Snapshot
 from qi_game.core import GameError
 from qi_game.reference import Game, legal_moves, restore
+from qi_game.trajectory import PythonTrajectory, TrajectoryFactory
 
 from qi.artifacts import provenance
 from qi.evaluation import Corpus
@@ -157,6 +158,7 @@ def generate_policies(
     event: Callable[[dict], None] | None = None,
     clock: Callable[[], float] = monotonic,
     continue_from_run: int | None = None,
+    trajectory_factory: TrajectoryFactory | None = None,
 ) -> dict:
     """Generate complete games incrementally; retain quotas/shortfalls independently.
 
@@ -170,11 +172,11 @@ def generate_policies(
     identities = pin_teachers(config)
     if provider is None:
         with SessionProvider(identities) as live:
-            return _generate(store, config, live, identities, event, clock, continue_from_run)
-    return _generate(store, config, provider, identities, event, clock, continue_from_run)
+            return _generate(store, config, live, identities, event, clock, continue_from_run, trajectory_factory)
+    return _generate(store, config, provider, identities, event, clock, continue_from_run, trajectory_factory)
 
 
-def _generate(store, config, provider, identities, event, clock, continue_from_run):
+def _generate(store, config, provider, identities, event, clock, continue_from_run, trajectory_factory):
     io = CollectionIO(store)
     inherited = io.continuation(continue_from_run, config.model_dump())
     origin = provenance()
@@ -183,6 +185,7 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
             config={
                 "recipe": config.model_dump(),
                 "implementation_sha256": origin["source_sha256"],
+                "execution": (trajectory_factory or PythonTrajectory).identity(),
                 "continued_from_run": continue_from_run,
                 "inherited_games": inherited,
             },
@@ -201,6 +204,7 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
     inherited_pending = set(inherited)
     before = Counter()
     querying_actor = False
+    trajectory = None
 
     def query(game, settings, *, game_id, retain, role, metadata=None):
         if clock() + settings.timeout_seconds > deadline:
@@ -322,6 +326,10 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
                 sampler = Random(fingerprint("policy-sampling-v1", actor_identity))
                 intervention_rng = Random(fingerprint("policy-intervention-v1", actor_identity))
                 game = restore(source.start.snapshot)
+                tick = perf_counter()
+                trajectory = trajectory_factory(source.start.snapshot) if trajectory_factory else None
+                position = trajectory.inspect() if trajectory else None
+                counters["referee_seconds"] += perf_counter() - tick
                 intervention_at = None
                 if source.actor.mode == "intervention":
                     lo = max(len(game.moves), source.actor.intervention_min_ply)
@@ -337,13 +345,13 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
                     for _ in range(source.additional_plies):
                         if clock() >= deadline:
                             raise GameError("dataset_timeout", "Generation allowance exhausted.")
-                        if game.outcome:
+                        if position.outcome if position else game.outcome:
                             break
                         states.append(game)
                         ply = len(game.moves)
                         before = counters.copy()
                         querying_actor = True
-                        legal = sorted(legal_moves(game.board, game.turn))
+                        legal = sorted(position.legal_moves if position else legal_moves(game.board, game.turn))
                         if source.actor.mode == "random":
                             decision = ActorDecision(
                                 move=rng.choice(legal), reason="uniform-legal", eligible_moves=legal
@@ -373,7 +381,21 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
                                 )
                                 intervention_done |= intervene
                         decisions[ply] = decision.model_dump()
-                        game = game.apply(decision.move)
+                        tick = perf_counter()
+                        if trajectory:
+                            position = trajectory.step(decision.move)
+                            # Existing teacher/sampler consumers use immutable
+                            # Python values; materialization executes no move.
+                            game = Game(
+                                position.board,
+                                position.turn,
+                                tuple(position.snapshot.moves),
+                                (*game.positions, position.board + position.turn),
+                            )
+                        else:
+                            game = game.apply(decision.move)
+                        counters["referee_seconds"] += perf_counter() - tick
+                        tick = perf_counter()
                         store.append(
                             game_id,
                             Snapshot(moves=list(game.moves)),
@@ -381,8 +403,14 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
                             actor_queries=counters["actor_attempts"] - before["actor_attempts"],
                             actor_ms=1000 * (counters["actor_seconds"] - before["actor_seconds"]),
                         )
+                        counters["append_seconds"] += perf_counter() - tick
                         querying_actor = False
+                    if trajectory:
+                        trajectory.close()
+                        trajectory = None
+                    tick = perf_counter()
                     selection = sample_positions(states, source.sampling, sampler, excluded)
+                    counters["sampling_seconds"] += perf_counter() - tick
                     by_ply = {len(state.moves): state for state in states}
                     for ply in selection.selected:
                         state = by_ply[ply]
@@ -462,6 +490,9 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
                 {"kind": "failed", "run_id": run, "error": f"{type(exc).__name__}: {exc}", "counters": dict(counters)}
             )
         raise
+    finally:
+        if trajectory is not None:
+            trajectory.close()
     return {
         "status": "shortfall" if rejected_games or any(shortfalls.values()) else "complete",
         "generation_status": "complete",

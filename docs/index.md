@@ -41,6 +41,7 @@ Frontend rationale: [shared app ADR](adr/0005-shared-local-frontend.md),
 [consolidated lab work item](../records/work-items/items/AB-UI-002-consolidated-lab.md).
 Training adjudication: [xiangqi-training-v1](xiangqi-training-v1.md).
 Game contracts, referee substitution and isolated package checks: [Game package](../packages/qi-game/README.md).
+Optional native trajectories and generation integration: [Native package](../packages/qi-game-native/README.md).
 
 ## Authority by concern
 

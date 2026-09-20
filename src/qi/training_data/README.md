@@ -393,6 +393,16 @@ supervision identities. Changing it requires a fresh run; multithreaded engine
 search can change trajectories and labels even at the same seed and node budget.
 Measure throughput before increasing it; small node budgets may not benefit.
 
+Policy generation accepts an explicit `trajectory_factory` for persistent
+execution. The optional [native package](../../../packages/qi-game-native/README.md)
+supplies `NativeTrajectory`; actor RNG streams, sampling and per-move collection
+validation stay unchanged. Backend/binary identity is recorded in run execution
+metadata, outside actor identities. The default keeps the direct Python path;
+the explicit `PythonTrajectory` adapter serves as a conformance/timing control.
+Execution, append and sampling phase counters cover only their named blocks,
+not all validation or teacher time. Integration evidence and reproduction live in
+[AB-ARCH-004](../../../records/work-items/items/AB-ARCH-004-native-generation.md).
+
 ## Generated-data follow-up selections
 
 `followups.py` builds the training-only candidate pool for the locked

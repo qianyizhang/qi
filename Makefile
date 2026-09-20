@@ -1,4 +1,4 @@
-.PHONY: install lint test test-game test-learning test-learning-mps test-data check format authoring-check web-build play
+.PHONY: install lint test test-game test-native test-learning test-learning-mps test-data check format authoring-check web-build play
 install:
 	uv sync --locked
 	uv run python scripts/bootstrap_agents.py
@@ -15,6 +15,9 @@ test: web-build
 	npm test --prefix web
 test-game:
 	uv run --locked python scripts/check_game_package.py
+test-native:
+	uv run --locked --extra native python scripts/check_game_package.py --native
+	uv run --locked --extra native pytest tests/test_native_generation.py
 test-learning:
 	uv run --locked --extra learning pytest tests/test_learning.py tests/test_learning_config.py tests/test_training_data.py tests/test_reference.py
 test-data:

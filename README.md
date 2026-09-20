@@ -23,6 +23,10 @@ make check
 make play
 ```
 
+Optional C++ trajectory experiments use `uv sync --locked --extra native` and
+`make test-native`; see the [native package guide](packages/qi-game-native/README.md).
+Normal installation and play use the Python reference.
+
 Open http://127.0.0.1:8000. Home connects **Play**, **Data**, **Learn**, **Experiments**, **Benchmarks**, and **Reference**.
 In Play, select Red and Black independently: Human, a search player, a trained
 checkpoint, or configured Pikafish. Set each player's applicable limits, then

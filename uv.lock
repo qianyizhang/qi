@@ -6,6 +6,7 @@ requires-python = ">=3.12"
 members = [
     "qi",
     "qi-game",
+    "qi-game-native",
 ]
 
 [[package]]
@@ -767,6 +768,9 @@ learning = [
     { name = "numpy" },
     { name = "torch" },
 ]
+native = [
+    { name = "qi-game-native" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -783,11 +787,12 @@ requires-dist = [
     { name = "pyarrow", marker = "extra == 'data'", specifier = ">=20,<24" },
     { name = "pydantic", specifier = ">=2.10,<3" },
     { name = "qi-game", editable = "packages/qi-game" },
+    { name = "qi-game-native", marker = "extra == 'native'", editable = "packages/qi-game-native" },
     { name = "torch", marker = "extra == 'learning'", specifier = "==2.10.0" },
     { name = "typer", specifier = ">=0.27,<0.28" },
     { name = "uvicorn", specifier = ">=0.30,<1" },
 ]
-provides-extras = ["learning", "data"]
+provides-extras = ["learning", "data", "native"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -819,6 +824,25 @@ dev = [
     { name = "hypothesis", specifier = ">=6,<7" },
     { name = "pytest", specifier = ">=8,<10" },
 ]
+
+[[package]]
+name = "qi-game-native"
+version = "0.1.0"
+source = { editable = "packages/qi-game-native" }
+dependencies = [
+    { name = "qi-game" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "qi-game", editable = "packages/qi-game" }]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8,<10" }]
 
 [[package]]
 name = "rich"

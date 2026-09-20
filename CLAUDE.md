@@ -80,6 +80,7 @@ make install   # sync Python/web deps and bootstrap agent symlinks
 make lint      # Ruff lint/format checks and docs (check_docs.py)
 make test      # test suite
 make test-game # isolated game sdist/wheel and declared-dependency checks
+make test-native # optional native wheel isolation and generation/HTTP conformance
 make test-learning # optional CPU policy-training integration checks
 make test-learning-mps # opt-in Metal training and CPU checkpoint reload
 make check     # lint, tests, and production browser build
@@ -103,6 +104,9 @@ SDKs. Its [guide](packages/qi-game/README.md) owns `qi_game` contracts, the refe
 protocol, explicit Python reference use and isolated package checks.
 `src/qi/protocol.py` owns application requests and player/session evidence;
 CLI and HTTP consume the game package. Supported packages share the root uv lock.
+The optional [native package](packages/qi-game-native/README.md) owns C++ build
+dependencies and persistent trajectory execution; policy generation accepts it
+explicitly. Default setup and backend selection remain Python.
 The React board consumes legal moves; it does not implement rules. Boundary
 contracts arrive with behavior; avoid speculative packages. Vocabulary authority:
 `docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a
