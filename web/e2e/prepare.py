@@ -8,7 +8,7 @@ from qi.experiments.inspect import inspect_decision
 from qi.experiments.model import Plan
 from qi.experiments.report import report
 from qi.experiments.runner import run
-from qi.protocol import Snapshot
+from qi_game.contracts import Snapshot
 
 root = Path(__file__).resolve().parents[1] / ".test-artifacts"
 if root.exists():

@@ -193,8 +193,8 @@ An optional independent movement check uses pyffish 0.0.90 in a separate environ
 
 ```bash
 uv venv /tmp/qi-reference
-uv pip install --python /tmp/qi-reference/bin/python pyffish==0.0.90
-PYTHONPATH=src /tmp/qi-reference/bin/python scripts/check_reference.py
+uv pip install --python /tmp/qi-reference/bin/python ./packages/qi-game pyffish==0.0.90
+/tmp/qi-reference/bin/python scripts/check_reference.py
 ```
 
 This compares sampled legal moves, not repetition/chasing adjudication.

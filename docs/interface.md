@@ -2,7 +2,7 @@
 description: Local app, player selection, replay, saved sessions and experiment interfaces.
 scope: local lab interfaces
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 

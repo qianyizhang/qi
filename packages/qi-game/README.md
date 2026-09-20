@@ -54,7 +54,9 @@ remain later slices under [the architecture decisions](../../records/work-items/
 Python research code that needs the reference representation explicitly uses
 `restore(snapshot)` or `replay(tuple_of_moves)` from `qi_game.reference`. Snapshot
 is data only. Old `qi.game`, game-type exports from `qi.protocol`, and
-`Snapshot.game()` were removed; internal callers are migrated directly.
+`Snapshot.game()` were removed; supported application, tooling and test callers
+are migrated directly. [Retained study sources](../../docs/experiments.md#retained-source-and-current-tools)
+keep their recorded bytes and require their original source environment.
 Saved JSON, hashes and evidence interpretations are unchanged. New execution
 provenance includes package source and manifest changes.
 

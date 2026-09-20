@@ -30,7 +30,8 @@ sketches below remain illustrative, not additional fixed contracts.
 [Execution](../../../docs/adr/0012-replaceable-game-execution.md),
 [packages/migration](../../../docs/adr/0013-modular-packages-and-direct-migration.md),
 the [core model](../../../docs/models.md) and [experiment method](../../../docs/experiments.md)
-own promoted decisions. Runtime code is unchanged. Starting checkout: clean `main`
+own promoted decisions. This decision task changed no runtime code; subsequent
+implementation is tracked in AB-ARCH-002. Starting checkout: clean `main`
 at `a238aff`.
 Related API/FE discussion (Codex task `01a09e23-e58d-7632-bd32-9d7e32685b77`)
 proposed Play, Data, Training, Evaluation and Experiments as consumer areas;
@@ -47,7 +48,10 @@ that discussion made no repository changes.
 
 ## Context and Trade-offs
 
-### What exists and what obstructs independence
+### Findings at the initial architecture survey
+
+The table records the starting checkout. AB-ARCH-002 subsequently extracted game
+contracts and the reference implementation; its work record owns current status.
 
 | Current evidence | Implication |
 | --- | --- |
@@ -403,7 +407,8 @@ contracts. This completes the decision task, not the runtime redesign.
 extract game interchange and a used referee seam into a uv-managed package,
 migrate consumers directly, and verify preserved replay/hash/outcome behavior
 plus isolated dependencies. Native selection and measured workload optimization
-follow that seam. Implementation has not started.
+follow that seam. Its [package guide](../../../packages/qi-game/README.md) now
+documents the implemented boundary and its remaining limits.
 
 ## Status History
 

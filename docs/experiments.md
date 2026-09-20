@@ -64,6 +64,26 @@ links the current learning evidence without duplicating its detailed results.
 
 ## Configs and runs
 
+### Retained source and current tools
+
+Supported application/tooling imports follow the current package owners.
+Retained study code under `data/experiments/` may instead pin its own source
+bytes or a complete historical tree. This includes legacy learning scripts,
+the architecture-surface study and its diagnostics, and frozen move-generation
+timing/game controllers. Preserve those files and the original run artifacts;
+changing an import can invalidate a recorded source hash or select a different
+engine for a historical timing comparison.
+
+Reproduce such a study with its recorded revision or archived source tree and
+matching lock, plus the retained inputs. The last pre-extraction checkout is not
+a universal reproduction environment: studies can require earlier exact bytes.
+Do not run historical scripts against HEAD merely because they still exist here.
+For a new experiment, adapt the useful logic into a separately identified task
+with current imports, fresh outputs and explicit source lineage. No old runtime
+API shims are provided. The [game package guide](../packages/qi-game/README.md)
+owns current referee imports; the [historical index](../data/experiments/learning/README.md)
+routes retained learning evidence.
+
 ### Agent execution and integration
 
 Within an authorized task's owned paths, frozen evaluator and budget, agents may

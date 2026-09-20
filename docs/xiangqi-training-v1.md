@@ -2,7 +2,7 @@
 description: Accepted adjudication contract for the first qi training ruleset.
 scope: xiangqi training adjudication
 status: stable
-last_update: 2026-09-15
+last_update: 2026-09-21
 document_class: coordination
 ---
 
