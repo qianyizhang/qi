@@ -731,3 +731,1071 @@ generation or teacher policies; each cell retains its executed source bundle.
 - Review: ratified for the user's operational handoff. Stop on user request,
   integrity uncertainty, exhausted resource envelope or a material decision;
   retain partial work and failure evidence.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "planned",
+  "conclusion": "unassessed",
+  "finding": "",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "Exploratory larger-pool operation, not teacher quality, training or Elo. Sampling shortfalls retained; no guarantee of final unique size. OS counters are not physical SSD wear.",
+  "decision": "Operate under the authorized handoff until user stop, resource boundary or material fault. Expect near pilot resource costs; investigate sustained matched-policy writes/game growth above 2x, amplification above 100x or growing WAL above 64MB.",
+  "revisit": "Every batch boundary; stop on integrity, repeated engine failures or uncertain/exhausted accounting. Freeze split exclusions before later export/training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — incident: overnight cross-split trajectory collision
+
+- Evidence: [compact paused-run evidence](../../../data/experiments/learning/history/overnight-generation-20260911.json). Batch 0 ran 1,213 seconds and completed 553/1,000 games before the existing exact-trajectory split guard rejected game 554. Its 86-ply training trajectory (`plausible-block-005`, index 53) exactly repeats completed validation game 38 (`plausible-block-000`, index 37). The failed attempt remains retained; no automatic resume or next batch was dispatched.
+- Yield: 453 plausible, 50 intervention and 50 random completed games; 453 train / 100 validation. Completed games retain 8,126 selected occurrences and 7,103 distinct selected inputs. The failed game separately retains nine selected occurrences and 30 successful analyses; all-status distinct selected inputs total 7,110. Outcomes: 349 checkmates, 44 stalemates, 149 referee ply-limit draws and 11 repetition draws. Sampling shortfalls remain explicit.
+- Verification: all 553 completed trajectories and 25,943 successful analyses checked across two incremental passes; the failed trajectory also replays legally and equals the cited validation trajectory. SQLite integrity, foreign keys and read-only reopen passed. This establishes physical/replay consistency, not train/validation independence or snapshot eligibility.
+- Resources: actual generator OS writes 8.584GB, sampled combined RSS peak 607.6MB, WAL peak 4.23MB, closed DB 372.6MB. The initial launcher-path failure is retained with a conservative 21GB charge; a 1GB operator reserve and 13.84MB measured validation writes bring charged/reserved usage to 30.598GB. These are OS-attributed/conservative accounting values, not SSD wear.
+- Decision: ledger and approved heartbeat are paused. The source implementation was unchanged. The handoff requires a user decision for split conflicts; do not bypass the guard, delete records, silently change split assignments or resume under a changed implementation hash.
+- Next action: decide whether to keep the partial collection paused for selection audit, or authorize a data-only collision-handling protocol that retains conflicting failed evidence, defines continuation/exclusion semantics, tests the change and reconciles run/source identities before any further dispatch. No training/export or Elo was performed.
+- Operational limit: the final two heartbeat observations were about 10.7 minutes apart despite a configured five-minute recurrence; the process stopped itself and was discovered roughly 5.6 minutes later. No claim of exact five-minute scheduling is made.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "failed",
+  "conclusion": "inconclusive",
+  "finding": "Batch 0 completed 553/1000 games in 1213 seconds; exact train trajectory 554 collided with validation trajectory 38, triggering the existing split guard. 8126 selected occurrences / 7103 distinct inputs belong to completed games. All 553 completed replays and 25943 retained successful analyses verified; SQLite checks passed. Generator writes 8.584GB, RSS 607.6MB and WAL 4.23MB stayed within guards.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "Partial batch, split collision and failed retained rows; no snapshot eligibility, training or playing-strength conclusion. All-status uniques include failed rows. Initial launcher failure carries a conservative 21GB charge. Heartbeat cadence was not exact.",
+  "decision": "Pause ledger and heartbeat; preserve all evidence. User decision required on collision continuation/exclusion semantics before new dispatch.",
+  "revisit": "User-approved data-only split collision protocol, identity reconciliation and tests; then recheck remaining resource allowance and final selection audit.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — decision: filter duplicate trajectories and continue
+
+The user accepted exact cross-split trajectory duplication as an expected larger-run
+rejection, not a whole-job failure: filter and move on, retaining warnings useful
+for diagnosing low acceptance. This supersedes the incident's unresolved-policy
+next action; implementation and recovery verification remain outstanding.
+
+Retain rejected attempts and analyses as evidence, exclude them from accepted
+output/export, preserve the earlier accepted trajectory and split assignments, and
+continue without quota refill. Record a structured warning containing reason, both
+game/source identities, splits and trajectory hash. Resume must recognize rejected
+logical identities as already handled, without relabeling them successful or
+regenerating completed work after an implementation change.
+
+Report accepted and duplicate-rejected completed candidates, counts by reason,
+policy, split and source, and interval/cumulative acceptance defined as
+`accepted / (accepted + duplicate-rejected)`. Separate retry, reused, unfinished and
+other-failure counts. Low acceptance is diagnostic, not permission to change settings
+or invent a new stop threshold. Illegal moves, replay/spec mismatch and corruption
+remain hard failures; intermediate-board overlap remains a separate selection audit.
+
+The [pickup handoff](../../reports/session-handoff-overnight-generation-20260911.md)
+carries the implementation, counter/exclusion tests and identity reconciliation
+required before resuming. No code fix or restarted generation is claimed here.
+
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "failed",
+  "conclusion": "inconclusive",
+  "finding": "Batch 0 completed 553/1000 games in 1213 seconds; exact train trajectory 554 collided with validation trajectory 38, triggering the existing split guard. 8126 selected occurrences / 7103 distinct inputs belong to completed games. All 553 completed replays and 25943 retained successful analyses verified; SQLite checks passed. Generator writes 8.584GB, RSS 607.6MB and WAL 4.23MB stayed within guards.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "Partial batch, split collision and failed retained rows; no snapshot eligibility, training or playing-strength conclusion. All-status uniques include failed rows. Initial launcher failure carries a conservative 21GB charge. Heartbeat cadence was not exact.",
+  "decision": "User approved retaining and filtering exact cross-split duplicate trajectories, warning with collision identities, and continuing without quota refill. Record interval/cumulative acceptance and rejection counts. Implement and test rejection, exclusion and resume identity reconciliation before restarting; operation remains paused pending that work.",
+  "revisit": "Verify the approved filter-and-continue behavior, diagnostics, export exclusion and safe resume after implementation changes; then resume within the existing budget.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — reviewed rejection repair and explicit continuation
+
+Produced by `babysit@1.1.0` and `experiment@1.0.0` in the receiving task. The latest
+user pickup authorizes bounded repair and actual continuation, superseding the
+incident section's historical await-decision instruction. [Recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+retains the original incident unchanged. Commit `5c73fa1` preserves split isolation
+and failed evidence while skipping confirmed trajectory rejections without refill.
+A frozen continuation manifest references 553 original completions and one verified
+legacy rejection; only the 446 unstarted identities are planned in the repaired run.
+No original game/run rows are moved or relabeled. The unchanged recipe was previewed
+through the launch environment, writer locks reconciled, and invocation 2 launched.
+
+Focused rejection/resume/legacy-recovery tests passed; the full gate passed 556
+Python tests, one opt-in skip, five browser tests, lint/docs/catalog and builds.
+A separate 1GB pickup operator reserve and 110,592 bytes validation charge leave
+118.402GB before invocation 2, retaining all prior charges. This is recovery evidence
+for the existing study, with no new strength, snapshot eligibility or complete-batch claim.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "Recovery commit 5c73fa1 passed 556 Python tests (one opt-in skip), five browser tests and repository checks. Explicit continuation references 553 completed games plus verified legacy rejection 554 unchanged; 446 unstarted identities dispatched as invocation 2 with the original frozen recipe. No completed recovery batch claimed yet.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "Partial batch, split collision and failed retained rows; no snapshot eligibility, training or playing-strength conclusion. All-status uniques include failed rows. Initial launcher failure carries a conservative 21GB charge. Heartbeat cadence was not exact.",
+  "decision": "Latest user-authorized babysit pickup supersedes the historical blanket pause. Retain exact-trajectory conflicts as excluded failed attempts, continue without quota refill, and supervise sequential reviewed batches within the existing cumulative allowance.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+Recovery checkpoint at 2026-09-11 00:07:36 UTC: invocation 2 had 136 new
+accepted games plus 553 reused completions and one reused rejection. Global
+acceptance was 689/690 (99.855%); 116 new replays and 5,494 analyses had passed
+incremental validation. Sampled invocation writes were 2.138GB, peak combined RSS
+607.6MB and WAL 4.31MB. These are an early observation, not final charges or a
+completed batch. Read-only operator diagnostics now record rejection identity
+warnings and interval/cumulative acceptance by reason/policy/split/source. Hermetic
+checks passed for denominator exclusions, warning identities and cursor replay.
+The retargeted five-minute heartbeat is ACTIVE; generation source remains pinned
+to commit `5c73fa1`. Low acceptance has no automatic stop threshold.
+
+
+### 2026-09-11 — batch 0 verified; batch 1 dispatched
+
+[Recovery boundary evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+records 999 accepted games and one retained duplicate rejection from 1,000 planned
+identities. All completed replays and 46,237 successful analyses verified; SQLite
+integrity, foreign keys and reopen passed. Accepted output retains 14,587 selected
+occurrences / 12,451 global distinct selected inputs. No phase quota was refilled.
+Recovery charged 7.1597056GB; 111.233672704GB remained before the next dispatch.
+Batch 1 uses unused blocks 10–19 and unchanged settings, previewed then launched
+as invocation 3. Supervision continues; this is not completion of the whole study.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "Batch 0 is fully disposed: 999 accepted games and one retained exact-trajectory rejection, acceptance 99.9%. All 999 completed replays and 46237 successful analyses verified; SQLite integrity, foreign keys and reopen passed. Accepted yield: 14587 selected occurrences / 12451 global distinct selected inputs. Recovery invocation 2 completed 446 new games, reused 553 completions and one rejection, charged 7.1597056GB writes. Batch 1 (blocks 10-19) launched as invocation 3 with unchanged settings.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "First batch only; ongoing study is unassessed. Phase quotas underfill. Accepted trajectories can still share intermediate inputs across splits; no immutable export eligibility, training or strength claim. Initial launcher failure retains conservative 21GB charge; heartbeat cadence is approximate.",
+  "decision": "Continue sequential supervised batches after reviewed boundaries. Retain duplicate rejection evidence and diagnostics without quota refill. Preserve original failed run and cumulative charges; 111.234GB remained before batch 1 dispatch.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — batch 1 verified; batch 2 dispatched
+
+The [recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+records batch 1 with 999 accepted games, one retained rejection, 14,353 selected
+occurrences and 45,647 verified successful analyses. Global accepted distinct
+selected inputs reached 23,994; per-batch unique counts are not summed. Its
+16.684494848GB charge and 28,631,040-byte validation charge leave 94.520546816GB
+before batch 2. Rejection 1090 preserves matching accepted game 987; execution
+continued and warning identities were verified. Batch 2 is running under unchanged
+source/settings with new source blocks 20–29; supervision remains active.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "Batches 0 and 1 each disposed 1000 planned identities with 999 accepted games and one retained duplicate rejection. All 1998 completed replays and 91884 successful analyses verified. Accepted collection yield is 28940 selected occurrences / 23994 global distinct selected inputs. Batch 1 used 16.684494848GB writes, peak sampled RSS 608.6MB and WAL 4.37MB. Its live rejection retained the validation attempt while preserving the prior accepted training game; later games continued.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "Two completed batches; study remains running and unassessed. Phase quotas underfill; shared intermediate inputs across splits require separate frozen selection audit. No export eligibility, training or strength claim. Original failures and approximate heartbeat cadence remain recorded.",
+  "decision": "Continue supervised batch 2 (blocks 20-29), launched as invocation 4 after validation and exact recipe preview. 94.520546816GB remained before dispatch. Preserve cumulative charges and reject-without-refill diagnostics.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — batch 2 verified; batch 3 dispatched
+
+[Recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+records 994 accepted and 6 retained duplicate-rejected candidates
+in the latest batch. Incremental validation passed 994 completed
+replays and 45922 successful analyses, with rejected evidence
+checked separately. Accepted collection totals: 2992 games, 43380
+selected occurrences and 35457 global distinct selected inputs. No per-batch
+unique counts were summed. Invocation writes charged 17148076032 bytes; remaining
+allowance before batch 3 was 77342696960 bytes. The next recipe preserved
+settings and source identity and used new blocks 30–39; supervision continues.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "3 batches fully disposed: 2992 accepted games and 8 retained duplicate rejections. All completed replays and successful analyses through row 137806 verified. Accepted yield: 43380 selected occurrences / 35457 global distinct selected inputs. Latest batch 2: 994 accepted, 6 rejected, 17.148076GB charged writes; peak sampled combined RSS 608.1MB and WAL 4.39MB.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "3 completed batches; ongoing study is unassessed. Phase quotas underfill, and shared intermediate inputs require a separate frozen selection audit. No export eligibility, training or playing-strength claim. Original failures, conservative charges and approximate heartbeat cadence remain recorded.",
+  "decision": "Continue supervised batch 3 under unchanged source/settings and unused source blocks 30-39. Invocation 5 launched after validation and preview; 77.342697GB remained before dispatch. Retain cumulative charges, rejections and diagnostics without refill.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — batch 3 verified; batch 4 dispatched
+
+[Recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+records 993 accepted and 7 retained duplicate-rejected candidates
+in the latest batch. Incremental validation passed 993 completed
+replays and 45865 successful analyses, with rejected evidence
+checked separately. Accepted collection totals: 3985 games, 57755
+selected occurrences and 46829 global distinct selected inputs. No per-batch
+unique counts were summed. Invocation writes charged 17476648960 bytes; remaining
+allowance before batch 4 was 59835352576 bytes. The next recipe preserved
+settings and source identity and used new blocks 40–49; supervision continues.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "4 batches fully disposed: 3985 accepted games and 15 retained duplicate rejections. All completed replays and successful analyses through row 183671 verified. Accepted yield: 57755 selected occurrences / 46829 global distinct selected inputs. Latest batch 3: 993 accepted, 7 rejected, 17.476649GB charged writes; peak sampled combined RSS 598.2MB and WAL 4.31MB.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "4 completed batches; ongoing study is unassessed. Phase quotas underfill, and shared intermediate inputs require a separate frozen selection audit. No export eligibility, training or playing-strength claim. Original failures, conservative charges and approximate heartbeat cadence remain recorded.",
+  "decision": "Continue supervised batch 4 under unchanged source/settings and unused source blocks 40-49. Invocation 6 launched after validation and preview; 59.835353GB remained before dispatch. Retain cumulative charges, rejections and diagnostics without refill.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — batch 4 verified; batch 5 dispatched
+
+[Recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+records 996 accepted and 4 retained duplicate-rejected candidates
+in the latest batch. Incremental validation passed 996 completed
+replays and 46108 successful analyses, with rejected evidence
+checked separately. Accepted collection totals: 4981 games, 72220
+selected occurrences and 58210 global distinct selected inputs. No per-batch
+unique counts were summed. Invocation writes charged 17795018752 bytes; remaining
+allowance before batch 5 was 42008626688 bytes. The next recipe preserved
+settings and source identity and used new blocks 50–59; supervision continues.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "5 batches fully disposed: 4981 accepted games and 19 retained duplicate rejections. All completed replays and successful analyses through row 229779 verified. Accepted yield: 72220 selected occurrences / 58210 global distinct selected inputs. Latest batch 4: 996 accepted, 4 rejected, 17.795019GB charged writes; peak sampled combined RSS 609.3MB and WAL 4.39MB.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "5 completed batches; ongoing study is unassessed. Phase quotas underfill, and shared intermediate inputs require a separate frozen selection audit. No export eligibility, training or playing-strength claim. Original failures, conservative charges and approximate heartbeat cadence remain recorded.",
+  "decision": "Continue supervised batch 5 under unchanged source/settings and unused source blocks 50-59. Invocation 7 launched after validation and preview; 42.008627GB remained before dispatch. Retain cumulative charges, rejections and diagnostics without refill.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — batch 5 verified; batch 6 dispatched
+
+[Recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+records 991 accepted and 9 retained duplicate-rejected candidates
+in the latest batch. Incremental validation passed 991 completed
+replays and 46376 successful analyses, with rejected evidence
+checked separately. Accepted collection totals: 5972 games, 86697
+selected occurrences and 69557 global distinct selected inputs. No per-batch
+unique counts were summed. Invocation writes charged 18177028096 bytes; remaining
+allowance before batch 6 was 23798875648 bytes. The next recipe preserved
+settings and source identity and used new blocks 60–69; supervision continues.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "6 batches fully disposed: 5972 accepted games and 28 retained duplicate rejections. All completed replays and successful analyses through row 276155 verified. Accepted yield: 86697 selected occurrences / 69557 global distinct selected inputs. Latest batch 5: 991 accepted, 9 rejected, 18.177028GB charged writes; peak sampled combined RSS 608.8MB and WAL 4.33MB.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "6 completed batches; ongoing study is unassessed. Phase quotas underfill, and shared intermediate inputs require a separate frozen selection audit. No export eligibility, training or playing-strength claim. Original failures, conservative charges and approximate heartbeat cadence remain recorded.",
+  "decision": "Continue supervised batch 6 under unchanged source/settings and unused source blocks 60-69. Invocation 8 launched after validation and preview; 23.798876GB remained before dispatch. Retain cumulative charges, rejections and diagnostics without refill.",
+  "revisit": "Review the first completed recovery batch, incremental validation, resource costs and rejection denominators before next dispatch. Freeze shared-input exclusions and export eligibility separately before training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — final resource boundary
+
+All seven dispatched batches completed. Final incremental replay validation and
+SQLite integrity, foreign-key and reopen checks passed. The cumulative write
+allowance is below the next-dispatch minimum; supervision is paused.
+[Recovery evidence](../../../data/experiments/learning/history/overnight-generation-recovery-20260911.json)
+retains final totals, measured costs, conservative charges and validation lineage.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "complete",
+  "conclusion": "inconclusive",
+  "finding": "Seven batches fully disposed: 6963 accepted / 37 duplicate-rejected, 7000 finalized candidates. Yield 101167 selected occurrences / 80768 global distinct selected inputs. Replays and successful analyses through row 322387 verified; final SQLite integrity, foreign keys and reopen passed. Final invocation charged 18.188747GB.",
+  "conditions": "Sequential numbered 1000-game batches, each 3600 seconds; 80/10/10 plausible/intervention/random, 10% validation; frozen seed, 300-ply cap, 10k actors, paired 10k/100k supervision, phase caps 1/8/8 and spacing 4. One writer. 150GB cumulative writes; 20GB/invocation, 21GB remaining required, 1500MB sampled RSS and 30GB free disk. Exact deadline resumes billed independently.",
+  "limitations": "Observed costs remained within guards across seven batches, but no matched control or scale generalization is established. Phase quotas underfill; exact trajectory rejections retained without refill. Shared intermediate-input eligibility needs a separate frozen audit. No training, export or playing-strength claim.",
+  "decision": "Stop at cumulative resource boundary: 5.576468GB remains, below 21GB dispatch minimum. Heartbeat paused. Preserve all data and original incident charges.",
+  "revisit": "New generation requires explicit additional resource authorization and a reconciled ledger. Freeze selection and shared-input exclusions separately before export or training.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — authorized 10000-candidate extension and CPU pilot
+
+The user lifted the write-volume constraint and requested a total of 10000
+planned game attempts, CPU tuning and approximately ten-minute supervision.
+Preserve the first 7000 attempts and all cumulative charges. Three new batches
+use unused blocks 70–99; retain the no-refill rejection policy, one SQLite writer,
+1500MB sampled RSS guard and 30GB free-space reserve. Engine thread settings
+will be chosen from a sequential 1/2/4/8-thread frozen-position pilot, with three
+rounds and unchanged 10k actor / 10k and 100k label budgets. Choose a multicore
+setting only with at least 5% lower median query time than one thread. The raw
+protocol and results live under `artifacts/learning/overnight-batches-20260911/`
+as `thread-pilot-protocol.json` and `thread-pilot-results.json`. This changes
+search conditions; it is not a matched continuation of the original experiment.
+
+
+### 2026-09-11 — 10000-attempt extension checkpoint
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "Extension checkpoint: 7000 planned attempts disposed, 6963 accepted / 37 rejected. 101167 selected occurrences / 80768 global distinct selected inputs. Eight-thread fixed-position median query time 375.5ms versus 996.6ms at one thread; six-game integration pilot passed replay and all 214 analysis identities.",
+  "conditions": "Batches 0-6 retain original one-thread settings and limits. User-authorized batches 7-9 use eight engine threads, same node budgets/mix/seed/horizon/sampling, disjoint blocks70-99, one writer, 1500MB RSS and 30GB free disk. Write-volume cap removed; cumulative accounting retained. Stop at 10000 planned attempts including rejected candidates; no refill. Ten-minute heartbeat.",
+  "limitations": "Fixed-position query pilot is not an end-to-end speedup claim. Eight-thread search changes trajectories/labels; original 7000 attempts retain one-thread provenance. No refill or export/training eligibility claim.",
+  "decision": "Continue batch 7 and sequential validated dispatches through batch9, then stop.",
+  "revisit": "Review each batch with incremental validation; final integrity check and pause at target or explicit user stop.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-10k-extension-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — 10000-attempt extension checkpoint
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "Extension checkpoint: 8000 planned attempts disposed, 7963 accepted / 37 rejected. 114313 selected occurrences / 93257 global distinct selected inputs. Eight-thread fixed-position median query time 375.5ms versus 996.6ms at one thread; six-game integration pilot passed replay and all 214 analysis identities.",
+  "conditions": "Batches 0-6 retain original one-thread settings and limits. User-authorized batches 7-9 use eight engine threads, same node budgets/mix/seed/horizon/sampling, disjoint blocks70-99, one writer, 1500MB RSS and 30GB free disk. Write-volume cap removed; cumulative accounting retained. Stop at 10000 planned attempts including rejected candidates; no refill. Ten-minute heartbeat.",
+  "limitations": "Fixed-position query pilot is not an end-to-end speedup claim. Eight-thread search changes trajectories/labels; original 7000 attempts retain one-thread provenance. No refill or export/training eligibility claim.",
+  "decision": "Continue batch 8 and sequential validated dispatches through batch9, then stop.",
+  "revisit": "Review each batch with incremental validation; final integrity check and pause at target or explicit user stop.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-10k-extension-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — 10000-attempt extension checkpoint
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "running",
+  "conclusion": "unassessed",
+  "finding": "Extension checkpoint: 9000 planned attempts disposed, 8963 accepted / 37 rejected. 127588 selected occurrences / 105674 global distinct selected inputs. Eight-thread fixed-position median query time 375.5ms versus 996.6ms at one thread; six-game integration pilot passed replay and all 214 analysis identities.",
+  "conditions": "Batches 0-6 retain original one-thread settings and limits. User-authorized batches 7-9 use eight engine threads, same node budgets/mix/seed/horizon/sampling, disjoint blocks70-99, one writer, 1500MB RSS and 30GB free disk. Write-volume cap removed; cumulative accounting retained. Stop at 10000 planned attempts including rejected candidates; no refill. Ten-minute heartbeat.",
+  "limitations": "Fixed-position query pilot is not an end-to-end speedup claim. Eight-thread search changes trajectories/labels; original 7000 attempts retain one-thread provenance. No refill or export/training eligibility claim.",
+  "decision": "Continue batch 9 and sequential validated dispatches through batch9, then stop.",
+  "revisit": "Review each batch with incremental validation; final integrity check and pause at target or explicit user stop.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-10k-extension-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```
+
+
+### 2026-09-11 — 10000-attempt extension checkpoint
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "overnight-generation-20260911",
+  "title": "Supervised sequential overnight generation",
+  "question": "Does the calibrated long-game mixture retain bounded resource costs and useful yield as one shared collection grows?",
+  "kind": "performance",
+  "topics": [
+    "overnight",
+    "generation",
+    "SQLite",
+    "resource",
+    "long games"
+  ],
+  "execution": "complete",
+  "conclusion": "inconclusive",
+  "finding": "Extension checkpoint: 10000 planned attempts disposed, 9963 accepted / 37 rejected. 140599 selected occurrences / 117792 global distinct selected inputs. Eight-thread fixed-position median query time 375.5ms versus 996.6ms at one thread; six-game integration pilot passed replay and all 214 analysis identities.",
+  "conditions": "Batches 0-6 retain original one-thread settings and limits. User-authorized batches 7-9 use eight engine threads, same node budgets/mix/seed/horizon/sampling, disjoint blocks70-99, one writer, 1500MB RSS and 30GB free disk. Write-volume cap removed; cumulative accounting retained. Stop at 10000 planned attempts including rejected candidates; no refill. Ten-minute heartbeat.",
+  "limitations": "Fixed-position query pilot is not an end-to-end speedup claim. Eight-thread search changes trajectories/labels; original 7000 attempts retain one-thread provenance. No refill or export/training eligibility claim.",
+  "decision": "Target complete; no dispatch, pause heartbeat.",
+  "revisit": "Review each batch with incremental validation; final integrity check and pause at target or explicit user stop.",
+  "evidence": [
+    {
+      "path": "records/reports/session-handoff-overnight-generation-20260911.md",
+      "role": "config",
+      "sha256": null
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/batch-0000.json",
+      "role": "config",
+      "sha256": "7e1f3325594ad6388d7ec3ca0c1565020ac2f224053c20e3b7943d22b28eb7df"
+    },
+    {
+      "path": "artifacts/learning/overnight-batches-20260911/ledger.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-20260911.json",
+      "role": "results",
+      "sha256": "f4e6907c1e80ed60730ecbe29d1a36c049c0d2ed8d4a3b775cba859be99c1b04"
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+      "role": "results",
+      "sha256": null
+    },
+    {
+      "path": "data/experiments/learning/history/overnight-generation-10k-extension-20260911.json",
+      "role": "results",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "generation-resource-v1",
+      "relationship": "extends",
+      "contribution": "Same calibrated policies and teachers over sequential batches in a growing shared collection; compare interval resource and retained-yield behavior."
+    }
+  ],
+  "novelty": "Larger shared-collection resource and saturation evidence beyond seven fresh small pilot cells."
+}
+```

@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "study": "overnight-generation-20260911",
+  "state": "paused",
+  "produced_by": "experiment@1.0.0; agent=GPT-6; 2026-09-11",
+  "incident": "Exact trajectory crosses splits.",
+  "run_id": 1,
+  "execution": "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/batch-0000/executions/d413ab475edf4db3beb0d4437a51677e",
+  "batch_index": 0,
+  "completed_batches": 0,
+  "completed_games": 553,
+  "failed_games": 1,
+  "planned_games": 1000,
+  "generation_seconds": 1213.1403664999962,
+  "source_sha256": "ce2619e5264ec7c502f21db3f15d34175a648d0546d6b3019b6f9f65002991de",
+  "source_changed_during_run": false,
+  "collision": {
+    "train_game_id": 554,
+    "train_source": "plausible-block-005",
+    "train_index": 53,
+    "validation_game_id": 38,
+    "validation_source": "plausible-block-000",
+    "validation_index": 37,
+    "plies": 86,
+    "exact_snapshot_equal": true,
+    "trajectory_hash": "aa986fb3a653360c721b2db1293c94020e0c899b47abdf497bac96ad38d62a1b"
+  },
+  "metrics": {
+    "games_by_policy": {
+      "plausible": 453,
+      "intervention": 50,
+      "random": 50
+    },
+    "games_by_split": {
+      "validation": 100,
+      "train": 453
+    },
+    "referee_outcomes": {
+      "ply_limit": 149,
+      "checkmate": 349,
+      "repetition": 11,
+      "stalemate": 44
+    },
+    "selected_by_phase": {
+      "endgame": 3184,
+      "middlegame": 4402,
+      "opening": 540
+    },
+    "shortfall_by_phase": {
+      "endgame": 1240,
+      "middlegame": 22,
+      "opening": 13
+    },
+    "requested_by_phase": {
+      "endgame": 4424,
+      "middlegame": 4424,
+      "opening": 553
+    },
+    "actor_queries": 87885,
+    "actor_reported_nodes": 874325039,
+    "actor_ms": 618029.4304582784,
+    "analysis_budgets": [
+      {
+        "spec_id": 1,
+        "requested_nodes": 10000,
+        "multipv": "3",
+        "retained_successes": 9545,
+        "retained_reported_nodes": 94886128
+      },
+      {
+        "spec_id": 2,
+        "requested_nodes": 10000,
+        "multipv": "1",
+        "retained_successes": 8263,
+        "retained_reported_nodes": 81765750
+      },
+      {
+        "spec_id": 3,
+        "requested_nodes": 100000,
+        "multipv": "1",
+        "retained_successes": 8135,
+        "retained_reported_nodes": 784169831
+      }
+    ],
+    "global_unique_selected_all_statuses": 7110,
+    "global_unique_selected_complete_games": 7103
+  },
+  "retention_by_game_status": [
+    {
+      "status": "complete",
+      "occurrences": 10923,
+      "selected": 8126
+    },
+    {
+      "status": "failed",
+      "occurrences": 12,
+      "selected": 9
+    }
+  ],
+  "analyses_by_game_status": [
+    {
+      "game_status": "complete",
+      "analysis_status": "success",
+      "count": 25913
+    },
+    {
+      "game_status": "failed",
+      "analysis_status": "success",
+      "count": 30
+    }
+  ],
+  "verification": {
+    "complete_games_checked_total": 553,
+    "successful_analyses_checked_total": 25943,
+    "early_games": 46,
+    "early_analyses": 2271,
+    "final_incremental": {
+      "time": "2026-09-10T16:46:26.448394+00:00",
+      "games": 507,
+      "analyses": 23672,
+      "selected": 7461,
+      "phases": {
+        "endgame": 2932,
+        "middlegame": 4035,
+        "opening": 494
+      },
+      "outcomes": {
+        "ply_limit": 135,
+        "checkmate": 320,
+        "repetition": 10,
+        "stalemate": 42
+      },
+      "policies": {
+        "plausible": 407,
+        "intervention": 50,
+        "random": 50
+      },
+      "splits": {
+        "validation": 54,
+        "train": 453
+      },
+      "incomplete_games": [
+        {
+          "id": 554,
+          "status": "failed"
+        }
+      ],
+      "unsuccessful_analyses": {},
+      "integrity": "ok",
+      "foreign_keys": "ok",
+      "readonly_reopen_games": 554,
+      "global_unique_selected": 7110,
+      "all_game_statuses": {
+        "complete": 553,
+        "failed": 1
+      },
+      "elapsed_seconds": 58.35352245800459,
+      "process_usage": {
+        "available": true,
+        "authority": "macOS proc_pid_rusage v2",
+        "pid": 90866,
+        "cpu_seconds": 58.35260733333334,
+        "cpu_timebase": [
+          125,
+          3
+        ],
+        "rss_bytes": 75366400,
+        "footprint_bytes": 59277816,
+        "disk_read_bytes": 1585152,
+        "disk_write_bytes": 13840384
+      },
+      "cursors": {
+        "game_rowid": 554,
+        "analysis_rowid": 25943,
+        "pending_game_ids": [],
+        "pending_analysis_ids": []
+      }
+    },
+    "failed_game_replay": "Game 554 replays legally and exactly matches game 38; it remains failed and is not counted as a completed game."
+  },
+  "resources": {
+    "elapsed_seconds": 1213.1418995420026,
+    "process": {
+      "available": true,
+      "authority": "macOS proc_pid_rusage v2",
+      "pid": 72774,
+      "cpu_seconds": 114.729604,
+      "cpu_timebase": [
+        125,
+        3
+      ],
+      "rss_bytes": 76906496,
+      "footprint_bytes": 54329848,
+      "disk_read_bytes": 184320,
+      "disk_write_bytes": 8583770112
+    },
+    "disk_write_bytes": 8582692864,
+    "disk_read_bytes": 163840,
+    "sql_callbacks": {},
+    "sql_callback_bytes": {},
+    "peak_sampled_rss_bytes": 76939264,
+    "peak_sampled_combined_rss_bytes": 607600640,
+    "peak_wal_bytes": 4231272,
+    "files": {
+      "db": 372568064,
+      "-wal": 0,
+      "-shm": 0
+    },
+    "teachers": [],
+    "peak_process_rss": 76939264
+  },
+  "accounting": {
+    "actual_generator_write_bytes": 8583770112,
+    "failed_launcher_conservative_charge_bytes": 21000000000,
+    "operator_reserved_charge_bytes": 1000000000,
+    "validation_write_bytes": 13840384,
+    "charged_total_including_operator_reserve_bytes": 30597610496
+  },
+  "limits": "150GB session; 20GB/invocation; 21GB remaining required; 1500MB RSS; 30GB free. No limit raised.",
+  "limitations": [
+    "Partial batch mixture and split counts differ from the full frozen batch.",
+    "7110 unique selected inputs includes failed-game rows; completed games alone have 7103. No eligible training snapshot has been exported.",
+    "Full cross-split shared-input/exclusion and ambiguity audit remains undone. Physical integrity does not establish split validity.",
+    "Retained analysis counts and reported nodes do not count every actor query. Actor totals shown cover completed games only.",
+    "Heartbeat observations were 10.7 minutes apart before discovering the exit, despite five-minute configured recurrence. Runner enforced guards independently; no post-failure dispatch occurred."
+  ],
+  "decision": "Paused heartbeat and ledger; preserve immutable failure and all evidence. No resume or subsequent batch before a user-approved cross-split collision protocol.",
+  "candidate_actions": [
+    "Keep paused and use the partial collection only after the separately frozen selection audit.",
+    "Approve a data-only collision protocol: retain conflicting attempts as failed/excluded, define how later generation may continue without changing existing split identities, test it, reconcile implementation/run hashes and remaining source IDs, then resume under the original budget. Never delete/relabel failed evidence or relax the existing guard silently."
+  ]
+}

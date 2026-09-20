@@ -1,0 +1,98 @@
+{
+  "status": "complete",
+  "target_planned_games": 10000,
+  "totals": {
+    "planned_disposed": 10000,
+    "accepted_games": 9963,
+    "rejected_games": 37,
+    "selected_occurrences": 140599,
+    "global_distinct_selected_inputs": 117792
+  },
+  "threads": 8,
+  "write_volume_cap": null,
+  "thread_pilot_median_ms": {
+    "1": 996.5838770585833,
+    "2": 604.7565839980962,
+    "4": 417.0581659855088,
+    "8": 375.47379097668454
+  },
+  "thread_pilot_speedup": 2.6542035716161805,
+  "limitations": "Fixed-position query pilot is not an end-to-end speedup claim. Eight-thread search changes trajectories/labels; original 7000 attempts retain one-thread provenance. No refill or export/training eligibility claim.",
+  "source": {
+    "source_sha256": "28558bcbdb10000bb5c3787df70afa4f313fca696ade5faab8691279c1f865f7",
+    "commit": "9f1d57a4b408a18e6bdba1b5b57e63d4169581a4",
+    "working_tree": "M records/reports/session-handoff-overnight-generation-20260911.md\n M records/work-items/items/AB-DATA-008-generation-scaling-pilot.md\n?? data/experiments/learning/history/overnight-generation-20260911.json\n?? data/experiments/learning/history/overnight-generation-recovery-20260911.json",
+    "python": "3.12.13",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "packages": {
+      "qi": "0.1.0",
+      "pydantic": "2.13.5"
+    }
+  },
+  "latest_invocation": {
+    "invocation": 11,
+    "batch_index": 9,
+    "pid": 6596,
+    "supervisor_pid": 6591,
+    "started_at": "2026-09-11T05:51:36.964539+00:00",
+    "log": "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/batch-0009-invocation-0011.log",
+    "command": [
+      "/Users/zhangqy/pkgs/qi/.venv/bin/python",
+      "scripts/run_generation_pilot.py",
+      "--config",
+      "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/batch-0009.json",
+      "--output",
+      "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/batch-0009",
+      "--collection",
+      "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/collection.sqlite",
+      "--max-rss-mb",
+      "1500",
+      "--min-free-gb",
+      "30"
+    ],
+    "state": "exited",
+    "charged": true,
+    "tool_session_id": 37504,
+    "execution_path": "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/batch-0009/executions/c589c47105874e16954931a48fa77c58",
+    "exit_code": 0,
+    "ended_at": "2026-09-11T06:05:01.295431+00:00",
+    "charged_write_bytes": 14577831936,
+    "accounting": "final-max"
+  },
+  "cumulative_runner_charged_bytes": 186377200128,
+  "operator_reserved_charge_bytes": 3000000000,
+  "validation_write_bytes": 306925568,
+  "pilot_write_bytes": 65175552,
+  "ledger": "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/ledger.json",
+  "validation": "/Users/zhangqy/pkgs/qi/artifacts/learning/overnight-batches-20260911/validation-1789107491811831000.json",
+  "checks": {
+    "make_check": "passed 561 Python tests, 1 skip, 5 browser tests, lint/docs/builds",
+    "log": "artifacts/learning/overnight-batches-20260911/thread-change-check.log",
+    "e2e": "6 games and 214 analyses replay/spec verified",
+    "commit": "9f1d57a"
+  },
+  "final_closeout": {
+    "time": "2026-09-11T06:19:36.424742+00:00",
+    "event": "10000-attempt-final-closeout",
+    "totals": {
+      "planned_disposed": 10000,
+      "accepted_games": 9963,
+      "rejected_games": 37,
+      "selected_occurrences": 140599,
+      "global_distinct_selected_inputs": 117792
+    },
+    "integrity": "ok",
+    "foreign_keys": "ok",
+    "readonly_reopen_games": 10000,
+    "analysis_validation_high_water": 443832,
+    "heartbeat": "PAUSED",
+    "no_further_dispatch": true,
+    "accounted_write_bytes": 189749301248,
+    "runner_charged_bytes": 186377200128,
+    "conservative_failed_launch_bytes": 21000000000,
+    "operator_reserve_bytes": 3000000000,
+    "validation_write_bytes": 306925568,
+    "pilot_write_bytes": 65175552,
+    "checks": "561 Python tests, one opt-in skip, five browser tests and builds passed after source change; final docs and catalog evidence passed; generation source unchanged."
+  }
+}
