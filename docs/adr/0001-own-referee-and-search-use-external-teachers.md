@@ -8,7 +8,7 @@ document_class: coordination
 
 # ADR-0001: Own the referee and search; reuse external teachers
 
-- **Status**: accepted
+- **Status**: superseded by [ADR-0012](0012-replaceable-game-execution.md)
 - **Last Update**: 2026-09-07
 
 Qi will implement its own framework-independent Python referee and compact

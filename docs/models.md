@@ -2,7 +2,7 @@
 description: Accepted ownership and identity model for game learning and training data.
 scope: core domain model
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -19,6 +19,14 @@ The referee owns legality, state transitions and terminal outcomes. Players
 choose actions. Training Data owns example selection, supervision provenance
 and dataset composition. Trainers prepare model inputs and update weights.
 Evaluation owns held-out measurement and comparison recipes.
+
+A **Referee backend** implements the same named rules and history semantics;
+backend substitution does not transfer rules authority. Qi retains a readable
+reference and conformance fixtures while allowing reused or locally authored
+accelerated implementations. Python experiments and coarse native execution
+share semantic contracts without requiring identical internal composition.
+[ADR-0012](adr/0012-replaceable-game-execution.md) owns this accepted evolution;
+the current implementation remains Python.
 
 ```mermaid
 flowchart LR
@@ -65,6 +73,33 @@ and outcome authority; engine-native work and scores keep their own semantics.
 Saved decisions retain resolved configuration and identity, so later binding
 changes cannot rewrite their meaning. Pure evidence validation does not load
 models or execute engines.
+
+The accepted runtime evolution gives each participant a **Player session** scoped
+to one game. It may retain mutable search state between moves, and resets between
+games by default. Immutable model resources may be shared; a stateful engine
+process needs explicit session ownership or an exclusive lease. Cache/reset
+policy belongs to resolved configuration and comparison conditions, including
+explicit cold-decision or cross-game-reuse modes. A Player session is distinct
+from the saved Game session and from a client connection.
+
+Possible multi-client/batch serving initially targets game/player execution for
+trusted clients under one owner. This is deliberately a low-fidelity direction:
+workloads may reshape service boundaries, batching and deployment. Preserve
+session/resource ownership and trial evidence through those changes; multiple
+clients do not imply shared mutable player/game state. No detailed server contract
+or service implementation is fixed by this decision. See
+[AB-ARCH-001](../records/work-items/items/AB-ARCH-001-modular-runtime.md).
+The runtime redesign is not yet implemented.
+
+## Execution reproducibility
+
+Referee semantics and replay are exact under the named ruleset. Controlled
+deterministic actors must conform across reference/native backends and batch
+scheduling, using stable per-game RNG streams. Exact regeneration of other
+decisions requires pinned actor, RNG and runtime conditions; a seed alone is not
+that guarantee. GPU training/inference has no universal bitwise cross-hardware
+promise. Preserve separate semantic identities and execution provenance; backend
+or scheduling changes must not silently redefine the rules or recorded evidence.
 
 ## Addressable situations
 
@@ -185,3 +220,11 @@ independent. Prior-experiment links state what a follow-up extends, reproduces,
 challenges or uses. [ADR-0007](adr/0007-experiment-recall-and-evidence.md) owns this
 boundary; the [method](experiments.md) and [module](../src/qi/experiments/README.md)
 own workflow and executable schema respectively.
+
+The accepted next execution boundary is a small **Experiment task** that can
+wrap a local function or script. Task configuration and correctness remain with
+the domain; the shared task/run/evaluation envelope must also serve non-game
+experiments. Start inside qi and adapt existing runners/catalog, without a separate
+platform or workflow language. Selecting a winner does not itself change shared
+defaults; the [method](experiments.md#agent-execution-and-integration) owns execution
+and integration policy. This general task boundary is not yet implemented.

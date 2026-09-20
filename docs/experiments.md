@@ -2,7 +2,7 @@
 description: Minimal method for comparable experiments and durable learning.
 scope: experiment methodology
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -63,6 +63,32 @@ The [policy-generalization campaign](../records/campaigns/policy-generalization.
 links the current learning evidence without duplicating its detailed results.
 
 ## Configs and runs
+
+### Agent execution and integration
+
+Within an authorized task's owned paths, frozen evaluator and budget, agents may
+develop candidates, execute comparisons, retain failures, select a feasible winner
+and prepare a tested integration change. Ranking alone does not change shared
+defaults. Automatic integration may be authorized for a bounded experiment; reuse
+that authorization rather than asking again. Candidate work cannot silently alter
+its governing evaluator, shared contracts or budget.
+
+The accepted generalization is a minimal local task/run/evaluation envelope over
+functions or scripts, adapting existing runners and catalog. Domain runners retain
+their configuration, correctness, recovery and evidence semantics. Begin inside qi;
+add general machinery only after useful tasks demonstrate a need. This boundary
+is accepted under [AB-ARCH-001](../records/work-items/items/AB-ARCH-001-modular-runtime.md)
+and is not yet implemented.
+
+Recorded trials will use a fresh worker process and output root per trial,
+executed serially by default. Direct function calls remain available for
+interactive prototypes. A persistent server may coordinate clients and jobs;
+it must preserve trial identity, isolation and evidence. Workloads will determine
+any shared external resource semantics; a fresh Python process alone does not
+isolate those resources. Serving remains deliberately low fidelity. This
+execution change is accepted but not implemented.
+
+### Implemented training recipes
 
 The [trainer guide](../src/qi/learning/README.md) owns executable recipe semantics.
 Recipes use seven sections: data, model, objective, optimizer, training, evaluation,

@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -87,6 +87,15 @@ make play      # build and serve the local browser board
 ```
 
 ## Architecture rules
+
+Accepted redesign: [replaceable execution](docs/adr/0012-replaceable-game-execution.md)
+and [uv-managed packages with direct migration](docs/adr/0013-modular-packages-and-direct-migration.md).
+Use lazy implementation/resource loading and package-owned dependencies. Refactor
+internal consumers directly, without default compatibility shims; preserve evidence
+and use explicit migrations/backfills when needed. The [decision work item](records/work-items/items/AB-ARCH-001-modular-runtime.md)
+routes the first migration slice and deferred workload choices. Paths below describe
+the current implementation until migrated. Possible server mode remains low fidelity;
+do not turn it into a detailed framework before a workload needs one.
 
 Keep `src/qi/game.py` independent of training, UI, and model SDKs.
 `src/qi/protocol.py` owns validated interchange; CLI and HTTP are adapters.

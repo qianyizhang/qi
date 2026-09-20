@@ -2,7 +2,7 @@
 description: Project scope, architecture direction, and learning milestones.
 scope: project direction
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -21,8 +21,11 @@ freshly verified third-party capabilities.
 
 ## Decision state
 
-[ADR-0001](adr/0001-own-referee-and-search-use-external-teachers.md) records the
-accepted ownership and teacher-bootstrapping boundary.
+[ADR-0012](adr/0012-replaceable-game-execution.md) owns the accepted rules/reference
+and replaceable-execution boundary, superseding ADR-0001's Python-only direction.
+[ADR-0013](adr/0013-modular-packages-and-direct-migration.md) accepts uv-managed
+package dependencies, lazy loading and direct consumer migration without default
+shims. These are accepted destinations; runtime restructuring is not yet implemented.
 
 The local frontend connects play, generated-data review, learning walkthroughs,
 experiment reports, benchmarks and reference material.
@@ -52,8 +55,8 @@ slice; do not turn them into fixed interface contracts now.
 
 | Area | Direction | Adoption point |
 | :-- | :-- | :-- |
-| Tooling | Python 3.12, uv, Ruff, pytest, Hypothesis | Bootstrap |
-| Referee | Framework-independent Python state transitions | First playable game |
+| Tooling | Python 3.12, uv, Ruff, pytest, Hypothesis; package-owned dependencies | Single package implemented; package restructuring accepted |
+| Referee | Readable Python reference plus conforming replaceable execution | Python implemented; native backend and language remain unselected |
 | CLI | Typer and Pydantic at external boundaries; JSON output | Game commands |
 | Reference | pyffish/Fairy-Stockfish for differential checks; Pikafish via UCI as teacher | Validate installation, rule coverage, and licensing before use |
 | Neural learning | PyTorch policy/value model and an educational PUCT implementation | After replay and arena |
@@ -62,6 +65,21 @@ slice; do not turn them into fixed interface contracts now.
 | Data | SQLite collections, frozen Parquet snapshots and retained JSON datasets/records | Replay, selection, then training and experiments |
 
 Referee, CLI/API, and browser dependencies are installed and locked.
+The accepted package migration uses one uv workspace and lockfile for supported
+packages. Studies that need incompatible dependencies use excluded, separately
+locked uv projects. Isolated package tests check declared dependency closure;
+lazy imports and a shared environment alone cannot enforce it.
+
+The first native backend targets Apple Silicon macOS and Linux x86_64 CPU
+execution. GPU/model-device dependencies stay outside the referee extension;
+Windows and GPU-native simulation are deferred. Possible multi-client/batch
+serving starts conceptually with game/player execution on a single host for
+trusted clients under one owner. Keep this direction low fidelity and revise it
+around demonstrated workloads; no detailed serving architecture is required by
+the refactor. Session/run ownership and evidence remain governing constraints.
+The [decision record](../records/work-items/items/AB-ARCH-001-modular-runtime.md)
+routes the first implementation slice.
+
 The optional local learning extra pins PyTorch for a small teacher-imitation
 policy; its [work item](../records/work-items/items/AB-LEARN-001-policy-imitation.md)
 records the working pipeline and unsuccessful held-out generalization smoke.
@@ -72,8 +90,10 @@ legality, transitions and outcomes; players select actions under budgets.
 [ADR-0004](adr/0004-training-data-bounded-context.md) assigns selection, supervision
 provenance and dataset composition to Training Data. Its first slice supports
 random and teacher-guided continuations with frozen mixtures. Trainers prepare model inputs
-and change weights using frozen data. Search and training
-call Python directly; HTTP and CLI validation stay outside simulation loops.
+and change weights using frozen data. Current search and training call Python
+directly. The redesign permits coarse native execution while Python owns research
+and ML; HTTP and CLI validation stay outside simulation loops. First native
+acceptance targets batched gameplay/trajectory production with controlled actors.
 Do not create generic multi-game abstractions before a second game needs them.
 
 ## Milestones
@@ -119,5 +139,7 @@ direction, to be settled before running those experiments.
   latency, invalid actions, and any retries in evaluation artifacts.
 - Keep evaluation data separate from training data and teacher tools inaccessible
   to evaluated players unless tool access is the explicit experiment.
-- Prefer synchronous execution first. Profile before adding concurrency,
-  distributed training, another language, or a remote simulation service.
+- Prefer simple local execution first. Native substitution is accepted under
+  ADR-0012; measure representative costs before selecting/adopting an implementation.
+  Concurrency, distributed training and remote simulation services need their
+  own demonstrated workload need.

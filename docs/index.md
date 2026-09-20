@@ -2,7 +2,7 @@
 description: Compact navigator over authority areas, rules, glossary, and agent flows in qi.
 scope: documentation navigator index
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -16,6 +16,9 @@ stale route, and preserve the owning authority. Doctrine:
 
 Project scope and milestone direction: [Project plan](project.md).
 Accepted ownership and Training Data model: [Core model](models.md).
+Modular/native evolution: [accepted execution boundary](adr/0012-replaceable-game-execution.md),
+[package and migration decision](adr/0013-modular-packages-and-direct-migration.md),
+[decision record and migration handoff](../records/work-items/items/AB-ARCH-001-modular-runtime.md).
 Generation, frozen mixtures and phase policies: [Training Data](../src/qi/training_data/README.md).
 Accepted collection/snapshot evolution: [SQLite and Parquet ADR](adr/0008-sqlite-collection-parquet-snapshots.md),
 [build specification](../records/work-items/items/AB-DATA-007-sqlite-training-data-store.md),

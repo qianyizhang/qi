@@ -2,7 +2,7 @@
 description: Canonical domain and technical vocabulary, including beginner explanations used by the experiment report.
 scope: domain vocabulary
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -22,8 +22,10 @@ deprecated spellings for the authoring checker; aliases and misconceptions do no
 | Xiangqi | 中国象棋 | Chinese chess, played by Red and Black. This is the first game implemented in qi. | Confusing it with Chinese checkers | — |
 | Chinese checkers | 跳棋 | The proposed later star-shaped board game. Its rules differ from Xiangqi. | Calling it Xiangqi | — |
 | Referee | 裁判 | The code that decides which moves are legal, applies them, and determines when a game ends. Players ask it for moves; they cannot override its rulings. | Player or evaluator as rules authority | — |
+| Referee backend | 裁判执行后端 | A replaceable implementation of the same named rules and history semantics. The accepted design permits Python or conforming accelerated execution. | A different ruleset or independent rules authority | — |
 | Player | 行棋方 | A human or program that chooses a legal move. A program may choose randomly, search ahead, or use learned weights. | Using Policy as the name for every player | players |
 | Player binding | 行棋方配置绑定 | A named local configuration selecting a player implementation and any checkpoint or external-engine resources. Each participant resolves its own binding to pinned content identities. | An algorithm version or a content fingerprint | player_binding |
+| Player session | 行棋执行会话 | One participant's runtime context for a game, including permitted mutable search state and an explicit reset policy. Accepted for the runtime redesign; not yet implemented. | Saved Game session, client connection, or a globally shared player instance | — |
 | Ruleset | 规则集 | The named rules used to judge a game. qi uses xiangqi-training-v1, including simplified repetition handling and a 300-ply ceiling. | Tournament-correctness claims | xiangqi-training-v1 |
 | Board | 棋盘 | The 90 squares and their pieces. In raw records, a dot means an empty square; uppercase pieces are Red and lowercase pieces are Black. | Treating the board alone as full state | leaf_board |
 | General | 将／帅 | The king piece, shown as 帥 or 將 and encoded K/k. It normally moves one point orthogonally inside its palace; opposing generals cannot face along an unobstructed file. | A piece that can be left in check | king |
@@ -182,6 +184,7 @@ deprecated spellings for the authoring checker; aliases and misconceptions do no
 | Experiment catalog | 实验目录 | Shared discovery projection of questions, findings, conditions and evidence links in owning work items or reports. Missing artifacts or unsupported run formats do not erase a registered finding. | A second conclusion authority or proof that unregistered work never happened | experiment-catalog; prior work |
 | Experiment plan | 实验计划 | The frozen question and matrix of corpus positions, recipes, budgets, seeds, and comparisons to execute. | Results already obtained | plan; preview; question; name; order |
 | Experiment run | 实验运行 | One execution of a plan with its environment, saved units, and status. A run can stop before the planned matrix finishes. | Assuming a run is complete | run |
+| Experiment task | 实验执行任务 | A local function or script adapted to the accepted minimal run/evaluation boundary, retaining its domain configuration and correctness rules. The general boundary is not yet implemented. | A universal workflow language or automatic integration approval | — |
 | Matrix | 实验组合矩阵 | All planned combinations of positions, players, budgets, and seeds, plus selected paired games. A time limit may leave some combinations missing. | Equally sampled results when units are missing | comparison matrix; planned |
 | Corpus | 局面集 | The fixed collection of saved positions used for evaluation. Its identity and provenance travel with the plan. Selected examples are not necessarily representative of all play. | Automatically representative benchmark data | corpus; purpose |
 | Opening | 起始局面 | Legacy evaluation name for a saved starting position, including midgame or tactical positions. New Training Data vocabulary uses Starting position; the existing corpus fields retain their meaning. | The opening game phase | openings; opening_id; game_openings |
