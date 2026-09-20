@@ -1,0 +1,868 @@
+{
+  "protocol_owner": "records/work-items/items/AB-ARCH-007-incremental-collection-append.md",
+  "baseline_commit": "c44e08d",
+  "studies": {
+    "confirmation-01": {
+      "results": [
+        {
+          "arm": "old-default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.2500095181167126e-06,
+          "wall_seconds": 2.556674584018765,
+          "cpu_seconds": 2.272267,
+          "peak_rss_mib": 114.78125,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6715.363819595895,
+          "selected_per_second": 163.10249360891655,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.05360093840863556,
+            "append_seconds": 1.488737266859971,
+            "sampling_seconds": 0.1198760019033216,
+            "label_seconds": 0.10713515448151156
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "old-native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0020176249963697046,
+          "wall_seconds": 2.3836287920130417,
+          "cpu_seconds": 2.096285,
+          "peak_rss_mib": 114.4375,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7202.883291865382,
+          "selected_per_second": 174.94334746973405,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.33418469392927364,
+            "append_seconds": 1.3859494242933579,
+            "sampling_seconds": 0.09577471084776334,
+            "label_seconds": 0.10490907766507007
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.2090022210031748e-06,
+          "wall_seconds": 2.4869684579898603,
+          "cpu_seconds": 2.153693,
+          "peak_rss_mib": 115.015625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6903.585747073435,
+          "selected_per_second": 167.67402041642626,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.05746099996031262,
+            "append_seconds": 1.3453956632874906,
+            "sampling_seconds": 0.11701150287990458,
+            "label_seconds": 0.11909112095599994
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.001843083999119699,
+          "wall_seconds": 2.1650890839810017,
+          "cpu_seconds": 1.826199,
+          "peak_rss_mib": 113.921875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7929.9277461742795,
+          "selected_per_second": 192.60177471924248,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.33197039394872263,
+            "append_seconds": 1.16236902718083,
+            "sampling_seconds": 0.0957961659587454,
+            "label_seconds": 0.10897420562105253
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0017882910033222288,
+          "wall_seconds": 2.040497999987565,
+          "cpu_seconds": 1.747641,
+          "peak_rss_mib": 113.421875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 8414.12243486866,
+          "selected_per_second": 204.36187636672088,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.3190397751459386,
+            "append_seconds": 1.080104309890885,
+            "sampling_seconds": 0.09473775618243963,
+            "label_seconds": 0.09941874022479169
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.374981366097927e-06,
+          "wall_seconds": 2.2304432500095572,
+          "cpu_seconds": 1.949554,
+          "peak_rss_mib": 114.28125,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7697.573116879989,
+          "selected_per_second": 186.95835457737525,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.052306525089079514,
+            "append_seconds": 1.1868370942829642,
+            "sampling_seconds": 0.11213003520970233,
+            "label_seconds": 0.10420283977873623
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "old-native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0018205420055892318,
+          "wall_seconds": 2.3291024999925867,
+          "cpu_seconds": 2.040852,
+          "peak_rss_mib": 113.859375,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7371.508982560727,
+          "selected_per_second": 179.03892164528065,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.3230956033221446,
+            "append_seconds": 1.3493683380365837,
+            "sampling_seconds": 0.09510870804660954,
+            "label_seconds": 0.10282761859707534
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "old-default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.7499842215329409e-06,
+          "wall_seconds": 2.8006312499928754,
+          "cpu_seconds": 2.453137,
+          "peak_rss_mib": 114.546875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6130.403636695719,
+          "selected_per_second": 148.89500358216057,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.059389633912360296,
+            "append_seconds": 1.645624178869184,
+            "sampling_seconds": 0.12536929405177943,
+            "label_seconds": 0.11838258619536646
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "old-default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.8749851733446121e-06,
+          "wall_seconds": 2.554781000013463,
+          "cpu_seconds": 2.256459,
+          "peak_rss_mib": 114.125,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6720.34119555043,
+          "selected_per_second": 163.22338392128424,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.053857890859944746,
+            "append_seconds": 1.4945468196820002,
+            "sampling_seconds": 0.11915674898773432,
+            "label_seconds": 0.10573663280229084
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "old-native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.001857124996604398,
+          "wall_seconds": 2.313228499988327,
+          "cpu_seconds": 2.00614,
+          "peak_rss_mib": 113.71875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7422.09427217702,
+          "selected_per_second": 180.26753517955717,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.32160484936321154,
+            "append_seconds": 1.3520859380951151,
+            "sampling_seconds": 0.0954339558375068,
+            "label_seconds": 0.09900462900986895
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.0829826351255178e-06,
+          "wall_seconds": 2.2491752909845673,
+          "cpu_seconds": 1.957644,
+          "peak_rss_mib": 114.296875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7633.464616483645,
+          "selected_per_second": 185.40128982897548,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.05140941235003993,
+            "append_seconds": 1.2022871799126733,
+            "sampling_seconds": 0.11354421297437511,
+            "label_seconds": 0.1046700527658686
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0019351659866515547,
+          "wall_seconds": 2.095799792004982,
+          "cpu_seconds": 1.753884,
+          "peak_rss_mib": 113.625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 8192.09929569417,
+          "selected_per_second": 198.9693870525056,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.31629405604326166,
+            "append_seconds": 1.0859280430013314,
+            "sampling_seconds": 0.0951743372133933,
+            "label_seconds": 0.13145758674363606
+          },
+          "execution_counters": {
+            "label_attempts": 417,
+            "label_reported_nodes": 417000,
+            "label_successes": 417
+          },
+          "selected_by_phase": {
+            "endgame": 85,
+            "middlegame": 256,
+            "opening": 76
+          },
+          "shortfall_by_phase": {
+            "endgame": 43,
+            "middlegame": 0,
+            "opening": 52
+          }
+        }
+      ],
+      "paired": [
+        {
+          "round": 1,
+          "default_over_native": 1.1486679584643285,
+          "old_native_over_native": 1.1009379750925563,
+          "default_over_old_default": 0.9727356283569982,
+          "old_default_over_default": 1.028028552515397
+        },
+        {
+          "round": 2,
+          "default_over_native": 1.093087692329593,
+          "old_native_over_native": 1.141438266544138,
+          "default_over_old_default": 0.7964073278176952,
+          "old_default_over_default": 1.2556388735650974
+        },
+        {
+          "round": 3,
+          "default_over_native": 1.0731823237909839,
+          "old_native_over_native": 1.103744980227972,
+          "default_over_old_default": 0.8803789017425425,
+          "old_default_over_default": 1.1358745626691988
+        }
+      ],
+      "medians": {
+        "default_over_native": 1.093087692329593,
+        "old_native_over_native": 1.103744980227972,
+        "default_over_old_default": 0.8803789017425425,
+        "old_default_over_default": 1.1358745626691988
+      }
+    },
+    "teacher-01": {
+      "results": [
+        {
+          "arm": "default",
+          "workload": "teacher",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 2040,
+            "misses": 112,
+            "maxsize": 4096,
+            "currsize": 112
+          },
+          "load_seconds": 1.6249832697212696e-06,
+          "wall_seconds": 0.683518792007817,
+          "cpu_seconds": 0.140312,
+          "peak_rss_mib": 44.96875,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 187.26624856063378,
+          "selected_per_second": 29.26035133759903,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.000563963083550334,
+            "actor_seconds": 0.48441520699998364,
+            "append_seconds": 0.015496711857849732,
+            "sampling_seconds": 0.0009506670176051557,
+            "label_seconds": 0.06318291704519652
+          },
+          "execution_counters": {
+            "actor_attempts": 128,
+            "actor_reported_nodes": 128270,
+            "actor_successes": 128,
+            "label_attempts": 20,
+            "label_reported_nodes": 20004,
+            "label_successes": 20
+          },
+          "selected_by_phase": {
+            "endgame": 0,
+            "middlegame": 16,
+            "opening": 4
+          },
+          "shortfall_by_phase": {
+            "endgame": 8,
+            "middlegame": 0,
+            "opening": 4
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "teacher",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0018358330125920475,
+          "wall_seconds": 0.6775744159822352,
+          "cpu_seconds": 0.132755,
+          "peak_rss_mib": 45.546875,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 188.9091396912423,
+          "selected_per_second": 29.51705307675661,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.0025465832732152194,
+            "actor_seconds": 0.4870178329292685,
+            "append_seconds": 0.014407128794118762,
+            "sampling_seconds": 0.0008645000343676656,
+            "label_seconds": 0.060830417991383
+          },
+          "execution_counters": {
+            "actor_attempts": 128,
+            "actor_reported_nodes": 128270,
+            "actor_successes": 128,
+            "label_attempts": 20,
+            "label_reported_nodes": 20004,
+            "label_successes": 20
+          },
+          "selected_by_phase": {
+            "endgame": 0,
+            "middlegame": 16,
+            "opening": 4
+          },
+          "shortfall_by_phase": {
+            "endgame": 8,
+            "middlegame": 0,
+            "opening": 4
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "teacher",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0018118750012945384,
+          "wall_seconds": 0.6691669169813395,
+          "cpu_seconds": 0.130553,
+          "peak_rss_mib": 45.4375,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 191.2826183598814,
+          "selected_per_second": 29.88790911873147,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.0024739209620747715,
+            "actor_seconds": 0.47949658590368927,
+            "append_seconds": 0.014066751260543242,
+            "sampling_seconds": 0.0009124590142164379,
+            "label_seconds": 0.06092804201762192
+          },
+          "execution_counters": {
+            "actor_attempts": 128,
+            "actor_reported_nodes": 128270,
+            "actor_successes": 128,
+            "label_attempts": 20,
+            "label_reported_nodes": 20004,
+            "label_successes": 20
+          },
+          "selected_by_phase": {
+            "endgame": 0,
+            "middlegame": 16,
+            "opening": 4
+          },
+          "shortfall_by_phase": {
+            "endgame": 8,
+            "middlegame": 0,
+            "opening": 4
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "teacher",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 2040,
+            "misses": 112,
+            "maxsize": 4096,
+            "currsize": 112
+          },
+          "load_seconds": 1.7500133253633976e-06,
+          "wall_seconds": 0.6780522080080118,
+          "cpu_seconds": 0.136854,
+          "peak_rss_mib": 44.90625,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 188.776024159024,
+          "selected_per_second": 29.4962537748475,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.0005330849962774664,
+            "actor_seconds": 0.4812205378257204,
+            "append_seconds": 0.018165800051065162,
+            "sampling_seconds": 0.0009507499344181269,
+            "label_seconds": 0.06214862602064386
+          },
+          "execution_counters": {
+            "actor_attempts": 128,
+            "actor_reported_nodes": 128270,
+            "actor_successes": 128,
+            "label_attempts": 20,
+            "label_reported_nodes": 20004,
+            "label_successes": 20
+          },
+          "selected_by_phase": {
+            "endgame": 0,
+            "middlegame": 16,
+            "opening": 4
+          },
+          "shortfall_by_phase": {
+            "endgame": 8,
+            "middlegame": 0,
+            "opening": 4
+          }
+        }
+      ],
+      "paired": [
+        {
+          "round": 1,
+          "default_over_native": 1.0087730231327647
+        },
+        {
+          "round": 2,
+          "default_over_native": 1.0132781385349332
+        }
+      ],
+      "medians": {
+        "default_over_native": 1.011025580833849
+      }
+    }
+  }
+}

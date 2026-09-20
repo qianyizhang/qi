@@ -301,6 +301,18 @@ input/example fingerprints retain their meanings. Storage row IDs are local;
 occurrences and attempts also carry portable identities. `Collection.positions`
 provides bounded indexed pagination, while count/spec queries use SQLite directly.
 
+Appending a move uses guarded incremental JSONB updates. One private cache retains
+the last validated game's exact stored bytes, indexed identity, immutable prefix
+and counters. Every append rereads SQLite; only an exact byte/identity match can
+reuse validation. Other data is fully validated and normalized, including omitted
+default fields. SQL checks the observed payload, identity and running status again
+before appending the move and updating counters. The cache advances only after
+commit succeeds; a failed update or commit leaves the persisted prefix unchanged.
+Same-prefix work accounting remains supported. Invalid counters fail before writing.
+This keeps schema version 1, WAL/FULL and every-move commits; it does not introduce
+a write buffer or change snapshot/export identities. Performance evidence belongs
+to [AB-ARCH-007](../../../records/work-items/items/AB-ARCH-007-incremental-collection-append.md).
+
 `SelectionRecipe` version `sql-selection-v1` declares an explicit collection
 analysis-specification hash, reserved `Corpus`, seed and ordered buckets containing
 split/count plus optional mode/phase/theme/objective filters. It compiles to SQL;

@@ -265,6 +265,156 @@ def test_corrupt_schema_jsonb_and_snapshot_rejected(tmp_path, tiny_dataset):
         Collection(path)
 
 
+def test_incremental_append_preserves_metadata_accounting_and_caller_isolation(tmp_path, monkeypatch):
+    with Collection(tmp_path / "incremental.sqlite") as store:
+        gid = game(store, run(store))
+        original = store.game(gid).model_dump()
+        validated = []
+        validate = store._validate_game
+
+        def tracked(data, identity):
+            validated.append(identity)
+            return validate(data, identity)
+
+        monkeypatch.setattr(store, "_validate_game", tracked)
+        first = Snapshot(moves=["b0c2"])
+        store.append(gid, first, actor_nodes=3, actor_ms=0.25, actor_queries=1)
+        store.append(gid, first, actor_nodes=4, actor_ms=0.5, actor_queries=1)
+        first.moves.clear()  # callers cannot mutate the validated cached prefix
+        second = Snapshot(moves=["b0c2", "b9c7"])
+        store.append(gid, second, actor_nodes=5, actor_ms=0.75, actor_queries=1)
+        assert len(validated) == 1
+        result = store.game(gid)
+        assert result.model_dump() == original | {
+            "snapshot": second.model_dump(),
+            "actor_nodes": 12,
+            "actor_ms": 1.5,
+            "actor_queries": 3,
+        }
+        result.actor_nodes = 900
+        result.snapshot.moves.clear()
+        store.append(gid, second)
+        assert store.game(gid).actor_nodes == 12
+        # A valid SQL metadata update invalidates reuse and must survive the append.
+        with store.db:
+            store.db.execute(
+                "UPDATE games SET payload=jsonb_set(payload,'$.themes',jsonb('[\"new\"]')) WHERE id=?", (gid,)
+            )
+        store.append(gid, second)
+        assert store.game(gid).themes == ["new"]
+        other = game(store, store.db.execute("SELECT run_id FROM games WHERE id=?", (gid,)).fetchone()[0], "other")
+        store.append(other, Snapshot(moves=["a3a4"]))
+        store.append(gid, second)
+        assert store.game(other).snapshot.moves == ["a3a4"]
+        with pytest.raises(ValueError, match="replay identity"):
+            store.append(gid, second.model_copy(update={"ruleset": "wrong"}))
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "family='wrong'",
+        "split='validation'",
+        "trajectory='wrong'",
+        "payload=jsonb_set(payload,'$.version',2)",
+        "payload=jsonb_set(payload,'$.unexpected',1)",
+        "payload=jsonb_set(payload,'$.actor_nodes','invalid')",
+        "payload=jsonb_set(payload,'$.snapshot.moves',jsonb('[\"a3a4\"]'))",
+    ],
+)
+def test_append_never_reuses_validation_after_persisted_corruption(tmp_path, change):
+    with Collection(tmp_path / "corrupt.sqlite") as store:
+        gid = game(store, run(store))
+        store.append(gid, Snapshot(moves=["b0c2"]))
+        with store.db:
+            store.db.execute(f"UPDATE games SET {change} WHERE id=?", (gid,))
+        before = tuple(
+            store.db.execute("SELECT payload,family,split,trajectory FROM games WHERE id=?", (gid,)).fetchone()
+        )
+        with pytest.raises(ValueError):
+            store.append(gid, Snapshot(moves=["b0c2", "b9c7"]))
+        assert (
+            tuple(store.db.execute("SELECT payload,family,split,trajectory FROM games WHERE id=?", (gid,)).fetchone())
+            == before
+        )
+
+
+def test_append_commit_failure_keeps_cache_and_disk_at_committed_prefix(tmp_path):
+    path = tmp_path / "commit.sqlite"
+    with Collection(path) as store:
+        gid = game(store, run(store))
+        first = Snapshot(moves=["b0c2"])
+        second = Snapshot(moves=["b0c2", "b9c7"])
+        store.append(gid, first, actor_nodes=3)
+        cached = store._append_cache
+        store.db.execute(
+            "CREATE TRIGGER bad_fk AFTER UPDATE ON games BEGIN UPDATE games SET run_id=999 WHERE id=NEW.id; END"
+        )
+        store.db.execute("PRAGMA defer_foreign_keys=ON")
+        with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"):
+            store.append(gid, second, actor_nodes=5)
+        assert store._append_cache is cached
+        assert store.game(gid).snapshot == first and store.game(gid).actor_nodes == 3
+        store.db.execute("DROP TRIGGER bad_fk")
+        store.append(gid, second, actor_nodes=5)
+        assert store.game(gid).actor_nodes == 8
+        store.finish_game(gid, "ply-budget")
+        with pytest.raises(ValueError, match="running game"):
+            store.append(gid, second, actor_nodes=1)
+    with Collection(path) as reopened:
+        assert reopened.game(gid).snapshot == second and reopened.game(gid).actor_nodes == 8
+        assert reopened.db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        assert not reopened.db.execute("PRAGMA foreign_key_check").fetchall()
+
+
+def test_append_normalizes_valid_missing_defaults_and_rejects_bad_counters(tmp_path):
+    with Collection(tmp_path / "defaults.sqlite") as store:
+        gid = game(store, run(store))
+        with store.db:
+            store.db.execute(
+                "UPDATE games SET payload=jsonb_remove(payload,'$.themes','$.snapshot.moves','$.snapshot.ruleset') "
+                "WHERE id=?",
+                (gid,),
+            )
+        first = Snapshot(moves=["b0c2"])
+        store.append(gid, first, actor_nodes=2**80)
+        actual = json.loads(store.db.execute("SELECT json(payload) FROM games WHERE id=?", (gid,)).fetchone()[0])
+        assert actual == store.game(gid).model_dump()
+        assert actual["snapshot"] == first.model_dump() and actual["actor_nodes"] == 2**80
+        before = store.game(gid)
+        for counters in [{"actor_nodes": 0.5}, {"actor_ms": float("inf")}, {"actor_ms": float("nan")}]:
+            with pytest.raises(ValueError):
+                store.append(gid, first, **counters)
+            assert store.game(gid) == before
+
+
+def test_append_rejects_a_row_changed_after_observation(tmp_path, monkeypatch):
+    path = tmp_path / "changed.sqlite"
+    with Collection(path) as store, sqlite3.connect(path) as external:
+        gid = game(store, run(store))
+        first = Snapshot(moves=["b0c2"])
+        second = Snapshot(moves=["b0c2", "b9c7"])
+        store.append(gid, first, actor_nodes=3)
+        inspect = store.inspect
+
+        def change_after_read(snapshot):
+            value = inspect(snapshot)
+            # Direct SQL can ignore the advisory writer lock; the write guard still protects it.
+            with external:
+                external.execute(
+                    "UPDATE games SET payload=jsonb_set(payload,'$.themes',jsonb('[\"external\"]')) WHERE id=?", (gid,)
+                )
+            return value
+
+        monkeypatch.setattr(store, "inspect", change_after_read)
+        with pytest.raises(ValueError, match="unchanged running"):
+            store.append(gid, second, actor_nodes=5)
+        assert store.game(gid).snapshot == first and store.game(gid).themes == ["external"]
+        monkeypatch.setattr(store, "inspect", inspect)
+        store.append(gid, second, actor_nodes=5)
+        assert store.game(gid).actor_nodes == 8 and store.game(gid).themes == ["external"]
+
+
 def test_candidate_payload_retains_bounds_and_unknown_coverage(tiny_dataset):
     from qi.training_data.candidate_evidence import parse_candidates
 

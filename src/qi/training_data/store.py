@@ -4,14 +4,15 @@ import fcntl
 import json
 import sqlite3
 from contextlib import AbstractContextManager, contextmanager
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from time import time
 from typing import Literal
 from uuid import uuid4
 
-from pydantic import Field, JsonValue, model_validator
+from pydantic import ConfigDict, Field, JsonValue, model_validator
 from qi_game.contracts import Snapshot
+from qi_game.core import RULESET, START_FEN
 from qi_game.execution import ReplaySession
 from qi_game.reference import restore
 
@@ -60,6 +61,22 @@ class GamePayload(Contract):
     actor_nodes: int = 0
     actor_ms: float = 0.0
     parent_digest: str | None = None
+
+
+class _ActorWork(Contract):
+    model_config = ConfigDict(frozen=True)
+    actor_queries: int
+    actor_nodes: int
+    actor_ms: float
+
+
+@dataclass(frozen=True, slots=True)
+class _AppendState:
+    # Exact persisted bytes prove validation reuse, not semantic identity.
+    record: tuple[int, bytes, str, str, str]
+    moves: tuple[str, ...]
+    work: _ActorWork
+    normalized: str | None = None
 
 
 class OccurrencePayload(Contract):
@@ -177,6 +194,7 @@ class Collection(AbstractContextManager):
     def __init__(self, path: Path, *, readonly: bool = False):
         self.path, self.readonly = Path(path).resolve(), readonly
         self._execution: ReplaySession | None = None
+        self._append_cache: _AppendState | None = None
         self.lock = None
         self.db = None
         if not readonly:
@@ -213,6 +231,7 @@ class Collection(AbstractContextManager):
             raise
 
     def __exit__(self, *args):
+        self._append_cache = None
         if self.db is not None:
             self.db.close()
         if self.lock is not None and not self.lock.closed:
@@ -340,33 +359,76 @@ class Collection(AbstractContextManager):
                 ),
             ).lastrowid
 
-    def game(self, game_id: int) -> GamePayload:
-        row = self.db.execute("SELECT json(payload) FROM games WHERE id=?", (game_id,)).fetchone()
-        if row is None:
-            raise ValueError("Unknown game.")
-        payload = GamePayload.model_validate_json(row[0])
-        actual = self.db.execute("SELECT family,split,trajectory FROM games WHERE id=?", (game_id,)).fetchone()
-        if (payload.family, payload.split, state_fingerprint(payload.snapshot)) != tuple(actual):
+    @staticmethod
+    def _validate_game(data, identity) -> GamePayload:
+        payload = GamePayload.model_validate_json(data)
+        if (payload.family, payload.split, state_fingerprint(payload.snapshot)) != identity:
             raise ValueError("Game payload differs from indexed identity.")
         return payload
 
+    def game(self, game_id: int) -> GamePayload:
+        row = self.db.execute(
+            "SELECT json(payload),family,split,trajectory FROM games WHERE id=?", (game_id,)
+        ).fetchone()
+        if row is None:
+            raise ValueError("Unknown game.")
+        return self._validate_game(row[0], tuple(row[1:]))
+
+    def _append_state(self, game_id: int) -> _AppendState:
+        row = self.db.execute("SELECT id,payload,family,split,trajectory FROM games WHERE id=?", (game_id,)).fetchone()
+        if row is None:
+            raise ValueError("Unknown game.")
+        record = tuple(row)
+        if self._append_cache is not None and self._append_cache.record == record:
+            return self._append_cache
+        # Decode the exact observed bytes, including changes made by direct SQL.
+        data = self.db.execute("SELECT json(?)", (row[1],)).fetchone()[0]
+        payload = self._validate_game(data, record[2:])
+        return _AppendState(
+            record,
+            tuple(payload.snapshot.moves),
+            _ActorWork(actor_queries=payload.actor_queries, actor_nodes=payload.actor_nodes, actor_ms=payload.actor_ms),
+            payload.model_dump_json(),
+        )
+
     def append(self, game_id: int, snapshot: Snapshot, *, actor_nodes=0, actor_ms=0.0, actor_queries=0):
-        previous = self.game(game_id)
-        before, after = previous.snapshot.moves, snapshot.moves
+        if (
+            type(snapshot.schema_version) is not int
+            or snapshot.schema_version != 1
+            or snapshot.ruleset != RULESET
+            or snapshot.initial_fen != START_FEN
+        ):
+            raise ValueError("Unsupported replay identity.")
+        previous = self._append_state(game_id)
+        before, after = previous.moves, tuple(snapshot.moves)
         if after[: len(before)] != before or len(after) > len(before) + 1 or len(after) < len(before):
             raise ValueError("Prefix mutation or nonincremental append rejected.")
         self.inspect(snapshot)
-        previous.snapshot = snapshot
-        previous.actor_nodes += actor_nodes
-        previous.actor_ms += actor_ms
-        previous.actor_queries += actor_queries
+        work = _ActorWork(
+            actor_nodes=previous.work.actor_nodes + actor_nodes,
+            actor_ms=previous.work.actor_ms + actor_ms,
+            actor_queries=previous.work.actor_queries + actor_queries,
+        )
+        trajectory = state_fingerprint(snapshot)
+        # Normalize defaults on a validation miss; the warm path serializes only counters.
+        payload = "jsonb(?)" if previous.normalized is not None else "payload"
+        parameters = [previous.normalized] if previous.normalized is not None else []
+        if len(after) > len(before):
+            payload = f"jsonb_insert({payload},'$.snapshot.moves[#]',?)"
+            parameters.append(after[-1])
         with self.db:
-            result = self.db.execute(
-                "UPDATE games SET payload=jsonb(?),trajectory=?,updated=? WHERE id=? AND status='running'",
-                (previous.model_dump_json(), state_fingerprint(snapshot), time(), game_id),
-            )
-            if result.rowcount != 1:
-                raise ValueError("Only a running game may append.")
+            rows = self.db.execute(
+                f"UPDATE games SET payload=jsonb_patch({payload},jsonb(?)),trajectory=?,updated=? "
+                "WHERE id=? AND payload=? AND family=? AND split=? AND trajectory=? AND status='running' "
+                "RETURNING payload",
+                [*parameters, work.model_dump_json(), trajectory, time(), *previous.record],
+            ).fetchall()
+            if len(rows) != 1:
+                raise ValueError("Only an unchanged running game may append.")
+        # A failed UPDATE or COMMIT must never advance the cached persisted state.
+        self._append_cache = _AppendState(
+            (game_id, rows[0][0], previous.record[2], previous.record[3], trajectory), after, work
+        )
 
     def finish_game(self, game_id: int, reason: str, failure: str | None = None):
         payload = self.game(game_id)
