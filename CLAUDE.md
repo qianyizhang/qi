@@ -106,7 +106,8 @@ protocol, explicit Python reference use and isolated package checks.
 CLI and HTTP consume the game package. Supported packages share the root uv lock.
 The optional [native package](packages/qi-game-native/README.md) owns C++ build
 dependencies and persistent trajectory execution; policy generation accepts it
-explicitly. Default setup and backend selection remain Python.
+explicitly, sharing run-owned immutable referee results across collection,
+sampling and teacher validation. Default setup and backend selection remain Python.
 The React board consumes legal moves; it does not implement rules. Boundary
 contracts arrive with behavior; avoid speculative packages. Vocabulary authority:
 `docs/glossary/ddd.md`. Automated players live in `src/qi/players/`, each with a

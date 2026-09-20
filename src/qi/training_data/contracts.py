@@ -4,9 +4,10 @@ import json
 from hashlib import sha256
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, model_validator
 from qi_game.contracts import Snapshot
 from qi_game.core import START_BOARD, GameError
+from qi_game.execution import GameView
 from qi_game.reference import Game, legal_moves, restore
 
 from qi.evaluation import Corpus
@@ -32,7 +33,7 @@ def state_fingerprint(snapshot: Snapshot) -> str:
     return fingerprint("replay-state-v1", snapshot.model_dump())
 
 
-def observation_fingerprint(game: Game) -> str:
+def observation_fingerprint(game: Game | GameView) -> str:
     return fingerprint("observation-v1", {"encoding": ENCODING, "board": game.board, "turn": game.turn})
 
 
@@ -50,7 +51,7 @@ def supervision_spec(analysis: TeacherAnalysis) -> dict:
     }
 
 
-def classify_phase(game: Game) -> Phase:
+def classify_phase(game: Game | GameView) -> Phase:
     if game.board.count("K") != 1 or game.board.count("k") != 1:
         return "unknown"
     mobile = sum(piece.upper() in "RNC" for piece in game.board)
@@ -178,9 +179,11 @@ class Example(Contract):
         )
 
     @model_validator(mode="after")
-    def validate_example(self) -> Self:
-        game = restore(self.analysis.snapshot)
-        if game.outcome or self.analysis.move not in legal_moves(game.board, game.turn):
+    def validate_example(self, info: ValidationInfo) -> Self:
+        execution = (info.context or {}).get("execution")
+        game = execution.inspect(self.analysis.snapshot) if execution is not None else restore(self.analysis.snapshot)
+        legal = game.legal_moves if isinstance(game, GameView) else legal_moves(game.board, game.turn)
+        if game.outcome or self.analysis.move not in legal:
             raise ValueError("Example requires a legal teacher move in a nonterminal state.")
         if self.analysis.state_hash != game.state_hash or len(set(self.source_ids)) != len(self.source_ids):
             raise ValueError("Example state or source identity is invalid.")

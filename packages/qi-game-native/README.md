@@ -66,16 +66,23 @@ result = generate_policies(store, config, trajectory_factory=NativeTrajectory)
 ```
 
 The existing runner remains serial, driven by its Python actor and per-game RNG.
-It uses native legality, transitions and outcomes, then materializes immutable
-Python values for the existing teacher and sampler interfaces. Collection writes
-continue reference replay validation and retain every-move crash recovery.
+One run-owned `ReplaySession` supplies native legality, transitions and outcomes
+as immutable `GameView` values to collection, teacher and sampler consumers.
+Every generated history is validated once, then reused; uncached histories
+restore through the native backend. Collection writes still enforce persisted
+prefixes, lifecycle, split guards and a durable transaction for every move.
+The cache does not prove a write succeeded. Custom providers receive `GameView`
+when a factory is selected and `Game` on the default path; use the view's legal
+moves instead of invoking Python rules again.
 Backend identity lives in run execution metadata, outside actor/RNG identities.
 Referee, append and sampling phase timers are diagnostic; they do not exhaust
-wall time. Search, the older library generator and collection validation remain
-separate consumers of the Python reference.
+wall time. Search, the older library generator and collection operations outside
+the explicit run scope remain separate consumers of the Python reference.
 
-This integration's throughput conclusion belongs to
-[AB-ARCH-004](../../records/work-items/items/AB-ARCH-004-native-generation.md).
+The original integration's throughput conclusion belongs to
+[AB-ARCH-004](../../records/work-items/items/AB-ARCH-004-native-generation.md);
+the shared-validation follow-up belongs to
+[AB-ARCH-005](../../records/work-items/items/AB-ARCH-005-shared-replay-execution.md).
 The earlier complete-native-loop speedup does not establish generation speed.
 
 ## Verification

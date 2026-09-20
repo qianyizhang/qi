@@ -1,7 +1,6 @@
 """Small generation adapter over the AB-DATA-007 collection; no alternate data store."""
 
 from qi_game.contracts import Snapshot
-from qi_game.reference import restore
 
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity
 from qi.training_data.contracts import state_fingerprint
@@ -77,7 +76,7 @@ class CollectionIO:
                 game = self.store.game(row["id"])
                 if "generation_result" not in game.actor or state_fingerprint(game.snapshot) != row["trajectory"]:
                     raise ValueError("Continuation requires finalized generation evidence.")
-                restore(game.snapshot)
+                self.store.inspect(game.snapshot)
                 if row["logical_key"] in inherited:
                     raise ValueError("Ambiguous disposed identity in continuation.")
                 inherited[row["logical_key"]] = row["id"]
@@ -129,7 +128,7 @@ class CollectionIO:
                 or not len(parent.initial.moves) <= len(prefix.moves) < len(parent.snapshot.moves)
             ):
                 raise ValueError("Generated start must preserve its parent's prefix, family and split.")
-        if input_key(restore(source.start.snapshot)) in excluded:
+        if input_key(self.store.inspect(source.start.snapshot)) in excluded:
             raise ValueError("Generated start is a reserved observation.")
 
     def generated_start(self, game_id: int, ply: int):

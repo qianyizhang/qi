@@ -3,7 +3,7 @@
 import fcntl
 import json
 import sqlite3
-from contextlib import AbstractContextManager
+from contextlib import AbstractContextManager, contextmanager
 from dataclasses import asdict
 from pathlib import Path
 from time import time
@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from pydantic import Field, JsonValue, model_validator
 from qi_game.contracts import Snapshot
+from qi_game.execution import ReplaySession
 from qi_game.reference import restore
 
 from qi.players.policy.encoding import input_key
@@ -175,6 +176,7 @@ class Collection(AbstractContextManager):
 
     def __init__(self, path: Path, *, readonly: bool = False):
         self.path, self.readonly = Path(path).resolve(), readonly
+        self._execution: ReplaySession | None = None
         self.lock = None
         self.db = None
         if not readonly:
@@ -216,9 +218,28 @@ class Collection(AbstractContextManager):
         if self.lock is not None and not self.lock.closed:
             self.lock.close()
 
+    @contextmanager
+    def executing(self, execution: ReplaySession | None):
+        """Temporarily use one caller-owned referee session; never bypass SQL checks."""
+        if self._execution is not None:
+            raise RuntimeError("Collection already has an execution session.")
+        self._execution = execution
+        try:
+            yield
+        finally:
+            self._execution = None
+
+    def inspect(self, snapshot: Snapshot):
+        return self._execution.inspect(snapshot) if self._execution is not None else restore(snapshot)
+
+    def validate_example(self, answer: TeacherAnalysis):
+        return Example.model_validate(
+            {"analysis": answer, "source_ids": ["validation"]}, context={"execution": self._execution}
+        )
+
     def recover(self):
         for row in self.db.execute("SELECT id FROM games WHERE status='running'"):
-            restore(self.game(row[0]).snapshot)
+            self.inspect(self.game(row[0]).snapshot)
             for occurrence in self.db.execute("SELECT id FROM position_occurrences WHERE game_id=?", (row[0],)):
                 self.snapshot(occurrence[0])
         with self.db:
@@ -285,7 +306,7 @@ class Collection(AbstractContextManager):
         payload = GamePayload.model_validate(payload.model_dump())
         if payload.snapshot != payload.initial:
             raise ValueError("New game must start at its declared initial prefix.")
-        restore(payload.initial)
+        self.inspect(payload.initial)
         if self.db.execute(
             "SELECT 1 FROM games WHERE run_id=? AND logical_key=? AND status='complete'", (run, key)
         ).fetchone():
@@ -334,7 +355,7 @@ class Collection(AbstractContextManager):
         before, after = previous.snapshot.moves, snapshot.moves
         if after[: len(before)] != before or len(after) > len(before) + 1 or len(after) < len(before):
             raise ValueError("Prefix mutation or nonincremental append rejected.")
-        restore(snapshot)
+        self.inspect(snapshot)
         previous.snapshot = snapshot
         previous.actor_nodes += actor_nodes
         previous.actor_ms += actor_ms
@@ -349,7 +370,7 @@ class Collection(AbstractContextManager):
 
     def finish_game(self, game_id: int, reason: str, failure: str | None = None):
         payload = self.game(game_id)
-        game = restore(payload.snapshot)
+        game = self.inspect(payload.snapshot)
         if reason not in {"terminal", "ply-budget", "error", "deadline", "interrupted", "rejected-trajectory"}:
             raise ValueError("Unknown stop reason.")
         if reason in {"terminal", "ply-budget"}:
@@ -407,7 +428,7 @@ class Collection(AbstractContextManager):
             or payload.snapshot.moves[:ply] != snapshot.moves
         ):
             raise ValueError("Occurrence must be an exact persisted prefix.")
-        game = restore(snapshot)
+        game = self.inspect(snapshot)
         attempt = self.db.execute("SELECT attempt FROM games WHERE id=?", (game_id,)).fetchone()[0]
         identity = fingerprint(
             "occurrence-v1", {"game_attempt": attempt, "ply": ply, "state": state_fingerprint(snapshot)}
@@ -429,7 +450,7 @@ class Collection(AbstractContextManager):
                     ply,
                     game.board,
                     game.turn,
-                    board_identity(snapshot),
+                    fingerprint("board-turn-v1", {"ruleset": snapshot.ruleset, "board": game.board, "turn": game.turn}),
                     state_fingerprint(snapshot),
                     observation_fingerprint(game),
                     input_key(game),
@@ -501,7 +522,7 @@ class Collection(AbstractContextManager):
                 for value in (answer.reported_nodes, answer.reported_depth, answer.invalid_actions, answer.retries)
             ):
                 raise ValueError("Analysis work counters must be nonnegative.")
-            Example(analysis=answer, source_ids=["validation"])
+            self.validate_example(answer)
             spec = AnalysisSpec.model_validate_json(
                 self.db.execute("SELECT json(payload) FROM analysis_specs WHERE id=?", (row[1],)).fetchone()[0]
             )
@@ -511,7 +532,7 @@ class Collection(AbstractContextManager):
             answer=answer,
             failure=failure,
             raw=answer.search_info if answer else raw or [],
-            candidates=parse_candidates(answer) if answer else [],
+            candidates=parse_candidates(answer, execution=self._execution) if answer else [],
         )
         with self.db:
             order = (

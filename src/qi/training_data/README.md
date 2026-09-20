@@ -395,13 +395,20 @@ Measure throughput before increasing it; small node budgets may not benefit.
 
 Policy generation accepts an explicit `trajectory_factory` for persistent
 execution. The optional [native package](../../../packages/qi-game-native/README.md)
-supplies `NativeTrajectory`; actor RNG streams, sampling and per-move collection
-validation stay unchanged. Backend/binary identity is recorded in run execution
+supplies `NativeTrajectory`. One run-owned `ReplaySession` shares immutable
+`GameView` results with collection legality checks, sampling, teacher validation
+and candidate evidence parsing. Its bounded cache never replaces persisted-prefix,
+split, lifecycle or transaction checks; every move still commits durably.
+Uncached histories replay through the selected factory. Custom providers receive
+these views with explicit factories, or reference `Game` values on the default
+path. Actor RNG streams and sampling policies stay unchanged.
+Backend/binary identity is recorded in run execution
 metadata, outside actor identities. The default keeps the direct Python path;
 the explicit `PythonTrajectory` adapter serves as a conformance/timing control.
 Execution, append and sampling phase counters cover only their named blocks,
 not all validation or teacher time. Integration evidence and reproduction live in
-[AB-ARCH-004](../../../records/work-items/items/AB-ARCH-004-native-generation.md).
+[AB-ARCH-004](../../../records/work-items/items/AB-ARCH-004-native-generation.md) and
+[the shared-validation follow-up](../../../records/work-items/items/AB-ARCH-005-shared-replay-execution.md).
 
 ## Generated-data follow-up selections
 

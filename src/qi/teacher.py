@@ -12,7 +12,8 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 from qi_game.contracts import Snapshot
 from qi_game.core import GameError
-from qi_game.reference import Game, legal_moves, restore
+from qi_game.execution import GameView, ReplaySession
+from qi_game.reference import Game, inspect, legal_moves, restore
 
 
 @dataclass(frozen=True)
@@ -192,8 +193,15 @@ class TeacherIdentity:
 class TeacherSession:
     """Sequential, lazy engine session; any failed query permanently closes it."""
 
-    def __init__(self, config: TeacherConfig, *, identity: TeacherIdentity | None = None):
+    def __init__(
+        self,
+        config: TeacherConfig,
+        *,
+        identity: TeacherIdentity | None = None,
+        execution: ReplaySession | None = None,
+    ):
         self.config = config
+        self.execution = execution
         # CONTRACT: supplied identity must have been verified for these files by the caller.
         if identity is not None:
             identity.require(config)
@@ -224,14 +232,14 @@ class TeacherSession:
             self.engine.close()
             self.engine = None
 
-    def analyze(self, game: Game, config: TeacherConfig) -> TeacherAnalysis:
+    def analyze(self, game: Game | GameView, config: TeacherConfig) -> TeacherAnalysis:
         try:
             return self._analyze(game, config)
         except BaseException:
             self.close()
             raise
 
-    def _analyze(self, game: Game, config: TeacherConfig) -> TeacherAnalysis:
+    def _analyze(self, game: Game | GameView, config: TeacherConfig) -> TeacherAnalysis:
         if self.closed:
             raise GameError("teacher_closed", "Teacher session is closed; queries are not retried.")
         if (config.engine.resolve(), config.network.resolve()) != (
@@ -242,7 +250,15 @@ class TeacherSession:
         if game.outcome:
             raise GameError("game_over", "Cannot query a teacher after the game ends.")
         snapshot = Snapshot(moves=list(game.moves))
-        if restore(snapshot) != game:
+        if isinstance(game, GameView):
+            expected = (
+                self.execution.inspect(snapshot)
+                if self.execution is not None
+                else GameView.from_position(inspect(restore(snapshot)))
+            )
+        else:
+            expected = restore(snapshot)
+        if expected != game:
             raise GameError("invalid_state", "Teacher input must replay from the standard initial position.")
         if self.identity is None:
             self.identity = TeacherIdentity.read(config)
@@ -297,7 +313,8 @@ class TeacherSession:
                 break
             if line.startswith("info "):
                 info.append(line)
-        if move not in legal_moves(game.board, game.turn):
+        legal = game.legal_moves if isinstance(game, GameView) else legal_moves(game.board, game.turn)
+        if move not in legal:
             raise GameError("teacher_illegal_move", f"Teacher proposed a move rejected by qi: {move}")
         nodes, depth, score = read_info(info)
         return TeacherAnalysis(

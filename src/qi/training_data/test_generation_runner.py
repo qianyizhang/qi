@@ -5,6 +5,7 @@ import json
 import pytest
 from qi_game.contracts import Snapshot
 from qi_game.core import GameError
+from qi_game.execution import GameView
 from qi_game.reference import legal_moves, restore
 
 from qi.evaluation import Corpus, Opening
@@ -60,7 +61,7 @@ def setup(tmp_path):
 
     def provider(game, settings):
         calls.append((game.moves, settings.nodes, settings.multipv))
-        legal = sorted(legal_moves(game.board, game.turn))
+        legal = sorted(game.legal_moves if isinstance(game, GameView) else legal_moves(game.board, game.turn))
         identity = TeacherIdentity.read(settings)
         spec = analysis_spec(settings, identity).supervision
         return TeacherAnalysis(

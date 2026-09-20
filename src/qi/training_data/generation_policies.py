@@ -5,6 +5,7 @@ from typing import Literal, Self
 
 from pydantic import Field, model_validator
 from qi_game.core import GameError
+from qi_game.execution import GameView, ReplaySession
 from qi_game.reference import Game, legal_moves
 
 from qi.players.policy.encoding import input_key
@@ -62,7 +63,14 @@ class SamplingResult(Contract):
     duplicates: int = Field(default=0, ge=0)
 
 
-def choose_plausible(game: Game, answer: TeacherAnalysis, policy: ActorPolicy, rng: Random) -> ActorDecision:
+def choose_plausible(
+    game: Game | GameView,
+    answer: TeacherAnalysis,
+    policy: ActorPolicy,
+    rng: Random,
+    *,
+    execution: ReplaySession | None = None,
+) -> ActorDecision:
     """Uniformly sample compatible candidates, or explicitly use a legal teacher fallback.
 
     All evidence is parsed before fallbacks, so malformed or illegal observations
@@ -70,7 +78,7 @@ def choose_plausible(game: Game, answer: TeacherAnalysis, policy: ActorPolicy, r
     depth can be used only while later rank-one observations still support its best
     move and later candidate evidence has not introduced mate scores.
     """
-    legal = set(legal_moves(game.board, game.turn))
+    legal = set(game.legal_moves if isinstance(game, GameView) else legal_moves(game.board, game.turn))
     if (
         game.outcome
         or answer.move not in legal
@@ -79,7 +87,7 @@ def choose_plausible(game: Game, answer: TeacherAnalysis, policy: ActorPolicy, r
     ):
         raise GameError("invalid_supervision", "Actor answer must match the exact nonterminal state and a legal move.")
     try:
-        candidates = parse_candidates(answer)
+        candidates = parse_candidates(answer, execution=execution)
     except ValueError as exc:
         raise GameError("invalid_supervision", str(exc)) from exc
 
@@ -122,7 +130,7 @@ def choose_plausible(game: Game, answer: TeacherAnalysis, policy: ActorPolicy, r
 
 
 def sample_positions(
-    games: list[Game], policy: SamplingPolicy, rng: Random, excluded_inputs: set[str] | None = None
+    games: list[Game] | list[GameView], policy: SamplingPolicy, rng: Random, excluded_inputs: set[str] | None = None
 ) -> SamplingResult:
     """Select candidate states from ONE trajectory; return exact absolute plies.
 

@@ -20,6 +20,7 @@ dependencies.
 | `contracts.py` | Validated `Snapshot`, `Position` and `Result` data. |
 | `referee.py` | Structural `Referee` protocol: inspect a snapshot and apply a guarded action. |
 | `trajectory.py` | Persistent `Trajectory`/factory contracts and lazy `PythonTrajectory`. |
+| `execution.py` | Immutable `GameView` and bounded, caller-owned `ReplaySession` for sharing validated histories. |
 | `reference.py` | Readable Python rules, immutable `Game`, replay, and `PythonReferee`. |
 
 Importing contracts or the protocol does not import the reference implementation,
@@ -47,13 +48,22 @@ fresh data objects; mutating one must not affect subsequent inspections.
 The application uses this boundary for CLI inspect/legal/apply/replay and HTTP
 new/inspect/apply, final player moves and session inspection. HTTP accepts an
 explicit backend through `create_app(referee=...)`; normal composition selects
-`PythonReferee`. Player search, match generation, data validation and session
-history validation still use the Python reference directly. Backend injection
-does **not** replace those loops. Policy generation accepts an explicit persistent
-trajectory factory; the optional [native package](../qi-game-native/README.md)
-implements that boundary and caller-supplied batch stepping. Its integration
-keeps Python teacher/sampler values and collection replay validation. Player
+`PythonReferee`. Player search, match generation and player-session history still
+use the Python reference directly. Policy generation accepts an explicit
+persistent trajectory factory; the optional [native package](../qi-game-native/README.md)
+implements that boundary and caller-supplied batch stepping. A run-owned replay
+session supplies immutable results to collection validation, sampler and teacher
+consumers. Other data operations retain independent Python replay. Player
 sessions remain later slices under [the architecture decisions](../../records/work-items/items/AB-ARCH-001-modular-runtime.md).
+
+`ReplaySession` caches at most 301 validated full histories under the supported
+ruleset/start, advancing one owned trajectory for consecutive moves. Uncached
+branches restore through its selected factory. Only backend results enter the
+cache; views and their move/legal-move tuples are immutable, and `snapshot()`
+returns fresh data. Close releases the trajectory and cached views. A cached
+result proves legality, not persistence; application consumers must still check
+their own stored prefixes, lifecycle and transaction results. The session is
+explicitly owned by one synchronous caller, with no global backend selection.
 
 Python research code that needs the reference representation explicitly uses
 `restore(snapshot)` or `replay(tuple_of_moves)` from `qi_game.reference`. Snapshot

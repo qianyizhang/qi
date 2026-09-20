@@ -103,6 +103,13 @@ use whole-preparation wall time when comparing throughput.
 records full preparation equivalence and throughput, separate from the earlier
 query-only prototype. Process reuse does not establish label quality.
 
+Policy generation may supply a run-owned `ReplaySession` to `TeacherSession`.
+Its immutable `GameView` inputs are checked against that session's validated
+full history before querying; all view fields and the returned move must match.
+Without a supplied execution session, views and reference `Game` inputs are
+independently checked by Python replay. Engine settings and supervision identities
+do not depend on which referee performs this validation.
+
 ## Search settings and query speed
 
 The [glossary](glossary/ddd.md#learning-track) defines teacher queries, node/depth

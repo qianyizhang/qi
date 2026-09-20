@@ -2,6 +2,7 @@
 
 from hashlib import sha256
 
+from qi_game.execution import GameView
 from qi_game.reference import Game, parse_move
 
 ENCODING = "absolute-board-turn-v1"
@@ -11,7 +12,7 @@ INPUTS = 1261
 ACTIONS = 8100
 
 
-def input_key(game: Game) -> str:
+def input_key(game: Game | GameView) -> str:
     return sha256(f"{ENCODING}:{game.board}:{game.turn}".encode()).hexdigest()
 
 
