@@ -7,8 +7,8 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, model_validator
 from qi_game.contracts import Snapshot
 from qi_game.core import START_BOARD, GameError
-from qi_game.execution import GameView
 from qi_game.reference import Game, legal_moves, restore
+from qi_game.trajectory import GameView
 
 from qi.evaluation import Corpus
 from qi.players.policy.encoding import ENCODING, input_key

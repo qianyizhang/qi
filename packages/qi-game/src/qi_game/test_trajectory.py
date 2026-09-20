@@ -1,5 +1,7 @@
 """Persistent reference lifecycle and rejection semantics."""
 
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 from qi_game.contracts import Snapshot
@@ -16,9 +18,13 @@ def test_detached_views_atomic_rejection_and_close():
         assert error.value.code == code
         assert game.inspect() == before
     result = game.step("b9c7", before.state_hash)
-    result.snapshot.moves.clear()
-    result.legal_moves.clear()
-    assert game.inspect().snapshot.moves == ["b2e2", "b9c7"]
+    with pytest.raises(FrozenInstanceError):
+        result.board = "changed"
+    wire = result.to_position()
+    wire.snapshot.moves.clear()
+    wire.legal_moves.clear()
+    assert game.inspect().moves == ("b2e2", "b9c7")
+    assert before.moves == ("b2e2",)
     game.close()
     game.close()
     with pytest.raises(RuntimeError, match="closed"):

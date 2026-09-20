@@ -2,8 +2,8 @@
 
 from hashlib import sha256
 
-from qi_game.execution import GameView
 from qi_game.reference import Game, parse_move
+from qi_game.trajectory import GameView
 
 ENCODING = "absolute-board-turn-v1"
 ARCHITECTURE = "mlp-1261-64-8100-v1"

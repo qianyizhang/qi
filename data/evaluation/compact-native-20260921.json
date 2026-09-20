@@ -1,0 +1,621 @@
+{
+  "protocol_owner": "records/work-items/items/AB-ARCH-006-compact-native-observations.md",
+  "baseline_commit": "c4a8d91",
+  "studies": {
+    "confirmation-01": {
+      "results": [
+        {
+          "arm": "old-default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.2080126907676458e-06,
+          "wall_seconds": 2.6156243339937646,
+          "cpu_seconds": 2.2963620000000002,
+          "peak_rss_mib": 114.515625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6564.016008286964,
+          "selected_per_second": 159.42656389164566,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.05431538209086284,
+            "append_seconds": 1.5070578720769845,
+            "sampling_seconds": 0.11865199805470183,
+            "label_seconds": 0.10681492812000215
+          }
+        },
+        {
+          "arm": "old-native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "ef49e3ebc9e0b18a2d7a2ca49d815ac306fbeef23cc93d5ba301d0ac343e7cd4",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.001764957996783778,
+          "wall_seconds": 2.691180958005134,
+          "cpu_seconds": 2.306401,
+          "peak_rss_mib": 113.40625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6379.727067007304,
+          "selected_per_second": 154.95056129897173,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.48834958908264525,
+            "append_seconds": 1.519424621888902,
+            "sampling_seconds": 0.10529275005683303,
+            "label_seconds": 0.10541711919358931
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 9.999785106629133e-07,
+          "wall_seconds": 2.5941443750052713,
+          "cpu_seconds": 2.306542,
+          "peak_rss_mib": 114.59375,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6618.367183193153,
+          "selected_per_second": 160.74664310044528,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.05578924738802016,
+            "append_seconds": 1.5138140950293746,
+            "sampling_seconds": 0.12009883808786981,
+            "label_seconds": 0.10989237407920882
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.001665749994572252,
+          "wall_seconds": 2.3969260410231072,
+          "cpu_seconds": 2.106635,
+          "peak_rss_mib": 113.578125,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7162.924389887124,
+          "selected_per_second": 173.97282722249,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.33296423449064605,
+            "append_seconds": 1.3954803004162386,
+            "sampling_seconds": 0.09815037186490372,
+            "label_seconds": 0.10710174308042042
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0016186249849852175,
+          "wall_seconds": 2.470577375002904,
+          "cpu_seconds": 2.165399,
+          "peak_rss_mib": 113.6875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6949.387691199034,
+          "selected_per_second": 168.78645624264647,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.344518923695432,
+            "append_seconds": 1.4428372258262243,
+            "sampling_seconds": 0.10004908894188702,
+            "label_seconds": 0.10909878494567238
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.3750104699283838e-06,
+          "wall_seconds": 2.7215412500081584,
+          "cpu_seconds": 2.36927,
+          "peak_rss_mib": 114.109375,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6308.5576968376035,
+          "selected_per_second": 153.22200242188134,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.056885704630985856,
+            "append_seconds": 1.5594890398497228,
+            "sampling_seconds": 0.12214070896152407,
+            "label_seconds": 0.15007258905097842
+          }
+        },
+        {
+          "arm": "old-native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "ef49e3ebc9e0b18a2d7a2ca49d815ac306fbeef23cc93d5ba301d0ac343e7cd4",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0017670419765636325,
+          "wall_seconds": 2.6801715830224566,
+          "cpu_seconds": 2.383562,
+          "peak_rss_mib": 113.671875,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6405.933153219372,
+          "selected_per_second": 155.58705369517608,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.49678679287899286,
+            "append_seconds": 1.4763964241137728,
+            "sampling_seconds": 0.10836258193012327,
+            "label_seconds": 0.11060083599295467
+          }
+        },
+        {
+          "arm": "old-default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.4169781934469938e-06,
+          "wall_seconds": 2.633255458000349,
+          "cpu_seconds": 2.323952,
+          "peak_rss_mib": 114.265625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6520.066235061698,
+          "selected_per_second": 158.35911351975815,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.05450986381038092,
+            "append_seconds": 1.5619802163273562,
+            "sampling_seconds": 0.11903450102545321,
+            "label_seconds": 0.109676427236991
+          }
+        },
+        {
+          "arm": "old-default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 9.579816833138466e-07,
+          "wall_seconds": 2.615290791989537,
+          "cpu_seconds": 2.286973,
+          "peak_rss_mib": 114.015625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6564.8531523100655,
+          "selected_per_second": 159.44689641291265,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.05370776046765968,
+            "append_seconds": 1.5473474524915218,
+            "sampling_seconds": 0.11911037305253558,
+            "label_seconds": 0.10794776162947528
+          }
+        },
+        {
+          "arm": "old-native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "ef49e3ebc9e0b18a2d7a2ca49d815ac306fbeef23cc93d5ba301d0ac343e7cd4",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0016977080085780472,
+          "wall_seconds": 2.575538000004599,
+          "cpu_seconds": 2.301327,
+          "peak_rss_mib": 113.5625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6666.180036935717,
+          "selected_per_second": 161.9079198207347,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.4850017608841881,
+            "append_seconds": 1.4084938140003942,
+            "sampling_seconds": 0.10509829109651037,
+            "label_seconds": 0.10390070217545144
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "controlled",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 106243,
+            "misses": 17131,
+            "maxsize": 4096,
+            "currsize": 4096
+          },
+          "load_seconds": 1.333013642579317e-06,
+          "wall_seconds": 2.6438093750039116,
+          "cpu_seconds": 2.366373,
+          "peak_rss_mib": 114.390625,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 6494.038549952036,
+          "selected_per_second": 157.7269541225464,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.056610487517900765,
+            "append_seconds": 1.5502654698793776,
+            "sampling_seconds": 0.12182562812813558,
+            "label_seconds": 0.10753982901223935
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "controlled",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.001676999992923811,
+          "wall_seconds": 2.3855667910247575,
+          "cpu_seconds": 2.11153,
+          "peak_rss_mib": 114.125,
+          "plies": 17169,
+          "selected": 417,
+          "plies_per_second": 7197.031776513282,
+          "selected_per_second": 174.8012260938924,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "outcomes": {
+            "ply_limit": 46,
+            "checkmate": 18
+          },
+          "round": 3,
+          "phase_seconds": {
+            "referee_seconds": 0.33035168424248695,
+            "append_seconds": 1.3886227989569306,
+            "sampling_seconds": 0.09523258401895873,
+            "label_seconds": 0.10610453542903997
+          }
+        }
+      ],
+      "paired": [
+        {
+          "round": 1,
+          "default_over_native": 1.082279690990375,
+          "old_native_over_native": 1.1227634528332908,
+          "default_over_old_default": 0.9917878272084677
+        },
+        {
+          "round": 2,
+          "default_over_native": 1.101581062606857,
+          "old_native_over_native": 1.0848361237904183,
+          "default_over_old_default": 1.0335272416276893
+        },
+        {
+          "round": 3,
+          "default_over_native": 1.1082520870724486,
+          "old_native_over_native": 1.0796335737463196,
+          "default_over_old_default": 1.0109045552799425
+        }
+      ],
+      "medians": {
+        "default_over_native": 1.101581062606857,
+        "old_native_over_native": 1.0848361237904183,
+        "default_over_old_default": 1.0109045552799425
+      }
+    },
+    "teacher-01": {
+      "results": [
+        {
+          "arm": "default",
+          "workload": "teacher",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 2040,
+            "misses": 112,
+            "maxsize": 4096,
+            "currsize": 112
+          },
+          "load_seconds": 2.1250161807984114e-06,
+          "wall_seconds": 0.6644707090163138,
+          "cpu_seconds": 0.147373,
+          "peak_rss_mib": 44.765625,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 192.6345258912796,
+          "selected_per_second": 30.099144670512434,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.0005178367719054222,
+            "actor_seconds": 0.4634504589193966,
+            "append_seconds": 0.02769887089380063,
+            "sampling_seconds": 0.0010481670033186674,
+            "label_seconds": 0.06030575092881918
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "teacher",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.001608582999324426,
+          "wall_seconds": 0.6517409999796655,
+          "cpu_seconds": 0.13783499999999999,
+          "peak_rss_mib": 45.359375,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 196.3970350246396,
+          "selected_per_second": 30.687036722599938,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 1,
+          "phase_seconds": {
+            "referee_seconds": 0.002305041824001819,
+            "actor_seconds": 0.45906512191868387,
+            "append_seconds": 0.02694124821573496,
+            "sampling_seconds": 0.00087554199853912,
+            "label_seconds": 0.05934696100302972
+          }
+        },
+        {
+          "arm": "native",
+          "workload": "teacher",
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 1,
+            "misses": 1,
+            "maxsize": 4096,
+            "currsize": 1
+          },
+          "load_seconds": 0.0016164580010809004,
+          "wall_seconds": 0.6538476670102682,
+          "cpu_seconds": 0.140718,
+          "peak_rss_mib": 45.4375,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 195.76425283473537,
+          "selected_per_second": 30.5881645054274,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.002248123026220128,
+            "actor_seconds": 0.4580363758432213,
+            "append_seconds": 0.02812120906310156,
+            "sampling_seconds": 0.0008570420031901449,
+            "label_seconds": 0.061063290981110185
+          }
+        },
+        {
+          "arm": "default",
+          "workload": "teacher",
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          },
+          "reference_rule_cache_before_verification": {
+            "hits": 2040,
+            "misses": 112,
+            "maxsize": 4096,
+            "currsize": 112
+          },
+          "load_seconds": 1.374981366097927e-06,
+          "wall_seconds": 0.676551707991166,
+          "cpu_seconds": 0.151242,
+          "peak_rss_mib": 44.921875,
+          "plies": 128,
+          "selected": 20,
+          "plies_per_second": 189.19470380181397,
+          "selected_per_second": 29.561672469033432,
+          "semantic_sha256": "069003f693c305d367034a8310314269fbfb608ebeb9e762e794b12229427984",
+          "outcomes": {
+            "ply-budget": 4
+          },
+          "round": 2,
+          "phase_seconds": {
+            "referee_seconds": 0.0005378250789362937,
+            "actor_seconds": 0.46908395798527636,
+            "append_seconds": 0.03036992219858803,
+            "sampling_seconds": 0.0009080419549718499,
+            "label_seconds": 0.061376496974844486
+          }
+        }
+      ],
+      "paired": [
+        {
+          "round": 1,
+          "default_over_native": 1.019531852433782
+        },
+        {
+          "round": 2,
+          "default_over_native": 1.0347237470230835
+        }
+      ],
+      "medians": {
+        "default_over_native": 1.0271277997284327
+      }
+    }
+  },
+  "development": "development-01 passed four-arm parity on two 24-ply games before confirmation. No failed timing attempt.",
+  "profile": "artifacts/compact-native-20260921/profile-01/diagnostic.txt",
+  "limitations": [
+    "Three short local macOS ARM64 controlled rounds and two small teacher rounds.",
+    "Repeated trajectories are not independent workload samples.",
+    "Fixture labels and backend parity do not establish teaching quality or strength.",
+    "Worker CPU and RSS omit the teacher child process; peak RSS includes verification.",
+    "Raw collections, exact runtime copies and binaries remain local in ignored artifacts."
+  ]
+}

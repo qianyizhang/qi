@@ -4,8 +4,9 @@ from hashlib import sha256
 from importlib.metadata import version
 from pathlib import Path
 
-from qi_game.contracts import Position, Result, Snapshot
-from qi_game.core import RULESET, START_FEN, GameError
+from qi_game.contracts import Position, Snapshot
+from qi_game.core import RULESET, START_FEN, GameError, Outcome
+from qi_game.trajectory import GameView
 
 try:
     from qi_game_native import _native
@@ -25,6 +26,9 @@ class NativeTrajectory:
 
     def __init__(self, snapshot: Snapshot):
         snapshot = Snapshot.model_validate(snapshot.model_dump())
+        self._moves: tuple[str, ...] = ()
+        self._hash = sha256(f"{RULESET}|{START_FEN}".encode())
+        self._view: GameView | None = None
         # Restore through the same rule-error boundary as normal stepping.
         self._state = _native.State([])
         if snapshot.moves:
@@ -36,6 +40,9 @@ class NativeTrajectory:
                 for move in snapshot.moves:
                     self.step(move)
                 raise
+        self._moves = tuple(snapshot.moves)
+        for move in self._moves:
+            self._hash.update(f"|{move}".encode())
 
     @staticmethod
     def identity() -> dict[str, str]:
@@ -51,36 +58,64 @@ class NativeTrajectory:
             raise RuntimeError("Trajectory is closed.")
         return self._state
 
-    def inspect(self) -> Position:
-        board, red, result, checked, legal, moves = self._require_open().inspect()
+    def inspect(self) -> GameView:
+        state = self._require_open()
+        if self._view is not None:
+            return self._view
+        board, red, result, checked, legal = state.inspect()
         turn = "red" if red else "black"
         outcome = None
         if result:
-            outcome = Result(
+            outcome = Outcome(
                 winner=("black" if red else "red") if result in (1, 2) else None,
                 reason={1: "checkmate", 2: "stalemate", 3: "repetition", 4: "ply_limit"}[result],
             )
-        return Position(
-            snapshot=Snapshot(moves=moves),
+        self._view = GameView(
             board=board,
             turn=turn,
-            ply=len(moves),
-            state_hash=sha256("|".join((RULESET, START_FEN, *moves)).encode()).hexdigest(),
+            moves=self._moves,
+            state_hash=self._hash.hexdigest(),
             legal_moves=legal,
             in_check=checked,
             outcome=outcome,
         )
+        return self._view
 
-    def step(self, move: str, expected_hash: str | None = None) -> Position:
-        return step_many([self], [move], [expected_hash])[0]
+    def _guard(self, expected_hash):
+        if expected_hash is not None and expected_hash != self._hash.hexdigest():
+            raise GameError("stale_state", "The position changed. Inspect it again before moving.")
+
+    def _prepare(self, move):
+        if not isinstance(move, str):
+            raise TypeError("Actions must be coordinate strings.")
+        digest = self._hash.copy()
+        digest.update(f"|{move}".encode())
+        return (*self._moves, move), digest
+
+    def _commit(self, prepared):
+        self._moves, self._hash = prepared
+        self._view = None
+
+    def step(self, move: str, expected_hash: str | None = None) -> GameView:
+        state = self._require_open()
+        self._guard(expected_hash)
+        prepared = self._prepare(move)
+        error = state.step(move)
+        if error:
+            code, message = _ERRORS[error]
+            raise GameError(code, message)
+        self._commit(prepared)
+        return self.inspect()
 
     def close(self) -> None:
         self._state = None
+        self._moves = ()
+        self._view = None
 
 
 def step_many(
     games: list[NativeTrajectory], moves: list[str], expected_hashes: list[str | None] | None = None
-) -> list[Position]:
+) -> list[GameView]:
     """Atomically advance 1..128 distinct games, once each, in caller order.
 
     Inputs are Python coordinate strings, copied at the binding. All stale guards
@@ -95,14 +130,16 @@ def step_many(
         raise ValueError("Provide one guard per game.")
     states = [game._require_open() for game in games]
     for game, guard in zip(games, expected_hashes or [None] * len(games), strict=True):
-        if guard is not None and guard != game.inspect().state_hash:
-            raise GameError("stale_state", "The position changed. Inspect it again before moving.")
+        game._guard(guard)
     if any(not isinstance(move, str) for move in moves):
         raise TypeError("Actions must be coordinate strings.")
+    prepared = [game._prepare(move) for game, move in zip(games, moves, strict=True)]
     index, error = _native.step_many(states, moves)
     if error:
         code, message = _ERRORS[error]
         raise GameError(code, f"Batch item {index}: {message}")
+    for game, metadata in zip(games, prepared, strict=True):
+        game._commit(metadata)
     return [game.inspect() for game in games]
 
 
@@ -110,13 +147,13 @@ class NativeReferee:
     def inspect(self, snapshot: Snapshot) -> Position:
         game = NativeTrajectory(snapshot)
         try:
-            return game.inspect()
+            return game.inspect().to_position()
         finally:
             game.close()
 
     def apply(self, snapshot: Snapshot, move: str, expected_hash: str) -> Position:
         game = NativeTrajectory(snapshot)
         try:
-            return game.step(move, expected_hash)
+            return game.step(move, expected_hash).to_position()
         finally:
             game.close()

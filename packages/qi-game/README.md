@@ -19,8 +19,8 @@ dependencies.
 | `core.py` | Ruleset identity, sides, outcomes and `GameError`. |
 | `contracts.py` | Validated `Snapshot`, `Position` and `Result` data. |
 | `referee.py` | Structural `Referee` protocol: inspect a snapshot and apply a guarded action. |
-| `trajectory.py` | Persistent `Trajectory`/factory contracts and lazy `PythonTrajectory`. |
-| `execution.py` | Immutable `GameView` and bounded, caller-owned `ReplaySession` for sharing validated histories. |
+| `trajectory.py` | Immutable `GameView`, persistent `Trajectory`/factory contracts and lazy `PythonTrajectory`. |
+| `execution.py` | Bounded, caller-owned `ReplaySession` for sharing validated histories. |
 | `reference.py` | Readable Python rules, immutable `Game`, replay, and `PythonReferee`. |
 
 Importing contracts or the protocol does not import the reference implementation,
@@ -55,6 +55,13 @@ implements that boundary and caller-supplied batch stepping. A run-owned replay
 session supplies immutable results to collection validation, sampler and teacher
 consumers. Other data operations retain independent Python replay. Player
 sessions remain later slices under [the architecture decisions](../../records/work-items/items/AB-ARCH-001-modular-runtime.md).
+
+Persistent trajectories return immutable `GameView` values directly. Full history
+and legal actions are tuples; retained views stay valid after stepping or closing
+the trajectory. Use `view.snapshot()` or `view.to_position()` when interchange
+contracts are needed; each returns fresh mutable data. The snapshot-based referee
+protocol continues returning `Position`. Internal callers import `GameView` from
+`qi_game.trajectory`; there is no parallel legacy trajectory interface.
 
 `ReplaySession` caches at most 301 validated full histories under the supported
 ruleset/start, advancing one owned trajectory for consecutive moves. Uncached

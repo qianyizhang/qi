@@ -8,7 +8,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace qi_native {
@@ -122,4 +124,17 @@ struct State {
         return 0;
     }
 };
+
+int step(State& state, const std::string& move) {
+    int error = state.validate(move);
+    if (error) return error;
+    int source = (move[1] - '0') * 9 + move[0] - 'a';
+    int target = (move[3] - '0') * 9 + move[2] - 'a';
+    // Stage allocations before committing; scalar calls need no batch containers.
+    State pending = state;
+    pending.advance(source * 90 + target);
+    static_assert(std::is_nothrow_move_assignable_v<State>);
+    state = std::move(pending);
+    return 0;
+}
 } // namespace qi_native

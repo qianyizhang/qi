@@ -5,8 +5,9 @@ from typing import Literal, Self
 
 from pydantic import Field, model_validator
 from qi_game.core import GameError
-from qi_game.execution import GameView, ReplaySession
+from qi_game.execution import ReplaySession
 from qi_game.reference import Game, legal_moves
+from qi_game.trajectory import GameView
 
 from qi.players.policy.encoding import input_key
 from qi.teacher import TeacherAnalysis

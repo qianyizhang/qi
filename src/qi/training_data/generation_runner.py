@@ -13,9 +13,9 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 from qi_game.contracts import Snapshot
 from qi_game.core import GameError
-from qi_game.execution import GameView, ReplaySession
+from qi_game.execution import ReplaySession
 from qi_game.reference import Game, legal_moves
-from qi_game.trajectory import PythonTrajectory, TrajectoryFactory
+from qi_game.trajectory import GameView, PythonTrajectory, TrajectoryFactory
 
 from qi.artifacts import provenance
 from qi.evaluation import Corpus

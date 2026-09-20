@@ -2,40 +2,10 @@
 
 from collections import OrderedDict
 from contextlib import AbstractContextManager
-from dataclasses import dataclass
 
-from qi_game.contracts import Position, Snapshot
-from qi_game.core import RULESET, START_FEN, Outcome, Side
-from qi_game.trajectory import Trajectory, TrajectoryFactory
-
-
-@dataclass(frozen=True, slots=True)
-class GameView:
-    """Immutable referee result; contains no executable Python rule state."""
-
-    board: str
-    turn: Side
-    moves: tuple[str, ...]
-    state_hash: str
-    legal_moves: tuple[str, ...]
-    in_check: bool
-    outcome: Outcome | None
-
-    @classmethod
-    def from_position(cls, position: Position) -> "GameView":
-        result = position.outcome
-        return cls(
-            position.board,
-            position.turn,
-            tuple(position.snapshot.moves),
-            position.state_hash,
-            tuple(position.legal_moves),
-            position.in_check,
-            Outcome(result.winner, result.reason) if result else None,
-        )
-
-    def snapshot(self) -> Snapshot:
-        return Snapshot(moves=list(self.moves))
+from qi_game.contracts import Snapshot
+from qi_game.core import RULESET, START_FEN
+from qi_game.trajectory import GameView, Trajectory, TrajectoryFactory
 
 
 class ReplaySession(AbstractContextManager):
@@ -65,11 +35,11 @@ class ReplaySession(AbstractContextManager):
             self._views.move_to_end(moves)
             return self._views[moves]
         if self._cursor is not None and moves and moves[:-1] == self._moves:
-            position = self._cursor.step(moves[-1])
+            view = self._cursor.step(moves[-1])
         else:
             candidate = self.factory(snapshot)
             try:
-                position = candidate.inspect()
+                view = candidate.inspect()
             except BaseException:
                 candidate.close()
                 raise
@@ -77,11 +47,10 @@ class ReplaySession(AbstractContextManager):
                 self._cursor.close()
             self._cursor = candidate
         self._moves = moves
-        if position.snapshot != snapshot:
+        if view.moves != moves:
             # A broken implementation must never publish a result for another history.
             self.close()
             raise ValueError("Referee returned a different replay history.")
-        view = GameView.from_position(position)
         self._views[moves] = view
         if len(self._views) > self.capacity:
             self._views.popitem(last=False)

@@ -31,7 +31,7 @@ from qi_game_native.backend import NativeTrajectory, step_many
 games = [NativeTrajectory(Snapshot()), NativeTrajectory(Snapshot())]
 try:
     positions = step_many(games, ["b2e2", "a3a4"])
-    assert positions[0].snapshot.moves == ["b2e2"]
+    assert positions[0].moves == ("b2e2",)
 finally:
     for game in games:
         game.close()
@@ -39,8 +39,12 @@ finally:
 
 Each handle exclusively owns one game. Full replay history determines repetition
 and outcomes; restoration validates every action. No arbitrary-diagram API or
-automatic reset is exposed. `inspect()` and `step()` return detached contract
-objects; callers may retain or modify those objects without changing a handle.
+automatic reset is exposed. `inspect()` and `step()` return immutable `GameView`
+objects; callers may retain them across later steps and close. Inspection reuses
+the current view. Full move history stays in the handle's Python metadata instead
+of being exported from C++ every move; its replay hash updates incrementally with
+identical bytes. Metadata changes only after native transitions succeed. Mutable
+interchange data is available through `view.snapshot()` and `view.to_position()`.
 Explicit idempotent `close()` releases state; Python ownership also releases it
 when an abandoned handle is collected. Operations after close fail.
 
@@ -48,12 +52,15 @@ when an abandoned handle is collected. Operations after close fail.
 Actions are coordinate strings copied into C++; no borrowed array/pointer survives
 the call. All supplied stale guards are checked before action validation. A rule,
 guard or invalid-input rejection leaves every handle unchanged. Native changes
-are staged before commit. C++ retains the GIL; handles are exclusively owned by
+are staged before commit, and Python history/hash allocations are prepared before
+native execution. Scalar steps use a dedicated C++ entry point with the same
+staging guarantee, avoiding batch containers. C++ retains the GIL; handles are exclusively owned by
 one caller. This is serial batch execution, with no worker or thread scheduler.
 Workload truncation belongs to the caller; only referee outcomes terminate games.
 
 `NativeReferee` also implements snapshot-based inspect/apply for explicit HTTP
-injection. `NativeTrajectory.identity()` records the package version, compiler
+injection, returning fresh `Position` contracts at that boundary.
+`NativeTrajectory.identity()` records the package version, compiler
 and actual extension SHA-256. Semantic state hashes exclude backend identity.
 
 ## Generation integration
@@ -83,6 +90,8 @@ The original integration's throughput conclusion belongs to
 [AB-ARCH-004](../../records/work-items/items/AB-ARCH-004-native-generation.md);
 the shared-validation follow-up belongs to
 [AB-ARCH-005](../../records/work-items/items/AB-ARCH-005-shared-replay-execution.md).
+Compact observation and scalar-step measurements belong to
+[AB-ARCH-006](../../records/work-items/items/AB-ARCH-006-compact-native-observations.md).
 The earlier complete-native-loop speedup does not establish generation speed.
 
 ## Verification

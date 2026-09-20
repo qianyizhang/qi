@@ -12,8 +12,9 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 from qi_game.contracts import Snapshot
 from qi_game.core import GameError
-from qi_game.execution import GameView, ReplaySession
+from qi_game.execution import ReplaySession
 from qi_game.reference import Game, inspect, legal_moves, restore
+from qi_game.trajectory import GameView
 
 
 @dataclass(frozen=True)

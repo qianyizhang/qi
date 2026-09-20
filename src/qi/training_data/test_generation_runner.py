@@ -5,8 +5,8 @@ import json
 import pytest
 from qi_game.contracts import Snapshot
 from qi_game.core import GameError
-from qi_game.execution import GameView
 from qi_game.reference import legal_moves, restore
+from qi_game.trajectory import GameView
 
 from qi.evaluation import Corpus, Opening
 from qi.teacher import TeacherAnalysis, TeacherIdentity, digest

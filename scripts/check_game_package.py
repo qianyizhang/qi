@@ -80,7 +80,7 @@ from qi_game_native.backend import NativeTrajectory
 from qi_game.contracts import Snapshot
 assert 'qi_game.reference' not in sys.modules
 game = NativeTrajectory(Snapshot())
-assert game.step('b2e2').snapshot.moves == ['b2e2']
+assert game.step('b2e2').moves == ('b2e2',)
 game.close()
 assert 'qi_game.reference' not in sys.modules
 """,

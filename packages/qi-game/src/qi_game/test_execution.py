@@ -1,6 +1,6 @@
 """Shared immutable replay results cannot bypass history or lifecycle checks."""
 
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 
 import pytest
 
@@ -63,8 +63,7 @@ def test_failed_restore_preserves_session_and_rejects_broken_backend():
     class Broken(PythonTrajectory):
         def inspect(self):
             result = super().inspect()
-            result.snapshot.moves.append("a3a4")
-            return result
+            return replace(result, moves=(*result.moves, "a3a4"))
 
     with ReplaySession(Broken) as session:
         with pytest.raises(ValueError, match="different replay"):

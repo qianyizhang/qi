@@ -52,13 +52,15 @@ PYBIND11_MODULE(_native, module) {
             }
             return state;
         }))
+        .def("step", &qi_native::step)
         .def("inspect", [](State& state) {
             int result = state.result();
-            std::vector<std::string> moves, history;
-            if (!result) for (int move : state.actions()) moves.push_back(qi_native::move_text(move));
-            for (int move : state.history) history.push_back(qi_native::move_text(move));
+            const auto& actions = state.actions();
+            py::tuple moves(result ? 0 : actions.size());
+            if (!result) for (size_t i = 0; i < actions.size(); ++i)
+                moves[i] = qi_native::move_text(actions[i]);
             return py::make_tuple(std::string(state.board.data(), 90), state.side, result,
-                                  qi_native::checked(state.board, state.side), moves, history);
+                                  qi_native::checked(state.board, state.side), moves);
         });
     // Keep the GIL: exclusive game ownership is the initial concurrency policy.
     module.def("step_many", &step_many);

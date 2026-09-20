@@ -8,13 +8,12 @@ int main() {
     State state;
     for (const auto& [move, code] : std::vector<std::pair<std::string, int>>{
              {"bad", 2}, {"a9a8", 3}, {"a0a9", 4}, {std::string("a0a1\0", 5), 2}}) {
-        assert(state.validate(move) == code);
+        assert(step(state, move) == code);
         assert(state.history.empty() && state.key() == std::string(START) + "r");
     }
     for (int i = 0; i < 2; ++i) {
         for (int move : {1 * 90 + 20, 82 * 90 + 65, 20 * 90 + 1, 65 * 90 + 82}) {
-            assert(state.validate(move_text(move)) == 0);
-            state.advance(move);
+            assert(step(state, move_text(move)) == 0);
         }
     }
     assert(state.result() == 3 && state.validate("bad") == 1);
@@ -34,8 +33,7 @@ int main() {
         State game;
         while (!game.result()) {
             int move = game.actions()[random() % game.actions().size()];
-            assert(game.validate(move_text(move)) == 0);
-            game.advance(move);
+            assert(step(game, move_text(move)) == 0);
             assert(game.ply <= 300);
         }
     }
