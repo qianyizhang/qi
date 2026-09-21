@@ -93,6 +93,10 @@ the shared-validation follow-up belongs to
 Compact observation and scalar-step measurements belong to
 [AB-ARCH-006](../../records/work-items/items/AB-ARCH-006-compact-native-observations.md).
 The earlier complete-native-loop speedup does not establish generation speed.
+The [generation diagnosis](../../records/reports/2026-09-21-generation-bottlenecks.md)
+separates native state-copy cost from storage and external teacher work. Existing
+Python/native referee phase counters charge different work and should not be used
+as a direct engine-speed comparison.
 
 ## Verification
 

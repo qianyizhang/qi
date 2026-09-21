@@ -2,7 +2,7 @@
 description: Recall and record experiments across kinds, and execute or inspect bounded search runs.
 scope: shared experiment catalog and search evidence
 status: experimental
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -258,6 +258,35 @@ remain readable even when trace generation is incompatible. Invalid traces are
 reported separately from valid base evidence. Refresh evidence after a job to
 include its new trace in native views and subsequent exports. Benchmark units and
 untraced timings remain unchanged.
+
+## Opt-in cost profiling
+
+[`qi.profiling`](../profiling.py) provides nested wall spans, interval wall/CPU
+accounting, POSIX resource counters and optional cProfile export:
+
+```python
+from pathlib import Path
+from qi.profiling import Measurement
+
+with Measurement(functions=True) as measurement:
+    with measurement.timings.span("work"):
+        run_workload()
+result = measurement.result
+measurement.export_functions(Path("artifacts/new-profile"))
+```
+
+Each measurement is single-use and freezes results on exit, including exceptions;
+later validation cannot change them. Spans track inclusive and exclusive wall
+time on one synchronous call stack. `Timings.wrap(owner, method, label)` temporarily
+instruments a callable attribute and restores it on exit; shared class/module
+patches require an exclusively owned worker. This is not concurrent task profiling.
+Child CPU includes all waited children. RSS values are lifetime maxima for the
+worker and children separately, not a combined peak or interval delta.
+
+Use fresh isolated workers and separate unprofiled timings for speed claims.
+The [generation study](../../../data/experiments/generation_profile_v1/README.md)
+owns its fixed workloads, instrumentation and diagnostic modes; they are not
+part of the reusable package API or the search runner.
 
 ## Shared catalog and recording
 

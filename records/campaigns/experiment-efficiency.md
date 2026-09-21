@@ -2,7 +2,7 @@
 description: Investigate representative experiment costs and preserve evidence while reducing them.
 scope: experiment efficiency campaign
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-21
 document_class: coordination
 ---
 
@@ -21,29 +21,34 @@ Each owner retains its evidence checks. Follow the [experiment method](../../doc
 
 ## Current understanding
 
-Cumulative generation checkpoints revisit and serialize growing source libraries.
-Learning reports perform repeated inference and compute full-dataset metrics.
-These are candidate costs, not measured dominant bottlenecks. Persistent teacher
-sessions already exist; their recorded pilot does not establish end-to-end gains
-for every preparation workload.
+The [generation diagnosis](../reports/2026-09-21-generation-bottlenecks.md)
+measures two distinct regimes: collection writes dominate cheap controlled
+generation, while external teacher search dominates the realistic policy workload.
+The maintained native referee also pays for full-state copying on each move.
+These are measured costs; learning-report inference and training preparation
+remain separate, unprofiled candidates.
 
 ## Unknowns
 
-Representative phase timings, peak memory and scaling; safe reuse boundaries;
-whether checkpoint cadence, storage layout or report computation merits the first
-change. Minibatch training changes the optimization recipe and needs separate
-scientific evaluation.
+Whether independent policy-generation workers improve retained throughput at
+acceptable combined resource cost; whether bounded native state preparation can
+retain allocation-failure atomicity; and how to improve persistence while keeping
+the accepted recovery contract. Minibatch training changes the optimization recipe
+and needs separate scientific evaluation.
 
 ## Frontier
 
-Select one bounded representative workload, preserve its inputs and outputs, and
-profile it before choosing an optimization. Consider prepared-input reuse,
-checkpoint cadence or sharding, and chunked metrics only where measurements
-justify them. No experiment or performance change is scheduled by this page.
+For real-teacher throughput, compare two isolated workers with serial execution of
+the same frozen sources before adding a scheduler. For native execution, evaluate
+bounded atomic preparation instead of copying the entire repetition map. Preserve
+the current per-move durability contract; diagnostic synchronization disabling is
+not an adoption candidate. The report ranks these by workload. No follow-up
+implementation is scheduled by this page.
 
 ## Work
 
 - [Profile experiment costs](../work-items/items/AB-LEARN-008-experiment-performance.md).
+- [Native and pipeline bottleneck evidence](../reports/2026-09-21-generation-bottlenecks.md).
 - [Persistent teacher preparation evidence](../work-items/items/AB-DATA-004-persistent-teacher.md).
 
 Work items own execution status and acceptance criteria.
@@ -52,6 +57,11 @@ Work items own execution status and acceptance criteria.
 
 2026-09-10: captured review candidates. Separate structural suspicions from timed
 evidence, and performance-only changes from changes to the learning treatment.
+
+2026-09-21: measured generation after native integration and incremental append.
+Whole-game native-loop speed does not predict per-move integration or external
+teacher throughput. Existing Python/native referee phase timers charge different
+work; use matched complete actions and separate unprofiled pipeline comparisons.
 
 ## Closeout
 
