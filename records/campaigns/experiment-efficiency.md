@@ -24,31 +24,35 @@ Each owner retains its evidence checks. Follow the [experiment method](../../doc
 The [generation diagnosis](../reports/2026-09-21-generation-bottlenecks.md)
 measures two distinct regimes: collection writes dominate cheap controlled
 generation, while external teacher search dominates the realistic policy workload.
-The maintained native referee also pays for full-state copying on each move.
-These are measured costs; learning-report inference and training preparation
+The [follow-up](../reports/2026-09-21-generation-optimization.md) removes full-state
+copying from native scalar moves: matched action throughput improves 1.882x and
+controlled generation 1.086x over the old native implementation. Two isolated
+teacher/game workers improve verified generation throughput 1.770x, with higher
+simultaneous memory use. Learning-report inference and training preparation
 remain separate, unprofiled candidates.
 
 ## Unknowns
 
-Whether independent policy-generation workers improve retained throughput at
-acceptable combined resource cost; whether bounded native state preparation can
-retain allocation-failure atomicity; and how to improve persistence while keeping
-the accepted recovery contract. Minibatch training changes the optimization recipe
+How production parallel generation should combine isolated worker collections and
+own interruption/recovery; how worker count scales beyond the measured pair; and
+how to improve persistence while keeping the accepted recovery contract.
+Minibatch training changes the optimization recipe
 and needs separate scientific evaluation.
 
 ## Frontier
 
-For real-teacher throughput, compare two isolated workers with serial execution of
-the same frozen sources before adding a scheduler. For native execution, evaluate
-bounded atomic preparation instead of copying the entire repetition map. Preserve
-the current per-move durability contract; diagnostic synchronization disabling is
-not an adoption candidate. The report ranks these by workload. No follow-up
-implementation is scheduled by this page.
+The measured two-worker gain supports designing opt-in production parallel
+generation, with explicit collection combination and recovery ownership before
+implementation. Native scalar preparation is implemented and tested; Python stays
+default. Preserve per-move durability. Diagnostic synchronization disabling is not
+an adoption candidate. No production scheduler is authorized by this page.
 
 ## Work
 
 - [Profile experiment costs](../work-items/items/AB-LEARN-008-experiment-performance.md).
 - [Native and pipeline bottleneck evidence](../reports/2026-09-21-generation-bottlenecks.md).
+- [Atomic native stepping](../work-items/items/AB-ARCH-008-atomic-native-step.md).
+- [Two-worker generation experiment](../work-items/items/AB-DATA-009-two-worker-generation.md).
 - [Persistent teacher preparation evidence](../work-items/items/AB-DATA-004-persistent-teacher.md).
 
 Work items own execution status and acceptance criteria.
@@ -62,6 +66,11 @@ evidence, and performance-only changes from changes to the learning treatment.
 Whole-game native-loop speed does not predict per-move integration or external
 teacher throughput. Existing Python/native referee phase timers charge different
 work; use matched complete actions and separate unprofiled pipeline comparisons.
+
+2026-09-21 follow-up: safe scalar preparation removes the measured native copy
+cost, while teacher throughput benefits from two isolated workers. Exact combined
+outputs and interrupted-worker reuse pass; the next decision concerns production
+output and recovery semantics, not whether concurrency has local throughput value.
 
 ## Closeout
 

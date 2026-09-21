@@ -2,8 +2,10 @@
 
 import argparse
 import os
+import shlex
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -22,6 +24,21 @@ def main() -> None:
 
     with TemporaryDirectory(prefix="qi-game-package-") as directory:
         work = Path(directory).resolve()
+        if native:
+            executable = work / "native-sanitizer"
+            compiler = shlex.split(os.environ.get("CXX") or sysconfig.get_config_var("CXX") or "c++")
+            run(
+                *compiler,
+                "-std=c++17",
+                "-O1",
+                "-g",
+                "-fsanitize=address,undefined",
+                "-fno-omit-frame-pointer",
+                str(root / "packages/qi-game-native/sanitizer.cpp"),
+                "-o",
+                str(executable),
+            )
+            run(str(executable), cwd=work)
         dist = work / "dist"
         run("uv", "build", "--package", "qi-game", "--sdist", "--out-dir", str(dist))
         run("uv", "build", "--wheel", str(next(dist.glob("*.tar.gz"))), "--out-dir", str(dist), cwd=work)

@@ -53,8 +53,12 @@ Actions are coordinate strings copied into C++; no borrowed array/pointer surviv
 the call. All supplied stale guards are checked before action validation. A rule,
 guard or invalid-input rejection leaves every handle unchanged. Native changes
 are staged before commit, and Python history/hash allocations are prepared before
-native execution. Scalar steps use a dedicated C++ entry point with the same
-staging guarantee, avoiding batch containers. C++ retains the GIL; handles are exclusively owned by
+native execution. Scalar steps prepare the next board/key, history capacity and
+one repetition-table entry before committing nonthrowing value updates. Allocation
+failure preserves logical state without copying the growing history/repetition map;
+private capacity and legality-cache changes are not observable game transitions.
+Batch execution retains full-state staging for its all-or-nothing guarantee.
+C++ retains the GIL; handles are exclusively owned by
 one caller. This is serial batch execution, with no worker or thread scheduler.
 Workload truncation belongs to the caller; only referee outcomes terminate games.
 
@@ -94,14 +98,17 @@ Compact observation and scalar-step measurements belong to
 [AB-ARCH-006](../../records/work-items/items/AB-ARCH-006-compact-native-observations.md).
 The earlier complete-native-loop speedup does not establish generation speed.
 The [generation diagnosis](../../records/reports/2026-09-21-generation-bottlenecks.md)
-separates native state-copy cost from storage and external teacher work. Existing
+identified scalar state-copy cost separately from storage and external teacher
+work. The [safe-step follow-up](../../records/reports/2026-09-21-generation-optimization.md)
+measures its removal and the separate two-worker generation experiment. Existing
 Python/native referee phase counters charge different work and should not be used
 as a direct engine-speed comparison.
 
 ## Verification
 
-`make test-native` builds an sdist and wheel, tests the installed package in an
-isolated environment, then exercises generation and HTTP integration. The native
+`make test-native` first runs standalone ASan/UBSan and allocation-failure checks,
+then builds an sdist and wheel, tests the installed package in an isolated
+environment, and exercises generation and HTTP integration. The native
 wheel needs only `qi-game` and its declared dependencies. Core headers/sources and
 colocated tests ship with the wheel. CI defines macOS and Linux lanes;
 configured coverage is distinct from a locally executed result.
@@ -113,3 +120,7 @@ clang++ -std=c++17 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer \
   packages/qi-game-native/sanitizer.cpp -o /tmp/qi-native-sanitizer
 /tmp/qi-native-sanitizer
 ```
+
+The standalone check fails each real allocation in scalar stepping on fresh,
+growing and repeated-position states, verifying unchanged logical state and an
+identical successful retry. Production code contains no failure-injection hooks.

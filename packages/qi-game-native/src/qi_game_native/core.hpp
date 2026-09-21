@@ -97,7 +97,12 @@ struct State {
     std::vector<int> cached;
     bool dirty = true;
     explicit State() { std::copy(START, START + 91, board.begin()); repetitions[key()] = 1; }
-    std::string key() const { return std::string(board.data(), 90) + (side ? 'r' : 'b'); }
+    static std::string key(const Board& position, bool red_to_move) {
+        std::string value(position.data(), 91);
+        value.back() = red_to_move ? 'r' : 'b';
+        return value;
+    }
+    std::string key() const { return key(board, side); }
     const std::vector<int>& actions() {
         if (dirty) { cached = legal(board, side); dirty = false; }
         return cached;
@@ -109,8 +114,21 @@ struct State {
     }
     void advance(int m) {
         int s = m / 90, t = m % 90;
-        board[t] = board[s]; board[s] = '.';
-        side = !side; ++ply; history.push_back(m); ++repetitions[key()]; dirty = true;
+        Board next = board;
+        next[t] = next[s]; next[s] = '.';
+        auto next_key = key(next, !side);
+        // Reserve geometrically, not once per move. Capacity changes are private;
+        // a failed allocation must preserve the logical history and repetitions.
+        if (history.size() == history.capacity())
+            history.reserve(std::max(size_t{8}, history.size() * 2));
+        // This is the last potentially throwing operation. try_emplace leaves the
+        // map unchanged on allocation failure, including a failed rehash.
+        auto entry = repetitions.try_emplace(std::move(next_key), 0).first;
+        // No allocation below: int insertion fits reserved capacity, and board,
+        // counters and flags are trivial values. Batch callers still stage copies.
+        history.push_back(m);
+        ++entry->second;
+        board = next; side = !side; ++ply; dirty = true;
     }
     int validate(const std::string& move) {
         if (result()) return 1;
@@ -130,11 +148,7 @@ int step(State& state, const std::string& move) {
     if (error) return error;
     int source = (move[1] - '0') * 9 + move[0] - 'a';
     int target = (move[3] - '0') * 9 + move[2] - 'a';
-    // Stage allocations before committing; scalar calls need no batch containers.
-    State pending = state;
-    pending.advance(source * 90 + target);
-    static_assert(std::is_nothrow_move_assignable_v<State>);
-    state = std::move(pending);
+    state.advance(source * 90 + target);
     return 0;
 }
 } // namespace qi_native

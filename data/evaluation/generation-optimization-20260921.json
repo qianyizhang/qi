@@ -1,0 +1,629 @@
+{
+  "produced_by": "experiment@1.0.0 \u00b7 agent=GPT-6 \u00b7 effort=unspecified \u00b7 2026-09-21",
+  "baseline": {
+    "commit": "b1eff30ed718c27b688f46f0df4eedc80f2c9545",
+    "binary": "packages/qi-game-native/src/qi_game_native/_native.cpython-312-darwin.so",
+    "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f"
+  },
+  "native": {
+    "controlled": {
+      "cells": [
+        {
+          "round": 1,
+          "label": "baseline-native",
+          "seconds": 2.249949541997921,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-1-baseline-native",
+          "worker_cpu_seconds": 1.885898,
+          "waited_child_cpu_seconds": 0.023024999999999997,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 1,
+          "label": "candidate-native",
+          "seconds": 2.1503785000022617,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-1-candidate-native",
+          "worker_cpu_seconds": 1.753457,
+          "waited_child_cpu_seconds": 0.023207999999999993,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "dc2cddb15ab99ced01b5a863b585694f8aabdf2016b6d6a5edf0e974416ee880",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 1,
+          "label": "candidate-python",
+          "seconds": 2.47257529199851,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-1-candidate-python",
+          "worker_cpu_seconds": 2.110262,
+          "waited_child_cpu_seconds": 0.023215,
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          }
+        },
+        {
+          "round": 2,
+          "label": "candidate-python",
+          "seconds": 2.4827959169997484,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-2-candidate-python",
+          "worker_cpu_seconds": 2.117038,
+          "waited_child_cpu_seconds": 0.023234000000000005,
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          }
+        },
+        {
+          "round": 2,
+          "label": "candidate-native",
+          "seconds": 2.1118662919980125,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-2-candidate-native",
+          "worker_cpu_seconds": 1.77359,
+          "waited_child_cpu_seconds": 0.022616000000000004,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "dc2cddb15ab99ced01b5a863b585694f8aabdf2016b6d6a5edf0e974416ee880",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 2,
+          "label": "baseline-native",
+          "seconds": 2.2941251669981284,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-2-baseline-native",
+          "worker_cpu_seconds": 1.9169,
+          "waited_child_cpu_seconds": 0.022697000000000002,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 3,
+          "label": "baseline-native",
+          "seconds": 2.2874335839951527,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-3-baseline-native",
+          "worker_cpu_seconds": 1.9105149999999997,
+          "waited_child_cpu_seconds": 0.022905000000000002,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 3,
+          "label": "candidate-native",
+          "seconds": 2.1031129170005443,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-3-candidate-native",
+          "worker_cpu_seconds": 1.754345,
+          "waited_child_cpu_seconds": 0.023435000000000004,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "dc2cddb15ab99ced01b5a863b585694f8aabdf2016b6d6a5edf0e974416ee880",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 3,
+          "label": "candidate-python",
+          "seconds": 2.496023208994302,
+          "semantic_sha256": "b6d7618788cdf804327fb003d055ff288927006dfb246a307edd76a083adc519",
+          "path": "artifacts/generation-optimization-20260921/native-01/controlled-3-candidate-python",
+          "worker_cpu_seconds": 2.12899,
+          "waited_child_cpu_seconds": 0.023336,
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          }
+        }
+      ],
+      "pairs": [
+        {
+          "workload": "controlled",
+          "round": 1,
+          "candidate_over_baseline_native": 1.04630396090528,
+          "native_over_python": 1.1498325955155844
+        },
+        {
+          "workload": "controlled",
+          "round": 2,
+          "candidate_over_baseline_native": 1.0863022795006985,
+          "native_over_python": 1.1756406768777032
+        },
+        {
+          "workload": "controlled",
+          "round": 3,
+          "candidate_over_baseline_native": 1.087641831070814,
+          "native_over_python": 1.1868232032705717
+        }
+      ],
+      "median_candidate_over_baseline_native": 1.0863022795006985,
+      "median_native_over_python": 1.1756406768777032
+    },
+    "teacher": {
+      "cells": [
+        {
+          "round": 1,
+          "label": "baseline-native",
+          "seconds": 28.652324624999892,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-1-baseline-native",
+          "worker_cpu_seconds": 1.955097,
+          "waited_child_cpu_seconds": 25.470995000000002,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 1,
+          "label": "candidate-native",
+          "seconds": 28.706008332999772,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-1-candidate-native",
+          "worker_cpu_seconds": 1.976702,
+          "waited_child_cpu_seconds": 25.49836,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "dc2cddb15ab99ced01b5a863b585694f8aabdf2016b6d6a5edf0e974416ee880",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 1,
+          "label": "candidate-python",
+          "seconds": 29.24804220799706,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-1-candidate-python",
+          "worker_cpu_seconds": 2.062293,
+          "waited_child_cpu_seconds": 25.915942,
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          }
+        },
+        {
+          "round": 2,
+          "label": "candidate-python",
+          "seconds": 29.044227209000383,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-2-candidate-python",
+          "worker_cpu_seconds": 2.026913,
+          "waited_child_cpu_seconds": 25.755063999999997,
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          }
+        },
+        {
+          "round": 2,
+          "label": "candidate-native",
+          "seconds": 29.187110249993566,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-2-candidate-native",
+          "worker_cpu_seconds": 2.0014440000000002,
+          "waited_child_cpu_seconds": 25.925219000000002,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "dc2cddb15ab99ced01b5a863b585694f8aabdf2016b6d6a5edf0e974416ee880",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 2,
+          "label": "baseline-native",
+          "seconds": 28.791254583993577,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-2-baseline-native",
+          "worker_cpu_seconds": 1.9675710000000002,
+          "waited_child_cpu_seconds": 25.585417,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 3,
+          "label": "baseline-native",
+          "seconds": 28.961616541004332,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-3-baseline-native",
+          "worker_cpu_seconds": 1.98347,
+          "waited_child_cpu_seconds": 25.705593,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "b43ae54af624de35e263aede76614c9dd524509786645dcfdce551c7b9d04f8f",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 3,
+          "label": "candidate-native",
+          "seconds": 32.25527449999936,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-3-candidate-native",
+          "worker_cpu_seconds": 2.1432960000000003,
+          "waited_child_cpu_seconds": 28.862613,
+          "identity": {
+            "backend": "minimal-cpp",
+            "version": "0.1.0",
+            "binary_sha256": "dc2cddb15ab99ced01b5a863b585694f8aabdf2016b6d6a5edf0e974416ee880",
+            "compiler": "Apple LLVM 21.0.0 (clang-2100.1.1.101)"
+          }
+        },
+        {
+          "round": 3,
+          "label": "candidate-python",
+          "seconds": 29.130306665996613,
+          "semantic_sha256": "58dedbcc69f84d98f1f50dec5b66ca51ed90597140da9c3b8f528b92feacba39",
+          "path": "artifacts/generation-optimization-20260921/native-01/teacher-3-candidate-python",
+          "worker_cpu_seconds": 2.025412,
+          "waited_child_cpu_seconds": 25.842926,
+          "identity": {
+            "backend": "python-reference",
+            "version": "1"
+          }
+        }
+      ],
+      "pairs": [
+        {
+          "workload": "teacher",
+          "round": 1,
+          "candidate_over_baseline_native": 0.9981298790351786,
+          "native_over_python": 1.018882244745055
+        },
+        {
+          "workload": "teacher",
+          "round": 2,
+          "candidate_over_baseline_native": 0.9864373121350691,
+          "native_over_python": 0.9951045841890698
+        },
+        {
+          "workload": "teacher",
+          "round": 3,
+          "candidate_over_baseline_native": 0.897887771533456,
+          "native_over_python": 0.9031176177402301
+        }
+      ],
+      "median_candidate_over_baseline_native": 0.9864373121350691,
+      "median_native_over_python": 0.9951045841890698
+    },
+    "actions": {
+      "cells": [
+        {
+          "round": 1,
+          "label": "baseline-native",
+          "seconds": 0.27816395799891325,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-1-baseline-native"
+        },
+        {
+          "round": 1,
+          "label": "candidate-native",
+          "seconds": 0.15162833299837075,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-1-candidate-native"
+        },
+        {
+          "round": 1,
+          "label": "candidate-python",
+          "seconds": 0.41289700000197627,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-1-candidate-python"
+        },
+        {
+          "round": 2,
+          "label": "candidate-python",
+          "seconds": 0.42119820800144225,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-2-candidate-python"
+        },
+        {
+          "round": 2,
+          "label": "candidate-native",
+          "seconds": 0.14785870799823897,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-2-candidate-native"
+        },
+        {
+          "round": 2,
+          "label": "baseline-native",
+          "seconds": 0.2833923340003821,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-2-baseline-native"
+        },
+        {
+          "round": 3,
+          "label": "baseline-native",
+          "seconds": 0.28040270900237374,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-3-baseline-native"
+        },
+        {
+          "round": 3,
+          "label": "candidate-native",
+          "seconds": 0.14897791700059315,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-3-candidate-native"
+        },
+        {
+          "round": 3,
+          "label": "candidate-python",
+          "seconds": 0.4106839590021991,
+          "semantic_sha256": "41c7407500845b00e416d93c6b827a378960709299777b2006f17d5bfa1479e7",
+          "path": "artifacts/generation-optimization-20260921/native-01/actions-3-candidate-python"
+        }
+      ],
+      "pairs": [
+        {
+          "workload": "actions",
+          "round": 1,
+          "candidate_over_baseline_native": 1.8345117465737892,
+          "native_over_python": 2.7230860607457372
+        },
+        {
+          "workload": "actions",
+          "round": 2,
+          "candidate_over_baseline_native": 1.9166428398911572,
+          "native_over_python": 2.8486533779698577
+        },
+        {
+          "workload": "actions",
+          "round": 3,
+          "candidate_over_baseline_native": 1.8821763295378693,
+          "native_over_python": 2.756676742906561
+        }
+      ],
+      "median_candidate_over_baseline_native": 1.8821763295378693,
+      "median_native_over_python": 2.756676742906561
+    }
+  },
+  "workers": {
+    "combined": {
+      "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+      "games": 16,
+      "plies": 1402,
+      "selected": 169,
+      "analyses": 545
+    },
+    "pairs": [
+      {
+        "round": 1,
+        "two_over_one": 1.8151757785983267
+      },
+      {
+        "round": 2,
+        "two_over_one": 1.7651777915544378
+      },
+      {
+        "round": 3,
+        "two_over_one": 1.7697062239604275
+      }
+    ],
+    "median_two_over_one": 1.7697062239604275,
+    "cells": [
+      {
+        "round": 1,
+        "workers": 1,
+        "job_wall_seconds": 29.514555541005393,
+        "waited_process_tree_cpu_seconds": 32.872128,
+        "sampled_process_tree_rss_mib": 647.78125,
+        "rss_samples": 251,
+        "resource_boundary": "Worker startup through verified results; CPU includes ps probes and waited descendants; RSS sums coordinator/workers/descendants, may double-count shared pages and miss short peaks.",
+        "selected": 169,
+        "selected_per_second": 5.7259883099104645,
+        "generation_cpu_seconds": 27.647897,
+        "shards": [
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-1-workers-1/shard-0",
+            "games": 8,
+            "plies": 744,
+            "selected": 87,
+            "semantic_sha256": "cb5c4fc53fb83bc2f3954adee076d313ec9d7083980f7d2b9dc51769e6d103e6"
+          },
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-1-workers-1/shard-1",
+            "games": 8,
+            "plies": 658,
+            "selected": 82,
+            "semantic_sha256": "fba32e914f1953dfa4dc975279906fe738039b44aaed8b6a286c1aaa2ff96fca"
+          }
+        ]
+      },
+      {
+        "round": 1,
+        "workers": 2,
+        "job_wall_seconds": 16.25988837499608,
+        "waited_process_tree_cpu_seconds": 32.199019,
+        "sampled_process_tree_rss_mib": 1210.109375,
+        "rss_samples": 137,
+        "resource_boundary": "Worker startup through verified results; CPU includes ps probes and waited descendants; RSS sums coordinator/workers/descendants, may double-count shared pages and miss short peaks.",
+        "selected": 169,
+        "selected_per_second": 10.393675288686644,
+        "generation_cpu_seconds": 28.993492000000003,
+        "shards": [
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-1-workers-2/shard-1",
+            "games": 8,
+            "plies": 658,
+            "selected": 82,
+            "semantic_sha256": "fba32e914f1953dfa4dc975279906fe738039b44aaed8b6a286c1aaa2ff96fca"
+          },
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-1-workers-2/shard-0",
+            "games": 8,
+            "plies": 744,
+            "selected": 87,
+            "semantic_sha256": "cb5c4fc53fb83bc2f3954adee076d313ec9d7083980f7d2b9dc51769e6d103e6"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "workers": 2,
+        "job_wall_seconds": 16.991351249998843,
+        "waited_process_tree_cpu_seconds": 33.75206799999999,
+        "sampled_process_tree_rss_mib": 1215.703125,
+        "rss_samples": 146,
+        "resource_boundary": "Worker startup through verified results; CPU includes ps probes and waited descendants; RSS sums coordinator/workers/descendants, may double-count shared pages and miss short peaks.",
+        "selected": 169,
+        "selected_per_second": 9.946236618468559,
+        "generation_cpu_seconds": 30.250055000000003,
+        "shards": [
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-2-workers-2/shard-1",
+            "games": 8,
+            "plies": 658,
+            "selected": 82,
+            "semantic_sha256": "fba32e914f1953dfa4dc975279906fe738039b44aaed8b6a286c1aaa2ff96fca"
+          },
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-2-workers-2/shard-0",
+            "games": 8,
+            "plies": 744,
+            "selected": 87,
+            "semantic_sha256": "cb5c4fc53fb83bc2f3954adee076d313ec9d7083980f7d2b9dc51769e6d103e6"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "workers": 1,
+        "job_wall_seconds": 29.992755874998693,
+        "waited_process_tree_cpu_seconds": 33.389931,
+        "sampled_process_tree_rss_mib": 662.265625,
+        "rss_samples": 255,
+        "resource_boundary": "Worker startup through verified results; CPU includes ps probes and waited descendants; RSS sums coordinator/workers/descendants, may double-count shared pages and miss short peaks.",
+        "selected": 169,
+        "selected_per_second": 5.634693947576679,
+        "generation_cpu_seconds": 28.015988999999998,
+        "shards": [
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-2-workers-1/shard-0",
+            "games": 8,
+            "plies": 744,
+            "selected": 87,
+            "semantic_sha256": "cb5c4fc53fb83bc2f3954adee076d313ec9d7083980f7d2b9dc51769e6d103e6"
+          },
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-2-workers-1/shard-1",
+            "games": 8,
+            "plies": 658,
+            "selected": 82,
+            "semantic_sha256": "fba32e914f1953dfa4dc975279906fe738039b44aaed8b6a286c1aaa2ff96fca"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "workers": 1,
+        "job_wall_seconds": 29.948501582999597,
+        "waited_process_tree_cpu_seconds": 33.403127,
+        "sampled_process_tree_rss_mib": 650.859375,
+        "rss_samples": 255,
+        "resource_boundary": "Worker startup through verified results; CPU includes ps probes and waited descendants; RSS sums coordinator/workers/descendants, may double-count shared pages and miss short peaks.",
+        "selected": 169,
+        "selected_per_second": 5.643020220281525,
+        "generation_cpu_seconds": 28.041587,
+        "shards": [
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-3-workers-1/shard-0",
+            "games": 8,
+            "plies": 744,
+            "selected": 87,
+            "semantic_sha256": "cb5c4fc53fb83bc2f3954adee076d313ec9d7083980f7d2b9dc51769e6d103e6"
+          },
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-3-workers-1/shard-1",
+            "games": 8,
+            "plies": 658,
+            "selected": 82,
+            "semantic_sha256": "fba32e914f1953dfa4dc975279906fe738039b44aaed8b6a286c1aaa2ff96fca"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "workers": 2,
+        "job_wall_seconds": 16.92286616700585,
+        "waited_process_tree_cpu_seconds": 33.490958999999975,
+        "sampled_process_tree_rss_mib": 1209.015625,
+        "rss_samples": 144,
+        "resource_boundary": "Worker startup through verified results; CPU includes ps probes and waited descendants; RSS sums coordinator/workers/descendants, may double-count shared pages and miss short peaks.",
+        "selected": 169,
+        "selected_per_second": 9.986488005766759,
+        "generation_cpu_seconds": 30.069464999999997,
+        "shards": [
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-3-workers-2/shard-1",
+            "games": 8,
+            "plies": 658,
+            "selected": 82,
+            "semantic_sha256": "fba32e914f1953dfa4dc975279906fe738039b44aaed8b6a286c1aaa2ff96fca"
+          },
+          {
+            "path": "artifacts/generation-optimization-20260921/workers-01/round-3-workers-2/shard-0",
+            "games": 8,
+            "plies": 744,
+            "selected": 87,
+            "semantic_sha256": "cb5c4fc53fb83bc2f3954adee076d313ec9d7083980f7d2b9dc51769e6d103e6"
+          }
+        ]
+      }
+    ]
+  },
+  "recovery": {
+    "completed": {
+      "sha256": "9c782c0e4d2273c0dfe6b7804919c7f06d692d4ff29e6b63a44bd95342d6adf7",
+      "games": 8,
+      "plies": 744,
+      "selected": 87,
+      "analyses": 282
+    },
+    "interrupted_attempts_retained": 1,
+    "interrupted_after_appends": 5
+  },
+  "evidence": {
+    "artifacts/generation-optimization-20260921/baseline.json": "01de6cca4cf61f5cf88318564a74bf919efbf2f23d2a64b6de209aecb09d9ce2",
+    "artifacts/generation-optimization-20260921/candidate/manifest.json": "4f249b84bc391879c54bbd8b7a1c6547ea0a603463baad3303b81b990fcb7d0e",
+    "artifacts/generation-optimization-20260921/native-01/summary.json": "7249e9d4b6ca2cb16a413fc8993d2d9d2f7985cc20906bd979571b54dfd626b6",
+    "artifacts/generation-optimization-20260921/native-01/runtime-manifests.json": "00382927cc20136f6f9e5d4de2e6dc2d30e5555505ca85f2179a75d1eea6eca8",
+    "artifacts/generation-optimization-20260921/native-01/controller.py": "506fea737f0a92e43847b638c1cad8bbbb49fc002f8d6b10cf55487f604577f5",
+    "artifacts/generation-optimization-20260921/workers-01/summary.json": "3e1b9982677848c76e4f91fba8704f23ce5e50a50ee712cec2afbffb2a4f1b1d",
+    "artifacts/generation-optimization-20260921/workers-01/runtime-manifests.json": "f0993744cf73708b084bd773269ed18ba0555adcc8db694b16d21f9a76892f2c",
+    "artifacts/generation-optimization-20260921/workers-01/controller.py": "506fea737f0a92e43847b638c1cad8bbbb49fc002f8d6b10cf55487f604577f5",
+    "artifacts/generation-optimization-20260921/workers-01/checks.py": "12a6a1679386b47c68ee847973be26579e147db7c5abfcd125640a6fa0149b68",
+    "artifacts/generation-optimization-20260921/workers-01/shard-0.json": "75bfddc660f9c153db0fd75c1805f7d262250be68f1f1620c1d4c4193779382d",
+    "artifacts/generation-optimization-20260921/workers-01/shard-1.json": "33cd79d0c6e158e02731f5458215f9c6e7036086b6386abd364473116da83d81",
+    "artifacts/generation-optimization-20260921/recovery-01/summary.json": "8ecc5bf2e98f473f793a66da172f99da9d84bb1343d037d9a707217ffa5350fb",
+    "artifacts/generation-optimization-20260921/recovery-01/recovery.py": "88a16c226e7db9c32b418f894637216ab4600f777d58ec0ffc0c6990d423b42d"
+  }
+}
