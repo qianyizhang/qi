@@ -81,7 +81,7 @@ jobs:
         with:
           python-version: "3.12"
           cache-suffix: data
-      - run: uv sync --locked --extra data --extra learning
+      - run: uv sync --locked --offline --extra data --extra learning || uv sync --locked --extra data --extra learning
       - run: make test-data
         env:
           UV_OFFLINE: "true"
@@ -97,7 +97,8 @@ jobs:
         with:
           python-version: "3.12"
           cache-suffix: data
-      - run: uv sync --locked --extra learning
+      # Reuse immutable locked wheels without registry freshness requests.
+      - run: uv sync --locked --offline --extra learning || uv sync --locked --extra learning
       - run: make test-learning
         env:
           UV_OFFLINE: "true"
