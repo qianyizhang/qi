@@ -2,7 +2,7 @@
 description: Investigate representative experiment costs and preserve evidence while reducing them.
 scope: experiment efficiency campaign
 status: experimental
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -33,19 +33,20 @@ remain separate, unprofiled candidates.
 
 ## Unknowns
 
-How production parallel generation should combine isolated worker collections and
-own interruption/recovery; how worker count scales beyond the measured pair; and
+How worker count and source-size imbalance scale beyond the measured pair; how
+to account for aggregate OS writes and explicit cross-version recovery; and
 how to improve persistence while keeping the accepted recovery contract.
 Minibatch training changes the optimization recipe
 and needs separate scientific evaluation.
 
 ## Frontier
 
-The measured two-worker gain supports designing opt-in production parallel
-generation, with explicit collection combination and recovery ownership before
-implementation. Native scalar preparation is implemented and tested; Python stays
-default. Preserve per-move durability. Diagnostic synchronization disabling is not
-an adoption candidate. No production scheduler is authorized by this page.
+The [integrated two-worker path](../reports/2026-09-22-parallel-generation.md)
+retains a 1.704x median throughput gain including verified combined publication.
+Retained shards and explicit resume are implemented under AB-DATA-010. Python and
+serial generation remain defaults. Broader worker scaling and aggregate OS-write
+guards are candidates for separately bounded work. Preserve per-move durability. Diagnostic synchronization disabling is not
+an adoption candidate. The accepted implementation is owned by AB-DATA-010.
 
 ## Work
 
@@ -53,6 +54,7 @@ an adoption candidate. No production scheduler is authorized by this page.
 - [Native and pipeline bottleneck evidence](../reports/2026-09-21-generation-bottlenecks.md).
 - [Atomic native stepping](../work-items/items/AB-ARCH-008-atomic-native-step.md).
 - [Two-worker generation experiment](../work-items/items/AB-DATA-009-two-worker-generation.md).
+- [Supported parallel generation](../work-items/items/AB-DATA-010-parallel-generation.md).
 - [Persistent teacher preparation evidence](../work-items/items/AB-DATA-004-persistent-teacher.md).
 
 Work items own execution status and acceptance criteria.

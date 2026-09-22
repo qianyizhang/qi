@@ -152,6 +152,25 @@ def pin_teachers(config: PolicyGenerationConfig) -> dict[tuple[str, str], Teache
     return identities
 
 
+def source_identity(config, source, index):
+    actor_identity = {
+        "version": "policy-actor-v1",
+        "seed": config.seed,
+        "source": source.id,
+        "index": index,
+        "start": state_fingerprint(source.start.snapshot),
+        "policy": source.actor.model_dump(),
+        "parent_trajectory": source.parent_trajectory,
+        "teacher": (
+            None
+            if source.actor.mode == "random"
+            else config.teachers[config.actor_teacher].model_dump(exclude={"engine", "network"})
+        ),
+    }
+    key = fingerprint("policy-source-v1", actor_identity | {"plies": source.additional_plies})
+    return actor_identity, key
+
+
 def generate_policies(
     store: Collection,
     config: PolicyGenerationConfig,
@@ -161,6 +180,7 @@ def generate_policies(
     clock: Callable[[], float] = monotonic,
     continue_from_run: int | None = None,
     trajectory_factory: TrajectoryFactory | None = None,
+    deadline: float | None = None,
 ) -> dict:
     """Generate complete games incrementally; retain quotas/shortfalls independently.
 
@@ -177,10 +197,10 @@ def generate_policies(
         stack.enter_context(store.executing(execution))
         if provider is None:
             provider = stack.enter_context(SessionProvider(identities, execution=execution))
-        return _generate(store, config, provider, identities, event, clock, continue_from_run, execution)
+        return _generate(store, config, provider, identities, event, clock, continue_from_run, execution, deadline)
 
 
-def _generate(store, config, provider, identities, event, clock, continue_from_run, execution):
+def _generate(store, config, provider, identities, event, clock, continue_from_run, execution, deadline):
     io = CollectionIO(store)
     inherited = io.continuation(continue_from_run, config.model_dump())
     origin = provenance()
@@ -200,7 +220,7 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
     )
     store.run_status(run, "running")
     started, active_game = clock(), None
-    deadline = started + config.seconds
+    deadline = min(deadline, started + config.seconds) if deadline is not None else started + config.seconds
     excluded = reserved_inputs(config.corpus)
     counters = Counter()
     phases, shortfalls = Counter(), Counter()
@@ -264,21 +284,7 @@ def _generate(store, config, provider, identities, event, clock, continue_from_r
             for index in range(source.games):
                 if clock() >= deadline:
                     raise GameError("dataset_timeout", "Generation allowance exhausted.")
-                actor_identity = {
-                    "version": "policy-actor-v1",
-                    "seed": config.seed,
-                    "source": source.id,
-                    "index": index,
-                    "start": state_fingerprint(source.start.snapshot),
-                    "policy": source.actor.model_dump(),
-                    "parent_trajectory": source.parent_trajectory,
-                    "teacher": (
-                        None
-                        if source.actor.mode == "random"
-                        else config.teachers[config.actor_teacher].model_dump(exclude={"engine", "network"})
-                    ),
-                }
-                key = fingerprint("policy-source-v1", actor_identity | {"plies": source.additional_plies})
+                actor_identity, key = source_identity(config, source, index)
                 payload = GamePayload(
                     source_id=key,
                     family=source.start.family_id or key,

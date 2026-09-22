@@ -2,7 +2,7 @@
 description: Configurable generation policies, incremental SQLite execution and bounded engineering pilots.
 scope: training data generation module guide
 status: experimental
-last_update: 2026-09-12
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -56,6 +56,65 @@ restoration of a live engine search or partially labeled game's temporary spool.
 Changing the frozen config, export recipe or collection path requires a new output
 folder. Each resumed invocation has the same configured time allowance, recorded
 as a separate execution; it does not extend an existing invocation invisibly.
+
+## Opt-in parallel generation
+
+Add `--workers 2` to the same command to schedule whole independent sources in
+frozen source order into two process slots. Serial (`--workers 1`) remains the
+default. This first parallel path requires at least two sources and owns a fresh
+output directory. `--collection`, generated-parent sources and
+`--continue-from-run` require serial execution. Teacher settings and original
+source/game identities, indices and RNG streams do not change.
+
+The [parallel runner](../src/qi/training_data/parallel_generation.py) keeps one
+WAL/FULL SQLite collection per source under `shards/source-N/`, with independent
+persistent teachers. The coordinator's output lock and each collection's writer
+lock prevent concurrent ownership. Source IDs are data, not filesystem paths.
+Every invocation retains source/dependency archives, per-worker logs/events and
+summaries under `executions/`. `progress.json` identifies active/completed sources;
+SQL row IDs in worker logs belong to that worker's shard.
+
+After every source finishes, the [combiner](../src/qi/training_data/collection_combine.py)
+validates games, replay outcomes, occurrence indexes, actor/source identities,
+teacher requests and candidate evidence. It copies all completed and unsuccessful
+attempts in source order, one bounded game transaction at a time. Portable game,
+occurrence and analysis attempt identities survive; local SQL IDs are remapped and
+first-success ordering within occurrence/specification is preserved. Cross-shard
+family/start/trajectory split conflicts stop publication without rewriting source
+evidence. Input/label conflicts and snapshot quotas remain export-time checks.
+
+Only the finished combined file is atomically published as `collection.sqlite`,
+with source hashes and a content hash in `publication.json`. Existing collection
+inspection/export commands work on it; it contains separate source run records.
+Until publication, inspect committed work directly in the retained shard files.
+There is no partially combined public collection. Build failures retain their
+unpublished file in the execution directory.
+
+A worker failure, timeout, Ctrl-C or SIGTERM stops dispatch and interrupts active
+workers, then closes/reaps their teachers; a bounded kill fallback handles stuck
+processes. Abrupt host loss or SIGKILL cannot run this cleanup. Stop surviving
+workers before resuming; their collection locks prevent a second writer.
+`--resume` requires the exact frozen config, implementation source identity, Python
+and recorded package versions, export and limits. Completed games are reused;
+unfinished games become retained attempts and restart from their frozen start.
+Queued jobs share one invocation wall allowance, including combination. A changed
+implementation requires a fresh output; automatic cross-version adoption is absent.
+
+Resume after successful publication reuses the same hashed collection without
+teacher calls or changing its rows; a failed export can be retried. A collection
+modified through reanalysis or external SQL is never overwritten by the runner.
+Keep the shards and `publication.json` with the output for provenance/recovery.
+
+`--max-rss-mb` samples the coordinator, worker and teacher process tree roughly
+every 100 ms during generation and at game boundaries during combination.
+Summed RSS can double-count shared pages and miss brief peaks. `--min-free-gb`
+checks the shared output filesystem. Unavailable requested counters fail closed.
+`--max-write-gb` is rejected in parallel mode because the existing OS-write
+accounting covers only one process; use serial for that guard. These are sampled
+stops, not kernel-enforced caps. Shards plus the combined file require extra disk
+space. [AB-DATA-010](../records/work-items/items/AB-DATA-010-parallel-generation.md)
+owns acceptance and measured integration evidence; two is not an optimal-worker
+count claim.
 
 ## Independent policies
 

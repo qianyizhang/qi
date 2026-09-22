@@ -282,7 +282,9 @@ section remains part of that configuration, but export uses a separate
 run (2048 games, up to 16 selected samples/game, 7200 seconds). A collection may
 accumulate multiple runs; this implementation does not authorize the larger pilot
 or remove its configuration limits. One synchronous writer owns a process lock;
-there is no worker pool. Queries run outside transactions. Per-game actor caches
+the policy runner also supports an opt-in two-worker pool with separate durable
+shards and validated combined publication. See [parallel generation](../../../docs/data-generation.md#opt-in-parallel-generation)
+for invocation, recovery and resource boundaries. Queries run outside transactions. Per-game actor caches
 and sampling lists are bounded by the referee's 300-ply limit.
 
 Rerunning the same resolved configuration reuses completed logical sources and

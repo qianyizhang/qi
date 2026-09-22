@@ -9,29 +9,12 @@ from pathlib import Path
 from time import perf_counter
 from uuid import uuid4
 
-from qi_game.core import GameError
-
 from qi.artifacts import provenance, write_json
 from qi.teacher import digest
 from qi.training_data.generation_runner import PolicyGenerationConfig, SessionProvider, generate_policies, pin_teachers
-from qi.training_data.resource_probe import ResourceProbe
+from qi.training_data.resource_probe import ResourceProbe, enforce_resources
 from qi.training_data.snapshots import SelectionRecipe, SnapshotReader, export_snapshot, verify_snapshot
 from qi.training_data.store import Collection
-
-
-def enforce_resources(sample: dict, limits: dict, free_bytes: int):
-    if limits.get("max_write_bytes") is not None:
-        if sample["disk_write_bytes"] is None:
-            raise GameError("resource_limit", "Requested OS write guard is unavailable on this host.")
-        if sample["disk_write_bytes"] >= limits["max_write_bytes"]:
-            raise GameError("resource_limit", "OS-attributed write allowance reached; completed games are retained.")
-    if limits.get("max_rss_bytes") is not None:
-        if not sample["process"].get("available"):
-            raise GameError("resource_limit", "Requested RSS guard is unavailable on this host.")
-        if sample["peak_sampled_combined_rss_bytes"] >= limits["max_rss_bytes"]:
-            raise GameError("resource_limit", "Sampled runner plus teacher RSS allowance reached.")
-    if limits.get("min_free_bytes") is not None and free_bytes < limits["min_free_bytes"]:
-        raise GameError("resource_limit", "Free disk space fell below the configured reserve.")
 
 
 def main():
@@ -39,6 +22,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument(
+        "--workers", type=int, choices=(1, 2), default=1, help="Opt-in two-worker generation; serial by default"
+    )
     parser.add_argument(
         "--collection",
         type=Path,
@@ -83,6 +69,30 @@ def main():
     export = SelectionRecipe.model_validate_json(args.export_recipe.read_text()) if args.export_recipe else None
     if export and (not export.selected_only or export.reserved_corpus != config.corpus):
         parser.error("Policy exports require selected_only=true and the same frozen exclusion corpus.")
+    if args.workers == 2:
+        from qi.training_data.parallel_generation import run_parallel, validate_parallel
+
+        if args.collection is not None or args.continue_from_run is not None:
+            parser.error(
+                "Parallel generation owns a fresh output collection; "
+                "external collections/continuation use serial execution."
+            )
+        validate_parallel(config, limits)
+        if args.preview:
+            print(
+                json.dumps(
+                    {
+                        "config": config.model_dump(),
+                        "workers": 2,
+                        "shards": len(config.sources),
+                        "resource_limits": limits,
+                    },
+                    indent=2,
+                )
+            )
+        else:
+            print(json.dumps(run_parallel(config, args.output, resume=args.resume, export=export, limits=limits)))
+        return
     if args.continue_from_run is not None:
         from qi.training_data.generation_io import CollectionIO
 

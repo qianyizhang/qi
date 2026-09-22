@@ -8,6 +8,8 @@ from collections import Counter
 from pathlib import Path
 from time import perf_counter
 
+from qi_game.core import GameError
+
 
 class DarwinUsage(ctypes.Structure):
     # macOS SDK sys/resource.h rusage_info_v2: UUID followed by 18 uint64 fields.
@@ -95,3 +97,18 @@ class ResourceProbe:
             "teachers": children,
             "peak_process_rss": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
         }
+
+
+def enforce_resources(sample: dict, limits: dict, free_bytes: int):
+    if limits.get("max_write_bytes") is not None:
+        if sample["disk_write_bytes"] is None:
+            raise GameError("resource_limit", "Requested OS write guard is unavailable on this host.")
+        if sample["disk_write_bytes"] >= limits["max_write_bytes"]:
+            raise GameError("resource_limit", "OS-attributed write allowance reached; completed games are retained.")
+    if limits.get("max_rss_bytes") is not None:
+        if not sample["process"].get("available"):
+            raise GameError("resource_limit", "Requested RSS guard is unavailable on this host.")
+        if sample["peak_sampled_combined_rss_bytes"] >= limits["max_rss_bytes"]:
+            raise GameError("resource_limit", "Sampled runner plus teacher RSS allowance reached.")
+    if limits.get("min_free_bytes") is not None and free_bytes < limits["min_free_bytes"]:
+        raise GameError("resource_limit", "Free disk space fell below the configured reserve.")

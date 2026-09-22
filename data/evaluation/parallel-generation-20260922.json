@@ -1,0 +1,138 @@
+{
+  "experiment": "parallel-generation-20260922",
+  "status": "complete",
+  "results": [
+    {
+      "round": 1,
+      "workers": 1,
+      "wall_seconds": 27.979351208006847,
+      "peak_sampled_rss_bytes": 633618432,
+      "combine_seconds": null,
+      "verified": {
+        "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+        "games": 16,
+        "plies": 1402,
+        "selected": 169,
+        "analyses": 545
+      },
+      "path": "artifacts/parallel-generation-20260922/confirmation-01/round-1-workers-1"
+    },
+    {
+      "round": 1,
+      "workers": 2,
+      "wall_seconds": 16.070068833010737,
+      "peak_sampled_rss_bytes": 1297924096,
+      "combine_seconds": 0.5494626669969875,
+      "verified": {
+        "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+        "games": 16,
+        "plies": 1402,
+        "selected": 169,
+        "analyses": 545
+      },
+      "path": "artifacts/parallel-generation-20260922/confirmation-01/round-1-workers-2"
+    },
+    {
+      "round": 2,
+      "workers": 2,
+      "wall_seconds": 14.908782250000513,
+      "peak_sampled_rss_bytes": 1306083328,
+      "combine_seconds": 0.5577199999970617,
+      "verified": {
+        "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+        "games": 16,
+        "plies": 1402,
+        "selected": 169,
+        "analyses": 545
+      },
+      "path": "artifacts/parallel-generation-20260922/confirmation-01/round-2-workers-2"
+    },
+    {
+      "round": 2,
+      "workers": 1,
+      "wall_seconds": 24.924806957991677,
+      "peak_sampled_rss_bytes": 688603136,
+      "combine_seconds": null,
+      "verified": {
+        "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+        "games": 16,
+        "plies": 1402,
+        "selected": 169,
+        "analyses": 545
+      },
+      "path": "artifacts/parallel-generation-20260922/confirmation-01/round-2-workers-1"
+    },
+    {
+      "round": 3,
+      "workers": 1,
+      "wall_seconds": 27.071122875000583,
+      "peak_sampled_rss_bytes": 684474368,
+      "combine_seconds": null,
+      "verified": {
+        "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+        "games": 16,
+        "plies": 1402,
+        "selected": 169,
+        "analyses": 545
+      },
+      "path": "artifacts/parallel-generation-20260922/confirmation-01/round-3-workers-1"
+    },
+    {
+      "round": 3,
+      "workers": 2,
+      "wall_seconds": 15.887949083000422,
+      "peak_sampled_rss_bytes": 1302036480,
+      "combine_seconds": 0.5498733330023242,
+      "verified": {
+        "sha256": "ab90ed83f25ed29f0b2569cd5faeffbcf5b29379488a3a4610f768b2239a25c6",
+        "games": 16,
+        "plies": 1402,
+        "selected": 169,
+        "analyses": 545
+      },
+      "path": "artifacts/parallel-generation-20260922/confirmation-01/round-3-workers-2"
+    }
+  ],
+  "paired_throughput": [
+    1.7410847146175477,
+    1.671820443818664,
+    1.7038777461822172
+  ],
+  "median_paired_throughput": 1.7038777461822172,
+  "medians": {
+    "1": {
+      "wall_seconds": 27.071122875000583,
+      "rss_mib": 652.765625
+    },
+    "2": {
+      "wall_seconds": 15.887949083000422,
+      "rss_mib": 1241.71875,
+      "combine_seconds": 0.5498733330023242
+    }
+  },
+  "verified_archive_files": 1177,
+  "evidence": {
+    "artifacts/parallel-generation-20260922/confirmation-01/summary.json": "5ea9f25a8bf1e1663ea94335464f80d6a3699d41ca73b7230b6c021a8f4fa000",
+    "artifacts/parallel-generation-20260922/confirmation-01/runtime.json": "927c20842c4367cfd00e4a46b90b1ef1d1535cc85e003aa38427ff6d232ff7c7",
+    "artifacts/parallel-generation-20260922/confirmation-01/config.json": "d3f0fc6394b9d1ae6237337431a93154809e6b223c214a982ab87dc04ad2d6d6",
+    "artifacts/parallel-generation-20260922/confirmation-01/study.py": "426a78a5dfb37a8af61f5f331a8eace56fdd6f0da220a8d749293c6438fde150",
+    "artifacts/parallel-generation-20260922/confirmation-01/checks.py": "12a6a1679386b47c68ee847973be26579e147db7c5abfcd125640a6fa0149b68",
+    "artifacts/parallel-generation-20260922/real-resume.json": "a3215be97eae3b97b22971bd5dc03e36cee990a70ee5385584a0e64683f8edcf",
+    "artifacts/parallel-generation-20260922/make-check.log": "45af9192c82979b2644053ac57c5230b0d544e300adf1ae1d4e3f02f9387a947",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-2-workers-2/executions/246f326760944829a47434a4a4ecfcb3/provenance.json": "687443920cbccad539f83efdbedbc5edd4c75b6a15208cb21355fcd2a77f968a",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-1-workers-1/executions/44244f1677e24ed09ea98bb04ce35d90/provenance.json": "23906a8bfed27db82c0a9bd6efef3ded90e2e67c913574209ee66b0864e45c83",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-3-workers-2/executions/69d1b90455a344b0ba872075d35df23f/provenance.json": "687443920cbccad539f83efdbedbc5edd4c75b6a15208cb21355fcd2a77f968a",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-2-workers-1/executions/279cde86654d4a0d880e8b53567b74a0/provenance.json": "23906a8bfed27db82c0a9bd6efef3ded90e2e67c913574209ee66b0864e45c83",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-3-workers-1/executions/bc0d4c21fa504996bda235c3b89eb18b/provenance.json": "23906a8bfed27db82c0a9bd6efef3ded90e2e67c913574209ee66b0864e45c83",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-1-workers-2/executions/d8076668936f44698ce84a5339345505/provenance.json": "687443920cbccad539f83efdbedbc5edd4c75b6a15208cb21355fcd2a77f968a",
+    "artifacts/parallel-generation-20260922/confirmation-01/round-1-workers-2/executions/dedd2df48eb7498e93cca351060d4157/provenance.json": "687443920cbccad539f83efdbedbc5edd4c75b6a15208cb21355fcd2a77f968a",
+    "artifacts/parallel-generation-20260922/verification.json": "2c8571509199474ad0f4ef566b02bb644b35ce71f604b855f6c6c8e60fb393a8",
+    "artifacts/parallel-generation-20260922/focused-tests.log": "98d7113fedf196565bb7dcc35baf28c34485887328cff59846ae4c50971be219"
+  },
+  "limits": [
+    "One local machine and fixed development source families, three timing repetitions.",
+    "RSS sums coordinator and descendant resident sets, may double count shared pages and miss peaks.",
+    "Independent canonical audit follows timing; production combination is timed.",
+    "Confirmation used the archived controller; a subsequent guard makes unavailable RSS sampling an explicit error."
+  ]
+}
