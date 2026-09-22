@@ -34,7 +34,7 @@ test-native:
 test-learning:
 	uv run --locked --extra learning pytest tests/test_learning.py tests/test_learning_config.py tests/test_training_data.py tests/test_reference.py
 test-data:
-	uv run --locked --extra data --extra learning pytest src/qi/training_data/test_store.py src/qi/training_data/test_generation_runner.py tests/test_collection_learning.py tests/test_snapshot_training.py tests/test_semantic_selection.py
+	uv run --locked --extra data --extra learning pytest src/qi/training_data/test_store.py src/qi/training_data/test_generation_runner.py tests/test_collection_learning.py tests/test_snapshot_training.py tests/test_semantic_selection.py tests/test_parallel_generation.py
 test-learning-mps:
 	QI_TEST_MPS=1 uv run --locked --extra learning pytest tests/test_learning_mps.py
 test-reference-package:

@@ -135,7 +135,7 @@ def canonical(path):
         return rows
 
 
-def test_parallel_matches_serial_preserves_identities_exports_and_reuses(tmp_path, config):
+def test_parallel_matches_serial_preserves_identities_and_reuses(tmp_path, config):
     serial = tmp_path / "serial.sqlite"
     with Collection(serial) as store:
         generate_policies(store, config)
@@ -157,6 +157,13 @@ def test_parallel_matches_serial_preserves_identities_exports_and_reuses(tmp_pat
             with Collection(shard, readonly=True) as source:
                 originals.update(r[0] for r in source.db.execute("SELECT attempt FROM analyses"))
         assert attempts == originals
+
+
+def test_parallel_collection_exports_snapshot(tmp_path, config):
+    pytest.importorskip("pyarrow")
+    output = tmp_path / "parallel"
+    run_parallel(config, output)
+    with Collection(output / "collection.sqlite", readonly=True) as merged:
         spec = merged.db.execute("SELECT identity FROM analysis_specs LIMIT 1").fetchone()[0]
         # Freeze explicit disjoint observations for one row in each split.
         choices = {}
