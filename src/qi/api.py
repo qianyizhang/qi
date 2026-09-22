@@ -1,11 +1,12 @@
 """Local app adapter; referee operations and owned trace jobs have separate lifecycles."""
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from qi_game.contracts import Position, Snapshot
 from qi_game.core import GameError
@@ -15,7 +16,7 @@ from starlette.exceptions import HTTPException
 
 from qi.benchmark.api import register_benchmarks
 from qi.collection_api import register_collections
-from qi.experiment_api import register
+from qi.experiment_api import register_experiments
 from qi.generation_lesson import register_generation_lesson
 from qi.lab import TraceJobs
 from qi.players import PlayerInfo, choose, list_players, resolve_selection
@@ -36,7 +37,7 @@ def create_app(*, referee: Referee | None = None) -> FastAPI:
     jobs = TraceJobs()
 
     @asynccontextmanager
-    async def lifespan(app):
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         yield
         jobs.close()
 
@@ -46,7 +47,7 @@ def create_app(*, referee: Referee | None = None) -> FastAPI:
         lifespan=lifespan,
         responses={code: {"model": ErrorResponse} for code in (404, 405, 409, 422)},
     )
-    register(app, jobs)
+    register_experiments(app, jobs)
     register_collections(app)
     register_generation_lesson(app)
     register_benchmarks(app)
@@ -61,7 +62,7 @@ def create_app(*, referee: Referee | None = None) -> FastAPI:
         )
 
     @app.exception_handler(ValueError)
-    async def invalid_evidence(request: Request, exc: ValueError):
+    async def invalid_evidence(request: Request, exc: ValueError) -> JSONResponse:
         return JSONResponse(status_code=422, content={"error": {"code": "invalid_evidence", "message": str(exc)}})
 
     @app.exception_handler(GameError)
@@ -92,13 +93,13 @@ def create_app(*, referee: Referee | None = None) -> FastAPI:
         return backend.apply(request.snapshot, request.move, request.expected_state_hash)
 
     @app.post("/api/play/controller/inspect", response_model=Controller)
-    def controller(request: Controller):
+    def controller(request: Controller) -> Controller:
         if request.player != "human":
             resolve_selection(request.player, request.settings, request.binding_sha256, request.checkpoint_sha256)
         return request
 
     @app.post("/api/play/choose", response_model=PlayResult)
-    def play(request: PlayRequest):
+    def play(request: PlayRequest) -> PlayResult:
         game = restore(request.snapshot)
         if game.state_hash != request.expected_state_hash:
             raise GameError("stale_state", "The position changed before the player request.")
@@ -118,7 +119,7 @@ def create_app(*, referee: Referee | None = None) -> FastAPI:
         )
 
     @app.post("/api/play/session/inspect", response_model=SessionResult)
-    def session(request: GameSession):
+    def session(request: GameSession) -> SessionResult:
         return SessionResult(session=request, position=backend.inspect(request.snapshot))
 
     static = Path(__file__).parent / "static"
@@ -127,7 +128,7 @@ def create_app(*, referee: Referee | None = None) -> FastAPI:
             app.mount("/assets", StaticFiles(directory=static / "assets"), name="assets")
 
         @app.get("/{page:path}", include_in_schema=False)
-        def frontend(page: str):
+        def frontend(page: str) -> Response:
             if page in ("", "play", "experiments", "reference", "data", "learn/generation", "benchmarks") or (
                 page.startswith("experiments/") and len(page.split("/")) == 2
             ):

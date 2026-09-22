@@ -1,0 +1,34 @@
+minimum_pre_commit_version: "4.3.0"
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint
+        entry: uv run --locked ruff check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        files: ^(packages/|src/|scripts/|tests/|conftest\.py$|web/e2e/prepare\.py$)
+        stages: [pre-commit]
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run --locked ruff format --check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        files: ^(packages/|src/|scripts/|tests/|conftest\.py$|web/e2e/prepare\.py$)
+        stages: [pre-commit]
+      - id: prettier
+        name: Prettier
+        entry: npm run format:check --prefix web
+        language: system
+        files: ^web/(src/|tests/|e2e/|index\.html$|package\.json$|tsconfig\.json$|vite\.config\.ts$|playwright\.config\.ts$)
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: repository-metadata
+        name: Documentation, catalog, and generated API
+        entry: make lint-metadata
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

@@ -1,60 +1,61 @@
 """Build sdist -> wheel, install locked dependencies, then reproduce outside the checkout."""
 
 import argparse
-import os
-import subprocess
-import sys
+import tarfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+from package_check import PackageRunner, build_distribution, create_isolated_environment, export_requirements
+
+EXCLUDED_APPLICATION_SOURCES = {
+    ".agents",
+    ".claude",
+    ".codex",
+    "data",
+    "docs",
+    "packages",
+    "records",
+    "scripts",
+    "tests",
+    "web",
+}
+
+
+def check_application_sdist(archive: Path) -> None:
+    """Keep repository governance and source-only UI files out of the app sdist."""
+
+    with tarfile.open(archive, "r:gz") as distribution:
+        top_level_entries = {
+            parts[1] for member in distribution.getmembers() if len(parts := Path(member.name).parts) > 1
+        }
+    leaked_sources = sorted(top_level_entries & EXCLUDED_APPLICATION_SOURCES)
+    if leaked_sources:
+        raise RuntimeError(f"application sdist contains repository-only paths: {', '.join(leaked_sources)}")
 
 
 def check_package(output: Path) -> None:
     root = Path(__file__).resolve().parents[1]
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    env = {**os.environ, "UV_CACHE_DIR": str(root / ".cache/uv")}
-    env.pop("PYTHONPATH", None)
-
-    def run(*args, cwd=root, stdout=None):
-        subprocess.run(args, cwd=cwd, env=env, check=True, stdout=stdout)
+    runner = PackageRunner.create(root)
 
     dist = output / "dist"
-    for package in ("qi-game", "qi"):
-        run("uv", "build", "--package", package, "--sdist", "--out-dir", str(dist))
-    for archive in sorted(dist.glob("*.tar.gz")):
-        run("uv", "build", "--wheel", str(archive), "--out-dir", str(dist))
+    game_distribution = build_distribution(runner, "qi-game", dist)
+    application_distribution = build_distribution(runner, "qi", dist)
+    check_application_sdist(application_distribution.sdist)
     requirements = output / "requirements.txt"
-    run(
-        "uv",
-        "export",
-        "--locked",
-        "--extra",
-        "learning",
-        "--no-dev",
-        "--no-emit-workspace",
-        "--output-file",
-        str(requirements),
-        stdout=subprocess.DEVNULL,
-    )
+    export_requirements(runner, requirements, extras=("learning",), no_dev=True)
     with TemporaryDirectory(prefix="qi-package-") as directory:
         work = Path(directory).resolve()
-        python = work / "venv/bin/python"
-        qi = work / "venv/bin/qi"
-        run("uv", "venv", "--python", sys.executable, str(work / "venv"), cwd=work)
-        run("uv", "pip", "install", "--python", str(python), "-r", str(requirements), cwd=work)
-        run(
-            "uv",
-            "pip",
-            "install",
-            "--python",
-            str(python),
-            "--no-deps",
-            *map(str, sorted(dist.glob("*.whl"))),
-            cwd=work,
+        environment = create_isolated_environment(
+            runner,
+            work / "venv",
+            requirements,
+            (game_distribution.wheel, application_distribution.wheel),
         )
-        env["UV_OFFLINE"] = "true"
-        run(
-            str(python),
+        runner.use_offline_cache()
+        runner.run(
+            environment.python,
             "-I",
             "-c",
             "from qi.learning.provenance import source_identity; "
@@ -63,11 +64,13 @@ def check_package(output: Path) -> None:
             cwd=work,
         )
         with (output / "stdout.json").open("w") as stream:
-            subprocess.run(
-                [str(qi), "learn", "reference", "--output", str(output / "run")],
+            runner.run(
+                environment.executable("qi"),
+                "learn",
+                "reference",
+                "--output",
+                output / "run",
                 cwd=work,
-                env=env,
-                check=True,
                 stdout=stream,
             )
     print(f"Installed-package reference passed: {output / 'run/verification.json'}")

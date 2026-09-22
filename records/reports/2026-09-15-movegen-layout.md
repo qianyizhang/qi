@@ -2,7 +2,7 @@
 description: Measured NumPy versus occupancy-mask move generation and equivalent faster positional attack queries.
 scope: referee and positional evaluation performance
 status: stable
-last_update: 2026-09-15
+last_update: 2026-09-22
 document_class: report
 report_outcome: promoted
 produced_by: "experiment@1.0.0 · agent=GPT-6 · effort=unspecified · 2026-09-15"
@@ -126,10 +126,8 @@ a new timing-calibrated match study. This change alone is not evidence of parity
 - [Compact results](../../data/evaluation/movegen-layout-20260915.json)
 - [NumPy and mask prototypes](../../data/experiments/movegen_layout.py)
 - [Equivalence and isolated timing controller](../../data/experiments/movegen_layout_validation.py)
-- [Raw prototype results](../../artifacts/experiments/movegen-layout-20260915/screen.json)
-- [Raw correctness/setup results](../../artifacts/experiments/movegen-layout-20260915/equivalence.json)
-- [Raw timing summary](../../artifacts/experiments/movegen-layout-20260915/performance.json)
-- [Verification receipt](../../artifacts/experiments/movegen-layout-20260915/verification.json)
+- Local-only raw evidence under `artifacts/experiments/movegen-layout-20260915/`:
+  `screen.json`, `equivalence.json`, `performance.json` and `verification.json`.
 
 The local ignored run directory retains `before/`, `masks-only/`, `after/`, their
 hashes, dependency lock, exact inputs, source copies of the runners, individual

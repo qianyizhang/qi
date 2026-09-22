@@ -2,7 +2,7 @@
 description: Declarative learning recipes and retrospective experiment evidence.
 scope: learning recipes and retained evidence
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-12
 document_class: artifact
 ---
 

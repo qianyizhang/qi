@@ -2,7 +2,7 @@
 description: Compare student learning under shallow and stronger teacher labels on fixed inputs.
 scope: backlog item
 status: experimental
-last_update: 2026-09-10
+last_update: 2026-09-22
 document_class: work_record
 produced_by: "experiment@1.0.0 · agent=gpt-6 · effort=unknown · 2026-09-10"
 work_id: AB-LEARN-009
@@ -41,10 +41,11 @@ pilots as prior evidence under the
 
 ## Context and Trade-offs
 
-The September 9 [depth-cap pilot](../../../artifacts/pikafish-depth-cap-20260909/report.md)
-already compared teacher budgets against 1M-node reference choices on 36 related
-positions. The [MultiPV pilot](../../../artifacts/pikafish-multipv-20260909/report.md)
-also assessed distributions, rankings and selected-move loss. Their tracked
+The September 9 depth-cap pilot, retained locally at
+`artifacts/pikafish-depth-cap-20260909/report.md`, already compared teacher budgets
+against 1M-node reference choices on 36 related positions. The local MultiPV pilot
+at `artifacts/pikafish-multipv-20260909/report.md` also assessed distributions,
+rankings and selected-move loss. Their tracked
 [summary](../../../data/experiments/learning/history/teacher-generation-pilot-v1.json)
 preserves compact results; detailed local artifacts may be unavailable elsewhere.
 These pilots did not train students. A larger standalone teacher-budget audit is
@@ -116,11 +117,12 @@ versus median reported single-PV reference depth 20 across the full sample.
 
 [Compact results](../../../data/experiments/learning/history/teacher-quality-v1.json)
 retain paired seeds, teacher changes, query costs and source identities.
-[Raw run evidence](../../../artifacts/learning/teacher-quality-v1/status.json),
-[file receipts](../../../artifacts/learning/teacher-quality-v1/receipts.json),
-[verification](../../../artifacts/learning/teacher-quality-v1-verification.json)
-and the [aggregate audit script](../../../artifacts/learning/teacher-quality-v1-observations.py)
-remain local. The executed Python source and dependency files are preserved under
+Raw run evidence, receipts, verification and the aggregate audit script remain
+local at `artifacts/learning/teacher-quality-v1/status.json`,
+`artifacts/learning/teacher-quality-v1/receipts.json`,
+`artifacts/learning/teacher-quality-v1-verification.json` and
+`artifacts/learning/teacher-quality-v1-observations.py`. The executed Python source
+and dependency files are preserved under
 the run's `source/` directory with individual hashes; original checkout provenance
 is also retained under `artifacts/learning/teacher-quality-execution-v1/`.
 These ignored artifacts are required for detailed reconstruction; Git contains
@@ -155,8 +157,9 @@ agreement and candidate-score measurements and predeclare which governs decision
   Superseded audit instructions and the earlier running catalog revision remain
   available in collapsed historical sections; supported legacy readers remain.
 - `make check`: 478 Python tests passed, one opt-in MPS skip, five browser tests
-  passed. Rechecking all existing checkpoints and teacher evidence produced an
-  identical [verification result](../../../artifacts/learning/teacher-quality-v1-cleanup-verification.json).
+  passed. Rechecking all existing checkpoints and teacher evidence produced the
+  identical local result
+  `artifacts/learning/teacher-quality-v1-cleanup-verification.json`.
   This cleanup ran no new training or teacher queries and changes no finding.
 
 ### 2026-09-10 — verification: complete execution, mixed learning signal

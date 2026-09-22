@@ -2,7 +2,7 @@
 description: Accepted adjudication contract for the first qi training ruleset.
 scope: xiangqi training adjudication
 status: stable
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -45,19 +45,10 @@ generation. Piece-movement behavior was checked against
 and sampled against pyffish. Those references do not own this simplified
 adjudication policy.
 
-## Move-generation implementation
+## Implementation route
 
-The referee builds immutable piece destinations, rays and attack masks once at
-import. Legal generation filters candidates by occupancy and updates a 90-bit
-integer for each hypothetical move. King safety counts occupied squares along
-potential attack paths, excluding captured attackers. `is_attacked` reuses the
-inverse geometry for arbitrary targets, including empty squares used by positional
-evaluation; `reaches` remains the direct geometry reference. The fast path
-preserves the original source-square/target-square ordering, so fixed-budget
-search behavior is unchanged. Colocated exhaustive
-oracle tests cover both legal trajectories and arbitrary piece placements;
-[AB-EVAL-007](../records/work-items/items/AB-EVAL-007-move-generation.md) records
-equivalence controls and measured performance. The further data-structure study
-is [AB-EVAL-008](../records/work-items/items/AB-EVAL-008-movegen-layout.md).
-These implementation changes do not change the ruleset or repetition/ply-limit
-adjudication.
+The [game package](../packages/qi-game/README.md) owns the current referee
+implementation and conformance checks. [AB-EVAL-007](../records/work-items/items/AB-EVAL-007-move-generation.md)
+and [AB-EVAL-008](../records/work-items/items/AB-EVAL-008-movegen-layout.md)
+retain equivalence and performance evidence. Those implementation studies did
+not change this ruleset's adjudication.

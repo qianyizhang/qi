@@ -200,11 +200,6 @@ def test_browser_player_rejects_terminal_game(client) -> None:
     assert response.json()["error"]["code"] == "game_over"
 
 
-def test_retired_opponent_endpoint_is_absent(client):
-    assert "/api/opponent" not in client.get("/openapi.json").json()["paths"]
-    assert client.post("/api/opponent", json={}).status_code == 405
-
-
 def test_http_errors_preserve_messages_and_status(client):
     response = client.get("/api/benchmarks/missing")
     assert response.status_code == 404

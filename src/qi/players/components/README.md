@@ -2,7 +2,7 @@
 description: Composable search components and their shared accounting contract.
 scope: search composition
 status: stable
-last_update: 2026-09-08
+last_update: 2026-09-21
 document_class: coordination
 ---
 

@@ -83,11 +83,11 @@ def catalog() -> BenchmarkCatalog:
 
 def register_benchmarks(app: FastAPI) -> None:
     @app.get("/api/benchmarks", response_model=BenchmarkCatalog)
-    def list_benchmarks():
+    def list_benchmarks() -> BenchmarkCatalog:
         return catalog()
 
     @app.get("/api/benchmarks/{id}", response_model=BenchmarkReport)
-    def report(id: str):
+    def report(id: str) -> BenchmarkReport:
         path = locate(id)
         summary = summarize_benchmark(path)
         spec = load_manifest(path).spec
@@ -104,7 +104,7 @@ def register_benchmarks(app: FastAPI) -> None:
         )
 
     @app.get("/api/benchmarks/{id}/snapshots/{snapshot}", response_model=BenchmarkSummary)
-    def saved_snapshot(id: str, snapshot: str):
+    def saved_snapshot(id: str, snapshot: str) -> BenchmarkSummary:
         path = locate(id)
         if pool_state(load_manifest(path).spec) == "reserved":
             raise HTTPException(409, "Locked-test results have not been revealed.")

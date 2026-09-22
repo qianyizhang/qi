@@ -2,7 +2,7 @@
 description: Measured generated-data composition, provisional semantic tags and a controlled mixing/scaling proposal.
 scope: generated sample audit and proposed learning experiment
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-22
 document_class: report
 report_outcome: inconclusive
 inconclusive_reason: Descriptive data quality is measured, but no training comparison has run.
@@ -33,7 +33,8 @@ remain historical; the follow-up record owns training conclusions.
 
 Source: the completed collection owned by
 [AB-DATA-008](../work-items/items/AB-DATA-008-generation-scaling-pilot.md).
-The [final generation closeout](../../artifacts/learning/overnight-batches-20260911/extension-final-closeout.json)
+The local-only final generation closeout at
+`artifacts/learning/overnight-batches-20260911/extension-final-closeout.json`
 retains replay/analysis validation through analysis 443832 and SQLite integrity
 and foreign-key checks. This audit independently counts the current collection
 through a read-only transaction; it does not rerun every trajectory replay.
@@ -43,8 +44,9 @@ through a read-only transaction; it does not rerun every trajectory replay.
   `.venv/bin/python data/experiments/learning/generated-sample-audit-v1/audit.py`.
 - [Retained results](../../data/experiments/learning/history/generated-sample-audit-v1.json)
   include source/specification hashes, denominators, detailed strata and limitations.
-- [Provisional per-input tags](../../artifacts/learning/generated-sample-audit-v1/provisional-tags.jsonl)
-  are local diagnostic output, not an exported dataset or adopted selection policy.
+- Provisional per-input tags at
+  `artifacts/learning/generated-sample-audit-v1/provisional-tags.jsonl` are local
+  diagnostic output, not an exported dataset or adopted selection policy.
   The collection and this detailed output are ignored artifacts, not Git backups.
 
 The collection was unchanged during inspection: 10000 game rows, 187727 occurrence

@@ -2,7 +2,7 @@
 description: Setup and usage for the local qi Xiangqi game.
 scope: project setup
 status: stable
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -15,13 +15,17 @@ support bounded learning experiments.
 
 ## Setup and play
 
-Use Python 3.12, uv, and Node 22.12+ (verified here with Node 25.9).
+Use Python 3.12, the uv version pinned in `pyproject.toml`, and Node 24 from
+`.node-version`.
 
 ```bash
 make install
 make check
 make play
 ```
+
+`make install` also installs the pre-commit and pre-push hooks. Use
+`make install-hooks` when dependencies are already current.
 
 Optional C++ trajectory experiments use `uv sync --locked --extra native` and
 `make test-native`; see the [native package guide](packages/qi-game-native/README.md).
@@ -54,9 +58,12 @@ The server binds to localhost. Remote multiplayer is outside this slice.
 
 The repository is a uv workspace: the application depends on the independently
 installable [game package](packages/qi-game/README.md). `make test-game` builds
-and tests that package in isolation. Contracts import without loading a referee,
-players or ML libraries; the readable Python implementation remains available
-for experiments. Native execution is a later slice.
+and tests that package in isolation; `make test-reference-package` verifies the
+installed application package through its headless reference workflow. Browser
+play is a source-checkout surface served by `make play`, not a bundled-wheel
+contract. Contracts import without loading players or ML libraries; the readable
+Python implementation remains the default. Policy generation can explicitly
+select the optional native trajectory package; it is never a silent fallback.
 
 To check a small teacher-free CPU training run after installing the learning extra:
 
@@ -184,10 +191,12 @@ Browser integration tests run the production board against a local server on por
 18765, with Chromium at desktop and mobile widths:
 
 ```bash
-cd web
-npx playwright install chromium
-npm run test:e2e
+npm exec --prefix web -- playwright install chromium
+make test-e2e
 ```
+
+Pass a Playwright filter through `E2E_ARGS`, for example
+`make test-e2e E2E_ARGS=--project=desktop`.
 
 This separate lane tests opponent turns, explicit retries, replay/export/import,
 terminal states, and late responses during new-game/replay cancellation. Default
@@ -210,15 +219,9 @@ The normal checks need no external engine, model, GPU, or service.
 routes authorities. [The playable work item](records/work-items/items/AB-GAME-001-playable-xiangqi.md)
 records this slice's verification.
 
-Copier adopted local repo-kit commit `8ac840f4a3b1`; `.copier-answers.yml` records
-its full-kit baseline. The retention rules (`doc`, `governance`, `python`) and
-`doc-hygiene-audit`, `handoff`, and `governance-sync` skill cores were selectively
-synced from repo-kit `0a51b52`; the backlog lifecycle was reconciled locally.
-The explicit glossary replacement contract, its checkers and glossary-format
-reference were selectively synced from `c60fb19`; domain-modeling received only
-the related wording and a local patch bump, preserving its existing differences.
-Shared rules and skills remain kit-managed. Use `governance-sync` when updating;
-project bindings and application code belong to qi.
+`.copier-answers.yml` records the current governance-kit baseline. Shared rules
+and skills remain kit-managed; use `governance-sync` to reconcile them. Project
+bindings and application code belong to qi.
 
 ## Experiment recall
 

@@ -2,7 +2,7 @@
 description: Compare generated-source mixtures with fixed labels, model, phase balance and training updates.
 scope: backlog item
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-LEARN-012
 work_status: done
@@ -127,9 +127,10 @@ Budget disagreement and engine scores remain preference evidence, not truth.
 [Retained results](../../../data/experiments/learning/history/generated-source-mixing-v1.json)
 are reproduced by the
 [summarizer](../../../data/experiments/learning/generated-source-mixing-v1/summarize.py).
-The [raw verification](../../../artifacts/learning/generated-source-mixing-v1-run3/verification.json)
-and its receipts retain all 36 fits, shared development identity, label checks,
-raw per-position metric arithmetic, checkpoint/reload equality and source archive.
+The local-only raw verification at
+`artifacts/learning/generated-source-mixing-v1-run3/verification.json` and its
+receipts retain all 36 fits, shared development identity, label checks, raw
+per-position metric arithmetic, checkpoint/reload equality and source archive.
 
 Agreement below is the mean over nine fits per mixture. Primary gives equal
 weight to each of six development policy/phase cells; population-weighted

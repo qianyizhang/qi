@@ -2,7 +2,7 @@
 description: Bounded alpha-beta budget and search-efficiency experiments against pinned Pikafish profiles.
 scope: backlog item
 status: stable
-last_update: 2026-09-15
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-EVAL-006
 work_status: done
@@ -152,8 +152,8 @@ pre-change search implementation on the 12 frozen probe starts.
   search on all 12 probe starts. All 94 runtime Python files match the execution
   source archive. `make check`: 731 passed, one skipped; five browser unit tests,
   lint/docs/catalog, OpenAPI/type checks and production build passed. Both study
-  scripts also passed Ruff checks. Evidence:
-  [receipt](../../../artifacts/experiments/enhanced-potential-20260915/verification.json).
+  scripts also passed Ruff checks. The local-only receipt is
+  `artifacts/experiments/enhanced-potential-20260915/verification.json`.
   Follow-up: none required for this bounded study. Review: not-required.
 
 
@@ -184,6 +184,96 @@ pre-change search implementation on the 12 frozen probe starts.
       "path": "records/reports/2026-09-15-enhanced-alpha-beta.md",
       "role": "report",
       "sha256": "251457eef49a5e45224a3563c4b7c6e47d5067a42ec9c795f5e4d5a84f6e94f0"
+    },
+    {
+      "path": "data/evaluation/enhanced-potential-20260915.json",
+      "role": "results",
+      "sha256": "149d553c15a0cc67fd656e4294d7992bce070a4951484c3a23b63148f8c78ddd"
+    },
+    {
+      "path": "data/experiments/enhanced-potential-20260915.json",
+      "role": "config",
+      "sha256": "29c580d16f736f2a42caf9413607a641472ea6f819dc4770faef558d6b182c83"
+    },
+    {
+      "path": "data/experiments/enhanced_potential.py",
+      "role": "source",
+      "sha256": "72cc4435912512414fa6e5263b56abba1f9dfea6cb756ada2ed6f654b92b96f6"
+    },
+    {
+      "path": "data/experiments/enhanced_diagnostics.py",
+      "role": "source",
+      "sha256": "705aadb47d9138cac978569ac08840d540f6ebc9e5f056d1b415aa9b2fcd3410"
+    },
+    {
+      "path": "artifacts/experiments/enhanced-potential-20260915/manifest.json",
+      "role": "run",
+      "sha256": "72be21833a4151d5a68975df129cc017e574c8e59658949b920f88f6bdf84cdd"
+    },
+    {
+      "path": "artifacts/experiments/enhanced-potential-20260915/summary.json",
+      "role": "results",
+      "sha256": "7d05c5310d23eecf7482af9120d41fa1bcc6e994b0a8a6c71f8983fe34536684"
+    },
+    {
+      "path": "artifacts/experiments/enhanced-potential-20260915/diagnostics.json",
+      "role": "results",
+      "sha256": "399b569a7c00f077d445ac170574182dbd03fbef7d568397987298e271c22bc8"
+    },
+    {
+      "path": "artifacts/experiments/enhanced-potential-20260915/verification.json",
+      "role": "results",
+      "sha256": "b0eb06cee400262ac8fee68305a9c7848b9326a49c213ca11833596ea79b3d8e"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "saved-checkpoint-elo-20260914",
+      "relationship": "extends",
+      "contribution": "Direct alpha-beta optimization and bounded-engine comparison after the 128-visit reference panel."
+    },
+    {
+      "id": "search-components-v1",
+      "relationship": "extends",
+      "contribution": "Isolate budget scaling, component subtraction and PVS with completed paired-game evidence."
+    }
+  ],
+  "novelty": "A bounded search-efficiency follow-up, not a new reference-strength scale."
+}
+```
+
+### 2026-09-22 — portable report locator
+
+This final catalog revision records the report after ignored artifact links were
+made explicit local-only paths. The scientific result and old digest are retained.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "enhanced-potential-20260915",
+  "title": "Enhanced alpha-beta potential",
+  "question": "Can bounded search optimization approach the local Pikafish profiles?",
+  "kind": "performance",
+  "topics": [
+    "alpha-beta",
+    "enhanced",
+    "Pikafish",
+    "PVS",
+    "search efficiency",
+    "budget"
+  ],
+  "execution": "complete",
+  "conclusion": "not-supported",
+  "finding": "84 probes and 72/72 games completed, all replay-validated, no failures. At 128 visits enhanced fell back on 5/12 probe starts. All four screen profiles scored 0/8 against small Pikafish. PVS selected by latency tie-break; follow-up 8/0/0 versus original enhanced, 0/0/16 versus small and 0/0/16 versus large. Original enhanced unchanged on 12/12 probes.",
+  "conditions": "Four development families for screening, next eight for follow-up; both colors, seed 7. Original 128 visits/depth 2; scaled/lean/PVS 1024/depth 4. Pikafish 1k/depth 3 and 100k/depth 8, one thread, Hash 16 MiB. 18.1-minute game execution within 30-minute bound.",
+  "limitations": "The 8-0 control combines eightfold visit budget with recipe changes. Equal-budget screen shows no PVS strength gain. Small selected development study, unequal resources, bounded Pikafish. One CPU profile is not general speed evidence. No held-out, unrestricted-engine parity or Elo claim.",
+  "decision": "No evidence of approaching either capped Pikafish profile through these small changes. Retain explicit experimental variants; next investigate faster legal move generation with equivalence checks and a new matched-time game study.",
+  "revisit": "A materially faster search or stronger evaluator, frozen before a fresh development-family paired-game study.",
+  "evidence": [
+    {
+      "path": "records/reports/2026-09-15-enhanced-alpha-beta.md",
+      "role": "report",
+      "sha256": "2790e97b05231c4c0e2ecbd7f0087bc100aa9c748c39ae4b1a6cb1758739d4bf"
     },
     {
       "path": "data/evaluation/enhanced-potential-20260915.json",

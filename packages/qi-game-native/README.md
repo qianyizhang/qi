@@ -2,7 +2,7 @@
 description: Optional C++ trajectory execution, ownership, and conformance checks.
 scope: native game package
 status: experimental
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -76,9 +76,12 @@ from qi_game_native.backend import NativeTrajectory
 result = generate_policies(store, config, trajectory_factory=NativeTrajectory)
 ```
 
-The existing runner remains serial, driven by its Python actor and per-game RNG.
-One run-owned `ReplaySession` supplies native legality, transitions and outcomes
-as immutable `GameView` values to collection, teacher and sampler consumers.
+Each generation worker remains serial, driven by its Python actor and per-game
+RNG. The CLI can explicitly coordinate two isolated source workers with separate
+durable shards and validated publication; see
+[parallel generation](../../docs/data-generation.md#opt-in-parallel-generation).
+One run-owned `ReplaySession` per worker supplies native legality, transitions and
+outcomes as immutable `GameView` values to collection, teacher and sampler consumers.
 Every generated history is validated once, then reused; uncached histories
 restore through the native backend. Collection writes still enforce persisted
 prefixes, lifecycle, split guards and a durable transaction for every move.

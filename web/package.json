@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build && vite build --mode report",
-    "check": "tsc --noEmit && prettier --check src tests e2e index.html vite.config.ts playwright.config.ts",
-    "format": "prettier --write src tests e2e index.html vite.config.ts playwright.config.ts",
+    "check": "tsc --noEmit && npm run format:check",
+    "format:check": "prettier --check src tests e2e index.html package.json tsconfig.json vite.config.ts playwright.config.ts",
+    "format": "prettier --write src tests e2e index.html package.json tsconfig.json vite.config.ts playwright.config.ts",
     "test": "tsc src/request-gate.ts --target ES2022 --module ESNext --skipLibCheck --outDir .test-build && node --test tests/request-gate.test.mjs",
     "test:e2e": "playwright test",
     "generate:api": "../.venv/bin/python ../scripts/export_openapi.py && openapi-typescript openapi.json -o src/generated-api.ts && prettier --write src/generated-api.ts"
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
+    "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "openapi-typescript": "^7.13.0",

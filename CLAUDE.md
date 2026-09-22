@@ -2,7 +2,7 @@
 description: System rules, invariants, and guidelines for developer agents.
 scope: system guidelines
 status: stable
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -76,13 +76,16 @@ fixes ownership; [the method](docs/experiments.md) owns the workflow.
 ## Commands
 
 ```bash
-make install   # sync Python/web deps and bootstrap agent symlinks
-make lint      # Ruff lint/format checks and docs (check_docs.py)
+make install   # locked Python/web sync, agent bootstrap, and Git hooks
+make install-hooks # install pre-commit and pre-push hooks only
+make lint      # Python/web lint plus portable metadata and docs checks
 make test      # test suite
 make test-game # isolated game sdist/wheel and declared-dependency checks
+make test-reference-package # installed app package headless reference check
 make test-native # optional native wheel isolation and generation/HTTP conformance
 make test-learning # optional CPU policy-training integration checks
 make test-learning-mps # opt-in Metal training and CPU checkpoint reload
+make test-e2e  # production browser integration tests; accepts E2E_ARGS
 make check     # lint, tests, and production browser build
 make format    # auto-format and auto-fix
 make play      # build and serve the local browser board
@@ -140,11 +143,12 @@ Portable doctrine: `docs/rules/testing.md`.
 tests live in `packages/qi-game/src/qi_game/`; central `tests/` owns integration checks.
 Default checks require no engine, GPU, network, or service after dependency
 installation. Browser builds, type checks, and request-lifecycle unit tests run
-in `make check`. The optional `npm run test:e2e --prefix web` lane starts a local
-server and Chromium; see README for setup.
+in `make check`. The optional `make test-e2e` lane starts a local server and
+Chromium; pass Playwright options through `E2E_ARGS` and see README for setup.
 
-For prose and skill guidance, run `.venv/bin/python scripts/check_docs.py`; check
-changed skill references and invocation metadata as applicable. For a standalone
+For prose and skill guidance, run `.venv/bin/python scripts/check_checkout_docs.py`;
+this validates a portable checkout without ignored local artifacts. Check changed
+skill references and invocation metadata as applicable. For a standalone
 explainer, use its binding and validator plus visual inspection. For runnable
 Python behavior, run affected tests with `uv run pytest <paths>`; include shared
 consumers when contracts change. Use `make check` for cross-cutting application or

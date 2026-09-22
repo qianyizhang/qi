@@ -2,7 +2,7 @@
 description: Explore policy architecture mechanisms alongside data, teacher and metric limitations.
 scope: backlog item
 status: experimental
-last_update: 2026-09-12
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-LEARN-016
 work_status: done
@@ -160,12 +160,12 @@ part of this screen.
 }
 ```
 
-
 ### 2026-09-12 — finding: separate action support, transfer and confidence
 
 - Evidence: [consolidated report](../../reports/2026-09-12-architecture-surfaces.md),
   [retained findings](../../../data/experiments/learning/history/architecture-surfaces-v1.json)
-  and [independent closeout](../../../artifacts/learning/architecture-surfaces-v1-closeout/verification.json).
+  and local-only independent closeout
+  `artifacts/learning/architecture-surfaces-v1-closeout/verification.json`.
 - Consequence: dense models fit training but identify no unseen positive targets;
   spatial sharing transfers to some unseen combinations, while the fixed CNN
   recipe has late instability and cross-entropy trade-offs. Width and coordinate
@@ -318,7 +318,7 @@ part of this screen.
 
 ## HTML presentation delivery — 2026-09-12
 
-The [offline reading view](../../../artifacts/reports/architecture-surfaces-v1.html)
+The local-only offline reading view at `artifacts/reports/architecture-surfaces-v1.html`
 presents the full report, the retained figure, two metric/checkpoint explorers,
 and first-level evidence previews. The [view specification](../../../data/experiments/learning/architecture-surfaces-v1/report-view.json)
 pins the existing findings JSON; [the reusable exporter](../../../src/qi/experiments/README.md#present-authored-research-reports)
@@ -371,6 +371,133 @@ presentation corrections. The report front page was visually inspected.
       "path": "records/reports/2026-09-12-architecture-surfaces.md",
       "role": "report",
       "sha256": "541507fbcbf291bb145a6fc7251a047e47108c70bc944753b9cfa2ce59db64c6"
+    },
+    {
+      "path": "data/experiments/learning/architecture-surfaces-v1/protocol.json",
+      "role": "config",
+      "sha256": "cc91f1a01e7f40480eccc0e2d906bcc6085cf7419b747688da19ed726108a9a6"
+    },
+    {
+      "path": "data/experiments/learning/history/architecture-surfaces-v1.json",
+      "role": "results",
+      "sha256": "78c797b65e3b3321a9d87e073d801d4d1e22b95630f68f05b13f1ea04cda7bae"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1-closeout/verification.json",
+      "role": "results",
+      "sha256": "0aee897c4a23809973310d7f24011309530740e21dbd449f35d1c930afcf2907"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1/analysis.json",
+      "role": "results",
+      "sha256": "7e7697c0de09f27e25ec4c607b69e99b2e61f51a692313a43e2c6ebede9c4c71"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1/study/lineage.json",
+      "role": "source",
+      "sha256": "3a4b5a21c2092a51494e8523e163b221a9b00a8b1f411fe9ecef893fc9411348"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1/study/verification-32724.json",
+      "role": "results",
+      "sha256": "799c555f61c8533e1839bbf74a7d9f1045e02722266874406317f7ebe54d7f1e"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1-teacher/verification.json",
+      "role": "results",
+      "sha256": "bca5bdf43b035abba2020ef70df7b811aac3a0947cc53394164c78d62d81b665"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1-teacher/receipts.json",
+      "role": "run",
+      "sha256": "c6649977fea6a87354e122c93522bc3584b53537b22c0fc82acafa1408e1cc95"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1-data-verified/verification.json",
+      "role": "results",
+      "sha256": "d2a17989dd1011cc19444e4fc25309fdf17389d571768a587820c8af60fab857"
+    },
+    {
+      "path": "artifacts/learning/architecture-surfaces-v1/architecture-surfaces.png",
+      "role": "report",
+      "sha256": "91fcecb64a52cb45763eb301862c364907e5d11fcf0d295ce6b5e84067237a9d"
+    },
+    {
+      "path": "data/experiments/learning/architecture-surfaces-v1/analyze.py",
+      "role": "source",
+      "sha256": "6a65fa0510fda7f6abfb7537c24bd7b6007b92cb43420a1374665598560e2c28"
+    },
+    {
+      "path": "data/experiments/learning/architecture-surfaces-v1/verify_closeout.py",
+      "role": "source",
+      "sha256": "e9509d232b1e3d3ca2c811f7348c9fe6d97292cd2f973904865e2a4dd1db79c1"
+    },
+    {
+      "path": "data/experiments/learning/architecture-surfaces-v1/report-view.json",
+      "role": "config",
+      "sha256": "42728dc944a99fd64315732743ec0034df3601a0f5afded904a57c099026c67d"
+    },
+    {
+      "path": "artifacts/reports/architecture-surfaces-v1.html",
+      "role": "report",
+      "sha256": null
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "policy-tuning-v1",
+      "relationship": "extends",
+      "contribution": "Revisit capacity and coordinate sharing on changed generated100k-label regime."
+    },
+    {
+      "id": "generated-data-scaling-v1",
+      "relationship": "uses",
+      "contribution": "Reuse frozen4k inputs and inspected development to investigate representation rather than scale."
+    },
+    {
+      "id": "teacher-quality-v1",
+      "relationship": "extends",
+      "contribution": "Diagnose reference instability and metric disagreement on fixed development sample."
+    }
+  ],
+  "novelty": "Couple architecture contrasts to action support, choice difficulty, confidence and teacher stability diagnostics; explain mechanisms rather than optimize one metric."
+}
+```
+
+### 2026-09-22 — portable report locator
+
+This final revision records the report after ignored artifact links were
+made explicit local-only paths. The scientific result and old digest remain
+historical evidence.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "architecture-surfaces-v1",
+  "title": "Architecture mechanisms and diagnostic surfaces",
+  "question": "Which architecture, data, teacher and metric mechanisms explain the observed imitation limits?",
+  "kind": "learning",
+  "topics": [
+    "architecture",
+    "representation",
+    "teacher",
+    "metrics",
+    "data coverage",
+    "mechanism",
+    "generalization"
+  ],
+  "execution": "complete",
+  "conclusion": "mixed",
+  "finding": "15 fits and 30 exact checkpoint reloads. At 200 updates: macro 16.324% baseline, 18.219% wider, 15.525% canonical dense, 16.726% canonical pair, 20.444% spatial pair. Dense unseen-target accuracy is zero; spatial is 16.667% on 54 canonical development positions. CNN seed 17 destabilizes late despite the highest final CNN development score. 144 teacher queries reproduce all 48 original 100k moves; ten change at 1M and WDL saturates.",
+  "conditions": "Frozen mixed 4000 training and 373 inspected development inputs; seeds 7/17/27; five models; 50/200 correlated checkpoints; Adam .01 CPU one thread, full-batch chunks 256. 48 stratified full histories; 100k/1M single-PV and 1M all-legal. 3900 sealed inputs unscored.",
+  "limitations": "One training pool and reused development; initialization seeds are not dataset repetitions. Architecture capacity/optimization confounds persist. Absolute 50/canonical 54 unseen slices differ. Teacher WDL is saturated and all-legal search shallower; no game outcomes. 855.95s models plus 77.56s teacher; timings include host contention.",
+  "decision": "Prioritize AB-LEARN-017 controlled positive-action support versus representation transfer with stability controls;retain AB-LEARN-015 metric validity. No architecture or player-default promotion.",
+  "revisit": "Fresh source games under matched support intervention;declared optimizer/update controls and stable move-severity references with paired game outcomes.",
+  "evidence": [
+    {
+      "path": "records/reports/2026-09-12-architecture-surfaces.md",
+      "role": "report",
+      "sha256": "a992d71c74f15f968d53e037990f24be616b7ad4ad1607a39af85aa976f0c07c"
     },
     {
       "path": "data/experiments/learning/architecture-surfaces-v1/protocol.json",

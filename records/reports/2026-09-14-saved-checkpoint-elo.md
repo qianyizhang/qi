@@ -2,7 +2,7 @@
 description: Development-selected saved MLP evaluated against six frozen strategies with replayable local Elo evidence.
 scope: saved checkpoint playing-strength evaluation
 status: experimental
-last_update: 2026-09-14
+last_update: 2026-09-22
 document_class: report
 report_outcome: inconclusive
 inconclusive_reason: Development imitation selection cannot establish the strongest saved checkpoint; bootstrap failures prevent a reported interval.
@@ -20,7 +20,8 @@ player or proof that it is the strongest saved model.
 
 ## Checkpoint selection
 
-Selected [natural-mixture block 1, seed 27, 200 updates](../../artifacts/learning/generated-followups-v1/semantic/study-retry-1/block-1-natural-updates-200-seed-27/policy.pt).
+Selected the local-only checkpoint
+`artifacts/learning/generated-followups-v1/semantic/study-retry-1/block-1-natural-updates-200-seed-27/policy.pt`.
 Its weights exactly match the earlier source-mixing `block-1-both-seed-27` model.
 The saved recipe uses 4000 examples, a 64-unit absolute-coordinate MLP, Adam 0.01,
 and one CPU thread. Checkpoint SHA-256: `c38fa6c9f38ec74ff02a90f04de02e2451158b6c35431f82bb69f8188ec32388`.
@@ -106,13 +107,13 @@ immutable snapshot was independently read and its full projection matched the
 runner's result. Its evidence digest is `486756a88706ca97fba7cc94ea77e1709456b84565f7fe4de3fbf4a9081b9eb4`.
 
 - [Compact result and receipts](../../data/evaluation/saved-checkpoint-elo-20260914.json).
-- [Predeclared protocol and selected identity](../../artifacts/benchmark-checkpoint-20260914/protocol.json).
-- [Complete selection inventory and predictions](../../artifacts/benchmark-checkpoint-20260914/selection.json).
-- [Selected-model inference verification](../../artifacts/benchmark-checkpoint-20260914/selection-verification.json).
-- [Reference spec](../../artifacts/benchmark-checkpoint-20260914/reference-spec.json) and [candidate spec](../../artifacts/benchmark-checkpoint-20260914/candidate-spec.json).
-- [Named player resources](../../artifacts/benchmark-checkpoint-20260914/players.json).
-- [Reference run](../../artifacts/benchmarks/reference-development-20260914/manifest.json) and [candidate run](../../artifacts/benchmarks/checkpoint-development-20260914/manifest.json).
-- [Verified immutable snapshot](../../artifacts/benchmarks/checkpoint-development-20260914/reports/486756a88706ca97fba7cc94ea77e1709456b84565f7fe4de3fbf4a9081b9eb4.json).
+- Local-only protocol, selection and verification:
+  `artifacts/benchmark-checkpoint-20260914/{protocol,selection,selection-verification}.json`.
+- Local-only player inputs: `artifacts/benchmark-checkpoint-20260914/{reference-spec,candidate-spec,players}.json`.
+- Local-only run manifests:
+  `artifacts/benchmarks/{reference-development-20260914,checkpoint-development-20260914}/manifest.json`.
+- Local-only immutable snapshot:
+  `artifacts/benchmarks/checkpoint-development-20260914/reports/486756a88706ca97fba7cc94ea77e1709456b84565f7fe4de3fbf4a9081b9eb4.json`.
 - [Selection script](../../data/evaluation/select_saved_checkpoint.py).
 - [Owning work item and experiment ledger](../work-items/items/AB-EVAL-005-local-elo-benchmark.md).
 

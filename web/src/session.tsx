@@ -9,12 +9,12 @@ import {
 } from "react";
 import {
   request,
-  type Controllers,
   type GameSession,
   type PlayResult,
   type Position,
   type Schema,
   type Controller,
+  type SessionResult,
 } from "./api";
 import { RequestGate } from "./request-gate";
 import {
@@ -109,7 +109,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     try {
       const value = stored();
       if (value) {
-        const result = await request<Schema<"SessionResult">>(
+        const result = await request<SessionResult>(
           "play/session/inspect",
           value.session,
           ticket.signal,
@@ -126,7 +126,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         revision.current = value.revision;
         dispatch({
           type: "loaded",
-          session: result.session as GameSession,
+          session: result.session,
           position: result.position,
         });
       } else {
@@ -207,7 +207,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (active.current || current.current.conflict) return;
     const { position, session } = current.current;
     if (!position || !session || position.outcome) return;
-    const controller = session.controllers[position.turn] as Controller;
+    const controller = session.controllers[position.turn];
     if ((controller.player === "human") !== (humanMove !== undefined)) return;
     active.current = true;
     const ticket = gate.current.start();
@@ -301,7 +301,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             changeControllers(current.current.session, {
               ...current.current.session.controllers,
               [side]: validated,
-            } as Controllers),
+            }),
           );
       });
     } catch (error) {
@@ -331,12 +331,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         let session: GameSession, position: Position;
         const data = operation.kind === "import" ? operation.data : undefined;
         if (data && typeof data === "object" && "format" in data) {
-          const result = await request<Schema<"SessionResult">>(
+          const result = await request<SessionResult>(
             "play/session/inspect",
             data,
             ticket.signal,
           );
-          session = result.session as GameSession;
+          session = result.session;
           position = result.position;
         } else {
           position =

@@ -19,6 +19,7 @@ from qi.training_data.contracts import (
     Library,
     Source,
     SourcePlan,
+    SupervisionIdentity,
     classify_phase,
     fingerprint,
     satisfies_objective,
@@ -28,7 +29,7 @@ from qi.training_data.contracts import (
 from qi.training_data.v1 import reserved_inputs
 
 
-def teacher_spec(config: TeacherConfig, identity: TeacherIdentity | None = None) -> dict:
+def teacher_spec(config: TeacherConfig, identity: TeacherIdentity | None = None) -> SupervisionIdentity:
     identity = identity or TeacherIdentity.read(config)
     identity.require(config)
     return {
@@ -43,7 +44,9 @@ def teacher_spec(config: TeacherConfig, identity: TeacherIdentity | None = None)
     }
 
 
-def source_identity(recipe: GenerationRecipe, plan: SourcePlan, index: int, actor_spec: dict) -> tuple[dict, str]:
+def source_identity(
+    recipe: GenerationRecipe, plan: SourcePlan, index: int, actor_spec: SupervisionIdentity
+) -> tuple[dict, str]:
     """Shared continuation-v2 identity; sampling settings never seed actor randomness."""
     actor = {
         "seed": recipe.seed,
@@ -76,7 +79,7 @@ def generate_library(
     sources, examples = [], {}
     failure = None
 
-    def query(game: Game, config: TeacherConfig, spec: dict) -> TeacherAnalysis:
+    def query(game: Game, config: TeacherConfig, spec: SupervisionIdentity) -> TeacherAnalysis:
         remaining = deadline - monotonic()
         if remaining <= 0:
             raise GameError("dataset_timeout", "Generation deadline reached.")

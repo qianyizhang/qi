@@ -15,7 +15,6 @@ import {
   download,
   request,
   type Controller,
-  type Controllers,
   type PlayerInfo,
   type Position,
   type Choice,
@@ -264,9 +263,9 @@ export function PlayPage() {
       </section>
     );
   const position = view ?? game.position;
-  const controllers = game.session.controllers as Controllers;
-  const mismatch = ["red", "black"].flatMap((side) => {
-    const controller = controllers[side as "red" | "black"] as Controller;
+  const controllers = game.session.controllers;
+  const mismatch = (["red", "black"] as const).flatMap((side) => {
+    const controller = controllers[side];
     if (controller.player === "human") return [];
     const info = catalog.data?.find((entry) => entry.id === controller.player);
     return !info ||
@@ -482,7 +481,7 @@ export function PlayPage() {
             <ControllerForm
               key={side}
               side={side}
-              controller={controllers[side] as Controller}
+              controller={controllers[side]}
               players={catalog.data ?? []}
               disabled={
                 !game.paused || game.conflict || (game.busy && !game.thinking)

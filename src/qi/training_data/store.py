@@ -7,10 +7,10 @@ from contextlib import AbstractContextManager, contextmanager
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from time import time
-from typing import Literal
+from typing import Literal, Self
 from uuid import uuid4
 
-from pydantic import ConfigDict, Field, JsonValue, model_validator
+from pydantic import ConfigDict, Field, JsonValue
 from qi_game.contracts import Snapshot
 from qi_game.core import RULESET, START_FEN
 from qi_game.execution import ReplaySession
@@ -24,6 +24,7 @@ from qi.training_data.contracts import (
     Contract,
     Example,
     SourcePlan,
+    SupervisionIdentity,
     classify_phase,
     fingerprint,
     observation_fingerprint,
@@ -85,34 +86,18 @@ class OccurrencePayload(Contract):
     metadata: dict[str, JsonValue] = Field(default_factory=dict)
 
 
-class SupervisionIdentity(Contract):
-    target: Literal["legal-teacher-move-v1"]
-    authority: Literal["teacher-preference"]
-    adapter: Literal["uci-teacher-v1", "uci-teacher-v2"]
-    engine_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    network_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    settings: dict[str, str]
-    nodes: int = Field(ge=1)
-    depth: int | None = Field(ge=1, le=64)
-
-
 class AnalysisSpec(Contract):
     version: Literal[1] = 1
-    supervision: dict[str, JsonValue]
+    supervision: SupervisionIdentity
     timeout_seconds: float = Field(gt=0, le=120)
     output_contract: Literal["teacher-analysis-v1-v2"] = "teacher-analysis-v1-v2"
-
-    @model_validator(mode="after")
-    def validate_supervision(self):
-        SupervisionIdentity.model_validate(self.supervision)
-        return self
 
     @property
     def identity(self) -> str:
         return fingerprint("collection-analysis-spec-v1", self.model_dump())
 
     @classmethod
-    def from_analysis(cls, analysis: TeacherAnalysis):
+    def from_analysis(cls, analysis: TeacherAnalysis) -> Self:
         return cls(supervision=supervision_spec(analysis), timeout_seconds=float(analysis.timeout_seconds))
 
 

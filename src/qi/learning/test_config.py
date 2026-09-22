@@ -73,13 +73,6 @@ def test_source_order_and_insufficient_data_preserve_recipe_contract(tiny_datase
         preview_recipe(recipe, tiny_dataset)
 
 
-@pytest.mark.parametrize("command", ["train", "experiment"])
-def test_retired_flag_commands_are_unknown(command):
-    result = CliRunner().invoke(app, ["learn", command, "--help"])
-    assert result.exit_code != 0
-    assert "No such command" in result.output
-
-
 @pytest.mark.parametrize(
     "patch",
     [

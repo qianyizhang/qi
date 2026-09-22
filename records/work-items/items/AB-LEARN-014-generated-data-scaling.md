@@ -2,7 +2,7 @@
 description: Compare nested generated-data sizes with fixed passes and fixed example presentations.
 scope: backlog item
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-LEARN-014
 work_status: done
@@ -112,7 +112,8 @@ exploratory and require separate sealed confirmation before general claims.
 ### 2026-09-11 — finding: more distinct inputs help under both compute views
 
 - Evidence: [compact results](../../../data/experiments/learning/history/generated-data-scaling-v1.json),
-  [learning curves](../../../artifacts/learning/generated-followups-v1/scaling/learning-curves.png),
+  local-only learning curves at
+  `artifacts/learning/generated-followups-v1/scaling/learning-curves.png`,
   `artifacts/learning/generated-followups-v1/scaling/verification.json` and its
   receipt manifest retain all 30 fits, fresh checkpoint reloads, complete
   prediction parity, nested selection proofs and source archive. The six 4k
@@ -148,8 +149,8 @@ exploratory and require separate sealed confirmation before general claims.
 - Resources and audit: the scaling stage, including its 245.030-second pilot,
   takes 1808.485 seconds. All comparative fits complete within configured
   limits; the largest process high-water mark is 708591616 bytes (675.766 MiB).
-  Independent matrix verification takes 21.68 seconds. The additional
-  [closeout audit](../../../artifacts/learning/generated-followups-v1/closeout-audit.json)
+  Independent matrix verification takes 21.68 seconds. The additional local-only
+  closeout audit at `artifacts/learning/generated-followups-v1/closeout-audit.json`
   checks all 52 retained fits (48 comparisons, one pilot, three earlier controls),
   independently reloads the pilot, verifies all 39 frozen files and the original
   collection hash, and finds zero scored sealed inputs. Its 3.645-second runtime

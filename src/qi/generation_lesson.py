@@ -90,11 +90,13 @@ def practice_sampling(spacing: int, seed: int) -> SamplingResult:
     return sample_positions(games, policy, Random(seed))
 
 
-def register_generation_lesson(app: FastAPI):
+def register_generation_lesson(app: FastAPI) -> None:
     @app.get("/api/learn/generation", response_model=GenerationLesson)
-    def lesson():
+    def lesson() -> GenerationLesson:
         return generation_lesson()
 
     @app.get("/api/learn/generation/sampling", response_model=SamplingResult)
-    def sampling(spacing: int = Query(default=4, ge=1, le=8), seed: int = Query(default=7, ge=0, le=31)):
+    def sampling(
+        spacing: int = Query(default=4, ge=1, le=8), seed: int = Query(default=7, ge=0, le=31)
+    ) -> SamplingResult:
         return practice_sampling(spacing, seed)

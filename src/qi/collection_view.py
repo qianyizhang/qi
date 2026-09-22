@@ -603,16 +603,16 @@ def collection_quality(identity: str) -> CollectionQuality:
             spec = AnalysisSpec.model_validate_json(row["payload"])
             if spec.identity != row["identity"]:
                 raise ValueError("Analysis specification identity mismatch.")
-            sup = spec.supervision
+            supervision = spec.supervision
             specs.append(
                 SpecCoverage(
                     identity=spec.identity,
-                    nodes=sup["nodes"],
-                    depth=sup["depth"],
-                    multipv=int(sup["settings"].get("MultiPV", "1")),
-                    threads=sup["settings"].get("Threads", "unknown"),
-                    engine=sup["engine_sha256"],
-                    network=sup["network_sha256"],
+                    nodes=supervision["nodes"],
+                    depth=supervision["depth"],
+                    multipv=int(supervision["settings"].get("MultiPV", "1")),
+                    threads=supervision["settings"].get("Threads", "unknown"),
+                    engine=supervision["engine_sha256"],
+                    network=supervision["network_sha256"],
                     occurrences=row["n"],
                 )
             )

@@ -2,7 +2,7 @@
 description: Compare dense NumPy checks and compact occupancy masks for further move-generation optimization.
 scope: backlog item
 status: stable
-last_update: 2026-09-15
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-EVAL-008
 work_status: done
@@ -134,7 +134,6 @@ execution savings at identical outputs and budgets; it makes no new strength cla
 }
 ```
 
-
 ## Outcome
 
 - **2026-09-15 — finding:** Batched NumPy was 9.0% slower than the baseline
@@ -155,8 +154,8 @@ execution savings at identical outputs and budgets; it makes no new strength cla
   three rounds for all sources except timing. `make check` passed: 752 Python
   tests, one skipped; five browser tests; lint/docs/catalog, types and build.
   Frozen source/input hashes and raw timing means were verified. The initial
-  docs-only gate failure and corrected rerun are retained in the
-  [receipt](../../../artifacts/experiments/movegen-layout-20260915/verification.json).
+  docs-only gate failure and corrected rerun are retained in the local-only
+  receipt `artifacts/experiments/movegen-layout-20260915/verification.json`.
   Review: not-required.
 - **2026-09-15 — decision:** Adopt masks and the shared attack query without
   changing rules, scores, default budgets or player versions. This study adds
@@ -191,6 +190,136 @@ execution savings at identical outputs and budgets; it makes no new strength cla
       "path": "records/reports/2026-09-15-movegen-layout.md",
       "role": "report",
       "sha256": "89377d6f835ac69dd27ee509555d9a94001b8fe1a24972413a8ebe802f598598"
+    },
+    {
+      "path": "data/evaluation/movegen-layout-20260915.json",
+      "role": "results",
+      "sha256": "f58260f887e7b2a1159cf7b04d32c3222b33bc81428180b7c81706d25a1c10c8"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/movegen_layout.py",
+      "role": "source",
+      "sha256": "7941230e3a8091ca0e5c69a40aab1cf436205933ffdd199342bb06267c70ed07"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/movegen_layout_validation.py",
+      "role": "source",
+      "sha256": "075478bc436bc692f18cd7d660b29b47450db3e14025c5507a6000e1e55acbd0"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/movegen_optimization.py",
+      "role": "source",
+      "sha256": "0ed7b29cee6fe04dd5a99f94ffe20a9705139c6fd8111a6ba3f9aac9c5312106"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/after/src/qi/game.py",
+      "role": "source",
+      "sha256": "29f61c5a1e22ff58fc13107a1bbbfc6eef0e8e1ed535d196aaa15aefe2740148"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/after/src/qi/players/components/positional/__init__.py",
+      "role": "source",
+      "sha256": "9af35d32c4ec3f3af3a656cf7a6bd8fb587e90a6f5a091de04bd2948fbe2cfa1"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/after/src/qi/test_move_generation.py",
+      "role": "source",
+      "sha256": "e717d2fa5e10b467f236e808036d12b1ba544f6bba970847490ef62d7f16f738"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/manifest.json",
+      "role": "run",
+      "sha256": "06cfca74378bd56ae51144cc6a251be556a0687e94815c83cd15bcca3728b04d"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/before-hashes.json",
+      "role": "source",
+      "sha256": "5c28eccca4ecdeefbf26fb28388bcd9f872788932d1a16f3c827bd6e5838ecee"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/masks-only-hashes.json",
+      "role": "source",
+      "sha256": "71c24aa5b76699267be1e633a3ea3e898f3ef048465a4e0c5a4396a693552084"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/after-hashes.json",
+      "role": "source",
+      "sha256": "66523f99da71b08c7496e749b5da03ae764bd413ea4e13cf7f50244bf86516c0"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/screen.json",
+      "role": "results",
+      "sha256": "7db46541df3bc50cda260ac3db76542171c3361309ee70dc85478cada3e1c922"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/setup-before.json",
+      "role": "results",
+      "sha256": "31a31267a5a85fc521d22558722fc7e9e97955298df12aa2d45daba33dc52c59"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/before-profile.txt",
+      "role": "results",
+      "sha256": "50cdb4234b7828642b3fbd6aff4234d948db439e3250913778fcb5b515a09236"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/equivalence.json",
+      "role": "results",
+      "sha256": "2f57ab1dbb4346dfd1dc2ddd83b098e643e308d8bc62cf5dc4072f5b9470ac8e"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/performance.json",
+      "role": "results",
+      "sha256": "f9713709c88c1b3f6bda8e773d9a43bc7062eaf802aa75f7e471f3c87ed8ad5f"
+    },
+    {
+      "path": "artifacts/experiments/movegen-layout-20260915/verification.json",
+      "role": "results",
+      "sha256": "1cb47b2507d625b375bd01f9c4c791b196fe273a5848272cf1514c90c007e976"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "movegen-20260915",
+      "relationship": "extends",
+      "contribution": "Separate setup cost from per-candidate runtime and compare arrays with occupancy masks."
+    }
+  ],
+  "novelty": "Additional execution optimization at unchanged search budgets, not independent playing-strength evidence."
+}
+```
+
+### 2026-09-22 — portable report locator
+
+This final revision records the report after ignored artifact links were
+made explicit local-only paths. The scientific result and old digest remain
+historical evidence.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "movegen-layout-20260915",
+  "title": "Move-generation data structures",
+  "question": "Can batched arrays or compact occupancy masks improve the already optimized referee?",
+  "kind": "performance",
+  "topics": [
+    "referee",
+    "NumPy",
+    "bitmasks",
+    "alpha-beta",
+    "optimization"
+  ],
+  "execution": "complete",
+  "conclusion": "supported",
+  "finding": "Batched NumPy was 9.0% slower on the screen; masks improved legal generation. Three isolated rounds show 2.65x faster PVS at 1024 visits and 2.47x at 4096 relative to the already optimized baseline; masks-only ablation separates evaluator savings. All 7292 legal/check/evaluation queries, 180000 target attacks, 112 replays, perft 79666 and fixed-budget Choice controls matched.",
+  "conditions": "Three alternating isolated-process rounds, 512 cold legal queries and 12 development starts at 1024/4096 visits per source/round; baseline, masks-only and masks plus attack lookup. Initial NumPy/mask screen and adaptive profile-driven evaluator refinement retained.",
+  "limitations": "Finite reused development controls and local timings; no new games, clock limit, Elo or Pikafish closeness evidence. NumPy result is specific to this per-position batched prototype; Torch/GPU untested. Approximately 0.9 MB extra table memory and 0.6 ms startup.",
+  "decision": "Adopt occupancy masks and shared geometric attack lookup with identical evaluator scores and no new dependencies or default-budget changes.",
+  "revisit": "Fresh timing-calibrated matches or a frozen strength mechanism; batch arrays only for a materially different workload.",
+  "evidence": [
+    {
+      "path": "records/reports/2026-09-15-movegen-layout.md",
+      "role": "report",
+      "sha256": "e44f782a9f22d2948a42cff56070c4a67492d8d219b8e2245d3d2b0b12419d8b"
     },
     {
       "path": "data/evaluation/movegen-layout-20260915.json",

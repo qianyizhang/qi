@@ -2,7 +2,7 @@
 description: The pluggable player contract and a reading guide to the engine modules.
 scope: player architecture and extension
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-21
 document_class: coordination
 ---
 

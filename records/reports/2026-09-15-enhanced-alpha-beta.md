@@ -2,7 +2,7 @@
 description: Bounded budget, component-ablation and PVS experiments against two pinned Pikafish profiles.
 scope: enhanced alpha-beta optimization evidence
 status: experimental
-last_update: 2026-09-15
+last_update: 2026-09-22
 document_class: report
 report_outcome: inconclusive
 inconclusive_reason: This small exploratory study cannot establish long-term potential or isolate a PVS strength gain from the larger search budget.
@@ -156,14 +156,11 @@ exists; freeze its profile and new development-family comparison before play.
 ## Evidence and reproduction
 
 - [Compact verified results](../../data/evaluation/enhanced-potential-20260915.json)
-- [Raw game summary](../../artifacts/experiments/enhanced-potential-20260915/summary.json)
-- [CPU profile and baseline verification](../../artifacts/experiments/enhanced-potential-20260915/diagnostics.json)
 - [Diagnostic runner](../../data/experiments/enhanced_diagnostics.py)
 - [Resolved recipe](../../data/experiments/enhanced-potential-20260915.json)
 - [Study runner and verifier](../../data/experiments/enhanced_potential.py)
-- [Local run manifest](../../artifacts/experiments/enhanced-potential-20260915/manifest.json)
-- [Raw position probes](../../artifacts/experiments/enhanced-potential-20260915/probes.json)
-- [Frozen family starts](../../artifacts/experiments/enhanced-potential-20260915/starts.json)
+- Local-only raw evidence under `artifacts/experiments/enhanced-potential-20260915/`:
+  `summary.json`, `diagnostics.json`, `manifest.json`, `probes.json` and `starts.json`.
 
 ```bash
 QI_PLAYERS_CONFIG=artifacts/benchmark-checkpoint-20260914/players.json \
@@ -197,8 +194,8 @@ request-lifecycle tests passed, plus lint, docs/catalog, OpenAPI/type checks and
 the production browser build. Added coverage checks PVS against exhaustive
 minimax, quiescence score parity, real re-searches, interruption and trace/work
 accounting. Source snapshots predate the additional tests; all 94 runtime Python
-files match the executed archive exactly. See the
-[verification receipt](../../artifacts/experiments/enhanced-potential-20260915/verification.json).
+files match the executed archive exactly. The local-only receipt is
+`artifacts/experiments/enhanced-potential-20260915/verification.json`.
 
 ## Interpretation limits
 

@@ -2,7 +2,7 @@
 description: Exact move-generation optimization with isolated timing controls and a calibrated search-budget follow-up.
 scope: referee performance and alpha-beta playing strength
 status: experimental
-last_update: 2026-09-15
+last_update: 2026-09-22
 document_class: report
 report_outcome: inconclusive
 inconclusive_reason: The optimization and budget control passed, but the small development sample does not establish general playing strength or competitiveness with Pikafish.
@@ -150,15 +150,12 @@ change is adopted by this experiment.
 ## Evidence and reproduction
 
 - [Compact complete results](../../data/evaluation/movegen-20260915.json)
-- [Game outcomes and costs](../../artifacts/experiments/movegen-20260915/games-summary.json)
-- [Verification receipt](../../artifacts/experiments/movegen-20260915/verification.json)
 - [Timing/equivalence runner](../../data/experiments/movegen_optimization.py)
 - [Shared-runner game orchestration and verifier](../../data/experiments/movegen_games.py)
-- [Equivalence results](../../artifacts/experiments/movegen-20260915/equivalence.json)
-- [Raw timing summary and calibration](../../artifacts/experiments/movegen-20260915/performance.json)
-- [Frozen game manifest](../../artifacts/experiments/movegen-20260915/games-manifest.json)
-- [Before source hashes](../../artifacts/experiments/movegen-20260915/before-hashes.json)
-- [After source hashes](../../artifacts/experiments/movegen-20260915/after-hashes.json)
+- Local-only raw evidence under `artifacts/experiments/movegen-20260915/`:
+  `games-summary.json`, `verification.json`, `equivalence.json`,
+  `performance.json`, `games-manifest.json`, `before-hashes.json` and
+  `after-hashes.json`.
 
 The run directory retains `before/` and `after/` source trees, the dependency lock,
 exact inputs, individual timing rows, script copies, frozen game specs and game

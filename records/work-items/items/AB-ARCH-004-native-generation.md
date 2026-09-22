@@ -2,7 +2,7 @@
 description: Integrate optional persistent C++ game execution and measure real generation costs.
 scope: native trajectory integration
 status: experimental
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-ARCH-004
 work_status: done
@@ -277,7 +277,6 @@ those actual costs; it does not presume the earlier gain survives them.
 }
 ```
 
-
 ```experiment
 {
   "schema_version": 1,
@@ -312,6 +311,116 @@ those actual costs; it does not presume the earlier gain survives them.
     },
     {
       "path": "scripts/benchmark_native_generation.py",
+      "role": "source",
+      "sha256": "076066bb4f055610c083b15590a9fa626b86f2b255713bdde5070260abf261b9"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/confirmation-02/frozen/src/qi/training_data/generation_runner.py",
+      "role": "source",
+      "sha256": "658b0c0b87cf8cd73f25ff77ee7bb191b91ed059b983c285b6285e733edf49fa"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/confirmation-01/summary.json",
+      "role": "results",
+      "sha256": "f902661cfca50e563cfba8192e08222104093343ba100f7c6937e275a545b1c6"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/confirmation-02/summary.json",
+      "role": "results",
+      "sha256": "90f6e7e0124ba07abeabfe51d580f867b3c6988ebe82c846bd104418975118c0"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/teacher-01/summary.json",
+      "role": "results",
+      "sha256": "2d48e961ce9fe01c642b1a71fd6df0e337dbdbd24c459a47cd1d0d711afacea1"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/confirmation-01/manifest.json",
+      "role": "source",
+      "sha256": "87a5c0f52d84cb4a96e2b407a3dfec267b769c21e4136410ab403527109e889e"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/confirmation-02/manifest.json",
+      "role": "source",
+      "sha256": "219284590250ef638a7fb6f43e0fe7fa403a7a5ad77ebf58af8a5aad0f9e6e9b"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/teacher-01/manifest.json",
+      "role": "source",
+      "sha256": "5e817bb63ba548da3392c3a69c873d9a9e7fef9bcf90bd161b24e8f1a316cb11"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/package-check.log",
+      "role": "run",
+      "sha256": "59f38f0ba5856965a0e323056fdd8281d6d3e83450672bb4a2a0683e37c87c72"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/reference-package-check.log",
+      "role": "run",
+      "sha256": "982b833f2de6cc63eefb3c7b75f93cad966a31dbe2f7b35328f3d5ebed4402aa"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/make-check.log",
+      "role": "run",
+      "sha256": "a85f04308187ee88687c1dd31fa06f75630b209fd78e7de99b73d009027e6407"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/profile-01/diagnostic.txt",
+      "role": "run",
+      "sha256": "9a9a4e18bb9c25f165a25d0814423cb34336e60b2a7e8e4d91175f0737b58595"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "native-backends-20260921",
+      "relationship": "extends",
+      "contribution": "Tests the winning minimal C++ core inside actual actor, sampling, supervision and collection execution."
+    }
+  ],
+  "novelty": "Adds persistent package lifecycle, caller-supplied atomic batches and actual generation cost/evidence parity."
+}
+```
+
+### 2026-09-22 — frozen benchmark source locator
+
+The supported benchmark runner changed after this experiment. This final
+revision points to the byte-identical frozen source; earlier blocks remain
+historical evidence.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "native-generation-20260921",
+  "title": "Native trajectory generation integration",
+  "question": "Does optional persistent C++ execution improve real policy generation while preserving its evidence?",
+  "kind": "performance",
+  "topics": [
+    "native",
+    "C++",
+    "generation",
+    "trajectory",
+    "persistence"
+  ],
+  "execution": "complete",
+  "conclusion": "mixed",
+  "finding": "Optional C++ package and generation integration passed conformance. All 18 primary workers matched 64 trajectories/17169 plies/417 selections. Final native throughput was 0.835x the direct Python default; a detected Python-adapter regression was removed from the default. Four real-teacher cells matched 128 plies/20 selections with 1.030x paired gain and opposite round winners.",
+  "conditions": "macOS ARM64, Python 3.12; three alternating rounds before and after preserving the direct default. Primary random actor uses existing Python RNG and sampler with deterministic fixture supervision. Separate two-round four-game/32-ply plausible-actor pilot uses pinned Pikafish, one thread, 1000 nodes. Fresh process and collection per cell; full raw semantic records and source/binary snapshots retained.",
+  "limitations": "Finite conformance; short local timing windows and uncontrolled desktop load. Native batches independently tested but generation remains serial. Collection/sampling still execute Python rules. Fixture labels do not establish data quality. Worker CPU/RSS omit teacher child costs. Linux CI configured but not locally executed; no strength result. Repository-quality locator correction: the generation-runner source now points to its identical frozen confirmation-02 copy; original findings and retained source bytes are unchanged.",
+  "decision": "Keep direct Python as default and native explicitly experimental. Do not advance adoption: native fails the predeclared 1.2x end-to-end criterion. Preserve both confirmation attempts and their source snapshots.",
+  "revisit": "Extend replaceable execution through incremental collection validation and sampler observations while preserving per-move durability, then rerun full-pipeline parity and throughput. Profiled append/validation duplication is the next target.",
+  "evidence": [
+    {
+      "path": "records/reports/2026-09-21-native-generation.md",
+      "role": "report",
+      "sha256": "8cbd78d90633fdea5ea163fa0c337050de93a1f557fece9f7e2086a570ac1f5f"
+    },
+    {
+      "path": "data/evaluation/native-generation-20260921.json",
+      "role": "results",
+      "sha256": "b39f964154b4b3cef5f2d0302735a5086837e9b6aa29dc00b5444e83355fa297"
+    },
+    {
+      "path": "artifacts/native-generation-20260921/confirmation-02/frozen/scripts/benchmark_native_generation.py",
       "role": "source",
       "sha256": "076066bb4f055610c083b15590a9fa626b86f2b255713bdde5070260abf261b9"
     },

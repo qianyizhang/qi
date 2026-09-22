@@ -2,7 +2,7 @@
 description: Local UCI teacher contract, pinned Pikafish setup, and validation limits.
 scope: external teacher interface
 status: stable
-last_update: 2026-09-11
+last_update: 2026-09-21
 document_class: coordination
 ---
 

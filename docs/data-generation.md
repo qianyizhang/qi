@@ -211,41 +211,19 @@ uv run --extra data pytest src/qi/training_data/test_generation_policies.py \
   src/qi/training_data/test_generation_runner.py
 ```
 
-The larger scientific calibration and any overnight size decision remain with
-AB-DATA-008; successful unit tests and this tiny pilot do not establish scale
-readiness or optimal data-mixture weights.
+The retained sequential run under AB-DATA-008 is exploratory generation evidence,
+not scale readiness or an optimal data mixture. A new scaling question requires
+its own frozen protocol, fresh output and explicit resource allowance.
 
-## Resource-calibrated overnight profile
+## Retained overnight evidence
 
-This profile retains calibration evidence and reusable preview commands. Current
-execution ownership, batch limits and recovery decisions belong to
+The [resource pilot](../data/experiments/learning/history/generation-resource-v1.json)
+calibrated seven fresh collections and 512 games. Its original 9,000-game plan was
+later executed and explicitly extended to 10,000 disposed attempts. The final
+conditions, rejection history, result and limitations belong to
 [AB-DATA-008](../records/work-items/items/AB-DATA-008-generation-scaling-pilot.md)
-and its operator handoffs; this guide does not authorize a run.
-
-The [resource pilot evidence](../data/experiments/learning/history/generation-resource-v1.json)
-covers 512 games in seven fresh SQLite collections, including 300-ply trajectories.
-The [prepared overnight plan](../data/experiments/learning/generation-resource-v1/overnight-plan-v1.json)
-chooses 9,000 games in 100-game blocks: 80% plausible, 10% intervention and 10%
-random; every tenth block is validation. Teacher assets remain pinned, actors use
-10k nodes, and selected occurrences receive both 10k and 100k supervision.
-This is a measured starting configuration, not an optimal sampling policy.
-
-Preview the exact resolved configuration and resource limits:
-
-```bash
-uv run python scripts/run_generation_pilot.py \
-  --config data/experiments/learning/generation-resource-v1/overnight-long-play-v1.json \
-  --output artifacts/learning/overnight-long-play-v1 \
-  --max-write-gb 150 --max-rss-mb 1500 --min-free-gb 30 \
-  --preview
-```
-
-The prepared profile has not been launched. Its 10-hour generation cap leaves
-planning room within a 12-hour allowance for checks/export. The small-pool linear
-scenario is about six hours of generation, 6GB of SQLite files and 118GB of
-OS-attributed writes; allow 8–10 hours and 10–20GB for working artifacts. Roughly
-60k–100k unique inputs is a conservative planning range, not a guaranteed quota.
-Greater duplicate saturation, slower searches or a guard cutoff can reduce yield.
+and its retained history files. This completed operation is not a reusable command
+or authorization for another run.
 
 Resource options use decimal GB/MB and are frozen with the invocation. The
 runner checks write/RSS limits and free space at startup and game boundaries,
@@ -256,12 +234,9 @@ explicit requested counter that is unavailable fails closed. Limits apply per
 invocation, including a separately recorded manual resume. These guards do not
 change SQLite durability (`WAL`, `synchronous=FULL`) or teacher search budgets.
 
-The pilot did not show runaway I/O growth up to 128 games at a fixed horizon,
-but writes were approximately 17–27 times the closed database size. Per-ply
-transactions and page/log churn therefore matter when budgeting an overnight run.
-Keep OS-attributed writes distinct from disk-space consumption and physical SSD
-wear. `benchmark_generation.py` also records SQL trace callback traffic; callbacks
-can repeat outer statements for triggers, so they are not physical-I/O counters.
+Budget per-ply transactions and page/log churn separately from closed database
+size. OS-attributed writes, SQL trace callbacks, disk consumption and physical SSD
+wear are different measures.
 
 Before training from the overnight collection, freeze the predeclared exclusions
 for shared train/validation observations, audit label ambiguity, check quotas and

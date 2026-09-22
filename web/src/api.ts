@@ -7,8 +7,17 @@ export type Position = Schema<"Position">;
 export type Choice = Required<Schema<"Choice">>;
 export type PlayerInfo = Required<Schema<"PlayerInfo">>;
 export type Controller = Required<Schema<"Controller">>;
-export type Controllers = Required<Schema<"Controllers">>;
-export type GameSession = Required<Schema<"GameSession">>;
+// Validated responses include Pydantic defaults, including both nested controllers.
+export type Controllers = Record<"red" | "black", Controller>;
+export type GameSession = Omit<
+  Required<Schema<"GameSession">>,
+  "controllers"
+> & {
+  controllers: Controllers;
+};
+export type SessionResult = Omit<Schema<"SessionResult">, "session"> & {
+  session: GameSession;
+};
 export type PlayResult = Schema<"PlayResult">;
 export type ReportData = Schema<"ReportData">;
 export type ReportBundle = Schema<"ReportBundle">;

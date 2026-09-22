@@ -2,7 +2,7 @@
 description: Closeout of generated-source mixing, semantic enrichment and scaling, with verified model retention.
 scope: generated data session closeout
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -63,21 +63,11 @@ new inference or engine searches. Earlier independent reload-and-inference
 verification remains in each study's verification evidence and the follow-up
 `closeout-audit.json`.
 
-## Next question and checkout boundary
+## Related follow-up
 
-The user requested a decision interview for a separate experiment comparing
-Pikafish move evaluations with teacher top-1 agreement. The
-[campaign](../campaigns/policy-generalization.md) routes this frontier. Preserve
-all earlier primary outcomes when assessing another metric. The interview must
-resolve whether effectiveness means informative move-error estimates, predictive
-validity against game outcomes, or both; metric correlation alone does not settle
-playing strength. No next experiment has started.
-
-Five pre-existing generation closeout files were outside this session's edits:
-`records/reports/session-handoff-overnight-generation-20260911.md`,
-`records/work-items/items/AB-DATA-008-generation-scaling-pilot.md`, and the three
-`overnight-generation*20260911.json` history files. They remain outside this
-closeout commit. Do not discard or stage them merely to obtain a clean checkout.
+[AB-LEARN-015](../work-items/items/AB-LEARN-015-evaluation-metric-comparison.md)
+owns the still-deferred metric-validity question. This retention inventory does
+not authorize new scoring, fitting, sealed-input use or a playing-strength claim.
 
 ## Verification
 

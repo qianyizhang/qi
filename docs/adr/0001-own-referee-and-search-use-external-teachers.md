@@ -2,14 +2,14 @@
 description: Own the educational game core and search while reusing external teachers and training tools.
 scope: architecture decision
 status: stable
-last_update: 2026-09-07
+last_update: 2026-09-21
 document_class: coordination
 ---
 
 # ADR-0001: Own the referee and search; reuse external teachers
 
 - **Status**: superseded by [ADR-0012](0012-replaceable-game-execution.md)
-- **Last Update**: 2026-09-07
+- **Last Update**: 2026-09-21
 
 Qi will implement its own framework-independent Python referee and compact
 search implementation. External engines provide differential checks and teacher

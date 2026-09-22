@@ -2,7 +2,7 @@
 description: Explanatory architecture comparisons with audits of action coverage, teacher stability and evaluation resolution.
 scope: architecture and learning diagnostics
 status: experimental
-last_update: 2026-09-12
+last_update: 2026-09-22
 document_class: report
 report_outcome: inconclusive
 inconclusive_reason: One inspected development pool and one optimizer recipe cannot establish architecture superiority or playing strength.
@@ -68,7 +68,8 @@ Those two subsets differ, so compare unseen results within the same coordinates.
 | Mover-relative pair MLP64 | 100.00% | 16.47% → 16.73% | 23.24 → 21.80 | 1.23% of 54 |
 | Mover-relative spatial pair CNN32 | 75.17% | 20.67% → 20.44% | 3.44 → 11.33 | 16.67% of 54 |
 
-![Architecture diagnostic panels](../../artifacts/learning/architecture-surfaces-v1/architecture-surfaces.png)
+Generated diagnostic panels are retained locally at
+`artifacts/learning/architecture-surfaces-v1/architecture-surfaces.png`.
 
 **Capacity helps some supported decisions, but does not repair missing action
 support.** Widening improves the 200-update macro by 1.90 percentage points on
@@ -108,9 +109,11 @@ competence. A possible local capture-pattern advantage needs a matched test.
 
 ## Data: action coverage, source diversity and missing history
 
-The [verified data audit](../../artifacts/learning/architecture-surfaces-v1-data-verified/data-audit.json)
+The verified local data audit at
+`artifacts/learning/architecture-surfaces-v1-data-verified/data-audit.json`
 provides several explanations to test, rather than a generic claim that more data
-is always better.
+is always better. Its compact findings are retained in the
+[tracked study summary](../../data/experiments/learning/history/architecture-surfaces-v1.json).
 
 | Surface | 4000 training inputs | Existing nested 16000 inputs |
 | --- | ---: | ---: |
@@ -151,8 +154,9 @@ before being justified as the next fix.
 
 ## Teacher: repeatable preferences with budget and search sensitivity
 
-The [teacher probe](../../artifacts/learning/architecture-surfaces-v1-teacher/summary.json)
-froze eight development inputs per source/phase cell before querying. It kept
+The local teacher probe at
+`artifacts/learning/architecture-surfaces-v1-teacher/summary.json` froze eight
+development inputs per source/phase cell before querying. It kept
 identical full histories and pinned engine/network bytes. All 144 fresh-session
 queries succeeded and were verified offline from raw answers; query work took
 75.8 seconds, with total recorded finalization at 77.6 seconds under the 900-second cap.
@@ -273,8 +277,9 @@ checkpoints. Configs, source copies, identities, predictions, observations and
 every checkpoint are retained locally. The [owner](../work-items/items/AB-LEARN-016-architecture-surfaces.md)
 and catalog preserve the predeclared comparison and final assessment.
 
-The [independent closeout](../../artifacts/learning/architecture-surfaces-v1-closeout/verification.json)
-checks all 15 completed 200-update fits, 30 exact fresh-process reloads, unchanged
+The local independent closeout at
+`artifacts/learning/architecture-surfaces-v1-closeout/verification.json` checks
+all 15 completed 200-update fits, 30 exact fresh-process reloads, unchanged
 development targets, protected-input exclusion, three historical baseline tensor
 equalities, teacher receipts and resource accounting. The scientific study used
 855.95/1800 seconds; the teacher stage 77.56/900 seconds, for 933.51 seconds total.

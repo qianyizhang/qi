@@ -3,7 +3,7 @@
 from qi_game.contracts import Snapshot
 
 from qi.teacher import TeacherAnalysis, TeacherConfig, TeacherIdentity
-from qi.training_data.contracts import state_fingerprint
+from qi.training_data.contracts import SupervisionIdentity, state_fingerprint
 from qi.training_data.store import AnalysisPayload, AnalysisSpec, Collection, OccurrencePayload, RunPayload
 
 
@@ -12,18 +12,18 @@ def analysis_spec(config: TeacherConfig, identity: TeacherIdentity) -> AnalysisS
     if config.show_wdl:
         settings["UCI_ShowWDL"] = "true"
     return AnalysisSpec(
-        supervision={
-            "target": "legal-teacher-move-v1",
-            "authority": "teacher-preference",
-            "adapter": "uci-teacher-v2"
+        supervision=SupervisionIdentity(
+            target="legal-teacher-move-v1",
+            authority="teacher-preference",
+            adapter="uci-teacher-v2"
             if config.depth is None or config.multipv != 1 or config.show_wdl
             else "uci-teacher-v1",
-            "engine_sha256": identity.engine_sha256,
-            "network_sha256": identity.network_sha256,
-            "settings": settings,
-            "nodes": config.nodes,
-            "depth": config.depth,
-        },
+            engine_sha256=identity.engine_sha256,
+            network_sha256=identity.network_sha256,
+            settings=settings,
+            nodes=config.nodes,
+            depth=config.depth,
+        ),
         timeout_seconds=float(config.timeout_seconds),
     )
 

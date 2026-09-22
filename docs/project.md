@@ -2,7 +2,7 @@
 description: Project scope, architecture direction, and learning milestones.
 scope: project direction
 status: stable
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -27,7 +27,9 @@ and replaceable-execution boundary, superseding ADR-0001's Python-only direction
 package dependencies, lazy loading and direct consumer migration without default
 shims. The [game package](../packages/qi-game/README.md) now owns replay contracts
 and a referee protocol used by CLI/HTTP. Player, learning, data and experiment
-package separation and native execution remain later slices.
+package separation remains later work. An optional
+[native trajectory package](../packages/qi-game-native/README.md) is implemented
+for explicit generation runs; Python remains the default.
 
 The local frontend connects play, generated-data review, learning walkthroughs,
 experiment reports, benchmarks and reference material.
@@ -58,7 +60,7 @@ slice; do not turn them into fixed interface contracts now.
 | Area | Direction | Adoption point |
 | :-- | :-- | :-- |
 | Tooling | Python 3.12, uv, Ruff, pytest, Hypothesis; package-owned dependencies | qi application and qi-game workspace packages with one lock and an isolated game test lane |
-| Referee | Readable Python reference plus conforming replaceable execution | Snapshot operations accept an injected backend; search/generation still use Python directly; native backend remains unselected |
+| Referee | Readable Python reference plus conforming replaceable execution | Snapshot operations accept an injected backend; application/search default to Python, while policy generation may explicitly select the optional native trajectory package |
 | CLI | Typer and Pydantic at external boundaries; JSON output | Game commands |
 | Reference | pyffish/Fairy-Stockfish for differential checks; Pikafish via UCI as teacher | Validate installation, rule coverage, and licensing before use |
 | Neural learning | PyTorch policy/value model and an educational PUCT implementation | After replay and arena |
@@ -72,13 +74,12 @@ packages. Studies that need incompatible dependencies use excluded, separately
 locked uv projects. Isolated package tests check declared dependency closure;
 lazy imports and a shared environment alone cannot enforce it.
 
-The first native backend targets Apple Silicon macOS and Linux x86_64 CPU
-execution. GPU/model-device dependencies stay outside the referee extension;
-Windows and GPU-native simulation are deferred. Possible multi-client/batch
-serving starts conceptually with game/player execution on a single host for
-trusted clients under one owner. Keep this direction low fidelity and revise it
-around demonstrated workloads; no detailed serving architecture is required by
-the refactor. Session/run ownership and evidence remain governing constraints.
+The optional native backend targets Apple Silicon macOS and Linux x86_64 CPU.
+GPU/model-device dependencies stay outside the referee extension; Windows and
+GPU-native simulation are deferred. It remains explicit and experimental rather
+than a default promotion. Possible multi-client/batch serving remains a
+low-fidelity, single-owner direction to revise around demonstrated workloads.
+Session/run ownership and evidence remain governing constraints.
 The [decision record](../records/work-items/items/AB-ARCH-001-modular-runtime.md)
 routes the first implementation slice.
 

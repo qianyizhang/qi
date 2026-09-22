@@ -191,7 +191,8 @@ def teacher_move(
 
 def main() -> None:
     try:
-        app(standalone_mode=False)
+        # Typer returns explicit command exit codes when standalone handling is disabled.
+        raise SystemExit(app(standalone_mode=False))
     except TyperException as exc:
         typer.echo(json.dumps({"error": {"code": "invalid_arguments", "message": exc.format_message()}}), err=True)
         raise SystemExit(exc.exit_code) from exc

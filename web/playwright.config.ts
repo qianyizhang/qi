@@ -2,7 +2,13 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
+  globalSetup: "./e2e/preflight.ts",
+  forbidOnly: Boolean(process.env.CI),
   workers: 1,
+  reporter: process.env.CI
+    ? [["line"], ["html", { open: "never", outputFolder: "playwright-report" }]]
+    : "list",
+  outputDir: "test-results",
   use: { baseURL: "http://127.0.0.1:18765", trace: "retain-on-failure" },
   projects: [
     { name: "desktop", use: { viewport: { width: 1200, height: 900 } } },

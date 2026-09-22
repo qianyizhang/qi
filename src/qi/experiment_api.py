@@ -22,24 +22,24 @@ from qi.experiments.report import render_export
 from qi.lab import RunEntry, TraceJob, TraceJobs, TraceRequest, discover, run_path
 
 
-def register(app: FastAPI, jobs: TraceJobs) -> None:
+def register_experiments(app: FastAPI, jobs: TraceJobs) -> None:
     @app.get("/api/reference", response_model=Glossary)
-    def reference():
+    def reference() -> Glossary:
         return load_glossary()
 
     @app.get("/api/experiment-catalog", response_model=ExperimentCatalog)
-    def experiment_catalog(q: str = ""):
+    def experiment_catalog(q: str = "") -> ExperimentCatalog:
         return catalog(q)
 
     @app.get("/api/experiment-catalog/{experiment_id}", response_model=CatalogEntry)
-    def catalog_detail(experiment_id: str):
+    def catalog_detail(experiment_id: str) -> CatalogEntry:
         try:
             return get_entry(experiment_id)
         except ValueError as exc:
             raise GameError("unknown_experiment", str(exc)) from exc
 
     @app.get("/api/experiment-catalog/{experiment_id}/evidence/{index}")
-    def catalog_evidence(experiment_id: str, index: int):
+    def catalog_evidence(experiment_id: str, index: int) -> Response:
         try:
             path = evidence_path(experiment_id, index)
             body = path.read_text()
@@ -48,7 +48,7 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
         return Response(body, media_type="text/plain", headers={"X-Content-Type-Options": "nosniff"})
 
     @app.get("/api/experiment-catalog/{experiment_id}/owner")
-    def catalog_owner(experiment_id: str):
+    def catalog_owner(experiment_id: str) -> Response:
         try:
             body = read_owner(get_entry(experiment_id).owner)["text"]
         except (ValueError, OSError) as exc:
@@ -56,19 +56,19 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
         return Response(body, media_type="text/plain", headers={"X-Content-Type-Options": "nosniff"})
 
     @app.get("/api/experiments", response_model=list[RunEntry])
-    def experiments():
+    def experiments() -> list[RunEntry]:
         return [entry for entry, _ in discover().values()]
 
     @app.get("/api/experiments/{run_id}", response_model=ReportData)
-    def detail(run_id: str):
+    def detail(run_id: str) -> ReportData:
         return read_bundle(run_path(run_id)).data
 
     @app.get("/api/experiments/{run_id}/bundle", response_model=ReportBundle)
-    def bundle(run_id: str):
+    def bundle(run_id: str) -> ReportBundle:
         return read_bundle(run_path(run_id))
 
     @app.get("/api/experiments/{run_id}/units/{unit_id}", response_model=UnitDetail)
-    def unit(run_id: str, unit_id: str):
+    def unit(run_id: str, unit_id: str) -> UnitDetail:
         selected = next((unit for unit in read_bundle(run_path(run_id)).units if unit.job.id == unit_id), None)
         if selected is None:
             raise GameError("unknown_unit", "Recorded unit not found.")
@@ -83,7 +83,7 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
         limit: int = Query(default=100, ge=1, le=500),
         view: Literal["all", "mcts-tree"] = "all",
         show_work: bool = False,
-    ):
+    ) -> TracePage:
         selected = next((trace for trace in read_bundle(run_path(run_id)).traces if trace.summary.id == trace_id), None)
         if selected is None:
             raise GameError("unknown_trace", "Verified trace not found.")
@@ -97,7 +97,7 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
         return TracePage(events=events[offset : offset + limit], total=len(events), offset=offset)
 
     @app.get("/api/experiments/{run_id}/export")
-    def export(run_id: str, format: Literal["html", "md"] = "html"):
+    def export(run_id: str, format: Literal["html", "md"] = "html") -> Response:
         body = render_export(read_bundle(run_path(run_id)), format)
         return Response(
             body,
@@ -106,7 +106,7 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
         )
 
     @app.get("/api/experiments/{run_id}/evidence/{reference:path}")
-    def evidence(run_id: str, reference: str):
+    def evidence(run_id: str, reference: str) -> FileResponse:
         directory = run_path(run_id)
         path = contained(directory, directory / reference)
         if not path.is_file() or path.suffix not in (".json", ".md") or path.stat().st_size > 64 * 1024 * 1024:
@@ -114,13 +114,13 @@ def register(app: FastAPI, jobs: TraceJobs) -> None:
         return FileResponse(path, filename=Path(reference).name, media_type="text/plain")
 
     @app.get("/api/trace-jobs", response_model=list[TraceJob])
-    def statuses():
+    def statuses() -> list[TraceJob]:
         return jobs.list()
 
     @app.post("/api/trace-jobs", response_model=TraceJob)
-    def start(request: TraceRequest):
+    def start(request: TraceRequest) -> TraceJob:
         return jobs.start(request)
 
     @app.post("/api/trace-jobs/{job_id}/cancel", response_model=TraceJob)
-    def cancel(job_id: str):
+    def cancel(job_id: str) -> TraceJob:
         return jobs.cancel(job_id)

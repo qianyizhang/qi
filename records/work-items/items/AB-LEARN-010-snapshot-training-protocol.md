@@ -2,7 +2,7 @@
 description: Lock optimizer semantics before integrating bounded Parquet reads into production training.
 scope: backlog item
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-LEARN-010
 work_status: done
@@ -67,9 +67,9 @@ Evidence: user decision and AB-LEARN-012; review not-required.
   build. The focused tests cover an uneven final chunk across three Adam updates,
   losses/gradients/parameters within tolerance, no update from an incomplete
   pass, cache corruption and exact checkpoint prediction reload.
-- Representative evidence:
-  [pilot report](../../../artifacts/learning/generated-source-mixing-v1-run3/pilot/report.json)
-  and [resolved config](../../../artifacts/learning/generated-source-mixing-v1-run3/pilot/config.json).
+- Representative local-only evidence:
+  `artifacts/learning/generated-source-mixing-v1-run3/pilot/report.json` and
+  `artifacts/learning/generated-source-mixing-v1-run3/pilot/config.json`.
   CPU one thread, 4000 training and 373 validation inputs, 256-row chunks:
   200/200 updates in 25.073 seconds including measured setup/finalization;
   optimization 24.313 seconds; process lifetime peak RSS 429457408 bytes.

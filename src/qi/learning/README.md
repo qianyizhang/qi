@@ -2,7 +2,7 @@
 description: Run a bounded local teacher-imitation experiment and interpret its evidence.
 scope: supervised policy learning
 status: stable
-last_update: 2026-09-12
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -291,122 +291,16 @@ agreement asks whether imitation generalizes to unseen source games. Legal outpu
 prove the mask works. Paired-color replayable matches exercise the player boundary;
 the small fixed corpus does not establish general strength.
 
-## Data-size experiment
+## Retained study protocols
 
-Generate a fresh dataset once, then preview and execute the fixed comparison:
-
-```bash
-uv run --extra learning qi learn dataset \
-  --corpus data/evaluation/search-positions-v1.json \
-  --engine artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon \
-  --network artifacts/teachers/pikafish-2026-01-02/pikafish.nnue \
-  --games 64 --samples 16 --plies 32 --seed 7 --nodes 1000 --depth 3 --seconds 600 \
-  --output artifacts/learning/generalization-v1-data.json
-
-cat > artifacts/learning/generalization-recipe.json <<'JSON'
-{
-  "name": "generalization",
-  "data": {"dataset": "generalization-v1-data.json", "selection": "source-interleaved", "subset_seed": 7},
-  "training": {"updates": 200},
-  "execution": {"device": "mps", "fit_seconds": 60, "total_seconds": 600},
-  "cases": [
-    {"name": "size-96", "overrides": {"data": {"train_size": 96}}},
-    {"name": "size-192", "overrides": {"data": {"train_size": 192}}},
-    {"name": "size-384", "overrides": {"data": {"train_size": 384}}},
-    {"name": "size-768", "overrides": {"data": {"train_size": 768}}}
-  ],
-  "seeds": [7, 17, 27]
-}
-JSON
-
-uv run --extra learning qi learn run --config artifacts/learning/generalization-recipe.json --preview
-uv run --extra learning qi learn run --config artifacts/learning/generalization-recipe.json \
-  --output artifacts/learning/generalization-v1
-```
-
-The recipe declares the size/seed matrix and allowances. The model, Adam settings,
-teacher and whole-game validation split stay fixed. `data.subset_seed` shuffles
-source games and their labels, then interleaves them. Every size takes a prefix of
-that training-only order; different initialization seeds receive identical inputs.
-Insufficient labels or invalid dataset evidence fail before output is created.
-Preview requires no torch import and writes nothing.
-
-The shared [Recipe artifact and deadline semantics](#declarative-experiments) apply.
-Exact teacher agreement is an imitation measure, not a move-quality oracle.
-
-## Recorded results
-
-Durable conditions, measurements, limits and decisions remain in the owning
-[initial generalization](../../../records/work-items/items/AB-LEARN-002-policy-generalization.md),
-[tuning](../../../records/work-items/items/AB-LEARN-003-local-policy-tuning.md) and
-[data-scaling](../../../records/work-items/items/AB-LEARN-004-dataset-scaling.md)
-records; the [experiment index](../../../data/experiments/learning/README.md)
-routes their recipes and retained evidence. The two data-size records support
-scaling within their separate measured teacher-imitation setups; the tested tuning
-alternatives did not improve the already inspected fresh test. These results do
-not establish playing strength or authorize adaptive reuse of that test. The
+Completed data-size, tuning and teacher-quality studies are historical experiment
+protocols, not trainer defaults. Their recipes, reproduction limits and retained
+evidence are routed from the
+[learning experiment index](../../../data/experiments/learning/README.md); authored
+findings remain in the linked work items. The
 [policy-generalization campaign](../../../records/campaigns/policy-generalization.md)
-owns the current cross-study synthesis and revisit triggers.
-
-## Scale the dataset with the model fixed
-
-```bash
-uv run --extra learning qi learn dataset \
-  --corpus data/evaluation/search-positions-v1.json \
-  --engine artifacts/teachers/pikafish-2026-01-02/MacOS/pikafish-apple-silicon \
-  --network artifacts/teachers/pikafish-2026-01-02/pikafish.nnue \
-  --output artifacts/learning/scaled-data.json \
-  --seed 211 --games 1056 --samples 16 --workers 4 --seconds 7200
-```
-
-Copy the preceding recipe to `artifacts/learning/scaled-recipe.json`, set
-`data.dataset` to `scaled-data.json`, and declare cases with `data.train_size`
-768, 3072 and 12288. Set `execution.fit_seconds` to 600 and `execution.total_seconds`
-to 7200, keeping the model, optimizer, initialization seeds and 200 updates fixed.
-Preview with `qi learn run --config artifacts/learning/scaled-recipe.json --preview`,
-then execute with a fresh `--output artifacts/learning/scaled-curve`.
-
-Recipe accepts sizes through 32768, at most 600 seconds per fit and
-7200 seconds for the matrix. Training is still full
-batch: every update sees the entire chosen subset, so larger sizes also use more
-compute. This measures the benefit of more data with the same number of passes
-and optimizer updates, not equal compute. Full-batch tensor memory grows with
-dataset size; the supported cap is a bound, not a memory guarantee on every host.
-Games can end early and duplicate inputs are removed, so the generator does not
-guarantee a requested training count. Preview rejects insufficient data.
-
-## Fixed-input teacher-quality study
-
-`teacher_quality.py` runs the locked [AB-LEARN-009](../../../records/work-items/items/AB-LEARN-009-teacher-quality.md)
-comparison. Its study config is separate from a training `Recipe`: it pins parent
-dataset bytes, teacher assets, source/position counts, seeds and the total allowance.
-Paths resolve from the repository root. Invalid or equivalent PyTorch seeds are
-rejected before teacher preparation. The study writes complete per-fit recipes.
-
-```bash
-uv run python scripts/run_teacher_quality.py \
-  --config data/experiments/learning/teacher-quality-v1.json \
-  --output artifacts/learning/teacher-quality-v1
-uv run python scripts/run_teacher_quality.py --verify \
-  --output artifacts/learning/teacher-quality-v1
-```
-
-Use a fresh output directory. Data selection precedes teacher queries and all
-reference preparation precedes fitting. Both treatments use identical training
-inputs and a separate shared single-PV reference for comparison. Internal dataset
-validation scores use each treatment's own labels and are diagnostic only.
-All-legal MultiPV/WDL supplies separate common-depth move assessments; missing
-support stays unknown. The verifier reloads checkpoints and recomputes reference
-metrics and paired summaries without querying a teacher or training again.
-Raw answers, source copies, file receipts, failures and planned denominators
-remain in the evidence directory. Study completion does not imply an improvement.
-
-Choose exactly one of `--config` (run) or `--verify` (inspect saved evidence).
-Verification uses one CPU thread and restores the caller's setting afterward;
-progress messages go to stderr and its JSON result goes to stdout. Missing files,
-invalid configs and receipt mismatches report concise errors. A failed preflight
-with no queries or fits can verify its retained receipts with scope
-`preflight-failure-receipts`; this does not certify dataset or checkpoint evidence.
+owns cross-study synthesis and revisit triggers. Use the declarative runner above
+for new work and freeze a new protocol before executing it.
 
 ## Checks
 
@@ -458,26 +352,7 @@ high-water mark, not isolated per-fit memory.
 
 [ADR-0010](../../../docs/adr/0010-frozen-selection-and-bounded-full-batch-training.md)
 owns the trade-off; [AB-LEARN-010](../../../records/work-items/items/AB-LEARN-010-snapshot-training-protocol.md)
-retains build evidence, and [AB-LEARN-012](../../../records/work-items/items/AB-LEARN-012-generated-source-mixing.md)
-owns the source comparison. Its bounded runner is `scripts/run_generated_mixing.py`:
-pass `--config data/experiments/learning/generated-source-mixing-v1-amended.json`,
-a fresh `--output`, and `--stage prepare`, `run`, or `verify` in sequence.
-
-The subsequent frozen semantic and scaling protocols use
-`scripts/run_generated_followups.py --config data/experiments/learning/generated-followups-v1.json
---output artifacts/learning/generated-followups-v1 --study semantic|scaling
---stage prepare|run|verify`. Replace each choice with one value. The config pins
-the existing candidate pool and plans at that output root; use its exact paths.
-Reconstruction starts with `prepare_pool`, `semantic_plans` and `scaling_plans`
-in `qi.training_data.followups`, followed by a new explicitly frozen config.
-
-Both natural and enriched semantic cases are freshly fitted. Verification reloads
-every checkpoint and checks historical natural-control prediction equality.
-Scaling runs 30 unique fits: its six 4k/200-update fits are shared by the fixed-pass
-and fixed-presentation views. Its plan uses natural tag frequencies independently
-of the semantic result. The two owning work items fix the decision rules and
-shared budget; these study scripts do not change general trainer defaults.
-For a repaired failed execution, `--attempt study-retry-1` selects a fresh
-operational output directory. It does not resume weights or replace the earlier
-attempt. Earlier terminal-attempt durations are charged to the original shared
-allowance; a nonterminal attempt prevents another writer from starting.
+retains build evidence. Completed source-mixing, semantic and scaling protocols,
+including their attempt and verification rules, are routed from the
+[learning experiment index](../../../data/experiments/learning/README.md) and their
+owning work items. Those study scripts do not change general trainer defaults.

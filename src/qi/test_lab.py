@@ -161,9 +161,8 @@ def test_native_api_routes_and_lazy_trace_pages(lab_run):
         assert client.get("/api/unknown").status_code == 404
         assert client.get("/assets/absent.js").status_code == 404
         data = client.get(f"/api/experiments/{run_id}").json()
-        assert ("turns" not in data["units"][0] and "events" not in data["traces"][0]) or isinstance(
-            data["traces"][0]["events"], int
-        )
+        assert "turns" not in data["units"][0]
+        assert isinstance(data["traces"][0]["events"], int)
         page = client.get(f"/api/experiments/{run_id}/traces/alpha?limit=1&show_work=true").json()
         assert len(page["events"]) <= 1 and page["total"] >= len(page["events"])
         assert client.get("/api/experiments/not-a-run").status_code == 409

@@ -2,7 +2,7 @@
 description: Settle and measure a full-game generation regime before choosing a larger overnight run.
 scope: backlog item
 status: experimental
-last_update: 2026-09-11
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-DATA-008
 work_status: ready
@@ -25,6 +25,14 @@ preparation cost and storage before selecting a larger run size. The earlier
 The user accepted full-game coverage, structured metadata, alternative analyses,
 small tests first and an eventual overnight run after configuration settles.
 The precise run protocol remains open; this record does not schedule execution.
+
+## Current scope
+
+The retained 10,000-attempt operation reached its target and its generation
+resource evidence is complete. The work item remains `ready` because frozen
+selection/export eligibility, shared-input exclusions, phase shortfalls and the
+full calibration assessment below are still unresolved. No new generation run is
+authorized; the next work is assessment and an explicit export decision.
 
 ## Acceptance Criteria
 
@@ -156,9 +164,9 @@ result and revise the scope/config explicitly before dispatch.
 - Evidence: user explicitly requested implementation/testing, identified the
   concurrent AB-DATA-007 task, and authorized shared-checkout or worktree
   coordination and deferred integration only if the infrastructure is unavailable.
-- Consequence: generation owns new policy/runner/adapter/test files under the
-  [claim ledger](../../reports/claim-ledger-generation-20260910.md). Existing store,
-  snapshot, CLI and dependency files remain the other task's responsibility.
+- Consequence: generation owned the new policy, runner, adapter and test files.
+  Existing store, snapshot, CLI and dependency files remained the concurrent
+  collection task's responsibility.
 - Follow-up: implement the locked policies with explicit configurable calibration
   values, hermetic counterexample tests and a bounded real-engine pilot after
   freezing its recipe. No million-position or overnight run is dispatched.

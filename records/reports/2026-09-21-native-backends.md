@@ -2,7 +2,7 @@
 description: Direct C++ engine import versus a minimal Qi-specific native trajectory implementation.
 scope: native execution performance and conformance
 status: stable
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: report
 report_outcome: promoted
 produced_by: "experiment@1.0.0 · agent=GPT-6 · effort=unspecified · 2026-09-21"
@@ -121,10 +121,9 @@ playing-strength or learning-quality improvement.
 
 - [Compact measured results](../../data/evaluation/native-backends-20260921.json).
 - [Study sources and reproduction](../../data/experiments/native_backends_v1/README.md).
-- [Raw timing summary](../../artifacts/native-backends-20260921/confirmation-01/summary.json).
-- [Source, binary and toolchain manifest](../../artifacts/native-backends-20260921/confirmation-01/manifest.json).
-- [Conformance counts](../../artifacts/native-backends-20260921/confirmation-01/validation.json).
-- [Post-hoc imported-binding profile](../../artifacts/native-backends-20260921/import-diagnostic.txt).
+- Local-only raw evidence under `artifacts/native-backends-20260921/`:
+  `confirmation-01/{summary,manifest,validation}.json` and
+  `import-diagnostic.txt`.
 
 The local ignored run directory retains the executed source/dependency tree,
 complete per-worker trajectories, exact inputs, binary identities and validation

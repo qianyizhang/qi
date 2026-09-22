@@ -2,7 +2,7 @@
 description: Compare an imported C++ engine with a minimal C++ implementation for controlled Qi trajectories.
 scope: native backend experiment
 status: experimental
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: work_record
 work_id: AB-ARCH-003
 work_status: done
@@ -267,7 +267,6 @@ controls, not an extension of the replay-only public Snapshot format.
 }
 ```
 
-
 ```experiment
 {
   "schema_version": 1,
@@ -294,6 +293,106 @@ controls, not an extension of the replay-only public Snapshot format.
       "path": "records/reports/2026-09-21-native-backends.md",
       "role": "report",
       "sha256": "c8dba4c239e3a6b358a45c39d2b35132a2381c82085c2a7c09a59bfb7863e9c2"
+    },
+    {
+      "path": "data/evaluation/native-backends-20260921.json",
+      "role": "results",
+      "sha256": "047387748e16ab67db5387e41d5a432dd2279b133f85485168b531ba43d3deae"
+    },
+    {
+      "path": "data/experiments/native_backends_v1/study.py",
+      "role": "source",
+      "sha256": "518ac185345575db5d36f16f783c18b99f9fdfe8c4f5bc06ac32bf76215eef05"
+    },
+    {
+      "path": "data/experiments/native_backends_v1/minimal.cpp",
+      "role": "source",
+      "sha256": "20bd0b97b31e62a1fb208d6ae4dd7fe8b175693faa625f0d36891518ce738942"
+    },
+    {
+      "path": "data/experiments/native_backends_v1/requirements.txt",
+      "role": "config",
+      "sha256": "da0dea8ed81169b5249b944e7bbfc4b635f9e05dfd6102bc2eda32124e89801a"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/confirmation-01/inputs.json",
+      "role": "config",
+      "sha256": "2878d19824577e624c57b8a7233d7f53b5c5e114804e3c43727cb13a61ed10b4"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/confirmation-01/manifest.json",
+      "role": "source",
+      "sha256": "0dca3b06a397371788e0fd33d4bcbf9f13386f2b345495476acda8f8eedcfdad"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/confirmation-01/validation.json",
+      "role": "results",
+      "sha256": "8468e09ffe8d6473d72256854e5270bfad2340402e4ff3a140ebedb17cf55817"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/confirmation-01/summary.json",
+      "role": "results",
+      "sha256": "262faab96ea7f2d46f9b65198bb23e44a6843abf4be356c09c15097ea1850070"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/import-diagnostic.txt",
+      "role": "results",
+      "sha256": "3a32c58ae7e8be3a9cf77d9e74f49a5807f16f971920e476ba49b07da346ca5b"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/cleanup-01/report-before.md",
+      "role": "report",
+      "sha256": "bde31d52a5a05bb80acdf62acf6b00cd090a7059e14adcfe69052f0d3f30e256"
+    },
+    {
+      "path": "artifacts/native-backends-20260921/cleanup-01/verification.json",
+      "role": "results",
+      "sha256": "75adb51a7ce58680b21ede6a69d887a75fea0bcd9718ef028fa4ce95799719cd"
+    }
+  ],
+  "prior_work": [
+    {
+      "id": "movegen-layout-20260915",
+      "relationship": "extends",
+      "contribution": "Test native reuse versus minimal native implementation with full-history and trajectory controls."
+    }
+  ],
+  "novelty": "Different-language execution and binding/batch costs, not another Python move-generation tuning study."
+}
+```
+
+### 2026-09-22 — portable report locator
+
+This final revision records the report after ignored artifact links were
+made explicit local-only paths. The scientific result and old digest remain
+historical evidence.
+
+```experiment
+{
+  "schema_version": 1,
+  "id": "native-backends-20260921",
+  "title": "Imported versus minimal C++ game execution",
+  "question": "Which native replacement preserves Qi semantics and improves controlled trajectory throughput?",
+  "kind": "performance",
+  "topics": [
+    "native",
+    "C++",
+    "referee",
+    "pyffish",
+    "batch trajectories"
+  ],
+  "execution": "complete",
+  "conclusion": "mixed",
+  "finding": "Both backends passed 6075 development positions and frozen rule/history controls. All 21 isolated workers matched 128 games/34491 plies. Median paired speedups: minimal full-game C++ call 3.91x, native batch 128 3.22x, scalar C++ 1.76x; direct pyffish 0.0.90 import 0.00783x. Five HTTP/atomicity/evidence tests and native ASan/UBSan passed.",
+  "conditions": "Apple Silicon macOS; identical xorshift32 controlled actors, ordered actions and 128 confirmation seeds; 300-ply ruleset; three alternating isolated rounds. Time includes final trajectory materialization. Source, binaries, inputs and raw results frozen. Post-hoc four-game imported-call diagnostic separate.",
+  "limitations": "Finite conformance and short native timing windows; uncontrolled desktop load. Imported wheel compiler/flags unknown. Import API and minimal loop have different boundaries. No persistent wrapper around Fairy-Stockfish core, production teacher/storage/training, native search, Linux or strength measurement.",
+  "decision": "Advance minimal C++ coarse trajectory execution to realistic generation integration; retain Python oracle and current defaults. Direct unmodified import failed the speed criterion.",
+  "revisit": "Production generation workload and Linux/lifecycle checks before adoption; reconsider reuse with a persistent coarse engine-core binding.",
+  "evidence": [
+    {
+      "path": "records/reports/2026-09-21-native-backends.md",
+      "role": "report",
+      "sha256": "fd971884a7a5bccb9fe5f843c6fab2831a984137d02628b9367b7a3257cee128"
     },
     {
       "path": "data/evaluation/native-backends-20260921.json",

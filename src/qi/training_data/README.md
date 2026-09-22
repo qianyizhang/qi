@@ -2,7 +2,7 @@
 description: Replay-backed generation, reusable supervision and frozen training mixture contracts.
 scope: training data module
 status: stable
-last_update: 2026-09-10
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -283,9 +283,10 @@ run (2048 games, up to 16 selected samples/game, 7200 seconds). A collection may
 accumulate multiple runs; this implementation does not authorize the larger pilot
 or remove its configuration limits. One synchronous writer owns a process lock;
 the policy runner also supports an opt-in two-worker pool with separate durable
-shards and validated combined publication. See [parallel generation](../../../docs/data-generation.md#opt-in-parallel-generation)
-for invocation, recovery and resource boundaries. Queries run outside transactions. Per-game actor caches
-and sampling lists are bounded by the referee's 300-ply limit.
+shards and validated combined publication. See
+[parallel generation](../../../docs/data-generation.md#opt-in-parallel-generation)
+for invocation, recovery and resource boundaries. Queries run outside transactions.
+Per-game actor caches and sampling lists are bounded by the referee's 300-ply limit.
 
 Rerunning the same resolved configuration reuses completed logical sources and
 successful occurrence/specification analyses. It reconstructs only relevant
@@ -296,24 +297,13 @@ a later labeling failure, so reanalysis needs no regeneration. Generation checks
 remaining time before dispatching a query with its pinned timeout; it does not
 silently shorten that specification to fit the remaining allowance.
 
-The store has five tables, foreign-key/status/uniqueness checks, an atomic initial
-schema migration and versioned validated JSONB. `board-turn-v1` hashes the ruleset,
-canonical board and side to move. `replay-state-v1`, `observation-v1` and existing
-input/example fingerprints retain their meanings. Storage row IDs are local;
-occurrences and attempts also carry portable identities. `Collection.positions`
-provides bounded indexed pagination, while count/spec queries use SQLite directly.
-
-Appending a move uses guarded incremental JSONB updates. One private cache retains
-the last validated game's exact stored bytes, indexed identity, immutable prefix
-and counters. Every append rereads SQLite; only an exact byte/identity match can
-reuse validation. Other data is fully validated and normalized, including omitted
-default fields. SQL checks the observed payload, identity and running status again
-before appending the move and updating counters. The cache advances only after
-commit succeeds; a failed update or commit leaves the persisted prefix unchanged.
-Same-prefix work accounting remains supported. Invalid counters fail before writing.
-This keeps schema version 1, WAL/FULL and every-move commits; it does not introduce
-a write buffer or change snapshot/export identities. Performance evidence belongs
-to [AB-ARCH-007](../../../records/work-items/items/AB-ARCH-007-incremental-collection-append.md).
+The versioned SQLite schema validates JSONB and retains portable occurrence and
+attempt identities beside local row IDs. Every move append rereads and guards the
+stored prefix and status in its transaction. The private one-entry cache may reuse
+only byte-identical validated state and advances only after commit. Schema v1,
+WAL/FULL and per-move commits remain unchanged; there is no write buffer.
+Performance evidence belongs to
+[AB-ARCH-007](../../../records/work-items/items/AB-ARCH-007-incremental-collection-append.md).
 
 `SelectionRecipe` version `sql-selection-v1` declares an explicit collection
 analysis-specification hash, reserved `Corpus`, seed and ordered buckets containing

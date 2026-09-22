@@ -36,6 +36,41 @@ def recipe(store, corpus, count=1):
     )
 
 
+def test_analysis_spec_preserves_persisted_identity_and_validates_nested_fields():
+    # This digest predates the typed mapping; saved selections refer to it.
+    payload = {
+        "version": 1,
+        "supervision": {
+            "target": "legal-teacher-move-v1",
+            "authority": "teacher-preference",
+            "adapter": "uci-teacher-v2",
+            "engine_sha256": "a" * 64,
+            "network_sha256": "b" * 64,
+            "settings": {"Threads": "1", "Hash": "16", "MultiPV": "2", "Ponder": "false"},
+            "nodes": 100,
+            "depth": None,
+        },
+        "timeout_seconds": 1.0,
+        "output_contract": "teacher-analysis-v1-v2",
+    }
+    saved = json.dumps(payload, separators=(",", ":"))
+    spec = AnalysisSpec.model_validate_json(saved)
+    assert spec.model_dump_json() == saved
+    assert spec.identity == "b9ea3d70c429bc0c249dbea1f0806f11f6a9ea0a80a64340e010f2f657ca5c67"
+    for key, value in (
+        ("nodes", "100"),
+        ("depth", 65),
+        ("settings", {"Threads": 1}),
+        ("engine_sha256", "invalid"),
+        ("unrecognized", True),
+    ):
+        invalid = {**payload, "supervision": {**payload["supervision"], key: value}}
+        with pytest.raises(ValueError):
+            AnalysisSpec.model_validate(invalid)
+        with pytest.raises(ValueError):
+            AnalysisSpec.model_validate_json(json.dumps(invalid))
+
+
 def test_recovery_prefixes_and_first_committed_success(tmp_path, data_setup):
     _, _, teacher, labeler, _ = data_setup
     path = tmp_path / "store.sqlite"

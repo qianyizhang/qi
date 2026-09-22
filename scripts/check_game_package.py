@@ -3,11 +3,11 @@
 import argparse
 import os
 import shlex
-import subprocess
-import sys
 import sysconfig
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+from package_check import PackageRunner, build_distribution, create_isolated_environment, export_requirements
 
 
 def main() -> None:
@@ -16,18 +16,14 @@ def main() -> None:
     native = parser.parse_args().native
     package = "qi-game-native" if native else "qi-game"
     root = Path(__file__).resolve().parents[1]
-    env = {**os.environ, "UV_CACHE_DIR": str(root / ".cache/uv")}
-    env.pop("PYTHONPATH", None)
-
-    def run(*args, cwd=root, stdout=None):
-        subprocess.run(args, cwd=cwd, env=env, stdout=stdout, check=True)
+    runner = PackageRunner.create(root)
 
     with TemporaryDirectory(prefix="qi-game-package-") as directory:
         work = Path(directory).resolve()
         if native:
             executable = work / "native-sanitizer"
             compiler = shlex.split(os.environ.get("CXX") or sysconfig.get_config_var("CXX") or "c++")
-            run(
+            runner.run(
                 *compiler,
                 "-std=c++17",
                 "-O1",
@@ -38,42 +34,23 @@ def main() -> None:
                 "-o",
                 str(executable),
             )
-            run(str(executable), cwd=work)
+            runner.run(executable, cwd=work)
         dist = work / "dist"
-        run("uv", "build", "--package", "qi-game", "--sdist", "--out-dir", str(dist))
-        run("uv", "build", "--wheel", str(next(dist.glob("*.tar.gz"))), "--out-dir", str(dist), cwd=work)
+        distributions = [build_distribution(runner, "qi-game", dist)]
         if native:
             native_dist = work / "native-dist"
-            run("uv", "build", "--package", package, "--sdist", "--out-dir", str(native_dist))
-            run("uv", "build", "--wheel", str(next(native_dist.glob("*.tar.gz"))), "--out-dir", str(dist), cwd=work)
+            distributions.append(build_distribution(runner, package, native_dist, wheel_directory=dist))
         requirements = work / "requirements.txt"
-        run(
-            "uv",
-            "export",
-            "--locked",
-            "--package",
-            package,
-            "--no-emit-workspace",
-            "--output-file",
-            str(requirements),
-            stdout=subprocess.DEVNULL,
+        export_requirements(runner, requirements, package=package)
+        environment = create_isolated_environment(
+            runner,
+            work / "venv",
+            requirements,
+            (distribution.wheel for distribution in distributions),
         )
-        python = work / "venv/bin/python"
-        run("uv", "venv", "--python", sys.executable, str(work / "venv"), cwd=work)
-        run("uv", "pip", "install", "--python", str(python), "-r", str(requirements), cwd=work)
-        run(
-            "uv",
-            "pip",
-            "install",
-            "--python",
-            str(python),
-            "--no-deps",
-            *map(str, sorted(dist.glob("*.whl"))),
-            cwd=work,
-        )
-        env["UV_OFFLINE"] = "true"
-        run(
-            str(python),
+        runner.use_offline_cache()
+        runner.run(
+            environment.python,
             "-I",
             "-c",
             """
@@ -87,8 +64,8 @@ for name in ('qi', 'fastapi', 'typer', 'torch', 'numpy', 'pyarrow'):
             cwd=work,
         )
         if native:
-            run(
-                str(python),
+            runner.run(
+                environment.python,
                 "-I",
                 "-c",
                 """
@@ -103,7 +80,16 @@ assert 'qi_game.reference' not in sys.modules
 """,
                 cwd=work,
             )
-        run(str(python), "-I", "-m", "pytest", "--pyargs", "qi_game_native" if native else "qi_game", "-q", cwd=work)
+        runner.run(
+            environment.python,
+            "-I",
+            "-m",
+            "pytest",
+            "--pyargs",
+            "qi_game_native" if native else "qi_game",
+            "-q",
+            cwd=work,
+        )
     print(f"Isolated {package} sdist/wheel checks passed.")
 
 

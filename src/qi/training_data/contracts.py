@@ -2,13 +2,14 @@
 
 import json
 from hashlib import sha256
-from typing import Literal, Self
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, model_validator, with_config
 from qi_game.contracts import Snapshot
 from qi_game.core import START_BOARD, GameError
 from qi_game.reference import Game, legal_moves, restore
 from qi_game.trajectory import GameView
+from typing_extensions import TypedDict
 
 from qi.evaluation import Corpus
 from qi.players.policy.encoding import ENCODING, input_key
@@ -24,6 +25,20 @@ class Contract(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
 
 
+@with_config(ConfigDict(extra="forbid", strict=True))
+class SupervisionIdentity(TypedDict):
+    """Teacher identity kept as JSON mappings in versioned dataset fingerprints."""
+
+    target: Literal["legal-teacher-move-v1"]
+    authority: Literal["teacher-preference"]
+    adapter: Literal["uci-teacher-v1", "uci-teacher-v2"]
+    engine_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    network_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    settings: dict[str, str]
+    nodes: Annotated[int, Field(ge=1)]
+    depth: Annotated[int | None, Field(ge=1, le=64)]
+
+
 def fingerprint(kind: str, payload: object) -> str:
     raw = json.dumps({"scheme": kind, "payload": payload}, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return sha256(raw.encode()).hexdigest()
@@ -37,7 +52,7 @@ def observation_fingerprint(game: Game | GameView) -> str:
     return fingerprint("observation-v1", {"encoding": ENCODING, "board": game.board, "turn": game.turn})
 
 
-def supervision_spec(analysis: TeacherAnalysis) -> dict:
+def supervision_spec(analysis: TeacherAnalysis) -> SupervisionIdentity:
     # EvalFile is a local locator; the network content hash carries its identity.
     return {
         "target": "legal-teacher-move-v1",

@@ -2,7 +2,7 @@
 description: Accepted ownership and identity model for game learning and training data.
 scope: core domain model
 status: stable
-last_update: 2026-09-21
+last_update: 2026-09-22
 document_class: coordination
 ---
 
@@ -26,7 +26,9 @@ reference and conformance fixtures while allowing reused or locally authored
 accelerated implementations. Python experiments and coarse native execution
 share semantic contracts without requiring identical internal composition.
 [ADR-0012](adr/0012-replaceable-game-execution.md) owns this accepted evolution;
-the current implementation remains Python. The independent
+the Python reference remains the default, while the optional
+[native package](../packages/qi-game-native/README.md) implements explicit
+trajectory execution for policy generation. The independent
 [game package](../packages/qi-game/README.md) owns replay data and the implemented
 referee protocol; application/player-session records remain in `qi.protocol`.
 
